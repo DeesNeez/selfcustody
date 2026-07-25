@@ -100,7 +100,7 @@
               ${card("bi-signpost-split", "I am brand new", "Learn the basic model: wallet, recovery backup, exchange, address, transaction, and confirmation.", "guides.html")}
               ${card("bi-shield-lock", "I need a hardware wallet", "Compare approachable, air-gapped, open-source, and advanced signing devices without a one-size-fits-all ranking.", "devices.html", "Compare hardware")}
               ${card("bi-window", "I need wallet software", "Understand which app creates transactions, which device signs them, and when mobile or desktop software makes sense.", "software.html", "Compare software")}
-              ${card("bi-bank", "I need to buy or sell", "Compare platforms by custody model, CAD funding, trading tools, and withdrawal workflow.", "exchanges.html", "Compare platforms")}
+              ${card("bi-bank", "I need to buy bitcoin", "Compare platforms by custody model, CAD funding, purchase methods, and withdrawal workflow.", "exchanges.html", "Compare platforms")}
             </div>
           </div>
         </section>
