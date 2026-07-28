@@ -309,8 +309,8 @@
                 imageWidth: 836,
                 imageHeight: 762,
                 title: "COLDCARD Q / Mk5",
-                text: "Bitcoin-only signers built for air-gapped and advanced workflows, with dual secure elements and strong transaction-policy features.",
-                tags: ["Bitcoin only", "Air-gap options", "Beginner to advanced workflows"],
+                text: "Bitcoin-only signers built for air-gapped, beginner-to-advanced workflows, with dual secure elements and strong transaction-policy features.",
+                tags: ["Bitcoin only", "Air-gap options", "Advanced"],
                 href: "coinkite.html#coldcard"
               })}
               ${productCard({
@@ -318,20 +318,20 @@
                 imageAlt: "Trezor Safe 7 hardware wallet",
                 imageWidth: 560,
                 imageHeight: 560,
-                title: "Trezor Safe 7",
-                text: "Premium touchscreen device with open-source security, multiple hardware layers, encrypted Bluetooth, and broad asset support.",
-                tags: ["Touchscreen", "Open source", "Supports 💩 coins"],
+                title: "Trezor Safe 7 Bitcoin-only",
+                text: "Premium touchscreen signer with a dedicated Bitcoin-only firmware edition, open-source security, and encrypted Bluetooth.",
+                tags: ["Bitcoin only", "Touchscreen", "Open source"],
                 href: "#trezor"
               })}
               ${productCard({
-                image: "assets/img/devices/ledger-flex.webp",
-                imageAlt: "Ledger Flex hardware wallet",
-                imageWidth: 2244,
-                imageHeight: 1800,
-                title: "Ledger Flex",
-                text: "Large E Ink touchscreen and polished mobile experience backed by Ledger's Secure Element and Ledger OS security model.",
-                tags: ["E Ink", "Bluetooth", "Supports 💩 coins"],
-                href: "#ledger"
+                image: "assets/img/devices/krux-yahboom.png",
+                imageAlt: "Krux open-source Bitcoin signer running on K210 touchscreen hardware",
+                imageWidth: 312,
+                imageHeight: 440,
+                title: "Krux",
+                text: "Open-source, Bitcoin-only firmware you flash onto off-the-shelf K210 touchscreen hardware, with QR and SD-card air-gapped signing.",
+                tags: ["Bitcoin only", "DIY firmware", "QR air-gap"],
+                href: "#krux"
               })}
               ${productCard({
                 image: "assets/img/devices/blockstream-jade-plus.png",
@@ -344,17 +344,20 @@
                 href: "#jade"
               })}
               ${productCard({
-                image: "assets/img/devices/seedsigner.png",
-                imageAlt: "SeedSigner DIY Bitcoin signing device",
-                imageWidth: 1080,
-                imageHeight: 380,
+                image: "assets/img/devices/seedsigner-enclosure.jpg",
+                imageAlt: "Assembled orange SeedSigner enclosure",
+                imageWidth: 1600,
+                imageHeight: 1067,
                 title: "SeedSigner",
                 text: "DIY, stateless, air-gapped signing built from commodity hardware. Powerful and verifiable, but intentionally hands-on.",
                 tags: ["DIY", "Stateless", "QR air-gap"],
                 href: "#seedsigner"
               })}
               ${productCard({
-                icon: "bi-usb-c-drive",
+                image: "assets/img/devices/bitbox02.webp",
+                imageAlt: "BitBox02 hardware wallet",
+                imageWidth: 1020,
+                imageHeight: 574,
                 title: "BitBox02 Bitcoin-only",
                 text: "Compact Swiss-made signer with a secure dual-chip architecture, open-source firmware, touch controls, and microSD backup.",
                 tags: ["Bitcoin only", "USB-C", "microSD backup"],
@@ -378,8 +381,8 @@
                   <tr>
                     <th scope="col">Feature</th>
                     <th scope="col" class="sc-coldcard-col">COLDCARD<br>Q / Mk5</th>
-                    <th scope="col">Trezor<br>Safe 7</th>
-                    <th scope="col">Ledger<br>Flex</th>
+                    <th scope="col">Trezor Safe 7<br>Bitcoin-only</th>
+                    <th scope="col">Krux</th>
                     <th scope="col">Jade<br>Plus</th>
                     <th scope="col">SeedSigner</th>
                     <th scope="col">BitBox02<br>Bitcoin-only</th>
@@ -391,7 +394,7 @@
                     <th scope="row">Publicly reviewable firmware</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Public source and reproducible builds</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open-source security design</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>Proprietary Ledger OS</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open-source firmware</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open hardware and firmware</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open DIY software stack</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open, deterministic builds</small></td>
@@ -400,7 +403,7 @@
                     <th scope="row">Secure hardware isolation</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Two secure elements from different vendors</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Two secure elements plus MCU</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Certified Secure Element</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>No secure element; encrypted storage option</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>Open blind-oracle virtual secure element</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>Stateless design instead of a secure element</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Secure chip plus MCU</small></td>
@@ -408,8 +411,8 @@
                   <tr>
                     <th scope="row">Bitcoin-only operation</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Bitcoin-only firmware option</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>Multi-asset platform</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only firmware edition</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Partial">◐</span><small>Bitcoin and Liquid</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only edition</small></td>
@@ -429,7 +432,7 @@
                     <th scope="row">Fully air-gapped signing path</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR on Q; microSD on both</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR or SD card</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR or removable media</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR workflow</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
@@ -438,7 +441,7 @@
                     <th scope="row">Camera-based QR signing</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-partial" aria-label="Model dependent">◐</span><small>Q only</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
@@ -447,7 +450,7 @@
                     <th scope="row">Removable media for signing</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>microSD</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>SD card</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>SD card or USB drive</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>microSD is for backup</small></td>
@@ -456,7 +459,7 @@
                     <th scope="row">USB data connection</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Optional workflow</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>USB for power/flashing only</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>USB power only</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
@@ -465,7 +468,7 @@
                     <th scope="row">Bluetooth</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
@@ -474,7 +477,7 @@
                     <th scope="row">NFC</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
@@ -494,7 +497,7 @@
                     <th scope="row">Removable-media backup</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Encrypted microSD backup</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative">◐</span><small>SD card export; not a sole backup</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>SD card / SeedQR options</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative">◐</span><small>SeedQR or words; not device backup</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>microSD is the default backup</small></td>
@@ -503,7 +506,7 @@
                     <th scope="row">Stateless signing mode</th>
                     <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-no" aria-label="Not standard">—</span><small>Temporary-seed tools exist</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Optional amnesic mode</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Optional SeedQR workflow</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Normal operating model</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
@@ -522,14 +525,14 @@
             <article id="trezor" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/trezor-safe-7-detail.png" alt="Trezor Safe 7" width="660" height="1118" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Trezor Safe 7</h2><p>Trezor's current premium model combines a large colour touchscreen, open-source software, two secure elements plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging, and broad asset compatibility.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Mixed-asset owners who do not want a Bitcoin-only signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul>${externalLink("https://trezor.io/trezor-safe-7")}</div>
+                <div class="col-lg-7"><h2>Trezor Safe 7 Bitcoin-only</h2><p>Trezor's current premium model is also available as a dedicated Bitcoin-only firmware edition: same hardware as the standard Safe 7—large colour touchscreen, open-source software, two secure elements plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging—with altcoin functionality removed entirely.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Bitcoin-only holders who still want a premium touchscreen experience.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul>${externalLink("https://trezor.io/trezor-safe-7-bitcoin-only")}</div>
               </div>
             </article>
 
-            <article id="ledger" class="sc-detail">
+            <article id="krux" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/ledger-flex.webp" alt="Ledger Flex" width="2244" height="1800" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Ledger Flex</h2><p>Ledger Flex emphasizes a readable 2.84-inch E Ink touchscreen, secure on-device confirmation, multi-device connectivity, and a polished mobile/desktop ecosystem. Private keys are isolated in a certified Secure Element running Ledger OS.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who prioritize a refined interface and broad asset support.</li><li>Frequent mobile users who want Bluetooth and a larger transaction-review screen.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The firmware security model is not fully open source; decide how much vendor trust you accept.</li><li>Understand optional recovery products before enrolling—none are required for ordinary self-managed recovery.</li></ul>${externalLink("https://shop.ledger.com/pages/ledger-flex")}</div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/krux-yahboom.png" alt="Krux running on a Yahboom K210 touchscreen device" width="312" height="440" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>Krux</h2><p>Krux is open-source, Bitcoin-only firmware that turns off-the-shelf Kendryte K210 devices—such as the Yahboom K210 module or M5StickV—into air-gapped signers using QR codes or an SD card. It has no secure element; protection relies on encryption, and it can run in a stateless mode (load keys each session) or store an encrypted seed on the device.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer.</li><li>QR-based single-sig and multisig workflows.</li><li>Users comfortable flashing firmware and sourcing their own hardware.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The project states it has not yet been formally audited by a third party.</li><li>No secure element—encryption-based protection is a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li></ul>${externalLink("https://selfcustody.github.io/krux/")}</div>
               </div>
             </article>
 
@@ -542,25 +545,22 @@
 
             <article id="seedsigner" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/seedsigner.png" alt="SeedSigner DIY Bitcoin signing device" width="1080" height="380" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/seedsigner-enclosure.jpg" alt="Assembled orange SeedSigner enclosure" width="1600" height="1067" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>SeedSigner</h2><p>SeedSigner is a community-built, air-gapped signing system typically assembled from a Raspberry Pi Zero 1.3, camera, screen, and enclosure. The device is designed to be stateless: seed material is loaded when needed and not retained after power-off.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>Technically curious users who want to assemble and verify their own signer.</li><li>QR-based multisig setups and geographically separated keys.</li><li>People who value commodity parts and transparent software.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Correct components, software verification, enclosure assembly, SeedQR handling, and backups are your responsibility.</li><li>Not the smoothest first device for someone who wants vendor support and a guided setup.</li></ul>${externalLink("https://seedsigner.com/")}</div>
               </div>
             </article>
 
             <article id="bitbox" class="sc-detail">
-              <h2>BitBox02 Bitcoin-only</h2>
-              <p>The BitBox02 Bitcoin-only edition combines open-source firmware with a secure dual-chip design, a compact OLED display, touch sliders, USB-C, and a fast microSD backup workflow. The Bitcoin-only firmware edition is locked at the factory and cannot be switched to multi-asset firmware.</p>
-              <div class="row g-4">
-                <div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a compact, approachable Bitcoin-only device.</li><li>Users who like guided desktop software and microSD recovery.</li><li>Sparrow, Electrum, Specter, and personal-node users.</li></ul></div>
-                <div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Normal use is connected over USB-C rather than camera-based air gap.</li><li>The original BitBox02 does not work with iPhone/iPad; verify the current Nova model if iOS matters.</li></ul></div>
+              <div class="row g-5 align-items-center">
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/bitbox02.webp" alt="BitBox02 hardware wallet" width="1020" height="574" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>BitBox02 Bitcoin-only</h2><p>The BitBox02 Bitcoin-only edition combines open-source firmware with a secure dual-chip design, a compact OLED display, touch sliders, USB-C, and a fast microSD backup workflow. The Bitcoin-only firmware edition is locked at the factory and cannot be switched to multi-asset firmware.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a compact, approachable Bitcoin-only device.</li><li>Users who like guided desktop software and microSD recovery.</li><li>Sparrow, Electrum, Specter, and personal-node users.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Normal use is connected over USB-C rather than camera-based air gap.</li><li>The original BitBox02 does not work with iPhone/iPad; verify the current Nova model if iOS matters.</li></ul>${externalLink("https://bitbox.swiss/bitbox02/bitcoin-only/")}</div>
               </div>
-              ${externalLink("https://bitbox.swiss/bitbox02/bitcoin-only/")}
             </article>
 
             ${sourceNote([
               ["COLDCARD", "https://coldcard.com/"],
-              ["Trezor", "https://trezor.io/trezor-safe-7"],
-              ["Ledger", "https://shop.ledger.com/pages/ledger-flex"],
+              ["Trezor", "https://trezor.io/trezor-safe-7-bitcoin-only"],
+              ["Krux", "https://selfcustody.github.io/krux/"],
               ["Blockstream", "https://blockstream.com/jade/jade-plus/"],
               ["SeedSigner", "https://seedsigner.com/"],
               ["BitBox", "https://bitbox.swiss/bitbox02/bitcoin-only/"]
