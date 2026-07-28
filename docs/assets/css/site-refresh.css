@@ -464,6 +464,10 @@ body.site-refresh.sc-nav-open {
   filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.28));
 }
 
+.sc-product-card .sc-product-image img[alt="COLDCARD Q and Mk5 hardware wallets"] {
+  max-height: 185px;
+}
+
 .sc-product-card .sc-product-image img.sc-logo-image {
   max-height: 105px;
   padding: 12px;

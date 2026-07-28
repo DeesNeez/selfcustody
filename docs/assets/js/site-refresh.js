@@ -311,7 +311,7 @@
                 title: "COLDCARD Q / Mk5",
                 text: "Bitcoin-only signers built for air-gapped, beginner-to-advanced workflows, with dual secure elements and strong transaction-policy features.",
                 tags: ["Bitcoin only", "Air-gap options", "Advanced"],
-                href: "coinkite.html#coldcard"
+                href: "#coldcard"
               })}
               ${productCard({
                 image: "assets/img/devices/trezor-safe-7-shortlist.png",
@@ -336,22 +336,22 @@
               ${productCard({
                 image: "assets/img/devices/blockstream-jade-plus.png",
                 imageAlt: "Blockstream Jade Plus hardware wallet",
-                imageWidth: 900,
-                imageHeight: 900,
+                imageWidth: 925,
+                imageHeight: 547,
                 title: "Blockstream Jade Plus",
                 text: "Open-source Bitcoin signer with camera-based QR workflows, USB-C, Bluetooth, SD card support, and a larger display.",
                 tags: ["Bitcoin + Liquid", "QR air-gap", "Open source"],
                 href: "#jade"
               })}
               ${productCard({
-                image: "assets/img/devices/seedsigner-enclosure.jpg",
-                imageAlt: "Assembled orange SeedSigner enclosure",
-                imageWidth: 1600,
-                imageHeight: 1067,
-                title: "SeedSigner",
-                text: "DIY, stateless, air-gapped signing built from commodity hardware. Powerful and verifiable, but intentionally hands-on.",
-                tags: ["DIY", "Stateless", "QR air-gap"],
-                href: "#seedsigner"
+                image: "assets/img/devices/bitkey.png",
+                imageAlt: "Bitkey hardware key",
+                imageWidth: 320,
+                imageHeight: 363,
+                title: "Bitkey",
+                text: "Block's Bitcoin-only hardware key, phone app, and server key working together as a 2-of-3 multisig—no single point of failure, with company-assisted recovery.",
+                tags: ["Bitcoin only", "2-of-3 multisig", "NFC"],
+                href: "#bitkey-device"
               })}
               ${productCard({
                 image: "assets/img/devices/bitbox02.webp",
@@ -384,7 +384,7 @@
                     <th scope="col">Trezor Safe 7<br>Bitcoin-only</th>
                     <th scope="col">Krux</th>
                     <th scope="col">Jade<br>Plus</th>
-                    <th scope="col">SeedSigner</th>
+                    <th scope="col">Bitkey</th>
                     <th scope="col">BitBox02<br>Bitcoin-only</th>
                   </tr>
                 </thead>
@@ -396,7 +396,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open-source security design</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open-source firmware</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open hardware and firmware</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open DIY software stack</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Partial">◐</span><small>Commons Clause license; not independently buildable</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open, deterministic builds</small></td>
                   </tr>
                   <tr>
@@ -405,7 +405,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Two secure elements plus MCU</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>No secure element; encrypted storage option</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>Open blind-oracle virtual secure element</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>Stateless design instead of a secure element</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>2-of-3 multisig design, not a single secure element</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Secure chip plus MCU</small></td>
                   </tr>
                   <tr>
@@ -434,7 +434,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR or SD card</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR or removable media</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR workflow</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>Phone app + NFC, not air-gapped</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                   </tr>
                   <tr>
@@ -443,7 +443,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                   </tr>
                   <tr>
@@ -461,7 +461,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>USB for power/flashing only</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>USB power only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>USB-C for charging only</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                   </tr>
                   <tr>
@@ -479,7 +479,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                   </tr>
 
@@ -490,7 +490,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Different model">◐</span><small>App + cloud + social recovery, not a single seed phrase</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
                   </tr>
                   <tr>
@@ -499,7 +499,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative">◐</span><small>SD card export; not a sole backup</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>SD card / SeedQR options</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative">◐</span><small>SeedQR or words; not device backup</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>Cloud + social recovery instead</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>microSD is the default backup</small></td>
                   </tr>
                   <tr>
@@ -508,7 +508,7 @@
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Optional amnesic mode</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Optional SeedQR workflow</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Normal operating model</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
                   </tr>
                 </tbody>
@@ -521,6 +521,13 @@
         <section class="sc-section">
           <div class="container">
             <div class="sc-section-head"><span class="sc-eyebrow">Detailed notes</span><h2>What each device is really optimizing for</h2></div>
+
+            <article id="coldcard" class="sc-detail">
+              <div class="row g-5 align-items-center">
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/coldcard-q-mk5.png" alt="COLDCARD Q and Mk5 hardware wallets" width="836" height="762" loading="lazy"></div></div>
+                <div class="col-lg-7"><span class="sc-eyebrow">Our recommendation</span><h2>COLDCARD Q / Mk5</h2><p>COLDCARD is the device we most often point people to first—not because the others are worse, but because the Q and Mk5 cover the widest range of use: Bitcoin-only signers with dual secure elements from different vendors, publicly reviewable and reproducible firmware, and some of the deepest transaction-policy controls available on a consumer signer, while still working for someone building their first air-gapped setup.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want one device that scales from a first air-gapped wallet to advanced multisig and policy rules.</li><li>Users who value dual, independently-sourced secure elements and open, reproducible firmware.</li><li>Anyone who wants microSD, NFC, and (on the Q) QR/camera air-gap options in a single signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The interface rewards reading the docs; it is not the most guided out-of-box experience.</li><li>Choosing between Q and Mk5 comes down to keyboard-and-camera versus a smaller, simpler form factor—see the full breakdown below.</li></ul><p><a class="sc-text-link" href="coinkite.html#coldcard">Read the full COLDCARD Q vs Mk5 breakdown <i class="bi bi-arrow-right"></i></a></p>${externalLink("https://coldcard.com/")}</div>
+              </div>
+            </article>
 
             <article id="trezor" class="sc-detail">
               <div class="row g-5 align-items-center">
@@ -538,15 +545,15 @@
 
             <article id="jade" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/blockstream-jade-plus.png" alt="Blockstream Jade Plus" width="900" height="900" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/blockstream-jade-plus.png" alt="Blockstream Jade Plus" width="925" height="547" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>Blockstream Jade Plus</h2><p>Jade Plus is a Bitcoin and Liquid signer with a larger display, camera, physical controls, QR signing, USB-C, Bluetooth, and SD card support. Its hardware and firmware are open source, and its security architecture uses Blockstream's virtual secure element approach.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based air-gapped signing with a modern screen.</li><li>Users who prefer auditable hardware and firmware.</li><li>Sparrow, Nunchuk, Specter, and Blockstream App workflows.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Learn how PIN unlock, genuine check, and stateless recovery work before deciding on a backup plan.</li></ul>${externalLink("https://blockstream.com/jade/jade-plus/")}</div>
               </div>
             </article>
 
-            <article id="seedsigner" class="sc-detail">
+            <article id="bitkey-device" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/seedsigner-enclosure.jpg" alt="Assembled orange SeedSigner enclosure" width="1600" height="1067" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>SeedSigner</h2><p>SeedSigner is a community-built, air-gapped signing system typically assembled from a Raspberry Pi Zero 1.3, camera, screen, and enclosure. The device is designed to be stateless: seed material is loaded when needed and not retained after power-off.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>Technically curious users who want to assemble and verify their own signer.</li><li>QR-based multisig setups and geographically separated keys.</li><li>People who value commodity parts and transparent software.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Correct components, software verification, enclosure assembly, SeedQR handling, and backups are your responsibility.</li><li>Not the smoothest first device for someone who wants vendor support and a guided setup.</li></ul>${externalLink("https://seedsigner.com/")}</div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/bitkey.png" alt="Bitkey hardware key" width="320" height="363" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>Bitkey</h2><p>Bitkey is Block's Bitcoin-only wallet: a hardware key, a mobile app, and a Block-held recovery key form a 2-of-3 multisignature wallet by design—no single key can move funds alone. The hardware key has an OLED display, a fingerprint sensor, connects via NFC, and charges over USB-C. Firmware, app, server code, and hardware schematics are published on GitHub under the Commons Clause license, though the firmware cannot be independently rebuilt end-to-end because it depends on a proprietary third-party fingerprint-matching library Block cannot redistribute.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want multisig-level protection without configuring it themselves.</li><li>Users who prefer a polished, guided consumer product over a DIY or advanced setup.</li><li>Anyone comfortable with Block holding one of three keys to help with recovery.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The published code carries a Commons Clause restriction and isn't independently buildable end-to-end—source-available, not fully open source.</li><li>Recovery leans on the app, encrypted cloud backup, and social recovery rather than a single standard seed phrase.</li><li>A company-held key is a different trust model than a fully self-contained signer.</li></ul>${externalLink("https://bitkey.world/")}</div>
               </div>
             </article>
 
@@ -562,7 +569,7 @@
               ["Trezor", "https://trezor.io/trezor-safe-7-bitcoin-only"],
               ["Krux", "https://selfcustody.github.io/krux/"],
               ["Blockstream", "https://blockstream.com/jade/jade-plus/"],
-              ["SeedSigner", "https://seedsigner.com/"],
+              ["Bitkey", "https://bitkey.world/"],
               ["BitBox", "https://bitbox.swiss/bitbox02/bitcoin-only/"]
             ])}
           </div>
