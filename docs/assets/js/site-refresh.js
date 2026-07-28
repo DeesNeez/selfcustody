@@ -401,7 +401,7 @@
                   </tr>
                   <tr>
                     <th scope="row">Secure hardware isolation</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Two secure elements from different vendors</small></td>
+                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Two secure elements from different vendors, plus MCU</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Two secure elements plus MCU</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>No secure element; encrypted storage option</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>Open blind-oracle virtual secure element</small></td>

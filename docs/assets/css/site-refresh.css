@@ -1092,6 +1092,11 @@ body.site-refresh.sc-nav-open {
   color: #f6ae55;
 }
 
+[data-theme="dark"] .sc-feature-matrix tbody tr:not(.sc-matrix-group):hover th,
+[data-theme="dark"] .sc-feature-matrix tbody tr:not(.sc-matrix-group):hover td {
+  background-color: var(--sc-matrix-group-bg);
+}
+
 [data-theme="dark"] .sc-callout {
   border-color: #5c4020;
 }
