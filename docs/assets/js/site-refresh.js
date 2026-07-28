@@ -32,7 +32,7 @@
               <div class="col-lg-7 sc-hero-copy">${copy}</div>
               <div class="col-lg-5">
                 <figure class="sc-hero-media">
-                  <img src="${media.src}" alt="${media.alt}" fetchpriority="high">
+                  <img src="${media.src}" alt="${media.alt}" width="${media.width}" height="${media.height}" fetchpriority="high">
                 </figure>
               </div>
             </div>` : copy}
@@ -52,12 +52,12 @@
       </article>
     </div>`;
 
-  const productCard = ({ image, imageAlt, icon = "bi-usb-drive", title, text, tags, href }) => `
+  const productCard = ({ image, imageAlt, imageWidth, imageHeight, icon = "bi-usb-drive", title, text, tags, href }) => `
     <div class="col-md-6 col-xl-4">
       <article class="sc-card sc-product-card">
         <div class="sc-product-image">
           ${image
-            ? `<img src="${image}" alt="${imageAlt || title}" loading="lazy">`
+            ? `<img src="${image}" alt="${imageAlt || title}" width="${imageWidth}" height="${imageHeight}" loading="lazy">`
             : `<div class="sc-icon mb-0"><i class="bi ${icon}"></i></div>`}
         </div>
         <div class="sc-card-body">
@@ -170,7 +170,9 @@
            <a class="sc-btn sc-btn-ghost" href="contact.html">Ask a question</a>`,
           {
             src: "assets/img/education-library.jpeg",
-            alt: "Bookshelves and a reading lamp in a quiet library"
+            alt: "Bookshelves and a reading lamp in a quiet library",
+            width: 1600,
+            height: 2400
           }
         )}
 
@@ -284,7 +286,9 @@
            <a class="sc-btn sc-btn-ghost" href="coinkite.html">Explore Coinkite products</a>`,
           {
             src: "assets/img/signing-device-circuit.jpeg",
-            alt: "Close-up view of components on a circuit board"
+            alt: "Close-up view of components on a circuit board",
+            width: 2268,
+            height: 1500
           }
         )}
 
@@ -297,40 +301,50 @@
             <div class="sc-section-head"><span class="sc-eyebrow">Shortlist</span><h2>Six useful reference points</h2><p>This is not a winner-takes-all ranking. Each device represents a different balance of transparency, convenience, connectivity, and operator skill.</p></div>
             <div class="row g-4">
               ${productCard({
-                image: "https://coldcard.com/static/images/q-and-mk5-side-by-side.png",
+                image: "assets/img/devices/coldcard-q-mk5.png",
                 imageAlt: "COLDCARD Q and Mk5 hardware wallets",
+                imageWidth: 836,
+                imageHeight: 762,
                 title: "COLDCARD Q / Mk5",
                 text: "Bitcoin-only signers built for air-gapped and advanced workflows, with dual secure elements and strong transaction-policy features.",
                 tags: ["Bitcoin only", "Air-gap options", "Advanced"],
                 href: "coinkite.html#coldcard"
               })}
               ${productCard({
-                image: "https://trezor.io/_next/static/media/trezor-safe-7.0aygvh_qae205.png",
+                image: "assets/img/devices/trezor-safe-7-shortlist.png",
                 imageAlt: "Trezor Safe 7 hardware wallet",
+                imageWidth: 560,
+                imageHeight: 560,
                 title: "Trezor Safe 7",
                 text: "Premium touchscreen device with open-source security, multiple hardware layers, encrypted Bluetooth, and broad asset support.",
                 tags: ["Touchscreen", "Open source", "Multi-asset"],
                 href: "#trezor"
               })}
               ${productCard({
-                image: "https://images.ctfassets.net/ge894kijjvls/5ofwi3OJBDNJV4Cnw6cAVi/ad4c7ff5e1ed7f561968d260d28be5fd/flex_hero_graphite_desktop.webp",
+                image: "assets/img/devices/ledger-flex.webp",
                 imageAlt: "Ledger Flex hardware wallet",
+                imageWidth: 2244,
+                imageHeight: 1800,
                 title: "Ledger Flex",
                 text: "Large E Ink touchscreen and polished mobile experience backed by Ledger's Secure Element and Ledger OS security model.",
                 tags: ["E Ink", "Bluetooth", "Multi-asset"],
                 href: "#ledger"
               })}
               ${productCard({
-                image: "https://blockstream.com/img/jade/jade-plus-comparison.png",
+                image: "assets/img/devices/blockstream-jade-plus.png",
                 imageAlt: "Blockstream Jade Plus hardware wallet",
+                imageWidth: 900,
+                imageHeight: 900,
                 title: "Blockstream Jade Plus",
                 text: "Open-source Bitcoin signer with camera-based QR workflows, USB-C, Bluetooth, SD card support, and a larger display.",
                 tags: ["Bitcoin + Liquid", "QR air-gap", "Open source"],
                 href: "#jade"
               })}
               ${productCard({
-                image: "https://seedsigner.com/wp-content/uploads/2021/12/Frame-6.png",
+                image: "assets/img/devices/seedsigner.png",
                 imageAlt: "SeedSigner DIY Bitcoin signing device",
+                imageWidth: 1080,
+                imageHeight: 380,
                 title: "SeedSigner",
                 text: "DIY, stateless, air-gapped signing built from commodity hardware. Powerful and verifiable, but intentionally hands-on.",
                 tags: ["DIY", "Stateless", "QR air-gap"],
@@ -504,28 +518,28 @@
 
             <article id="trezor" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="https://trezor.io/_next/static/media/TS7.26qo5k-xv4ep7.png" alt="Trezor Safe 7" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/trezor-safe-7-detail.png" alt="Trezor Safe 7" width="660" height="1118" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>Trezor Safe 7</h2><p>Trezor's current premium model combines a large colour touchscreen, open-source software, two secure elements plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging, and broad asset compatibility.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Mixed-asset owners who do not want a Bitcoin-only signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul>${externalLink("https://trezor.io/trezor-safe-7")}</div>
               </div>
             </article>
 
             <article id="ledger" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="https://images.ctfassets.net/ge894kijjvls/5ofwi3OJBDNJV4Cnw6cAVi/ad4c7ff5e1ed7f561968d260d28be5fd/flex_hero_graphite_desktop.webp" alt="Ledger Flex" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/ledger-flex.webp" alt="Ledger Flex" width="2244" height="1800" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>Ledger Flex</h2><p>Ledger Flex emphasizes a readable 2.84-inch E Ink touchscreen, secure on-device confirmation, multi-device connectivity, and a polished mobile/desktop ecosystem. Private keys are isolated in a certified Secure Element running Ledger OS.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who prioritize a refined interface and broad asset support.</li><li>Frequent mobile users who want Bluetooth and a larger transaction-review screen.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The firmware security model is not fully open source; decide how much vendor trust you accept.</li><li>Understand optional recovery products before enrolling—none are required for ordinary self-managed recovery.</li></ul>${externalLink("https://shop.ledger.com/pages/ledger-flex")}</div>
               </div>
             </article>
 
             <article id="jade" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="https://blockstream.com/img/jade/jade-plus-comparison.png" alt="Blockstream Jade Plus" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/blockstream-jade-plus.png" alt="Blockstream Jade Plus" width="900" height="900" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>Blockstream Jade Plus</h2><p>Jade Plus is a Bitcoin and Liquid signer with a larger display, camera, physical controls, QR signing, USB-C, Bluetooth, and SD card support. Its hardware and firmware are open source, and its security architecture uses Blockstream's virtual secure element approach.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based air-gapped signing with a modern screen.</li><li>Users who prefer auditable hardware and firmware.</li><li>Sparrow, Nunchuk, Specter, and Blockstream App workflows.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Learn how PIN unlock, genuine check, and stateless recovery work before deciding on a backup plan.</li></ul>${externalLink("https://blockstream.com/jade/jade-plus/")}</div>
               </div>
             </article>
 
             <article id="seedsigner" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="https://seedsigner.com/wp-content/uploads/2021/12/Frame-6.png" alt="SeedSigner DIY Bitcoin signing device" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/seedsigner.png" alt="SeedSigner DIY Bitcoin signing device" width="1080" height="380" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>SeedSigner</h2><p>SeedSigner is a community-built, air-gapped signing system typically assembled from a Raspberry Pi Zero 1.3, camera, screen, and enclosure. The device is designed to be stateless: seed material is loaded when needed and not retained after power-off.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>Technically curious users who want to assemble and verify their own signer.</li><li>QR-based multisig setups and geographically separated keys.</li><li>People who value commodity parts and transparent software.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Correct components, software verification, enclosure assembly, SeedQR handling, and backups are your responsibility.</li><li>Not the smoothest first device for someone who wants vendor support and a guided setup.</li></ul>${externalLink("https://seedsigner.com/")}</div>
               </div>
             </article>
@@ -598,7 +612,7 @@
           <div class="container">
             <article id="coldcard" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="https://coldcard.com/static/images/q-and-mk5-side-by-side.png" alt="COLDCARD Q and Mk5 side by side" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/coldcard-q-mk5.png" alt="COLDCARD Q and Mk5 side by side" width="836" height="762" loading="lazy"></div></div>
                 <div class="col-lg-7">
                   <span class="sc-eyebrow">Bitcoin hardware signers</span><h2>COLDCARD Q and Mk5</h2>
                   <p>Both models are Bitcoin-only signers built around dual secure elements, verifiable firmware, extensive PIN controls, PSBT workflows, microSD, NFC, and USB-C. They are designed to keep private keys on the device while letting you choose how transaction data moves.</p>
@@ -612,7 +626,7 @@
 
             <article id="tapsigner" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="https://tapsigner.com/static/images/tapsigner-mockup-oj.svg" alt="TAPSIGNER NFC Bitcoin hardware signer" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/tapsigner.svg" alt="TAPSIGNER NFC Bitcoin hardware signer" width="571" height="360" loading="lazy"></div></div>
                 <div class="col-lg-7">
                   <span class="sc-eyebrow">Reusable NFC signer</span><h2>TAPSIGNER</h2>
                   <p>TAPSIGNER keeps one BIP32 private key on a credit-card-sized NFC card. A compatible wallet constructs and displays the transaction; you tap the card and enter its PIN to authorize a signature.</p>
@@ -625,7 +639,7 @@
 
             <article id="satscard" class="sc-detail">
               <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="https://satscard.com/static/images/satscard.png" alt="SATSCARD physical bearer Bitcoin card" loading="lazy"></div></div>
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/satscard.png" alt="SATSCARD physical bearer Bitcoin card" width="2015" height="532" loading="lazy"></div></div>
                 <div class="col-lg-7">
                   <span class="sc-eyebrow">Physical bearer bitcoin</span><h2>SATSCARD</h2>
                   <p>SATSCARD has ten independent slots. You verify and fund the current sealed slot, then the card can be handed to another person without an on-chain transfer. The recipient can keep it sealed, pass it again, or unseal the slot and sweep the bitcoin into a normal wallet.</p>
@@ -729,7 +743,9 @@
            <a class="sc-btn sc-btn-ghost" href="guides.html">Withdrawal checklist</a>`,
           {
             src: "assets/img/money-coins.jpeg",
-            alt: "A collection of international coins"
+            alt: "A collection of international coins",
+            width: 422,
+            height: 750
           }
         )}
 
