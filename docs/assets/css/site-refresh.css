@@ -1061,3 +1061,70 @@ body.site-refresh.sc-nav-open {
     transition: none;
   }
 }
+
+/* Dark theme (toggled via [data-theme="dark"] on <html>, see site-refresh.js) */
+[data-theme="dark"] {
+  --sc-ink: #ece7e0;
+  --sc-ink-soft: #cfc9bd;
+  --sc-paper: #1a1918;
+  --sc-wash: #211f1c;
+  --sc-surface: #242220;
+  --sc-line: #6e695e;
+  --sc-muted: #a49e93;
+  --sc-success: #35b48a;
+  --sc-warning: #33230f;
+  --sc-link: #ff9a1f;
+  --sc-link-hover: #ffb455;
+  --sc-matrix-group-bg: #3a2a10;
+  --sc-matrix-highlight-bg: #33230f;
+}
+
+[data-theme="dark"] .sc-feature-matrix .sc-matrix-group th {
+  color: #f6ae55;
+}
+
+[data-theme="dark"] .sc-callout {
+  border-color: #5c4020;
+}
+
+[data-theme="dark"] .sc-matrix-no {
+  color: #b8b3a8;
+  background: #2c2a26;
+}
+
+[data-theme="dark"] .sc-matrix-partial {
+  color: #f6ae55;
+}
+
+[data-theme="dark"] .sc-theme-toggle .bi-sun-fill {
+  display: inline-block;
+}
+
+[data-theme="dark"] .sc-theme-toggle .bi-moon-stars-fill {
+  display: none;
+}
+
+.sc-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.sc-theme-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.sc-theme-toggle .bi-sun-fill {
+  display: none;
+}

@@ -924,6 +924,10 @@
             <ul>${links}</ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
+          <button type="button" class="sc-theme-toggle" aria-label="Switch to dark theme" aria-pressed="false">
+            <i class="bi bi-moon-stars-fill" aria-hidden="true"></i>
+            <i class="bi bi-sun-fill" aria-hidden="true"></i>
+          </button>
         </div>
       </header>`;
   };
@@ -1000,6 +1004,40 @@
       if (nav.classList.contains("navbar-mobile")) toggleNav();
     });
   });
+
+  /**
+   * Theme toggle (light/dark). The initial theme is already applied by an
+   * inline script in <head> (before this file loads) to avoid a flash of
+   * the wrong theme; this just wires up the button and keeps it in sync.
+   */
+  const themeToggle = document.querySelector(".sc-theme-toggle");
+
+  if (themeToggle) {
+    const root = document.documentElement;
+
+    const syncToggleLabel = () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      themeToggle.setAttribute("aria-pressed", String(isDark));
+      themeToggle.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
+    };
+
+    syncToggleLabel();
+
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      if (nextTheme === "dark") {
+        root.setAttribute("data-theme", "dark");
+      } else {
+        root.removeAttribute("data-theme");
+      }
+      try {
+        window.localStorage.setItem("sc-theme", nextTheme);
+      } catch (error) {
+        /* localStorage unavailable (private browsing, disabled storage); theme still applies for this session */
+      }
+      syncToggleLabel();
+    });
+  }
 
   /**
    * Scroll-reveal entrance animation for section content.
