@@ -588,6 +588,7 @@ body.site-refresh.sc-nav-open {
 .sc-table {
   min-width: 760px;
   margin: 0;
+  color: var(--sc-ink);
 }
 
 .sc-feature-matrix {
@@ -612,6 +613,10 @@ body.site-refresh.sc-nav-open {
   left: 0;
   z-index: 2;
   background: var(--sc-surface);
+}
+
+.sc-feature-matrix thead th:first-child {
+  color: var(--sc-ink);
 }
 
 .sc-feature-matrix tbody th {
@@ -725,7 +730,7 @@ body.site-refresh.sc-nav-open {
 .sc-table thead th {
   padding: 18px 20px;
   color: #fff;
-  background: var(--sc-ink);
+  background: #242424;
   border: 0;
   font-size: 0.77rem;
   letter-spacing: 0.06em;
