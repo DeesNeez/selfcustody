@@ -93,6 +93,12 @@ body.site-refresh.sc-nav-open {
   white-space: nowrap;
 }
 
+.site-refresh a.sc-brand,
+.site-refresh a.sc-brand:hover,
+.site-refresh a.sc-brand:focus {
+  text-decoration: none;
+}
+
 .sc-brand-name {
   margin-left: 12px;
   letter-spacing: 1px;
@@ -922,6 +928,12 @@ body.site-refresh.sc-nav-open {
   font-size: 0.86rem;
 }
 
+.sc-theme-toggle-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
+
 .sc-inline-disclaimer {
   padding: 14px 0;
   color: #6b5b44;
@@ -1124,7 +1136,6 @@ body.site-refresh.sc-nav-open {
   justify-content: center;
   width: 40px;
   height: 40px;
-  margin-left: 8px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 50%;
   background: transparent;

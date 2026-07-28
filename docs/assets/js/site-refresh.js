@@ -525,7 +525,7 @@
             <article id="coldcard" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/coldcard-q-mk5.png" alt="COLDCARD Q and Mk5 hardware wallets" width="836" height="762" loading="lazy"></div></div>
-                <div class="col-lg-7"><span class="sc-eyebrow">Our recommendation</span><h2>COLDCARD Q / Mk5</h2><p>COLDCARD is the device we most often point people to first—not because the others are worse, but because the Q and Mk5 cover the widest range of use: Bitcoin-only signers with dual secure elements from different vendors, publicly reviewable and reproducible firmware, and some of the deepest transaction-policy controls available on a consumer signer, while still working for someone building their first air-gapped setup.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want one device that scales from a first air-gapped wallet to advanced multisig and policy rules.</li><li>Users who value dual, independently-sourced secure elements and open, reproducible firmware.</li><li>Anyone who wants microSD, NFC, and (on the Q) QR/camera air-gap options in a single signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The interface rewards reading the docs; it is not the most guided out-of-box experience.</li><li>Choosing between Q and Mk5 comes down to keyboard-and-camera versus a smaller, simpler form factor—see the full breakdown below.</li></ul><p><a class="sc-text-link" href="coinkite.html#coldcard">Read the full COLDCARD Q vs Mk5 breakdown <i class="bi bi-arrow-right"></i></a></p>${externalLink("https://coldcard.com/")}</div>
+                <div class="col-lg-7"><span class="sc-eyebrow">Our recommendation</span><h2>COLDCARD Q / Mk5</h2><p>COLDCARD is the device we most often point people to first—not because the others are worse, but because the Q and Mk5 cover the widest range of use: Bitcoin-only signers with dual secure elements from different vendors, publicly reviewable and reproducible firmware, and some of the deepest transaction-policy controls available on a consumer signer, while still working for someone building their first air-gapped setup.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want one device that scales from a first air-gapped wallet to advanced multisig and policy rules.</li><li>Users who value dual, independently-sourced secure elements and open, reproducible firmware.</li><li>Anyone who wants microSD, NFC, and (on the Q) QR/camera air-gap options in a single signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Read the docs to get the most out of its more advanced features.</li><li>Choosing between Q and Mk5 comes down to keyboard-and-camera versus a smaller, simpler form factor—see the full breakdown below.</li></ul><p><a class="sc-text-link" href="coinkite.html#coldcard">Read the full COLDCARD Q vs Mk5 breakdown <i class="bi bi-arrow-right"></i></a></p>${externalLink("https://coldcard.com/")}</div>
               </div>
             </article>
 
@@ -931,10 +931,6 @@
             <ul>${links}</ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
-          <button type="button" class="sc-theme-toggle" aria-label="Switch to dark theme" aria-pressed="false">
-            <i class="bi bi-moon-stars-fill" aria-hidden="true"></i>
-            <i class="bi bi-sun-fill" aria-hidden="true"></i>
-          </button>
         </div>
       </header>`;
   };
@@ -975,6 +971,12 @@
         <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
           <span>© ${currentYear} SelfCustody.ca</span>
           <span>Ontario, Canada · <a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+        <div class="sc-theme-toggle-row">
+          <button type="button" class="sc-theme-toggle" aria-label="Switch to light theme" aria-pressed="true">
+            <i class="bi bi-moon-stars-fill" aria-hidden="true"></i>
+            <i class="bi bi-sun-fill" aria-hidden="true"></i>
+          </button>
         </div>
       </div>
     </footer>`;
