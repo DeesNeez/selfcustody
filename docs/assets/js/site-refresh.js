@@ -69,11 +69,14 @@
       </article>
     </div>`;
 
+  const lastLinkCheck = "July 28, 2026";
+
   const sourceNote = links => `
     <p class="sc-source-note">
       Product details checked against ${links.map(([label, url]) =>
         `<a href="${url}" target="_blank" rel="noopener">${label}</a>`).join(", ")}.
       Features, availability, and pricing can change.
+      <span class="sc-source-note-date">Links checked ${lastLinkCheck}.</span>
     </p>`;
 
   const pages = {
@@ -295,7 +298,7 @@
         <section class="sc-section">
           <div class="container">
             <div class="sc-callout mb-5">
-              <h3>Before choosing a brand</h3>
+              <h2>Before choosing a brand</h2>
               <p>Buy directly from the manufacturer or a listed authorized reseller. Check tamper evidence and device authenticity, install only official firmware, and never use recovery words supplied by a seller.</p>
             </div>
             <div class="sc-section-head"><span class="sc-eyebrow">Shortlist</span><h2>Six useful reference points</h2><p>This is not a winner-takes-all ranking. Each device represents a different balance of transparency, convenience, connectivity, and operator skill.</p></div>
@@ -751,7 +754,7 @@
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-callout mb-5"><h3>Prices and fees are intentionally not ranked here</h3><p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p></div>
+            <div class="sc-callout mb-5"><h2>Prices and fees are intentionally not ranked here</h2><p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p></div>
             <div class="sc-section-head"><span class="sc-eyebrow">Two models</span><h2>Direct-to-wallet versus custodial platform</h2></div>
             <div class="row g-4">
               <div class="col-lg-6"><article class="sc-card"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-arrow-right-circle"></i></div><h3>Direct-to-wallet broker</h3><p>You provide a wallet address and purchased bitcoin settles to that address. This reduces time held by the service but requires you to have a tested wallet first.</p><p><strong>Examples:</strong> Bull Bitcoin and Bitcoin Well describe direct self-custody purchase flows.</p></div></article></div>

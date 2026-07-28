@@ -537,6 +537,7 @@ body.site-refresh.sc-nav-open {
   border-radius: 12px;
 }
 
+.sc-callout h2,
 .sc-callout h3 {
   margin: 0 0 7px;
   font-size: 1.25rem;
@@ -756,6 +757,12 @@ body.site-refresh.sc-nav-open {
 
 .sc-source-note a {
   text-decoration: underline;
+}
+
+.sc-source-note-date {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.8;
 }
 
 .sc-cta {
