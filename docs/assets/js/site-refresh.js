@@ -320,7 +320,7 @@
                 imageHeight: 560,
                 title: "Trezor Safe 7",
                 text: "Premium touchscreen device with open-source security, multiple hardware layers, encrypted Bluetooth, and broad asset support.",
-                tags: ["Touchscreen", "Open source", "Multi-asset"],
+                tags: ["Touchscreen", "Open source", "Supports 💩 coins"],
                 href: "#trezor"
               })}
               ${productCard({
@@ -330,7 +330,7 @@
                 imageHeight: 1800,
                 title: "Ledger Flex",
                 text: "Large E Ink touchscreen and polished mobile experience backed by Ledger's Secure Element and Ledger OS security model.",
-                tags: ["E Ink", "Bluetooth", "Multi-asset"],
+                tags: ["E Ink", "Bluetooth", "Supports 💩 coins"],
                 href: "#ledger"
               })}
               ${productCard({
