@@ -310,7 +310,7 @@
                 imageHeight: 762,
                 title: "COLDCARD Q / Mk5",
                 text: "Bitcoin-only signers built for air-gapped and advanced workflows, with dual secure elements and strong transaction-policy features.",
-                tags: ["Bitcoin only", "Air-gap options", "Advanced"],
+                tags: ["Bitcoin only", "Air-gap options", "Beginner to advanced workflows"],
                 href: "coinkite.html#coldcard"
               })}
               ${productCard({
