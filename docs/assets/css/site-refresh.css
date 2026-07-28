@@ -1,6 +1,8 @@
 :root {
   --sc-orange: #ff8a00;
   --sc-orange-dark: #d96f00;
+  --sc-link: #a85100;
+  --sc-link-hover: #8a4300;
   --sc-ink: #242424;
   --sc-ink-soft: #333333;
   --sc-paper: #ffffff;
@@ -45,11 +47,25 @@ body.site-refresh.sc-nav-open {
 }
 
 .site-refresh a {
-  color: var(--sc-orange-dark);
+  color: var(--sc-link);
 }
 
 .site-refresh a:hover {
-  color: var(--sc-orange);
+  color: var(--sc-link-hover);
+  text-decoration: underline;
+}
+
+.site-refresh a:focus-visible,
+.site-refresh button:focus-visible,
+.site-refresh [role="button"]:focus-visible,
+.site-refresh summary:focus-visible {
+  outline: 3px solid var(--sc-orange);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.site-refresh .sc-btn:focus-visible {
+  outline-offset: 2px;
 }
 
 .site-refresh #header {
@@ -141,6 +157,7 @@ body.site-refresh.sc-nav-open {
 .site-refresh .navbar .active:focus,
 .site-refresh .navbar li:hover > a {
   color: var(--sc-orange);
+  text-decoration: none;
 }
 
 .site-refresh .navbar .sc-contact-link {
@@ -296,7 +313,12 @@ body.site-refresh.sc-nav-open {
   border: 2px solid var(--sc-orange);
   border-radius: 999px;
   font-weight: 700;
+  text-decoration: none;
   transition: 0.2s ease;
+}
+
+.site-refresh .sc-btn:hover {
+  text-decoration: none;
 }
 
 .sc-btn-primary {
@@ -769,8 +791,8 @@ body.site-refresh.sc-nav-open {
   padding: 70px 0;
   color: #fff;
   background:
-    linear-gradient(90deg, rgba(255, 138, 0, 0.96), rgba(226, 111, 0, 0.96)),
-    var(--sc-orange);
+    linear-gradient(90deg, rgba(179, 86, 0, 0.96), rgba(148, 71, 0, 0.96)),
+    #b35600;
 }
 
 .sc-cta h2 {
@@ -781,7 +803,7 @@ body.site-refresh.sc-nav-open {
 .sc-cta p {
   max-width: 700px;
   margin-bottom: 0;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .sc-cta .sc-btn {
