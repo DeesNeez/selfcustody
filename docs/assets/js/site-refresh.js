@@ -63,6 +63,18 @@
       </article>
     </div>`;
 
+  const pathCard = (icon, title, text, href, linkText = "Learn more") => `
+    <div class="col-md-6 col-xl-3">
+      <a class="sc-card sc-path-card-link" href="${href}">
+        <div class="sc-card-body">
+          <div class="sc-icon"><i class="bi ${icon}"></i></div>
+          <h3>${title}</h3>
+          <p>${text}</p>
+          <span class="sc-text-link">${linkText} <i class="bi bi-arrow-right"></i></span>
+        </div>
+      </a>
+    </div>`;
+
   const productCard = ({ image, imageAlt, imageWidth, imageHeight, icon = "bi-usb-drive", title, text, tags, href }) => `
     <div class="col-md-6 col-xl-4">
       <article class="sc-card sc-product-card">
@@ -92,14 +104,14 @@
 
   const pages = {
     home: {
-      title: "Self Custody Canada | Practical Bitcoin Self-Custody",
+      title: "SelfCustody.ca",
       description: "Clear, practical guidance for learning how to buy bitcoin, choose a wallet, protect recovery material, and withdraw to self custody.",
       content: `
         ${hero(
           "Bitcoin self-custody, explained",
           `<span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-exit">EXIT</span><span class="sc-outlined-word sc-hero-fiat" data-text="FIAT"><span class="sc-word-fill">FIAT</span></span></span>
            <span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-enter">ENTER</span><span class="sc-outlined-word sc-hero-command-destination" data-text="BITCOIN"><span class="sc-word-fill">BITCOIN</span></span></span>`,
-          "Your keys, your bitcoin. Learn how to buy it, move it, and protect it without turning security into a full time job.",
+          "Your keys, your bitcoin. Learn how to buy it, move it, and<br class=\"sc-tablet-lead-break\"> protect it without turning security into a full time job.",
           `<a class="sc-btn sc-btn-primary" href="guides.html">Explore Guides <i class="bi bi-arrow-right"></i></a>
            <a class="sc-btn sc-btn-ghost" href="contact.html">Get Help</a>`,
           {
@@ -114,23 +126,27 @@
           }
         )}
 
-        <section class="sc-section">
+        <section class="sc-section sc-path-section">
+          <div class="sc-path-stars" aria-hidden="true"></div>
           <div class="container">
-            <div class="sc-section-head">
-              <span class="sc-eyebrow">Choose your path</span>
-              <h2>One step at a time</h2>
-              <p>You don't need to learn everything today. Take your time.</p>
+            <div class="sc-path-heading-row">
+              <div class="sc-section-head">
+                <span class="sc-eyebrow">Choose your path</span>
+                <h2>One step at a time</h2>
+                <p>You don't need to learn everything today. Take your time.</p>
+              </div>
+              <div class="sc-path-constellation" aria-hidden="true"></div>
             </div>
-            <div class="row g-4">
-              ${card("bi-signpost-split", "I am brand new", "Learn the basic model: wallet, recovery backup, exchange, address, transaction, and confirmation.", "guides.html")}
-              ${card("bi-shield-lock", "I need a hardware wallet", "Compare approachable, air-gapped, open-source, and advanced signing devices without a one-size-fits-all ranking.", "devices.html", "Compare hardware")}
-              ${card("bi-window", "I need wallet software", "Understand which app creates transactions, which device signs them, and when mobile or desktop software makes sense.", "software.html", "Compare software")}
-              ${card("bi-bank", "I need to buy bitcoin", "Compare platforms by custody model, CAD funding, purchase methods, and withdrawal workflow.", "exchanges.html", "Compare platforms")}
+            <div class="row g-4 sc-path-options">
+              ${pathCard("bi-signpost-split", "I am brand new", "Learn the basic model: wallet, recovery backup, exchange, address, transaction, and confirmation.", "guides.html")}
+              ${pathCard("bi-shield-lock", "I need a hardware wallet", "Compare approachable, air-gapped, open-source, and advanced signing devices without a one-size-fits-all ranking.", "devices.html", "Compare hardware")}
+              ${pathCard("bi-window", "I need wallet software", "Understand which app creates transactions, which device signs them, and when mobile or desktop software makes sense.", "software.html", "Compare software")}
+              ${pathCard("bi-bank", "I need to buy bitcoin", "Compare platforms by custody model, CAD funding, purchase methods, and withdrawal workflow.", "exchanges.html", "Compare platforms")}
             </div>
           </div>
         </section>
 
-        <section class="sc-section sc-section-muted">
+        <section class="sc-section sc-section-muted sc-mission-section">
           <div class="container">
             <div class="row g-5 align-items-center">
               <div class="col-lg-6">
@@ -155,7 +171,7 @@
           </div>
         </section>
 
-        <section class="sc-section">
+        <section class="sc-section sc-sequence-section">
           <div class="container">
             <div class="sc-section-head centered">
               <span class="sc-eyebrow">A sensible sequence</span>
@@ -1024,6 +1040,114 @@
   document.getElementById("site-header").innerHTML = renderHeader();
   document.getElementById("main-content").innerHTML = page.content;
   document.getElementById("site-footer").innerHTML = renderFooter();
+
+  const header = document.getElementById("header");
+  if (pageKey === "home" && header) {
+    let headerFadeFrame = 0;
+    const updateHeaderFade = () => {
+      const progress = Math.min(Math.max(window.scrollY / 160, 0), 1);
+      header.style.setProperty("--sc-header-progress", progress.toFixed(3));
+      headerFadeFrame = 0;
+    };
+    const requestHeaderFade = () => {
+      if (!headerFadeFrame) headerFadeFrame = window.requestAnimationFrame(updateHeaderFade);
+    };
+
+    updateHeaderFade();
+    window.addEventListener("scroll", requestHeaderFade, { passive: true });
+  }
+
+  if (pageKey === "home") {
+    const pathSection = document.querySelector(".sc-path-section");
+    const starField = pathSection?.querySelector(".sc-path-stars");
+    const constellation = pathSection?.querySelector(".sc-path-constellation");
+    const pathCards = [...(pathSection?.querySelectorAll(".sc-path-options .sc-card") || [])];
+
+    const ambientStars = [
+      [3, 8, 3, 0.1, 3.8], [9, 25, 2, 2.7, 4.4], [13, 40, 3, 1.8, 4.2],
+      [18, 62, 2, 3.4, 4.9], [22, 13, 4, 2.6, 4.8], [27, 87, 3, 0.4, 4.1],
+      [31, 73, 2, 0.9, 3.5], [36, 49, 4, 2, 5.1], [40, 18, 2, 1.3, 3.9],
+      [44, 30, 3, 3.1, 4.4], [49, 66, 2, 2.4, 4.6], [52, 88, 4, 1.4, 5],
+      [57, 43, 3, 0.7, 3.6], [61, 15, 2, 2.2, 3.7], [65, 76, 3, 3.7, 4.8],
+      [69, 59, 4, 0.5, 4.6], [73, 93, 2, 2.5, 4.9], [77, 30, 3, 3.5, 4.1],
+      [81, 10, 2, 1.9, 3.8], [85, 79, 4, 1.1, 5.2], [89, 62, 3, 1.6, 4],
+      [93, 18, 2, 2.9, 3.9], [96, 49, 4, 0.2, 4.7], [6, 92, 3, 3.8, 4.3],
+      [16, 52, 2, 0.6, 3.7], [25, 35, 3, 2.1, 4.5], [48, 6, 2, 3.3, 4],
+      [59, 96, 3, 1.2, 4.8], [72, 46, 2, 2.8, 3.6], [91, 91, 3, 0.8, 5]
+    ];
+
+    if (starField) {
+      starField.innerHTML = ambientStars.map(([x, y, size, delay, duration]) =>
+        `<span style="--star-x:${x}%;--star-y:${y}%;--star-size:${size}px;--star-delay:${delay}s;--star-duration:${duration}s"></span>`
+      ).join("");
+    }
+
+    const constellationPatterns = [
+      {
+        points: [[8, 55], [28, 34], [47, 52], [68, 22], [91, 38], [72, 75]],
+        edges: [[0, 1], [1, 2], [2, 3], [3, 4], [2, 5], [5, 4]]
+      },
+      {
+        points: [[13, 20], [43, 10], [75, 23], [87, 52], [69, 82], [39, 91], [12, 61], [49, 49]],
+        edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 0], [0, 7], [7, 3]]
+      },
+      {
+        points: [[10, 72], [29, 44], [50, 59], [68, 27], [91, 13], [84, 72], [58, 86]],
+        edges: [[0, 1], [1, 2], [2, 3], [3, 4], [3, 5], [5, 6], [6, 2]]
+      },
+      {
+        points: [[8, 46], [27, 19], [48, 35], [67, 12], [91, 36], [73, 61], [88, 84], [48, 80], [24, 66]],
+        edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [5, 7], [7, 8], [8, 0]]
+      }
+    ];
+
+    let activeConstellation = -1;
+    const renderConstellation = index => {
+      if (!constellation || index < 0) return;
+      const pattern = constellationPatterns[index % constellationPatterns.length];
+      const width = constellation.clientWidth || 330;
+      const height = constellation.clientHeight || 170;
+      const lines = pattern.edges.map(([start, end], lineIndex) => {
+        const [x1, y1] = pattern.points[start];
+        const [x2, y2] = pattern.points[end];
+        const dx = ((x2 - x1) / 100) * width;
+        const dy = ((y2 - y1) / 100) * height;
+        const length = Math.hypot(dx, dy);
+        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        return `<span class="sc-constellation-line" style="left:${x1}%;top:${y1}%;width:${length}px;transform:rotate(${angle}deg);--line-delay:${lineIndex * 45}ms"></span>`;
+      }).join("");
+      const stars = pattern.points.map(([x, y], starIndex) =>
+        `<span class="sc-constellation-star" style="left:${x}%;top:${y}%;--point-delay:${starIndex * 55}ms"></span>`
+      ).join("");
+
+      constellation.classList.remove("is-visible");
+      constellation.innerHTML = `${lines}${stars}`;
+      window.requestAnimationFrame(() => constellation.classList.add("is-visible"));
+      activeConstellation = index;
+    };
+
+    const hideConstellation = () => {
+      constellation?.classList.remove("is-visible");
+      activeConstellation = -1;
+    };
+
+    pathCards.forEach((cardElement, index) => {
+      cardElement.addEventListener("mouseenter", () => renderConstellation(index));
+      cardElement.addEventListener("mouseleave", () => {
+        if (!cardElement.contains(document.activeElement)) hideConstellation();
+      });
+      cardElement.addEventListener("focusin", () => renderConstellation(index));
+      cardElement.addEventListener("focusout", () => {
+        window.requestAnimationFrame(() => {
+          if (!cardElement.contains(document.activeElement)) hideConstellation();
+        });
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if (activeConstellation >= 0) renderConstellation(activeConstellation);
+    });
+  }
 
   const nav = document.getElementById("navbar");
   const toggle = document.querySelector(".mobile-nav-toggle");
