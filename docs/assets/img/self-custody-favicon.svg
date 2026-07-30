@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Self Custody four-circle favicon</title>
+  <desc id="desc">Four connected raised circles with red and banknote paper on top and green and Bitcoin orange below.</desc>
+
+  <defs>
+    <linearGradient id="red" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#ff4149"/>
+      <stop offset="0.52" stop-color="#f5222b"/>
+      <stop offset="1" stop-color="#d9121c"/>
+    </linearGradient>
+
+    <linearGradient id="paper" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#fff4dc"/>
+      <stop offset="0.52" stop-color="#eee2c7"/>
+      <stop offset="1" stop-color="#d2c3a2"/>
+    </linearGradient>
+
+    <linearGradient id="green" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#4ba265"/>
+      <stop offset="0.52" stop-color="#3c9056"/>
+      <stop offset="1" stop-color="#2c7543"/>
+    </linearGradient>
+
+    <linearGradient id="orange" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#ffb236"/>
+      <stop offset="0.52" stop-color="#ff9900"/>
+      <stop offset="1" stop-color="#dc7600"/>
+    </linearGradient>
+
+    <linearGradient id="surface-sheen" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.34"/>
+      <stop offset="0.3" stop-color="#ffffff" stop-opacity="0.09"/>
+      <stop offset="0.62" stop-color="#000000" stop-opacity="0.03"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.26"/>
+    </linearGradient>
+
+    <filter id="raised" x="-16%" y="-16%" width="132%" height="142%">
+      <feDropShadow dx="0" dy="9" stdDeviation="7" flood-color="#000000" flood-opacity="0.38"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#raised)">
+    <!-- Four circular rims only; the center remains open. -->
+    <circle cx="136" cy="136" r="126" fill="#080a0d"/>
+    <circle cx="376" cy="136" r="126" fill="#080a0d"/>
+    <circle cx="136" cy="376" r="126" fill="#080a0d"/>
+    <circle cx="376" cy="376" r="126" fill="#080a0d"/>
+
+    <circle cx="136" cy="136" r="98" fill="url(#red)"/>
+    <circle cx="376" cy="136" r="98" fill="url(#paper)"/>
+    <circle cx="136" cy="376" r="98" fill="url(#green)"/>
+    <circle cx="376" cy="376" r="98" fill="url(#orange)"/>
+
+    <circle cx="136" cy="136" r="98" fill="url(#surface-sheen)"/>
+    <circle cx="376" cy="136" r="98" fill="url(#surface-sheen)"/>
+    <circle cx="136" cy="376" r="98" fill="url(#surface-sheen)"/>
+    <circle cx="376" cy="376" r="98" fill="url(#surface-sheen)"/>
+  </g>
+</svg>
