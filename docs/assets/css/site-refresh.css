@@ -79,6 +79,20 @@ body.site-refresh.sc-nav-open {
   backdrop-filter: blur(12px);
 }
 
+body.site-refresh[data-page="home"] #header {
+  --sc-header-progress: 0;
+  background: rgb(20 20 21 / calc(var(--sc-header-progress) * 0.96));
+  border-bottom-color: rgb(255 255 255 / calc(var(--sc-header-progress) * 0.07));
+  box-shadow: 0 8px 24px rgb(0 0 0 / calc(var(--sc-header-progress) * 0.28));
+  backdrop-filter: blur(calc(var(--sc-header-progress) * 12px));
+}
+
+body.site-refresh:not([data-page="home"]) #header {
+  background: rgba(20, 20, 21, 0.985);
+  border-bottom-color: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
 .site-refresh #header .container {
   height: 100%;
 }
@@ -243,7 +257,7 @@ body[data-page="home"] .sc-hero.has-background-media::after {
      tablet/mobile video strips that vignette hasn't caught up yet,
      producing a hard cutoff). Starting from transparent makes this band
      actually fade the video underneath, regardless of figure height. */
-  background: linear-gradient(180deg, rgba(8, 9, 11, 0) 0%, rgba(8, 9, 11, 0.85) 60%, var(--sc-paper) 100%);
+  background: linear-gradient(180deg, rgba(8, 9, 11, 0) 0%, rgba(8, 9, 11, 0.85) 60%, #08090b 100%);
   content: "";
   pointer-events: none;
 }
@@ -258,6 +272,224 @@ body[data-page="home"] .sc-hero + .sc-section {
   z-index: 1;
   margin-top: -148px;
   padding-top: 42px;
+  background: #08090b;
+}
+
+body[data-page="home"] .sc-hero + .sc-section.sc-path-section {
+  overflow: hidden;
+  isolation: isolate;
+  padding-bottom: 150px;
+  background: linear-gradient(
+    180deg,
+    #08090b 0%,
+    #08090b calc(100% - 110px),
+    var(--sc-wash) 100%
+  );
+}
+
+body[data-page="home"] .sc-mission-section {
+  background: linear-gradient(
+    180deg,
+    var(--sc-wash) 0%,
+    var(--sc-wash) calc(100% - 170px),
+    var(--sc-paper) 100%
+  );
+}
+
+body[data-page="home"] .sc-sequence-section {
+  background: var(--sc-paper);
+}
+
+.sc-path-section .container {
+  position: relative;
+  z-index: 1;
+}
+
+.sc-path-stars {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sc-path-stars span {
+  position: absolute;
+  top: var(--star-y);
+  left: var(--star-x);
+  width: calc(var(--star-size) * 1.4);
+  height: calc(var(--star-size) * 1.4);
+  border-radius: 50%;
+  background: rgba(255, 232, 196, 0.92);
+  box-shadow:
+    0 0 7px rgba(255, 226, 181, 0.68),
+    0 0 15px rgba(255, 138, 0, 0.34);
+  opacity: 0;
+  animation: sc-path-twinkle var(--star-duration) ease-in-out var(--star-delay) infinite;
+}
+
+@keyframes sc-path-twinkle {
+  0%,
+  20%,
+  100% {
+    opacity: 0;
+    transform: scale(0.35);
+  }
+  28% {
+    opacity: 0.92;
+    transform: scale(1);
+  }
+  43% {
+    opacity: 0.86;
+    transform: scale(1.06);
+  }
+  52% {
+    opacity: 0.18;
+    transform: scale(0.62);
+  }
+}
+
+.sc-path-heading-row {
+  position: relative;
+}
+
+.sc-path-constellation {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  margin-bottom: 38px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.sc-path-constellation.is-visible {
+  opacity: 1;
+}
+
+.sc-constellation-line {
+  position: absolute;
+  height: 1.5px;
+  transform-origin: 0 50%;
+}
+
+.sc-constellation-line::after {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 178, 76, 0.12), rgba(255, 196, 112, 0.68), rgba(255, 178, 76, 0.16));
+  box-shadow: 0 0 7px rgba(255, 138, 0, 0.18);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.sc-path-constellation.is-visible .sc-constellation-line::after {
+  animation: sc-constellation-draw 420ms ease-out var(--line-delay) forwards;
+}
+
+.sc-constellation-star {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border: 1px solid rgba(255, 236, 208, 0.92);
+  border-radius: 50%;
+  background: #ff9a1f;
+  box-shadow:
+    0 0 7px rgba(255, 201, 126, 0.94),
+    0 0 17px rgba(255, 138, 0, 0.68);
+  opacity: 0;
+  transform: scale(0.25);
+}
+
+.sc-path-constellation.is-visible .sc-constellation-star {
+  animation: sc-constellation-pop 360ms cubic-bezier(0.2, 0.9, 0.25, 1.35) var(--point-delay) forwards;
+}
+
+@keyframes sc-constellation-draw {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes sc-constellation-pop {
+  65% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.sc-path-options .sc-card {
+  transition:
+    transform 90ms ease-out,
+    border-color 110ms ease-out,
+    box-shadow 120ms ease-out;
+  will-change: transform, box-shadow;
+}
+
+.sc-path-card-link {
+  display: block;
+  color: inherit !important;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.sc-path-card-link .sc-text-link {
+  color: var(--sc-link);
+  transition: color 90ms ease-out, gap 90ms ease-out;
+}
+
+.sc-path-card-link:hover .sc-text-link,
+.sc-path-card-link:focus-visible .sc-text-link {
+  gap: 10px;
+  color: var(--sc-link-hover);
+}
+
+.sc-path-card-link:focus-visible {
+  border-radius: var(--sc-radius);
+}
+
+.sc-path-options .sc-card:hover,
+.sc-path-options .sc-card:focus-within {
+  border-color: rgba(255, 237, 184, 0.88);
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.38),
+    0 0 16px rgba(255, 255, 255, 0.34),
+    0 0 42px rgba(255, 231, 166, 0.38),
+    0 0 76px rgba(255, 215, 112, 0.18),
+    inset 0 0 20px rgba(255, 244, 211, 0.045);
+  transform: translateY(-10px) scale(1.012);
+}
+
+@media (min-width: 992px) {
+  .sc-path-heading-row {
+    display: grid;
+    grid-template-columns: minmax(520px, 1.55fr) minmax(350px, 1fr);
+    gap: 32px;
+    align-items: center;
+  }
+
+  .sc-path-heading-row .sc-section-head {
+    max-width: 760px;
+  }
+
+  .sc-path-constellation {
+    width: min(460px, calc(100% + 70px));
+    height: 230px;
+    justify-self: start;
+    transform: translateX(clamp(-48px, -2.4vw, -24px));
+  }
+}
+
+@media (max-width: 991px) {
+  .sc-path-constellation {
+    display: none;
+  }
 }
 
 /* Exchanges hero: the graded key-in-lock photo, held to the right half so
@@ -723,6 +955,10 @@ body[data-page="contact"] .sc-hero-flip {
 body[data-page="home"] .sc-hero .sc-lead {
   color: rgba(255, 255, 255, 1);
   text-shadow: 0 2px 7px rgba(0, 0, 0, 0.88);
+}
+
+.sc-tablet-lead-break {
+  display: none;
 }
 
 .sc-hero-actions {
@@ -1523,15 +1759,24 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
     transform: none;
   }
 
-  /* Deliberately keep the figure's own ::after (defined near the top of
-     this file) rather than disabling it -- its top/bottom vignette is
-     what fades the video to solid dark at its own edges, the same way
-     it does on desktop. Without it the video would hit a hard cutoff
-     right where the hero's own bottom fade below starts, instead of
-     blending into it. */
+  /* The figure's own vignette (below) fades the video's bottom edge to
+     solid dark in only ~12% of its height -- fine on desktop where the
+     figure is tall enough for that to still be a long, gradual fade in
+     actual pixels, but on this much shorter figure it's a fast, abrupt
+     dip. Disabling its bottom fade here (left/right/top edges keep
+     theirs) and handing the whole job to one deliberately tall,
+     gently-curved band instead -- overlapping the video's last ~150px
+     on purpose -- gives a single continuous taper rather than two short
+     ones stacked together. */
+  body[data-page="home"] .sc-hero-background-media::after {
+    background:
+      linear-gradient(90deg, #08090b 0%, rgba(8, 9, 11, 0.8) 2%, rgba(8, 9, 11, 0.32) 7%, transparent 15%, transparent 82%, rgba(8, 9, 11, 0.45) 90%, rgba(8, 9, 11, 0.9) 96%, #08090b 100%),
+      linear-gradient(180deg, #08090b 0%, rgba(8, 9, 11, 0.9) 5%, rgba(8, 9, 11, 0.45) 11%, transparent 18%, transparent 100%);
+  }
 
   body[data-page="home"] .sc-hero.has-background-media::after {
-    height: 140px;
+    height: 202px;
+    background: linear-gradient(180deg, rgba(8, 9, 11, 0) 0%, rgba(8, 9, 11, 0.16) 35%, rgba(8, 9, 11, 0.55) 65%, #08090b 100%);
   }
 
   body[data-page="home"] .sc-hero + .sc-section {
@@ -1548,6 +1793,12 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
     object-position: center;
     filter: none;
     transform: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .sc-tablet-lead-break {
+    display: block;
   }
 }
 
@@ -1568,17 +1819,38 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
      it near the button row instead, with just a slight overlap at the
      top of the video rather than running it behind any text above. */
   body[data-page="home"] .sc-hero.has-background-media {
-    min-height: 693px;
+    min-height: 712px;
     padding-bottom: 80px;
   }
 
+  /* See the 991px breakpoint above: the figure's own bottom vignette is
+     disabled here too, in favour of one taller, gently-curved band that
+     overlaps the video's last ~60px on purpose, giving a single
+     continuous fade instead of two short, stacked ones. */
+  body[data-page="home"] .sc-hero-background-media::after {
+    background:
+      linear-gradient(90deg, #08090b 0%, rgba(8, 9, 11, 0.8) 2%, rgba(8, 9, 11, 0.32) 7%, transparent 15%, transparent 82%, rgba(8, 9, 11, 0.45) 90%, rgba(8, 9, 11, 0.9) 96%, #08090b 100%),
+      linear-gradient(180deg, #08090b 0%, rgba(8, 9, 11, 0.9) 5%, rgba(8, 9, 11, 0.45) 11%, transparent 18%, transparent 76%, rgba(8, 9, 11, 0.14) 83%, rgba(8, 9, 11, 0.58) 93%, #08090b 100%);
+  }
+
   body[data-page="home"] .sc-hero.has-background-media::after {
-    height: 120px;
+    height: 110px;
+    background: linear-gradient(180deg, rgba(8, 9, 11, 0) 0%, rgba(8, 9, 11, 0.16) 35%, rgba(8, 9, 11, 0.55) 65%, #08090b 100%);
   }
 
   body[data-page="home"] .sc-hero + .sc-section {
     margin-top: -80px;
     padding-top: 30px;
+  }
+
+  body[data-page="home"] .sc-hero + .sc-section.sc-path-section {
+    padding-bottom: 125px;
+    background: linear-gradient(
+      180deg,
+      #08090b 0%,
+      #08090b calc(100% - 90px),
+      var(--sc-wash) 100%
+    );
   }
 
   body[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
@@ -1587,12 +1859,21 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
 
   /* Box sized to the video's own aspect ratio (not stretched to fill
      whatever room is left) so the whole frame shows, nothing cropped --
-     see the 991px breakpoint above. */
+     see the 991px breakpoint above. The vortex's spiral core sits right
+     at the source footage's left edge though, with zero margin, so it
+     reads as cut off. Scaling up and anchoring growth to the right edge
+     crops that extra sliver off the left only, keeping the banknotes on
+     the right fully visible. */
   body[data-page="home"] .sc-hero-background-media :is(img, video) {
     object-fit: contain;
     object-position: center;
     filter: none;
-    transform: none;
+    /* scaleX only, not scale() -- a uniform scale also grows the video
+       taller, throwing it out of alignment with the figure's own
+       bottom-fade vignette (sized to the original box) and producing a
+       hard-edged cutoff instead of the intended smooth fade. */
+    transform: scaleX(1.1);
+    transform-origin: right center;
   }
 
   body[data-page="home"] .sc-hero-background-media {
@@ -1677,4 +1958,23 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
   .sc-hero-flip-item {
     transition: none;
   }
+
+  .sc-path-stars span {
+    opacity: 0.22;
+    animation: none;
+    transform: none;
+  }
+
+  .sc-path-constellation.is-visible .sc-constellation-line::after,
+  .sc-path-constellation.is-visible .sc-constellation-star {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+
+  .sc-path-options .sc-card:hover,
+  .sc-path-options .sc-card:focus-within {
+    transform: none;
+  }
+
 }
