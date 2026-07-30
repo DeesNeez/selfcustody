@@ -1270,7 +1270,7 @@
 
     revealTargets.forEach((el, index) => {
       el.classList.add("sc-reveal");
-      el.style.transitionDelay = `${Math.min(index % 4, 3) * 70}ms`;
+      el.style.setProperty("--sc-reveal-delay", `${Math.min(index % 4, 3) * 70}ms`);
     });
 
     const observer = new IntersectionObserver((entries, obs) => {
