@@ -18,6 +18,7 @@
     `<a class="sc-text-link" href="${url}" target="_blank" rel="noopener">${label} <i class="bi bi-arrow-up-right"></i></a>`;
 
   const hero = (eyebrow, title, lead, actions = "", media = null) => {
+    const backgroundMedia = Boolean(media?.background);
     const copy = `
       <span class="sc-eyebrow">${eyebrow}</span>
       <h1>${title}</h1>
@@ -25,17 +26,27 @@
       ${actions ? `<div class="sc-hero-actions">${actions}</div>` : ""}`;
 
     return `
-      <section class="sc-hero${media ? " has-media" : ""}">
+      <section class="sc-hero${media ? backgroundMedia ? " has-background-media" : " has-media" : ""}">
+        ${backgroundMedia ? `
+          <figure class="sc-hero-background-media" aria-hidden="true">
+            ${media.video
+              ? `<video autoplay muted loop playsinline preload="auto" poster="${media.poster}" width="${media.width}" height="${media.height}">
+                  <source src="${media.src}" type="${media.type}">
+                </video>`
+              : `<img src="${media.src}" alt="" width="${media.width}" height="${media.height}" fetchpriority="high">`}
+          </figure>` : ""}
         <div class="container">
           ${media ? `
-            <div class="row g-5 align-items-center">
-              <div class="col-lg-7 sc-hero-copy">${copy}</div>
-              <div class="col-lg-5">
-                <figure class="sc-hero-media">
-                  <img src="${media.src}" alt="${media.alt}" width="${media.width}" height="${media.height}" fetchpriority="high">
-                </figure>
-              </div>
-            </div>` : copy}
+            ${backgroundMedia
+              ? `<div class="sc-hero-copy">${copy}</div>`
+              : `<div class="row g-5 align-items-center">
+                  <div class="col-lg-7 sc-hero-copy">${copy}</div>
+                  <div class="col-lg-5">
+                    <figure class="sc-hero-media">
+                      <img src="${media.src}" alt="${media.alt}" width="${media.width}" height="${media.height}" fetchpriority="high">
+                    </figure>
+                  </div>
+                </div>`}` : copy}
         </div>
       </section>`;
   };
@@ -86,18 +97,29 @@
       content: `
         ${hero(
           "Bitcoin self-custody, explained",
-          "Say <em>NO</em><br>to counterparty risk.",
-          "Practical guidance for taking control of your own money. Learn how to buy bitcoin, move it off an exchange, and protect it without turning security into a full time job.",
+          `<span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-exit">EXIT</span><span class="sc-outlined-word sc-hero-fiat" data-text="FIAT"><span class="sc-word-fill">FIAT</span></span></span>
+           <span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-enter">ENTER</span><span class="sc-outlined-word sc-hero-command-destination" data-text="BITCOIN"><span class="sc-word-fill">BITCOIN</span></span></span>`,
+          "Your keys, your bitcoin. Learn how to buy it, move it, and protect it without turning security into a full time job.",
           `<a class="sc-btn sc-btn-primary" href="guides.html">Explore Guides <i class="bi bi-arrow-right"></i></a>
-           <a class="sc-btn sc-btn-ghost" href="contact.html">Get Help</a>`
+           <a class="sc-btn sc-btn-ghost" href="contact.html">Get Help</a>`,
+          {
+            src: "assets/img/cash-vortex/exchanges-cash-vortex-final3.mp4",
+            type: "video/mp4",
+            poster: "assets/img/cash-vortex/exchanges-cash-vortex.png",
+            alt: "",
+            width: 1616,
+            height: 1072,
+            video: true,
+            background: true
+          }
         )}
 
         <section class="sc-section">
           <div class="container">
             <div class="sc-section-head">
               <span class="sc-eyebrow">Choose your path</span>
-              <h2>Start with the decision in front of you</h2>
-              <p>You do not need to learn everything at once. Pick the part of the journey you are working on now.</p>
+              <h2>One step at a time</h2>
+              <p>You don't need to learn everything today. Take your time.</p>
             </div>
             <div class="row g-4">
               ${card("bi-signpost-split", "I am brand new", "Learn the basic model: wallet, recovery backup, exchange, address, transaction, and confirmation.", "guides.html")}
@@ -585,7 +607,13 @@
           "Canadian-built tools for<br><em>keys, signing, and physical bitcoin.</em>",
           "COLDCARD, TAPSIGNER, and SATSCARD may sit in the same store, but they do very different jobs. This page separates the models clearly.",
           `<a class="sc-btn sc-btn-primary" href="#compare-coinkite">Compare products</a>
-           <a class="sc-btn sc-btn-ghost" href="devices.html">All device brands</a>`
+           <a class="sc-btn sc-btn-ghost" href="devices.html">All device brands</a>`,
+          {
+            src: "assets/img/coinkite-metal-security.jpeg",
+            alt: "Close-up of scratched, brushed metal catching warm light",
+            width: 1600,
+            height: 1067
+          }
         )}
 
         <section class="sc-section">
@@ -691,17 +719,23 @@
           "The app builds the transaction.<br><em>The key authorizes it.</em>",
           "Wallet software shows balances, generates receive addresses, chooses coins and fees, and broadcasts transactions. A hardware signer can keep the private key outside that app.",
           `<a class="sc-btn sc-btn-primary" href="#software-compare">Compare wallets</a>
-           <a class="sc-btn sc-btn-ghost" href="devices.html">Pair with hardware</a>`
+           <a class="sc-btn sc-btn-ghost" href="devices.html">Pair with hardware</a>`,
+          {
+            src: "assets/img/software-code-screen.jpeg",
+            alt: "Blurred keyboard in the foreground with syntax-highlighted code on a laptop screen",
+            width: 1600,
+            height: 1067
+          }
         )}
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-section-head"><span class="sc-eyebrow">Five useful choices</span><h2>Match software to the job</h2><p>Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
+            <div class="sc-section-head"><span class="sc-eyebrow">Four featured wallets</span><h2>Match software to the job</h2><p>Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
             <div class="row g-4">
               ${card("bi-diagram-2", "Sparrow Wallet", "Desktop Bitcoin wallet with excellent PSBT, hardware, multisig, coin control, labeling, Tor, and personal-node support.", "#sparrow", "Read Sparrow notes")}
-              ${card("bi-phone", "BlueWallet", "Approachable iOS and Android wallet with watch-only accounts, coin control, multisig vaults, hardware PSBT workflows, and node connections.", "#bluewallet", "Read BlueWallet notes")}
-              ${card("bi-lightning", "Electrum", "Long-running desktop Bitcoin wallet with SPV verification, cold-storage workflows, multisig, plugins, and hardware support.", "#electrum", "Read Electrum notes")}
               ${card("bi-people", "Nunchuk", "Mobile and desktop wallet focused on multisig, shared wallets, hardware keys, recovery planning, and optional inheritance services.", "#nunchuk", "Read Nunchuk notes")}
+              ${card("bi-phone", "Cove Wallet", "Bitcoin-only mobile wallet with UTXO management, labels, hardware-wallet integration, and PSBT signing over QR or NFC.", "#cove", "Read Cove notes")}
+              ${card("bi-lightning", "Electrum", "Long-running desktop Bitcoin wallet with SPV verification, cold-storage workflows, multisig, plugins, and hardware support.", "#electrum", "Read Electrum notes")}
             </div>
           </div>
         </section>
@@ -713,10 +747,10 @@
                 <thead><tr><th>Wallet</th><th>Platforms</th><th>Best at</th><th>Hardware use</th></tr></thead>
                 <tbody>
                   <tr><td><strong>Sparrow</strong></td><td>Desktop</td><td>Detailed Bitcoin control and PSBT workflows</td><td>Excellent USB, file, SD, and QR support</td></tr>
-                  <tr><td><strong>BlueWallet</strong></td><td>iOS, Android</td><td>Mobile self custody and watch only monitoring</td><td>Watch only and PSBT workflows</td></tr>
-                  <tr><td><strong>Electrum</strong></td><td>Desktop, Android</td><td>Fast, mature Bitcoin wallet with flexible servers</td><td>Broad plugin support</td></tr>
                   <tr><td><strong>Nunchuk</strong></td><td>Mobile, desktop</td><td>Collaborative multisig and inheritance planning</td><td>Broad hardware and NFC support</td></tr>
                   <tr><td><strong>Cove Wallet</strong></td><td>iOS, Android</td><td>Simple Bitcoin only use with UTXO management and labels</td><td>PSBT, QR, and NFC support for most hardware wallets</td></tr>
+                  <tr><td><strong>Electrum</strong></td><td>Desktop, Android</td><td>Fast, mature Bitcoin wallet with flexible servers</td><td>Broad plugin support</td></tr>
+                  <tr><td><strong>BlueWallet</strong></td><td>iOS, Android</td><td>Mobile self custody and watch only monitoring</td><td>Watch only and PSBT workflows</td></tr>
                 </tbody>
               </table>
             </div>
@@ -726,9 +760,10 @@
         <section class="sc-section">
           <div class="container">
             <article id="sparrow" class="sc-detail"><h2>Sparrow Wallet</h2><p>Sparrow is a desktop Bitcoin wallet for users who want visibility into transactions and UTXOs. It supports single-signature and multisig policies, common script types, output descriptors, PSBTs, hardware wallets, QR signing, coin control, labeling, Tor, Bitcoin Core, and private Electrum servers.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Hardware-wallet setup and transaction review.</li><li>Coin selection, fee control, labeling, and privacy education.</li><li>Air-gapped and multisig PSBT workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A public server can learn wallet activity. Move toward your own node or private server when privacy matters.</li><li>The interface exposes more detail than a beginner mobile wallet.</li></ul></div></div>${externalLink("https://sparrowwallet.com/")}</article>
-            <article id="bluewallet" class="sc-detail"><h2>BlueWallet</h2><p>BlueWallet is a mobile Bitcoin wallet with watch-only wallets, multisig vaults, coin control, fee tools, batch transactions, hardware-wallet PSBT support, and connections to personal Electrum infrastructure. It is useful both as a spending wallet and as a watch-only interface for cold storage.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Learning on mobile with small amounts.</li><li>Monitoring hardware wallets without importing private keys.</li><li>Creating or moving PSBTs for supported air-gapped devices.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone is a general-purpose internet-connected device; keep long-term savings keys on dedicated hardware.</li><li>Lightning use requires a compatible node or service configuration—understand who controls the keys and channels.</li></ul></div></div>${externalLink("https://bluewallet.io/")}</article>
-            <article id="electrum" class="sc-detail"><h2>Electrum</h2><p>Electrum is a mature Bitcoin wallet whose private keys stay encrypted on the local device. It uses decentralized Electrum servers, verifies transaction history with SPV, supports watch-only cold storage, multisig, and hardware-wallet plugins, and can export keys without platform lock-in.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Users who value a mature, lightweight Bitcoin-only desktop wallet.</li><li>Watch-only and offline-signing arrangements.</li><li>Custom server and hardware integrations.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Electrum is frequently impersonated by phishing sites. Use only electrum.org and verify downloads.</li><li>Server selection affects privacy and the trust placed in transaction information.</li></ul></div></div>${externalLink("https://electrum.org/")}</article>
             <article id="nunchuk" class="sc-detail"><h2>Nunchuk</h2><p>Nunchuk focuses on single-signature and multisig wallets, shared access, air-gapped signing, broad hardware support, and optional assisted services such as recovery and inheritance planning. It supports products including COLDCARD, TAPSIGNER, Jade, SeedSigner, Trezor, Ledger, BitBox, Passport, and Keystone.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Families, partners, and businesses that need multi-user multisig.</li><li>People building a deliberate inheritance or assisted-recovery plan.</li><li>NFC TAPSIGNER and multiple hardware-key setups.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Understand which features are self-serve and which depend on a paid service or platform key.</li><li>Back up the complete wallet configuration as well as every private key.</li></ul></div></div>${externalLink("https://nunchuk.io/")}</article>
+            <article id="cove" class="sc-detail"><h2>Cove Wallet</h2><p>Cove is a Bitcoin-only mobile wallet designed for both straightforward on-chain use and more advanced workflows. It supports UTXO management, BIP329 labels, hardware-wallet PSBTs, and signing or wallet imports over QR and NFC.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Bitcoin-only mobile self custody.</li><li>Managing and labeling individual UTXOs.</li><li>Using supported hardware wallets through PSBT, QR, or NFC workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone remains a general-purpose, internet-connected device; use dedicated hardware for long-term savings keys when appropriate.</li><li>Test hardware-wallet and backup workflows with a small amount before relying on them.</li></ul></div></div>${externalLink("https://covebitcoin.com/")}</article>
+            <article id="electrum" class="sc-detail"><h2>Electrum</h2><p>Electrum is a mature Bitcoin wallet whose private keys stay encrypted on the local device. It uses decentralized Electrum servers, verifies transaction history with SPV, supports watch-only cold storage, multisig, and hardware-wallet plugins, and can export keys without platform lock-in.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Users who value a mature, lightweight Bitcoin-only desktop wallet.</li><li>Watch-only and offline-signing arrangements.</li><li>Custom server and hardware integrations.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Electrum is frequently impersonated by phishing sites. Use only electrum.org and verify downloads.</li><li>Server selection affects privacy and the trust placed in transaction information.</li></ul></div></div>${externalLink("https://electrum.org/")}</article>
+            <article id="bluewallet" class="sc-detail"><h2>BlueWallet</h2><p>BlueWallet is a mobile Bitcoin wallet with watch-only wallets, multisig vaults, coin control, fee tools, batch transactions, hardware-wallet PSBT support, and connections to personal Electrum infrastructure. It is useful both as a spending wallet and as a watch-only interface for cold storage.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Learning on mobile with small amounts.</li><li>Monitoring hardware wallets without importing private keys.</li><li>Creating or moving PSBTs for supported air-gapped devices.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone is a general-purpose internet-connected device; keep long-term savings keys on dedicated hardware.</li><li>Lightning use requires a compatible node or service configuration—understand who controls the keys and channels.</li></ul></div></div>${externalLink("https://bluewallet.io/")}</article>
             <div class="sc-callout mt-4"><h3>Never import hardware-wallet recovery words into ordinary software just to “connect” it</h3><p>Connect using the hardware integration, xpub, descriptor, wallet file, or PSBT process documented by the device maker. Typing the recovery phrase into an online computer defeats key isolation.</p></div>
             ${sourceNote([
               ["Sparrow", "https://sparrowwallet.com/features/"],
@@ -750,13 +785,7 @@
           "Buying is one step.<br><em>Withdrawing is the custody decision.</em>",
           "Compare brokers and exchanges by what happens after the purchase: where bitcoin sits, how it reaches your wallet, what the full cost includes, and which records you need to keep.",
           `<a class="sc-btn sc-btn-primary" href="#exchange-compare">Compare platforms</a>
-           <a class="sc-btn sc-btn-ghost" href="guides.html">Withdrawal checklist</a>`,
-          {
-            src: "assets/img/money-coins.jpeg",
-            alt: "A collection of international coins",
-            width: 422,
-            height: 750
-          }
+           <a class="sc-btn sc-btn-ghost" href="guides.html">Withdrawal checklist</a>`
         )}
 
         <section class="sc-section">
@@ -819,10 +848,16 @@
       content: `
         ${hero(
           "Education and setup support",
-          "Get help building a setup<br><em>you can explain and recover.</em>",
+          "Get the help you need<br><em>to build a setup you can understand and recover.</em>",
           "Practical one-on-one guidance for people who want a second set of eyes while choosing tools, planning backups, or rehearsing a transaction—without handing over control.",
           `<a class="sc-btn sc-btn-primary" href="contact.html">Contact us</a>
-           <a class="sc-btn sc-btn-ghost" href="#boundaries">See service boundaries</a>`
+           <a class="sc-btn sc-btn-ghost" href="#boundaries">See service boundaries</a>`,
+          {
+            src: "assets/img/services-notebook.jpeg",
+            alt: "A leather notebook embossed with NOTES, spiral-bound in brass, on a wooden desk",
+            width: 1600,
+            height: 1067
+          }
         )}
 
         <section class="sc-section">
@@ -867,10 +902,16 @@
       content: `
         ${hero(
           "Contact",
-          "Ask the question.<br><em>Keep the secrets.</em>",
-          "Tell us what you are trying to accomplish and where you are stuck. Never send recovery words, private keys, PINs, passphrases, wallet files, or account credentials.",
+          `Ask your questions while protecting<br><em><span class="sc-hero-flip" aria-live="polite" data-flip-phrases='["your PIN","your private key","your passphrase","your backup","your personal info"]'><span class="sc-hero-flip-item is-active">your PIN</span></span></em>`,
+          "Tell us what you are trying to accomplish and where you are stuck. Never send recovery words, private keys, PINs, passphrases, wallet files, or personal information.",
           `<a class="sc-btn sc-btn-primary" href="mailto:info@selfcustody.ca">Email info@selfcustody.ca</a>
-           <a class="sc-btn sc-btn-ghost" href="services.html">Review services</a>`
+           <a class="sc-btn sc-btn-ghost" href="services.html">Review services</a>`,
+          {
+            src: "assets/img/hero-lock.webp",
+            alt: "A padlock securing a hasp, graded in the site's brand orange",
+            width: 2400,
+            height: 1590
+          }
         )}
 
         <section class="sc-section">
@@ -972,12 +1013,6 @@
           <span>© ${currentYear} SelfCustody.ca</span>
           <span>Ontario, Canada · <a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
         </div>
-        <div class="sc-theme-toggle-row">
-          <button type="button" class="sc-theme-toggle" aria-label="Switch to light theme" aria-pressed="true">
-            <i class="bi bi-moon-stars-fill" aria-hidden="true"></i>
-            <i class="bi bi-sun-fill" aria-hidden="true"></i>
-          </button>
-        </div>
       </div>
     </footer>`;
 
@@ -1015,37 +1050,86 @@
   });
 
   /**
-   * Theme toggle (light/dark). The initial theme is already applied by an
-   * inline script in <head> (before this file loads) to avoid a flash of
-   * the wrong theme; this just wires up the button and keeps it in sync.
+   * Hero headline rotation, generic across any page that has one (currently
+   * home's "Say NO to ___" and contact's "...without revealing your ___").
+   * Only the .sc-hero-flip span's contents rotate -- everything else in the
+   * headline is static markup around it. The phrase list lives on the
+   * element itself (data-flip-phrases, JSON-encoded) rather than hardcoded
+   * here, so every page sharing this markup pattern gets the same rotation
+   * behaviour and timing for free instead of duplicating this block. The
+   * outgoing phrase drops down and out, the incoming one enters from the
+   * top, both driven by CSS transitions on transform/opacity (see
+   * .sc-hero-flip-item in site-refresh.css).
    */
-  const themeToggle = document.querySelector(".sc-theme-toggle");
+  const heroFlip = document.querySelector(".sc-hero-flip");
 
-  if (themeToggle) {
-    const root = document.documentElement;
+  if (heroFlip) {
+    const flipPhrases = JSON.parse(heroFlip.dataset.flipPhrases || "[]");
 
-    const syncToggleLabel = () => {
-      const isDark = root.getAttribute("data-theme") === "dark";
-      themeToggle.setAttribute("aria-pressed", String(isDark));
-      themeToggle.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
+    const flipReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let flipIndex = 0;
+    let flipActive = heroFlip.querySelector(".sc-hero-flip-item");
+
+    const sizeFlipToContent = () => {
+      // Fixes the container's width so it doesn't reflow (shifting the
+      // trailing ".") as shorter/longer phrases rotate through. Grid
+      // auto-sizing alone isn't enough: it reacts the instant a new phrase
+      // is appended, before the slide animation starts, so it would jump
+      // to the new width immediately rather than growing with the motion.
+      const probe = flipActive.cloneNode(false);
+      probe.style.position = "absolute";
+      probe.style.visibility = "hidden";
+      probe.style.whiteSpace = "nowrap";
+      heroFlip.appendChild(probe);
+      let maxWidth = 0;
+      flipPhrases.forEach(text => {
+        probe.textContent = text;
+        maxWidth = Math.max(maxWidth, probe.getBoundingClientRect().width);
+      });
+      heroFlip.removeChild(probe);
+      heroFlip.style.width = `${Math.ceil(maxWidth)}px`;
     };
 
-    syncToggleLabel();
+    sizeFlipToContent();
 
-    themeToggle.addEventListener("click", () => {
-      const nextTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      if (nextTheme === "dark") {
-        root.setAttribute("data-theme", "dark");
-      } else {
-        root.removeAttribute("data-theme");
-      }
-      try {
-        window.localStorage.setItem("sc-theme", nextTheme);
-      } catch (error) {
-        /* localStorage unavailable (private browsing, disabled storage); theme still applies for this session */
-      }
-      syncToggleLabel();
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(sizeFlipToContent, 150);
     });
+
+    const advanceFlip = () => {
+      flipIndex = (flipIndex + 1) % flipPhrases.length;
+      const incoming = document.createElement("span");
+      incoming.className = "sc-hero-flip-item is-entering-start";
+      incoming.textContent = flipPhrases[flipIndex];
+      heroFlip.appendChild(incoming);
+
+      if (flipReducedMotion) {
+        flipActive.remove();
+        incoming.classList.remove("is-entering-start");
+        incoming.classList.add("is-active");
+        flipActive = incoming;
+        return;
+      }
+
+      // Flush layout so the entering item's start position (translateY(-100%),
+      // transition: none) is committed before the transition is switched back
+      // on below -- otherwise the browser can coalesce both class changes
+      // into a single frame and the slide never renders.
+      void incoming.offsetWidth;
+
+      const outgoing = flipActive;
+      outgoing.classList.remove("is-active");
+      outgoing.classList.add("is-leaving");
+      incoming.classList.remove("is-entering-start");
+      incoming.classList.add("is-active");
+      flipActive = incoming;
+
+      outgoing.addEventListener("transitionend", () => outgoing.remove(), { once: true });
+    };
+
+    setInterval(advanceFlip, 3900);
   }
 
   /**

@@ -1,19 +1,19 @@
 :root {
   --sc-orange: #ff8a00;
   --sc-orange-dark: #d96f00;
-  --sc-link: #a85100;
-  --sc-link-hover: #8a4300;
-  --sc-ink: #242424;
-  --sc-ink-soft: #333333;
-  --sc-paper: #ffffff;
-  --sc-wash: #f6f6f4;
-  --sc-line: #e4e1dc;
-  --sc-muted: #66645f;
-  --sc-success: #1f7a5a;
-  --sc-warning: #fff3df;
-  --sc-surface: #ffffff;
-  --sc-matrix-group-bg: #fff1db;
-  --sc-matrix-highlight-bg: #fff3df;
+  --sc-link: #ff9a1f;
+  --sc-link-hover: #ffb455;
+  --sc-ink: #ece7e0;
+  --sc-ink-soft: #cfc9bd;
+  --sc-paper: #1a1918;
+  --sc-wash: #211f1c;
+  --sc-line: #6e695e;
+  --sc-muted: #a49e93;
+  --sc-success: #35b48a;
+  --sc-warning: #33230f;
+  --sc-surface: #242220;
+  --sc-matrix-group-bg: #3a2a10;
+  --sc-matrix-highlight-bg: #33230f;
   --sc-radius: 18px;
   --sc-shadow: 0 18px 50px rgba(28, 28, 28, 0.09);
 }
@@ -112,7 +112,7 @@ body.site-refresh.sc-nav-open {
   justify-content: center;
   height: 19px;
   margin-bottom: 13px;
-  margin-left: 5px;
+  margin-left: 10px;
   padding: 0 8px 0 4px;
   color: #fff;
   background: #d8292f;
@@ -130,22 +130,16 @@ body.site-refresh.sc-nav-open {
 }
 
 .sc-brand-mark {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  color: #f7931a;
-  background: transparent;
-  border-radius: 0;
-  font-family: "boxicons";
-  font-size: 40px;
-  font-weight: 400;
-  line-height: 1;
-  box-shadow: none;
+  display: block;
+  flex: 0 0 auto;
+  width: 86px;
+  height: 30px;
+  background: url("../img/self-custody-symbol.svg") center / contain no-repeat;
 }
 
-.sc-brand-mark::before {
-  content: "\e916";
+.sc-brand-mark::before,
+.sc-brand-mark::after {
+  content: none;
 }
 
 .site-refresh .navbar > ul {
@@ -190,22 +184,133 @@ body.site-refresh.sc-nav-open {
 .sc-hero {
   position: relative;
   overflow: hidden;
-  padding: 150px 0 86px;
+  padding: 156px 0 86px;
   color: #fff;
   background:
     radial-gradient(circle at 86% 20%, rgba(255, 138, 0, 0.2), transparent 32%),
     linear-gradient(135deg, #202020, #303030);
 }
 
-.sc-hero::after {
+/* The homepage uses the animated cash vortex as its hero environment. */
+body[data-page="home"] .sc-hero.has-background-media {
+  min-height: clamp(980px, calc(66.667vw + 193px), 1115px);
+  padding-bottom: 120px;
+  isolation: isolate;
+  background: #08090b;
+}
+
+body[data-page="home"] .sc-hero-background-media {
   position: absolute;
-  right: -90px;
-  bottom: -160px;
-  width: 380px;
-  height: 380px;
-  border: 50px solid rgba(255, 255, 255, 0.025);
-  border-radius: 50%;
+  z-index: -2;
+  top: 0;
+  left: 50%;
+  width: min(calc(100% + 24px), 1460px);
+  aspect-ratio: 3 / 2;
+  transform: translateX(calc(-50% + 12px));
+  margin: 0;
+}
+
+body[data-page="home"] .sc-hero-background-media :is(img, video) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+body[data-page="home"] .sc-hero-background-media::after {
+  position: absolute;
+  inset: -1px;
+  background:
+    linear-gradient(90deg, #08090b 0%, rgba(8, 9, 11, 0.8) 2%, rgba(8, 9, 11, 0.32) 7%, transparent 15%, transparent 82%, rgba(8, 9, 11, 0.45) 90%, rgba(8, 9, 11, 0.9) 96%, #08090b 100%),
+    linear-gradient(180deg, #08090b 0%, rgba(8, 9, 11, 0.9) 5%, rgba(8, 9, 11, 0.45) 11%, transparent 18%, transparent 78%, rgba(8, 9, 11, 0.45) 88%, rgba(8, 9, 11, 0.9) 96%, #08090b 100%);
   content: "";
+  pointer-events: none;
+}
+
+body[data-page="home"] .sc-hero.has-background-media::after {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 140px;
+  display: block;
+  /* Both stops used to be fully opaque colours, so this band didn't fade
+     the video at all -- it just hid it the instant the band started
+     (fine on desktop, where the figure's own bottom vignette already
+     reaches solid dark well before this band begins, but on the shorter
+     tablet/mobile video strips that vignette hasn't caught up yet,
+     producing a hard cutoff). Starting from transparent makes this band
+     actually fade the video underneath, regardless of figure height. */
+  background: linear-gradient(180deg, rgba(8, 9, 11, 0) 0%, rgba(8, 9, 11, 0.85) 60%, var(--sc-paper) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+body[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
+  max-width: 730px;
+  transform: translateY(-44px);
+}
+
+body[data-page="home"] .sc-hero + .sc-section {
+  position: relative;
+  z-index: 1;
+  margin-top: -148px;
+  padding-top: 42px;
+}
+
+/* Exchanges hero: the graded key-in-lock photo, held to the right half so
+   it never sits under the left-aligned copy. Native colour was already warm
+   (hue ~22, close to the brand's 30) so the grade is a light push, not a full
+   rehue: nudge hue, add contrast, darken to the same luminance target used by
+   the other hero variants tried here (measured ~64 off the original iceberg
+   hero).
+
+   The photo lives on ::before rather than as a background layer on the hero
+   itself. A fade painted as a percentage of the *hero* only lines up with the
+   photo's left edge at one viewport width -- the edge moves as the container
+   aspect changes, so a hard seam reappears at other sizes. Masking ::before
+   keeps the gradient relative to the photo panel, so the dissolve stays
+   glued to its edge at every width.
+
+   Both this background and ::before also carry a matching bottom-edge fade
+   to var(--sc-paper) -- the next section's actual background -- so the hero
+   dissolves into the section below instead of ending on a hard line. It has
+   to be duplicated on both layers: ::before (the photo) paints on top of
+   this element's own background, so a fade added only here wouldn't show
+   through the photo, and one added only to ::before wouldn't cover the
+   plain dark area to its left. Same stop positions on both keeps the seam
+   between them invisible. var(--sc-paper) rather than a fixed colour keeps
+   it correct in both themes (see the theme toggle) -- but in light theme
+   that colour is white, and the ghost button's text is a hardcoded white
+   (see .sc-btn-ghost) with nothing behind it but this gradient. A
+   percentage-based stop went fully opaque well above the button row on
+   shorter heroes, washing white text out against a now-white background.
+   calc(100% - 130px) instead pins the fade to a fixed distance from the
+   bottom edge -- comfortably past .sc-hero's 86px/70px padding-bottom plus
+   the ~48px button row -- so it only ever fades space *below* the buttons,
+   regardless of how tall the hero ends up at a given breakpoint. */
+body[data-page="exchanges"] .sc-hero {
+  background:
+    linear-gradient(180deg, transparent calc(100% - 130px), var(--sc-paper) 100%),
+    radial-gradient(circle at 86% 20%, rgba(255, 138, 0, 0.2), transparent 32%),
+    linear-gradient(135deg, #1a1a1a, #242424);
+}
+
+body[data-page="exchanges"] .sc-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 58%;
+  background:
+    linear-gradient(180deg, transparent calc(100% - 130px), var(--sc-paper) 100%),
+    url("../img/hero-keylock.webp") center 42% / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.35) 30%, rgba(0, 0, 0, 0.85) 55%, #000 78%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.35) 30%, rgba(0, 0, 0, 0.85) 55%, #000 78%);
+  pointer-events: none;
 }
 
 .sc-hero .container {
@@ -228,15 +333,28 @@ body.site-refresh.sc-nav-open {
   margin: 0;
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: var(--sc-radius);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.32);
+  /* Two shadows instead of one: a tight, near-black contact shadow so the
+     card reads as sitting just above the surface, plus the original soft,
+     wide blur for ambient lift. One shadow alone was either a hard line
+     right under the edge or a diffuse blur with no sense of separation. */
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.38),
+    0 28px 70px rgba(0, 0, 0, 0.32);
 }
 
 .sc-hero-media::after {
   position: absolute;
   inset: 0;
+  /* Bottom darken stays (headroom for a caption later, and it grounds the
+     card the same way on every photo regardless of what's in the shot).
+     The tint is now a corner-anchored radial glow rather than a flat
+     diagonal wash -- it reads as *light* falling on the photo instead of a
+     color filter over it, and it matches the homepage hero's own radial
+     glow (radial-gradient at 86% 20%), so the brand accent behaves the
+     same way in both places instead of two unrelated effects. */
   background:
     linear-gradient(180deg, transparent 45%, rgba(23, 23, 23, 0.34)),
-    linear-gradient(135deg, rgba(255, 138, 0, 0.12), transparent 42%);
+    radial-gradient(circle at 85% 15%, rgba(255, 138, 0, 0.22), transparent 45%);
   content: "";
   pointer-events: none;
 }
@@ -265,7 +383,16 @@ body.site-refresh.sc-nav-open {
 }
 
 .sc-hero .sc-eyebrow {
-  color: var(--sc-orange);
+  color: var(--sc-link);
+}
+
+body[data-page="home"] .sc-hero .sc-eyebrow {
+  margin-bottom: 44px;
+  padding: 6px 14px 6px 12px;
+  background: rgba(8, 9, 11, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85), 0 0 18px rgba(0, 0, 0, 0.6);
 }
 
 .sc-eyebrow::before {
@@ -302,11 +429,300 @@ body.site-refresh.sc-nav-open {
   line-height: 1;
 }
 
+body[data-page="home"] .sc-hero h1 {
+  font-size: clamp(2rem, 4.5vw, 4.35rem);
+}
+
+.sc-hero-command-line {
+  display: flex;
+  align-items: center;
+  gap: 0.18em;
+  white-space: nowrap;
+}
+
+.sc-hero-command-line + .sc-hero-command-line {
+  margin-top: 0.18em;
+}
+
+.sc-outlined-word {
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  letter-spacing: 0.05em;
+}
+
+.sc-outlined-word::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  color: rgba(255, 248, 229, 0.98);
+  content: attr(data-text);
+  pointer-events: none;
+  text-shadow:
+    -1.25px -1.25px 0 rgba(255, 248, 229, 0.98),
+    0 -1.25px 0 rgba(255, 248, 229, 0.98),
+    1.25px -1.25px 0 rgba(255, 248, 229, 0.98),
+    -1.25px 0 0 rgba(255, 248, 229, 0.98),
+    1.25px 0 0 rgba(255, 248, 229, 0.98),
+    -1.25px 1.25px 0 rgba(255, 248, 229, 0.98),
+    0 1.25px 0 rgba(255, 248, 229, 0.98),
+    1.25px 1.25px 0 rgba(255, 248, 229, 0.98),
+    0 2.5px 1px rgba(12, 7, 1, 0.82);
+}
+
+.sc-outlined-word .sc-word-fill {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.sc-hero-fiat {
+  filter: drop-shadow(0 0 8px rgba(70, 102, 67, 0.28));
+}
+
+.sc-hero-fiat::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  color: transparent;
+  content: attr(data-text);
+  pointer-events: none;
+  -webkit-text-stroke: 3px rgba(4, 4, 4, 0.92);
+}
+
+.sc-hero-fiat .sc-word-fill {
+  color: #dce3ce;
+  background-color: #d9d0b7;
+  background-image: url("../img/fiat-single-bill.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 110% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sc-neon-sign {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.06em 0.22em 0.08em;
+  border: 2px solid currentColor;
+  border-radius: 0.13em;
+  background: rgba(7, 7, 9, 0.86);
+  font-size: 0.78em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.sc-neon-sign-exit {
+  color: #ff3947;
+  animation: sc-exit-flicker 6.8s infinite;
+  box-shadow:
+    inset 0 0 3px rgba(255, 57, 71, 0.1),
+    0 0 6px rgba(255, 57, 71, 0.88),
+    0 0 20px rgba(255, 57, 71, 0.58),
+    0 0 44px rgba(255, 57, 71, 0.3);
+  text-shadow:
+    0 0 2px rgba(255, 255, 255, 0.42),
+    0 0 5px rgba(255, 57, 71, 0.55);
+}
+
+.sc-neon-sign-enter {
+  color: #43ff8a;
+  animation: sc-enter-hum 5.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  box-shadow:
+    inset 0 0 3px rgba(67, 255, 138, 0.1),
+    0 0 8px rgba(67, 255, 138, 0.96),
+    0 0 30px rgba(67, 255, 138, 0.72),
+    0 0 66px rgba(67, 255, 138, 0.4);
+  text-shadow:
+    0 0 2px rgba(255, 255, 255, 0.4),
+    0 0 5px rgba(67, 255, 138, 0.52);
+  will-change: filter;
+}
+
+@keyframes sc-exit-flicker {
+  0%,
+  44%,
+  50%,
+  77%,
+  83%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  45.5%,
+  48% {
+    opacity: 0.76;
+    filter: brightness(0.72);
+  }
+  46.5%,
+  49% {
+    opacity: 0.94;
+    filter: brightness(0.94);
+  }
+  78.5% {
+    opacity: 0.82;
+    filter: brightness(0.78);
+  }
+  80% {
+    opacity: 0.97;
+    filter: brightness(0.96);
+  }
+  81% {
+    opacity: 0.86;
+    filter: brightness(0.82);
+  }
+}
+
+@keyframes sc-enter-hum {
+  0%,
+  100% {
+    filter: brightness(1.06);
+  }
+  50% {
+    filter: brightness(1.13);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-neon-sign {
+    animation: none;
+  }
+}
+
+.sc-hero-command-destination {
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  filter:
+    drop-shadow(0 3px 2px rgba(8, 4, 0, 0.92))
+    drop-shadow(0 0 6px rgba(255, 160, 28, 0.88))
+    drop-shadow(0 0 19px rgba(255, 145, 0, 0.66))
+    drop-shadow(0 0 40px rgba(255, 128, 0, 0.39));
+}
+
+.sc-hero-command-destination::after {
+  position: absolute;
+  z-index: -1;
+  right: 5%;
+  bottom: -0.11em;
+  left: 5%;
+  height: 0.3em;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 153, 0, 0.4) 0%,
+    rgba(255, 133, 0, 0.18) 42%,
+    rgba(255, 118, 0, 0) 74%
+  );
+  content: "";
+  filter: blur(0.11em);
+  opacity: 0.32;
+  pointer-events: none;
+  transform: scaleX(0.98);
+  transform-origin: center;
+  animation: sc-bitcoin-hum 4.8s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+.sc-hero-command-destination .sc-word-fill {
+  color: #f28a00;
+  background-image: linear-gradient(
+    110deg,
+    #f28a00 0%,
+    #f7ae3f 24%,
+    #ec7900 47%,
+    #f49d18 69%,
+    #f28a00 100%
+  );
+  background-position: center;
+  background-size: 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes sc-bitcoin-hum {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleX(0.98);
+  }
+  50% {
+    opacity: 0.46;
+    transform: scaleX(1.015);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-hero-command-destination::after {
+    animation: none;
+  }
+}
+
+/* Rotating tail phrase in the homepage headline ("Say NO to ___."). "Say NO"
+   is static markup outside this span -- only the phrase after "to" flips.
+   The two candidate items share one grid cell (grid-area: 1 / 1) so the
+   container's height always tracks a single line and stays stable across
+   phrases of different widths; JS pins an explicit width (see
+   site-refresh.js) since width still needs to hold steady mid-transition,
+   when outgoing and incoming items of different lengths briefly coexist.
+   line-height is bumped well past the h1's own 1.04 -- that's tight enough
+   that descenders (the "g" in "asking"/"ledgers") were getting clipped by
+   this container's overflow: hidden, and it left the row sitting right up
+   against the line above with no breathing room. */
+.sc-hero-flip {
+  position: relative;
+  display: inline-grid;
+  overflow: hidden;
+  line-height: 1.4;
+}
+
+/* Contact's headline has an extra line the homepage's doesn't ("Ask your
+   questions while protecting" / flip line), so the 1.4 line-height's extra
+   breathing room above the flip line -- fine as a single gap on the
+   homepage -- stacks up against this page's other gaps and reads as
+   noticeably bigger than the fixed 16px eyebrow-to-h1 gap above it.
+   Pulling it up with margin rather than touching line-height, since that
+   value is load-bearing for descenders (see the comment above) and
+   shrinking it risks clipping "passphrase"/"personal info" again. */
+body[data-page="contact"] .sc-hero-flip {
+  margin-top: -16px;
+}
+
+.sc-hero-flip-item {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.4s ease;
+}
+
+.sc-hero-flip-item.is-active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.sc-hero-flip-item.is-leaving {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.sc-hero-flip-item.is-entering-start {
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: none;
+}
+
 .sc-hero .sc-lead {
   max-width: 720px;
   margin: 24px 0 0;
   color: rgba(255, 255, 255, 0.72);
   font-size: clamp(1.03rem, 2vw, 1.25rem);
+}
+
+body[data-page="home"] .sc-hero .sc-lead {
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 2px 7px rgba(0, 0, 0, 0.88);
 }
 
 .sc-hero-actions {
@@ -339,19 +755,57 @@ body.site-refresh.sc-nav-open {
   background: var(--sc-orange);
 }
 
+body[data-page="home"] .sc-hero-actions .sc-btn-primary {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--sc-orange), var(--sc-orange)) padding-box,
+    linear-gradient(
+      125deg,
+      rgba(12, 9, 4, 0.82),
+      rgba(255, 190, 82, 0.72) 48%,
+      rgba(24, 13, 3, 0.78)
+    ) border-box;
+  box-shadow:
+    0 3px 11px rgba(0, 0, 0, 0.34),
+    0 0 12px rgba(255, 153, 0, 0.18);
+}
+
 .sc-btn-primary:hover {
   background: var(--sc-orange-dark);
   border-color: var(--sc-orange-dark);
   transform: translateY(-2px);
 }
 
+body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--sc-orange-dark), var(--sc-orange-dark)) padding-box,
+    linear-gradient(
+      125deg,
+      rgba(12, 9, 4, 0.86),
+      rgba(255, 190, 82, 0.82) 48%,
+      rgba(24, 13, 3, 0.82)
+    ) border-box;
+}
+
 .sc-btn-ghost {
   color: #fff !important;
-  background: transparent;
+  /* Not fully transparent: these buttons sit on hero photos, which almost
+     always have a bright/blurred patch somewhere, and a plain white label
+     with nothing behind it loses contrast wherever one lands underneath.
+     A backdrop of its own means legibility doesn't depend on what photo
+     (or gradient, or theme) happens to be behind it. */
+  background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 
 .sc-btn-ghost:hover {
-  color: var(--sc-ink) !important;
+  /* Hardcoded, not var(--sc-ink): the background here is a fixed white,
+     but --sc-ink flips to a pale cream in dark theme (it's meant for text
+     on dark surfaces) -- pairing that with a white background gave
+     near-invisible light-on-white text whenever dark theme was active. */
+  color: #1a1a1a !important;
   background: #fff;
   border-color: #fff;
 }
@@ -571,7 +1025,7 @@ body.site-refresh.sc-nav-open {
 .sc-callout {
   padding: 28px 30px;
   background: var(--sc-warning);
-  border: 1px solid #f5d5a4;
+  border: 1px solid #5c4020;
   border-left: 5px solid var(--sc-orange);
   border-radius: 12px;
 }
@@ -645,13 +1099,13 @@ body.site-refresh.sc-nav-open {
 
 .sc-feature-matrix tbody tr:not(.sc-matrix-group):hover th,
 .sc-feature-matrix tbody tr:not(.sc-matrix-group):hover td {
-  background-color: #fff8ee;
+  background-color: var(--sc-matrix-group-bg);
 }
 
 .sc-feature-matrix .sc-matrix-group th {
   width: auto;
   padding: 11px 20px;
-  color: #8d4800;
+  color: #f6ae55;
   background: var(--sc-matrix-group-bg);
   border-top: 2px solid rgba(255, 138, 0, 0.42);
   font-size: 0.75rem;
@@ -686,14 +1140,14 @@ body.site-refresh.sc-nav-open {
 }
 
 .sc-matrix-partial {
-  color: #9b4f00;
+  color: #f6ae55;
   background: var(--sc-surface);
   border: 2px solid var(--sc-orange);
 }
 
 .sc-matrix-no {
-  color: #8a8882;
-  background: #efeeeb;
+  color: #b8b3a8;
+  background: #2c2a26;
 }
 
 .sc-feature-matrix td small {
@@ -928,12 +1382,6 @@ body.site-refresh.sc-nav-open {
   font-size: 0.86rem;
 }
 
-.sc-theme-toggle-row {
-  display: flex;
-  justify-content: center;
-  margin-top: 22px;
-}
-
 .sc-inline-disclaimer {
   padding: 14px 0;
   color: #6b5b44;
@@ -1009,7 +1457,40 @@ body.site-refresh.sc-nav-open {
   }
 
   .sc-hero {
-    padding: 125px 0 70px;
+    padding: 130px 0 70px;
+  }
+
+  /* Desktop's own eyebrow margin-bottom was just trimmed to 44px, but
+     this shared rule would otherwise pull tablet down with it -- lock
+     tablet at its existing value (phone still gets its own override
+     below). */
+  body[data-page="home"] .sc-hero .sc-eyebrow {
+    margin-bottom: 56px;
+  }
+
+  .sc-outlined-word {
+    letter-spacing: 0.12em;
+  }
+
+  /* Desktop reverted to its original tighter line spacing, but this
+     wider gap between EXIT FIAT / ENTER BITCOIN still reads fine (and
+     was asked to stay) at tablet/mobile widths. */
+  .sc-hero-command-line + .sc-hero-command-line {
+    margin-top: 0.4em;
+  }
+
+  /* BITCOIN is bolder (font-weight 900) and longer than FIAT, so the same
+     0.12em reads as too much on this word specifically -- double-class
+     selector beats the single-class rule above regardless of source
+     order, giving BITCOIN its own middle-ground value. */
+  .sc-outlined-word.sc-hero-command-destination {
+    letter-spacing: 0.06em;
+  }
+
+  /* FIAT at the full 0.12em reads as too spaced on tablet/mobile --
+     dial it back to a middle ground here specifically. */
+  .sc-outlined-word.sc-hero-fiat {
+    letter-spacing: 0.08em;
   }
 
   .sc-hero.has-media {
@@ -1020,9 +1501,108 @@ body.site-refresh.sc-nav-open {
     max-width: 680px;
     aspect-ratio: 16 / 9;
   }
+
+  /* At this width the copy (eyebrow/title/lead/buttons) sits on solid
+     black at the top of the hero, and the video moves out from behind
+     the text entirely: it starts level with the "ENTER BITCOIN" line
+     and shows in full below it. The box is sized to the video's own
+     aspect ratio (rather than stretched to fill whatever room is left)
+     so nothing gets cropped -- min-height then just needs to clear
+     top + that fixed height + a little breathing room before the next
+     section. */
+  body[data-page="home"] .sc-hero.has-background-media {
+    min-height: 839px;
+    padding-bottom: 90px;
+  }
+
+  body[data-page="home"] .sc-hero-background-media {
+    left: 0;
+    top: 240px;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    transform: none;
+  }
+
+  /* Deliberately keep the figure's own ::after (defined near the top of
+     this file) rather than disabling it -- its top/bottom vignette is
+     what fades the video to solid dark at its own edges, the same way
+     it does on desktop. Without it the video would hit a hard cutoff
+     right where the hero's own bottom fade below starts, instead of
+     blending into it. */
+
+  body[data-page="home"] .sc-hero.has-background-media::after {
+    height: 140px;
+  }
+
+  body[data-page="home"] .sc-hero + .sc-section {
+    margin-top: -90px;
+    padding-top: 34px;
+  }
+
+  body[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
+    transform: translateY(-20px);
+  }
+
+  body[data-page="home"] .sc-hero-background-media :is(img, video) {
+    object-fit: contain;
+    object-position: center;
+    filter: none;
+    transform: none;
+  }
 }
 
 @media (max-width: 767px) {
+  /* Tablet's padding-top/eyebrow-margin combo is too generous once the
+     phone layout compresses everything else -- pull both back in just
+     for this width, keeping tablet as-is. */
+  .sc-hero {
+    padding-top: 108px;
+  }
+
+  body[data-page="home"] .sc-hero .sc-eyebrow {
+    margin-bottom: 32px;
+  }
+
+  /* Narrower than tablet, so starting the video at the "ENTER BITCOIN"
+     line would run it behind the lead paragraph and buttons too -- drop
+     it near the button row instead, with just a slight overlap at the
+     top of the video rather than running it behind any text above. */
+  body[data-page="home"] .sc-hero.has-background-media {
+    min-height: 693px;
+    padding-bottom: 80px;
+  }
+
+  body[data-page="home"] .sc-hero.has-background-media::after {
+    height: 120px;
+  }
+
+  body[data-page="home"] .sc-hero + .sc-section {
+    margin-top: -80px;
+    padding-top: 30px;
+  }
+
+  body[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
+    transform: translateY(-14px);
+  }
+
+  /* Box sized to the video's own aspect ratio (not stretched to fill
+     whatever room is left) so the whole frame shows, nothing cropped --
+     see the 991px breakpoint above. */
+  body[data-page="home"] .sc-hero-background-media :is(img, video) {
+    object-fit: contain;
+    object-position: center;
+    filter: none;
+    transform: none;
+  }
+
+  body[data-page="home"] .sc-hero-background-media {
+    left: 0;
+    top: 383px;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    transform: none;
+  }
+
   .sc-brand {
     font-size: 1.25rem;
   }
@@ -1034,15 +1614,15 @@ body.site-refresh.sc-nav-open {
   .sc-brand-domain {
     height: 15px;
     margin-bottom: 9px;
-    margin-left: 4px;
+    margin-left: 8px;
     padding: 0 6px 0 2px;
     border-radius: 4px;
     font-size: 10px;
   }
 
   .sc-brand-mark {
-    width: 34px;
-    height: 34px;
+    width: 76px;
+    height: 27px;
   }
 
   .sc-section {
@@ -1060,6 +1640,18 @@ body.site-refresh.sc-nav-open {
   .sc-cta .text-md-end {
     margin-top: 24px;
     text-align: left !important;
+  }
+
+  /* The homepage hero's photo panel is a hard-edged crop confined to the
+     right 58% -- fine at desktop widths where the h1 has room to wrap
+     within the left ~42% "text-safe" zone, but h1's max-width (850px) does
+     nothing to constrain wrapping on a 375px screen: longer rotating
+     phrases wrap to a third line and run straight across the photo, past
+     where the mask has faded it dark enough to stay readable. Simplest fix
+     is the one already used elsewhere on this breakpoint -- drop the photo,
+     keep the plain gradient + glow, which needs no text-safe zone at all. */
+  body[data-page="exchanges"] .sc-hero::before {
+    content: none;
   }
 }
 
@@ -1081,75 +1673,8 @@ body.site-refresh.sc-nav-open {
     transform: none;
     transition: none;
   }
-}
 
-/* Dark theme (toggled via [data-theme="dark"] on <html>, see site-refresh.js) */
-[data-theme="dark"] {
-  --sc-ink: #ece7e0;
-  --sc-ink-soft: #cfc9bd;
-  --sc-paper: #1a1918;
-  --sc-wash: #211f1c;
-  --sc-surface: #242220;
-  --sc-line: #6e695e;
-  --sc-muted: #a49e93;
-  --sc-success: #35b48a;
-  --sc-warning: #33230f;
-  --sc-link: #ff9a1f;
-  --sc-link-hover: #ffb455;
-  --sc-matrix-group-bg: #3a2a10;
-  --sc-matrix-highlight-bg: #33230f;
-}
-
-[data-theme="dark"] .sc-feature-matrix .sc-matrix-group th {
-  color: #f6ae55;
-}
-
-[data-theme="dark"] .sc-feature-matrix tbody tr:not(.sc-matrix-group):hover th,
-[data-theme="dark"] .sc-feature-matrix tbody tr:not(.sc-matrix-group):hover td {
-  background-color: var(--sc-matrix-group-bg);
-}
-
-[data-theme="dark"] .sc-callout {
-  border-color: #5c4020;
-}
-
-[data-theme="dark"] .sc-matrix-no {
-  color: #b8b3a8;
-  background: #2c2a26;
-}
-
-[data-theme="dark"] .sc-matrix-partial {
-  color: #f6ae55;
-}
-
-[data-theme="dark"] .sc-theme-toggle .bi-sun-fill {
-  display: inline-block;
-}
-
-[data-theme="dark"] .sc-theme-toggle .bi-moon-stars-fill {
-  display: none;
-}
-
-.sc-theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 50%;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.sc-theme-toggle:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  color: #fff;
-}
-
-.sc-theme-toggle .bi-sun-fill {
-  display: none;
+  .sc-hero-flip-item {
+    transition: none;
+  }
 }
