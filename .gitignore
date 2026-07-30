@@ -1,0 +1,12 @@
+# Draft/unused media that isn't referenced by the live site.
+# Keep files on disk for reference, but don't track them.
+docs/assets/img/cash-vortex/*
+!docs/assets/img/cash-vortex/exchanges-cash-vortex-final3.mp4
+!docs/assets/img/cash-vortex/exchanges-cash-vortex.png
+
+docs/assets/img/bitcoin-mark.svg
+docs/assets/img/cash-bundles-background.png
+docs/assets/img/hero-boxlock.webp
+docs/assets/img/hero-iceberg.webp
+docs/assets/img/self-custody-favicon.svg
+docs/favicon.ico
