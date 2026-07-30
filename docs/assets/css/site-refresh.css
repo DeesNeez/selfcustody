@@ -843,34 +843,47 @@ body[data-page="home"] .sc-hero h1 {
 .sc-hero-command-destination {
   font-weight: 900;
   letter-spacing: 0.01em;
-  filter:
-    drop-shadow(0 3px 2px rgba(8, 4, 0, 0.92))
-    drop-shadow(0 0 6px rgba(255, 160, 28, 0.88))
-    drop-shadow(0 0 19px rgba(255, 145, 0, 0.66))
-    drop-shadow(0 0 40px rgba(255, 128, 0, 0.39));
 }
 
+/* The glow is a solid-colour copy of the word sitting exactly behind the
+   gradient fill, radiating outward via text-shadow.
+
+   Two earlier approaches failed. filter: drop-shadow() on the parent
+   rendered no glow at all on some mobile browsers (confirmed missing on
+   a real device) -- a filter establishes a new rendering region, and the
+   multi-layer/large-radius stack is the kind of work mobile compositors
+   skip. Moving those same shadows onto .sc-word-fill as text-shadow
+   didn't work either: that element is -webkit-text-fill-color:
+   transparent for the gradient clip, so the shadow shows straight
+   through the hollow glyphs and reads as a smudge instead of a halo.
+
+   Painting it on its own layer underneath (same content: attr(data-text)
+   technique .sc-outlined-word::before already uses for the white
+   outline) keeps the glyphs opaque over the top, so only the halo
+   escapes around the edges -- and text-shadow has no stacking-context
+   side effects, so it renders reliably everywhere. */
 .sc-hero-command-destination::after {
   position: absolute;
   z-index: -1;
-  right: 5%;
-  bottom: -0.11em;
-  left: 5%;
-  height: 0.3em;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 153, 0, 0.4) 0%,
-    rgba(255, 133, 0, 0.18) 42%,
-    rgba(255, 118, 0, 0) 74%
-  );
-  content: "";
-  filter: blur(0.11em);
-  opacity: 0.32;
+  inset: 0;
+  color: #ec7900;
+  content: attr(data-text);
   pointer-events: none;
-  transform: scaleX(0.98);
-  transform-origin: center;
+  /* More layers at higher alpha than the drop-shadow version used,
+     deliberately: chained filter: drop-shadow() is cumulative -- each
+     shadow is applied to the *result* of the previous one, so the glow
+     compounds. text-shadow layers all draw independently from the same
+     glyphs, so matching that intensity takes a denser stack. */
+  text-shadow:
+    0 0 4px rgba(255, 180, 70, 1),
+    0 0 9px rgba(255, 163, 30, 0.96),
+    0 0 17px rgba(255, 150, 6, 0.88),
+    0 0 29px rgba(255, 140, 0, 0.74),
+    0 0 48px rgba(255, 130, 0, 0.56),
+    0 0 74px rgba(255, 122, 0, 0.36),
+    0 3px 2px rgba(8, 4, 0, 0.92);
   animation: sc-bitcoin-hum 4.8s ease-in-out infinite;
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 
 .sc-hero-command-destination .sc-word-fill {
@@ -890,15 +903,16 @@ body[data-page="home"] .sc-hero h1 {
   -webkit-text-fill-color: transparent;
 }
 
+/* Opacity only -- the glow layer is now glyph-shaped and sits directly
+   behind the real text, so the old scaleX pulse would slide it out from
+   under the letters and read as a doubled edge rather than a hum. */
 @keyframes sc-bitcoin-hum {
   0%,
   100% {
-    opacity: 0.3;
-    transform: scaleX(0.98);
+    opacity: 0.88;
   }
   50% {
-    opacity: 0.46;
-    transform: scaleX(1.015);
+    opacity: 1;
   }
 }
 
