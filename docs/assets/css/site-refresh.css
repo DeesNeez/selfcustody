@@ -28,6 +28,13 @@
 
 html {
   scroll-behavior: smooth;
+  /* Reserve the scrollbar gutter permanently so that locking the page
+     (body.sc-nav-open sets overflow:hidden when the mobile menu opens)
+     doesn't remove the scrollbar and widen the viewport underneath. #header
+     is position:fixed, so that widening re-centres its max-width container
+     and drags the nav toggle sideways mid-animation. No effect on touch
+     devices, which use overlay scrollbars and have no gutter to reserve. */
+  scrollbar-gutter: stable;
 }
 
 body.site-refresh {
@@ -126,7 +133,7 @@ body.site-refresh:not([data-page="home"]) #header {
   justify-content: center;
   height: 19px;
   margin-bottom: 13px;
-  margin-left: 10px;
+  margin-left: 7px;
   padding: 0 8px 0 4px;
   color: #fff;
   background: #d8292f;
@@ -140,7 +147,7 @@ body.site-refresh:not([data-page="home"]) #header {
 .sc-brand-domain-text {
   position: relative;
   top: 0.5px;
-  left: 0.5px;
+  left: 1px;
 }
 
 .sc-brand-mark {
@@ -222,6 +229,19 @@ body[data-page="home"] .sc-hero-background-media {
   aspect-ratio: 3 / 2;
   transform: translateX(calc(-50% + 12px));
   margin: 0;
+  /* The bottom dissolve lives here, as a mask on the figure itself, rather
+     than as an opaque overlay painted on top of it. That matters because
+     this figure's height is fluid (width:100% against a 3/2 ratio, so it
+     tracks viewport width) while every overlay that previously handled the
+     fade was sized in fixed pixels. The two only lined up at one viewport
+     width; everywhere else the video either met an opaque edge before it
+     had finished fading, or got chopped outright by the hero's
+     overflow:hidden. A mask is expressed in percentages of the element, so
+     it stays correct at every size on its own, and it makes the video
+     genuinely transparent instead of covering it with a colour that has to
+     be kept in sync with whatever is behind it. */
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 68%, rgba(0, 0, 0, 0.82) 78%, rgba(0, 0, 0, 0.45) 88%, rgba(0, 0, 0, 0.14) 95%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 68%, rgba(0, 0, 0, 0.82) 78%, rgba(0, 0, 0, 0.45) 88%, rgba(0, 0, 0, 0.14) 95%, transparent 100%);
 }
 
 body[data-page="home"] .sc-hero-background-media :is(img, video) {
@@ -237,7 +257,7 @@ body[data-page="home"] .sc-hero-background-media::after {
   inset: -1px;
   background:
     linear-gradient(90deg, #08090b 0%, rgba(8, 9, 11, 0.8) 2%, rgba(8, 9, 11, 0.32) 7%, transparent 15%, transparent 82%, rgba(8, 9, 11, 0.45) 90%, rgba(8, 9, 11, 0.9) 96%, #08090b 100%),
-    linear-gradient(180deg, #08090b 0%, rgba(8, 9, 11, 0.9) 5%, rgba(8, 9, 11, 0.45) 11%, transparent 18%, transparent 78%, rgba(8, 9, 11, 0.45) 88%, rgba(8, 9, 11, 0.9) 96%, #08090b 100%);
+    linear-gradient(180deg, #08090b 0%, rgba(8, 9, 11, 0.9) 5%, rgba(8, 9, 11, 0.45) 11%, transparent 18%, transparent 100%);
   content: "";
   pointer-events: none;
 }
@@ -635,11 +655,7 @@ body[data-page="exchanges"] .sc-hero::before {
 
 body[data-page="home"] .sc-hero .sc-eyebrow {
   margin-bottom: 44px;
-  padding: 6px 14px 6px 12px;
-  background: rgba(8, 9, 11, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85), 0 0 18px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
 }
 
 .sc-eyebrow::before {
@@ -1775,8 +1791,14 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
      so nothing gets cropped -- min-height then just needs to clear
      top + that fixed height + a little breathing room before the next
      section. */
+  /* Height has to be fluid because the figure's is: width:100% against a
+     3/2 ratio makes it 66.667vw tall, so a fixed min-height only contains
+     it at one viewport width. 240px figure top plus 66.667vw of video plus
+     the 90px the next section overlaps by means the section lands exactly
+     at the video's (by then fully masked out) bottom edge at every width,
+     instead of cutting into it. */
   body[data-page="home"] .sc-hero.has-background-media {
-    min-height: 839px;
+    min-height: calc(66.667vw + 330px);
     padding-bottom: 90px;
   }
 
@@ -1788,23 +1810,8 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
     transform: none;
   }
 
-  /* The figure's own vignette (below) fades the video's bottom edge to
-     solid dark in only ~12% of its height -- fine on desktop where the
-     figure is tall enough for that to still be a long, gradual fade in
-     actual pixels, but on this much shorter figure it's a fast, abrupt
-     dip. Disabling its bottom fade here (left/right/top edges keep
-     theirs) and handing the whole job to one deliberately tall,
-     gently-curved band instead -- overlapping the video's last ~150px
-     on purpose -- gives a single continuous taper rather than two short
-     ones stacked together. */
-  body[data-page="home"] .sc-hero-background-media::after {
-    background:
-      linear-gradient(90deg, #08090b 0%, rgba(8, 9, 11, 0.8) 2%, rgba(8, 9, 11, 0.32) 7%, transparent 15%, transparent 82%, rgba(8, 9, 11, 0.45) 90%, rgba(8, 9, 11, 0.9) 96%, #08090b 100%),
-      linear-gradient(180deg, #08090b 0%, rgba(8, 9, 11, 0.9) 5%, rgba(8, 9, 11, 0.45) 11%, transparent 18%, transparent 100%);
-  }
-
   body[data-page="home"] .sc-hero.has-background-media::after {
-    height: 202px;
+    height: 130px;
     background: linear-gradient(180deg, rgba(8, 9, 11, 0) 0%, rgba(8, 9, 11, 0.16) 35%, rgba(8, 9, 11, 0.55) 65%, #08090b 100%);
   }
 
@@ -1847,19 +1854,14 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
      line would run it behind the lead paragraph and buttons too -- drop
      it near the button row instead, with just a slight overlap at the
      top of the video rather than running it behind any text above. */
+  /* Fluid for the same reason as the 991px breakpoint above: 383px figure
+     top, plus 66.667vw of video, plus the 80px the next section overlaps
+     by. The old fixed 712px only contained the video up to about a 500px
+     viewport; past that the hero's overflow:hidden was chopping the bottom
+     of the frame off outright. */
   body[data-page="home"] .sc-hero.has-background-media {
-    min-height: 712px;
+    min-height: calc(66.667vw + 463px);
     padding-bottom: 80px;
-  }
-
-  /* See the 991px breakpoint above: the figure's own bottom vignette is
-     disabled here too, in favour of one taller, gently-curved band that
-     overlaps the video's last ~60px on purpose, giving a single
-     continuous fade instead of two short, stacked ones. */
-  body[data-page="home"] .sc-hero-background-media::after {
-    background:
-      linear-gradient(90deg, #08090b 0%, rgba(8, 9, 11, 0.8) 2%, rgba(8, 9, 11, 0.32) 7%, transparent 15%, transparent 82%, rgba(8, 9, 11, 0.45) 90%, rgba(8, 9, 11, 0.9) 96%, #08090b 100%),
-      linear-gradient(180deg, #08090b 0%, rgba(8, 9, 11, 0.9) 5%, rgba(8, 9, 11, 0.45) 11%, transparent 18%, transparent 76%, rgba(8, 9, 11, 0.14) 83%, rgba(8, 9, 11, 0.58) 93%, #08090b 100%);
   }
 
   body[data-page="home"] .sc-hero.has-background-media::after {
@@ -1924,7 +1926,7 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
   .sc-brand-domain {
     height: 15px;
     margin-bottom: 9px;
-    margin-left: 8px;
+    margin-left: 6px;
     padding: 0 6px 0 2px;
     border-radius: 4px;
     font-size: 10px;
@@ -1965,6 +1967,126 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
   }
 }
 
+/* Mobile nav open/close animation.
+   Three states, not two. .navbar-mobile alone flips the nav from
+   static-in-header to position:fixed and its <ul> from display:none to
+   display:block -- pure structure, no transition property, because
+   display isn't animatable anyway and because a transition declared here
+   would also catch this very first opacity jump (from the no-class
+   default down to 0) and try to animate *that*, racing the real fade-in
+   that starts a couple of frames later and getting overridden by it
+   before it's moved anywhere -- which is exactly what happened the first
+   time this was built: opacity read back as 1 immediately after clicking
+   open, because the "animate down to 0" and "animate up to 1" transitions
+   were both live at once and the second one won before the first had
+   gone anywhere.
+
+   So the transition itself is armed by a second class, .sc-nav-animating,
+   added on the frame after .navbar-mobile (once the opacity:0 structural
+   state has actually painted). Only once that's live does JS add the
+   third class, .sc-nav-visible, which is what actually changes the
+   opacity/transform target -- now there's a committed pre-change frame
+   for the browser to interpolate away from. Closing removes .sc-nav-visible
+   (transition is still armed, so the fade-out plays) and only strips
+   .sc-nav-animating and .navbar-mobile once that transition has finished,
+   per NAV_TRANSITION_MS in site-refresh.js.
+
+   transition: none is explicit, not just "absent", on both base rules
+   below: style.css's own .navbar-mobile and .navbar-mobile ul (the
+   unscoped vendor rules, lower specificity than these) already carry
+   transition: 0.3s unconditionally, completely independent of any class
+   of ours. Without overriding it here, that vendor transition applies
+   the instant .navbar-mobile lands -- before .sc-nav-animating even
+   exists -- and catches the very first opacity/transform jump, which is
+   the exact race this whole comment is about, just from a source outside
+   this file. This was missed on the first pass at this fix specifically
+   because it lives in a different stylesheet. */
+.site-refresh .navbar-mobile {
+  opacity: 0;
+  transition: none;
+}
+
+.site-refresh .navbar-mobile.sc-nav-animating {
+  transition: opacity 0.28s ease;
+}
+
+.site-refresh .navbar-mobile.sc-nav-visible {
+  opacity: 1;
+}
+
+.site-refresh .navbar-mobile ul {
+  opacity: 0;
+  transform: translateY(-14px) scale(0.98);
+  transition: none;
+}
+
+.site-refresh .navbar-mobile.sc-nav-animating ul {
+  transition:
+    opacity 0.22s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-refresh .navbar-mobile.sc-nav-visible ul {
+  opacity: 1;
+  transform: none;
+}
+
+/* style.css's own .navbar-mobile .mobile-nav-toggle re-anchors the button to
+   top:15px/right:15px the moment the menu opens. In the closed header the
+   button sits at (350, 20.5); that rule moves it to (347, 15) -- a ~3px left,
+   ~5.5px up snap landing on the exact frame the fade starts, which is the
+   bulk of the "janky" feel. These values reproduce the closed position
+   instead, so the button holds still while everything animates around it:
+   vertically centred in the 70px mobile header (1em is the 28px icon), and
+   horizontally on the Bootstrap container's own gutter, which the toggle
+   inherits since it stays a DOM descendant of .container even while the nav
+   is fixed. Expressed as calc rather than literals so both stay correct if
+   the header height or gutter is retuned. */
+.site-refresh .navbar-mobile .mobile-nav-toggle {
+  /* 1px is the header's bottom border, which sits inside its 70px
+     border-box height, so the space the button actually centres in is 69px,
+     not 70px. Without subtracting it the button still shifted down half a
+     pixel on open. 1em is the 28px icon. */
+  top: calc((70px - 1px - 1em) / 2);
+  right: calc(var(--bs-gutter-x, 1.5rem) * 0.5);
+}
+
+/* Below 576px .container is full-bleed, so the gutter above is the whole
+   inset. At and above 576px Bootstrap gives it a max-width and centres it,
+   which pushes the closed button much further in -- 54.5px rather than 12px
+   at a 820px viewport, a 57px jump if unaccounted for. These mirror that
+   centring so the open position keeps matching the closed one. 100% (of the
+   full-bleed fixed nav) rather than 100vw deliberately: 100vw includes the
+   scrollbar, the container's width does not, and mixing the two would
+   reintroduce a half-scrollbar offset. Values track Bootstrap's own
+   container max-widths; ≥992px needs no rule since the toggle is hidden by
+   then. */
+@media (min-width: 576px) {
+  .site-refresh .navbar-mobile .mobile-nav-toggle {
+    right: calc((100% - 540px) / 2 + var(--bs-gutter-x, 1.5rem) * 0.5);
+  }
+}
+
+@media (min-width: 768px) {
+  .site-refresh .navbar-mobile .mobile-nav-toggle {
+    right: calc((100% - 720px) / 2 + var(--bs-gutter-x, 1.5rem) * 0.5);
+  }
+}
+
+/* Deliberately no transform on the icon. A rotate(90deg) here reads as a
+   wobble rather than a flourish: the bi-list to bi-x class swap is instant,
+   so the glyph is already an X before the rotation starts, and an X is
+   symmetric under 90deg -- it passes through looking like a plus at 45deg
+   and lands exactly where it began. The panel animation carries the motion;
+   the icon just swaps.
+
+   transition:none also neutralises style.css's blanket
+   `.mobile-nav-toggle { transition: 0.5s }`, which would otherwise try to
+   animate the top/right values set above. */
+.site-refresh .mobile-nav-toggle {
+  transition: none;
+}
+
 /* Scroll-reveal entrance animation.
    Delay is read from --sc-reveal-delay (set inline by JS per-card) rather
    than the plain transition-delay property. transition-delay set inline
@@ -1988,6 +2110,14 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Same specificity as the .sc-nav-animating rules above (0,0,3,0), so
+     this reliably wins the cascade instead of losing to them. */
+  .site-refresh .navbar-mobile.sc-nav-animating,
+  .site-refresh .navbar-mobile.sc-nav-animating ul,
+  .site-refresh .mobile-nav-toggle {
+    transition: none;
+  }
+
   .sc-reveal {
     opacity: 1;
     transform: none;
@@ -2017,4 +2147,374 @@ body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
     scale: none;
   }
 
+}
+
+/* Homepage actions share one compact, control-panel treatment. */
+body[data-page="home"] .navbar .sc-contact-link {
+  margin-left: 10px;
+  padding: 8px 16px;
+  border: 1px solid rgba(222, 121, 24, 0.58);
+  border-radius: 8px;
+  background: rgba(10, 10, 10, 0.64);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 7px 20px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  letter-spacing: 0.02em;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+body[data-page="home"] .navbar .sc-contact-link:hover,
+body[data-page="home"] .navbar .sc-contact-link.active {
+  color: #fff;
+  border-color: rgba(255, 147, 43, 0.82);
+  background: rgba(10, 10, 10, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 11px 28px rgba(181, 68, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+body[data-page="home"] .sc-hero-actions {
+  width: max-content;
+  max-width: 100%;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(8, 9, 11, 0.62);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 46px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn {
+  min-height: 50px;
+  padding: 11px 20px;
+  border-width: 1px;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  letter-spacing: 0.025em;
+  box-shadow: none;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-primary {
+  border-color: transparent;
+  background:
+    linear-gradient(135deg, #ff940f, #d56200) padding-box,
+    linear-gradient(135deg, #ffc36f, #7f3200) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 9px 24px rgba(255, 122, 0, 0.22);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover {
+  border-color: transparent;
+  background:
+    linear-gradient(135deg, #ffab38, #df6900) padding-box,
+    linear-gradient(135deg, #ffe0b5, #9b4000) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 12px 30px rgba(255, 122, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-primary i {
+  transition: transform 0.2s ease;
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover i {
+  transform: translateX(3px);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost:hover {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+body[data-page="home"] .sc-cta .sc-btn {
+  min-width: 184px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  border-radius: 9px;
+  color: #21150b !important;
+  background: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 12px 28px rgba(72, 28, 0, 0.22);
+  letter-spacing: 0.02em;
+}
+
+body[data-page="home"] .sc-cta .sc-btn:hover {
+  color: #fff !important;
+  border-color: #ffbd68;
+  background: #1a1410;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 138, 0, 0.18),
+    0 14px 32px rgba(72, 28, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 991px) {
+  body[data-page="home"] .navbar .sc-contact-link {
+    margin: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(10, 10, 10, 0.64);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 7px 20px rgba(0, 0, 0, 0.18);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (max-width: 575px) {
+  body[data-page="home"] .sc-hero-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  body[data-page="home"] .sc-hero-actions .sc-btn,
+  body[data-page="home"] .sc-cta .sc-btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="home"] .navbar .sc-contact-link,
+  body[data-page="home"] .sc-hero-actions .sc-btn,
+  body[data-page="home"] .sc-hero-actions .sc-btn-primary i,
+  body[data-page="home"] .sc-cta .sc-btn {
+    transition: none;
+  }
+}
+
+/* Material interactions: energized hero and support controls, plus a final
+   CTA that closes like a powered gate. */
+body[data-page="home"] .navbar .sc-contact-link,
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+body[data-page="home"] .navbar .sc-contact-link > span,
+body[data-page="home"] .sc-hero-actions .sc-btn > span,
+body[data-page="home"] .sc-hero-actions .sc-btn > i,
+body[data-page="home"] .sc-cta .sc-btn > span {
+  position: relative;
+  z-index: 2;
+}
+
+body[data-page="home"] .navbar .sc-contact-link::before,
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost::before {
+  content: none;
+}
+
+body[data-page="home"] .navbar .sc-contact-link::after,
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost::after {
+  position: absolute;
+  z-index: 1;
+  top: -45%;
+  bottom: -45%;
+  left: -32%;
+  width: 24%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 245, 224, 0.52),
+    transparent
+  );
+  content: "";
+  opacity: 0;
+  transform: skewX(-18deg) translateX(-180%);
+  transition:
+    transform 0.72s cubic-bezier(0.2, 0.72, 0.22, 1),
+    opacity 0.18s ease;
+}
+
+body[data-page="home"] .navbar .sc-contact-link:hover,
+body[data-page="home"] .navbar .sc-contact-link.active {
+  border-color: rgba(255, 147, 43, 0.82);
+  background: rgba(10, 10, 10, 0.7);
+}
+
+body[data-page="home"] .navbar .sc-contact-link:hover::after,
+body[data-page="home"] .navbar .sc-contact-link.active::after,
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost:hover::after {
+  opacity: 1;
+  transform: skewX(-18deg) translateX(680%);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-primary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-primary::after {
+  position: absolute;
+  z-index: 1;
+  top: -45%;
+  bottom: -45%;
+  left: -32%;
+  width: 24%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 245, 224, 0.52),
+    transparent
+  );
+  content: "";
+  opacity: 0;
+  transform: skewX(-18deg) translateX(-180%);
+  transition:
+    transform 0.72s cubic-bezier(0.2, 0.72, 0.22, 1),
+    opacity 0.18s ease;
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-primary:hover::after {
+  opacity: 1;
+  transform: skewX(-18deg) translateX(680%);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost:hover {
+  border-color: rgba(255, 191, 96, 0.82);
+  background: rgba(8, 9, 11, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 26px rgba(255, 111, 0, 0.2);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-primary {
+  min-width: 154px;
+  text-align: center;
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost {
+  min-width: 154px;
+  color: #fff !important;
+  border-color: rgba(222, 121, 24, 0.58);
+  background: rgba(10, 10, 10, 0.64);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 7px 20px rgba(0, 0, 0, 0.18);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost::before {
+  background: linear-gradient(90deg, #873000 0%, #a94300 52%, #c45d08 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 196, 132, 0.2),
+    inset -12px 0 20px rgba(255, 140, 35, 0.12);
+}
+
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost:hover {
+  color: #fff !important;
+  border-color: rgba(255, 147, 43, 0.82);
+  background: rgba(10, 10, 10, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 11px 28px rgba(181, 68, 0, 0.2);
+}
+
+body[data-page="home"] .navbar .sc-contact-link,
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost {
+  background:
+    linear-gradient(
+      105deg,
+      rgba(156, 53, 0, 0.22) 0%,
+      rgba(255, 138, 0, 0.09) 42%,
+      rgba(10, 10, 10, 0) 76%
+    ),
+    rgba(10, 10, 10, 0.64);
+}
+
+body[data-page="home"] .navbar .sc-contact-link:hover,
+body[data-page="home"] .navbar .sc-contact-link.active,
+body[data-page="home"] .sc-hero-actions .sc-btn-ghost:hover {
+  background:
+    linear-gradient(
+      105deg,
+      rgba(174, 61, 0, 0.3) 0%,
+      rgba(255, 138, 0, 0.13) 44%,
+      rgba(10, 10, 10, 0) 78%
+    ),
+    rgba(10, 10, 10, 0.7);
+}
+
+body[data-page="home"] .sc-cta .sc-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+body[data-page="home"] .sc-cta .sc-btn::before {
+  position: absolute;
+  z-index: 0;
+  inset: -1px;
+  background:
+    linear-gradient(135deg, #21150b 0%, #2c190d 54%, #6e2a00 100%);
+  content: "";
+  transform: translateX(-104%);
+  transition: transform 0.48s cubic-bezier(0.22, 0.74, 0.2, 1);
+}
+
+body[data-page="home"] .sc-cta .sc-btn::after {
+  position: absolute;
+  z-index: 1;
+  right: 8px;
+  bottom: 5px;
+  left: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, #ff8a00, #ffd18f);
+  box-shadow: 0 0 9px rgba(255, 138, 0, 0.7);
+  content: "";
+  transform: scaleX(0.24);
+  transform-origin: left;
+  transition: transform 0.48s cubic-bezier(0.22, 0.74, 0.2, 1);
+}
+
+body[data-page="home"] .sc-cta .sc-btn:hover::before {
+  transform: translateX(0);
+}
+
+body[data-page="home"] .sc-cta .sc-btn:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="home"] .navbar .sc-contact-link::before,
+  body[data-page="home"] .navbar .sc-contact-link::after,
+  body[data-page="home"] .sc-hero-actions .sc-btn::before,
+  body[data-page="home"] .sc-hero-actions .sc-btn::after,
+  body[data-page="home"] .sc-cta .sc-btn::before,
+  body[data-page="home"] .sc-cta .sc-btn::after {
+    animation: none;
+    transition: none;
+  }
 }
