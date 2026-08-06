@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 320" role="img" aria-labelledby="title desc">
-  <title id="title">Self Custody four-circle logo preview</title>
-  <desc id="desc">Four raised circles in a row, coloured red, banknote paper, green, and Bitcoin orange, each surrounded by a black outline.</desc>
+  <title id="title">Self Custody four-circle logo</title>
+  <desc id="desc">Four circles in a row, coloured red, banknote paper, green, and Bitcoin orange, each surrounded by a black rim, lighting up one after another in a repeating left to right wave.</desc>
 
   <defs>
     <linearGradient id="red" x1="0" y1="0" x2="0.9" y2="1">
@@ -33,16 +33,75 @@
       <stop offset="0.62" stop-color="#000000" stop-opacity="0.03"/>
       <stop offset="1" stop-color="#000000" stop-opacity="0.26"/>
     </linearGradient>
+
+    <!-- Glow rings. The softness comes from gradient stops rather than a
+         feGaussianBlur, so these stay plain vector fills.
+
+         The stops are pinned to the geometry rather than chosen by eye. The
+         glow circle is r=126, the coloured face is r=96 (offset 0.762) and
+         the black rim runs from there out to r=118 (offset 0.937). So:
+         transparent until offset 0.68, which keeps the glow off the face
+         interior and lets its own gradient and surface sheen still read as
+         a sphere; at or near full opacity across 0.78 to 0.95, which is the
+         whole rim band, so no unlit black is left showing between the face
+         and the halo; then down to zero by offset 1.0 for the outer falloff.
+
+         Two earlier versions each got one half of this wrong. Peaking at
+         offset 0.90 left the glow at only about 0.6 by the rim's outer edge,
+         and peaking at 0.82 left it at about 0.33 there, so in both cases
+         the outer two thirds of the rim still read as a dark ring. The
+         second version also started ramping at offset 0.20, which laid an
+         roughly 85% colour veil over the face and flattened it. Covering
+         the rim and sparing the face are separate constraints; the stops
+         have to satisfy both.
+
+         Offset 1.0 stays exactly r=126 because the outer dots sit 126 units
+         from the viewBox edge, so that is the largest radius that never gets
+         hard clipped by the canvas boundary. -->
+    <radialGradient id="glow-red">
+      <stop offset="0.68" stop-color="#ff6a70" stop-opacity="0"/>
+      <stop offset="0.78" stop-color="#ff4149" stop-opacity="0.9"/>
+      <stop offset="0.88" stop-color="#ff3340" stop-opacity="1"/>
+      <stop offset="0.95" stop-color="#ff3340" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ff3340" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="glow-paper">
+      <stop offset="0.68" stop-color="#fff7e5" stop-opacity="0"/>
+      <stop offset="0.78" stop-color="#fff0cf" stop-opacity="0.9"/>
+      <stop offset="0.88" stop-color="#ffeec7" stop-opacity="1"/>
+      <stop offset="0.95" stop-color="#ffeec7" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ffeec7" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="glow-green">
+      <stop offset="0.68" stop-color="#69cf85" stop-opacity="0"/>
+      <stop offset="0.78" stop-color="#51c775" stop-opacity="0.9"/>
+      <stop offset="0.88" stop-color="#3fc069" stop-opacity="1"/>
+      <stop offset="0.95" stop-color="#3fc069" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#3fc069" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="glow-orange">
+      <stop offset="0.68" stop-color="#ffbd4d" stop-opacity="0"/>
+      <stop offset="0.78" stop-color="#ffa61f" stop-opacity="0.9"/>
+      <stop offset="0.88" stop-color="#ff9900" stop-opacity="1"/>
+      <stop offset="0.95" stop-color="#ff9900" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ff9900" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
-  <!-- Flat, filter-free by design: this renders at ~80px wide in the header,
-       where a feDropShadow + four animated feGaussianBlur glow rings (the
-       previous version) are both imperceptible and risky -- SVG filters
-       rasterize relative to the element's actual display size on some
-       mobile browsers, so a blur radius tuned for this 920-wide viewBox
-       becomes hugely disproportionate at ~80px and smears the whole mark
-       (confirmed blurry on a real device). Flat gradients + rims have no
-       such failure mode. -->
+  <!-- Filter free by design: this renders at roughly 80px wide in the header.
+       An earlier version wrapped every circle in a feDropShadow plus four
+       animated feGaussianBlur rings, which came out visibly blurry on a real
+       phone. Filtered subtrees are rasterized into an offscreen buffer that
+       some mobile browsers allocate at CSS pixel size instead of device pixel
+       size, so the whole mark rendered at 1x and was then upscaled. Plain
+       gradients and strokes have no such failure mode.
+
+       NOTE: keep double hyphens out of comments in this file. SVG is XML,
+       where a double hyphen inside a comment is a hard parse error that
+       silently kills the entire graphic. -->
   <g>
     <!-- Draw the overlapping rims first so they read as one connected perimeter. -->
     <circle cx="126" cy="148" r="118" fill="#080a0d"/>
@@ -60,5 +119,75 @@
     <circle cx="348" cy="148" r="96" fill="url(#surface-sheen)"/>
     <circle cx="570" cy="148" r="96" fill="url(#surface-sheen)"/>
     <circle cx="792" cy="148" r="96" fill="url(#surface-sheen)"/>
+  </g>
+
+  <!-- One continuous light sweeping left to right, looping straight back
+       into itself.
+
+       Every dot rides the same raised-cosine bump (0 floor, 1 peak),
+       phase-shifted so peaks land at t=0.11 red, 0.25 paper, 0.39 green,
+       0.53 orange. Each bump is wider than that 0.14 spacing, so adjacent
+       dots are always both partly lit and the handoff reads as one blended
+       wave rather than four separate blinks.
+
+       The floor is a true 0, not a low value: an unlit dot is meant to be
+       just its plain black rim. An earlier version rested at 0.16, which
+       left a permanent faint colour tint over every rim even when that dot
+       was supposed to be off, muddying the resting state and eating into
+       the contrast the wave has to work with.
+
+       No dark hold: orange's fall and red's next rise meet right at the
+       loop seam (t=1/t=0), both at 0, so the wave restarts the instant it
+       finishes rather than pausing first. That seam value has to be exact:
+       if red started rising even slightly before t=1, or orange were still
+       above 0 at t=1, the loop would either skip or stutter there, since
+       SMIL jumps straight from the last keyframe back to the first with no
+       easing of its own. Red's rise is also deliberately steeper than its
+       fall so it still reaches 0 by t=0 precisely rather than trailing into
+       the seam from the wrong side.
+
+       An earlier version of this animation tried to add a dark pause by
+       stretching keyTimes over the tail instead of changing values, which
+       only slowed red's ramp-up: red sat visibly glowing through the
+       gap instead of waiting in the dark. That approach is gone now that
+       the hold is zero, but the lesson stands for next time: pacing and
+       value shape are separate knobs, and only changing values moves a
+       dot's actual brightness, not just when it's evaluated.
+
+       21 evenly spaced keyframes per dot: SMIL only interpolates linearly
+       between explicit values, so the curve needs this many points to read
+       as smooth rather than faceted. -->
+  <g>
+    <g opacity="0">
+      <circle cx="126" cy="148" r="126" fill="url(#glow-red)"/>
+      <circle cx="126" cy="148" r="96" fill="#ff6a70" opacity="0.3"/>
+      <animate attributeName="opacity" dur="3.617s" repeatCount="indefinite"
+        keyTimes="0;0.05;0.1;0.15;0.2;0.25;0.3;0.35;0.4;0.45;0.5;0.55;0.6;0.65;0.7;0.75;0.8;0.85;0.9;0.95;1"
+        values="0;0.273;0.794;0.998;0.905;0.691;0.422;0.175;0.024;0;0;0;0;0;0;0;0;0;0;0;0"/>
+    </g>
+
+    <g opacity="0">
+      <circle cx="348" cy="148" r="126" fill="url(#glow-paper)"/>
+      <circle cx="348" cy="148" r="96" fill="#fff7e5" opacity="0.29"/>
+      <animate attributeName="opacity" dur="3.617s" repeatCount="indefinite"
+        keyTimes="0;0.05;0.1;0.15;0.2;0.25;0.3;0.35;0.4;0.45;0.5;0.55;0.6;0.65;0.7;0.75;0.8;0.85;0.9;0.95;1"
+        values="0;0.014;0.146;0.383;0.655;0.88;0.994;0.962;0.794;0.539;0.273;0.074;0;0;0;0;0;0;0;0;0"/>
+    </g>
+
+    <g opacity="0">
+      <circle cx="570" cy="148" r="126" fill="url(#glow-green)"/>
+      <circle cx="570" cy="148" r="96" fill="#69cf85" opacity="0.29"/>
+      <animate attributeName="opacity" dur="3.617s" repeatCount="indefinite"
+        keyTimes="0;0.05;0.1;0.15;0.2;0.25;0.3;0.35;0.4;0.45;0.5;0.55;0.6;0.65;0.7;0.75;0.8;0.85;0.9;0.95;1"
+        values="0;0;0;0;0;0.074;0.273;0.539;0.794;0.962;0.994;0.88;0.655;0.383;0.146;0.014;0;0;0;0;0"/>
+    </g>
+
+    <g opacity="0">
+      <circle cx="792" cy="148" r="126" fill="url(#glow-orange)"/>
+      <circle cx="792" cy="148" r="96" fill="#ffbd4d" opacity="0.34"/>
+      <animate attributeName="opacity" dur="3.617s" repeatCount="indefinite"
+        keyTimes="0;0.05;0.1;0.15;0.2;0.25;0.3;0.35;0.4;0.45;0.5;0.55;0.6;0.65;0.7;0.75;0.8;0.85;0.9;0.95;1"
+        values="0;0;0;0;0;0;0;0;0.024;0.175;0.422;0.691;0.905;0.998;0.946;0.761;0.5;0.239;0.054;0;0"/>
+    </g>
   </g>
 </svg>

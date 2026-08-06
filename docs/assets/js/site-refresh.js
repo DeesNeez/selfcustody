@@ -20,7 +20,7 @@
   const hero = (eyebrow, title, lead, actions = "", media = null) => {
     const backgroundMedia = Boolean(media?.background);
     const copy = `
-      <span class="sc-eyebrow">${eyebrow}</span>
+      ${eyebrow ? `<span class="sc-eyebrow">${eyebrow}</span>` : ""}
       <h1>${title}</h1>
       <p class="sc-lead">${lead}</p>
       ${actions ? `<div class="sc-hero-actions">${actions}</div>` : ""}`;
@@ -108,12 +108,12 @@
       description: "Clear, practical guidance for learning how to buy bitcoin, choose a wallet, protect recovery material, and withdraw to self custody.",
       content: `
         ${hero(
-          "Bitcoin self-custody, explained",
+          "",
           `<span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-exit">EXIT</span><span class="sc-outlined-word sc-hero-fiat" data-text="FIAT"><span class="sc-word-fill">FIAT</span></span></span>
            <span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-enter">ENTER</span><span class="sc-outlined-word sc-hero-command-destination" data-text="BITCOIN"><span class="sc-word-fill">BITCOIN</span></span></span>`,
           "Your keys, your bitcoin. Learn how to buy it, move it, and<br class=\"sc-tablet-lead-break\"> protect it without turning security into a full time job.",
-          `<a class="sc-btn sc-btn-primary" href="guides.html">Explore Guides <i class="bi bi-arrow-right"></i></a>
-           <a class="sc-btn sc-btn-ghost" href="contact.html">Get Help</a>`,
+          `<a class="sc-btn sc-btn-primary" href="guides.html"><span>Explore Guides</span></a>
+           <a class="sc-btn sc-btn-ghost" href="contact.html"><span>Get Help</span></a>`,
           {
             src: "assets/img/cash-vortex/exchanges-cash-vortex-final3.mp4",
             type: "video/mp4",
@@ -193,7 +193,7 @@
           <div class="container">
             <div class="row align-items-center">
               <div class="col-md-8"><h2>Ready to build your setup?</h2><p>Use the guides first, then compare tools once you know what problem each tool needs to solve.</p></div>
-              <div class="col-md-4 text-md-end"><a class="sc-btn" href="guides.html">Open the guides</a></div>
+              <div class="col-md-4 text-md-end"><a class="sc-btn" href="guides.html"><span>Open the guides</span></a></div>
             </div>
           </div>
         </section>`
@@ -972,7 +972,7 @@
     const links = routes.map(([key, label, href]) => {
       const active = key === pageKey ? "active" : "";
       const contactClass = key === "contact" ? "sc-contact-link" : "";
-      return `<li><a class="${active} ${contactClass}" href="${href}">${label}</a></li>`;
+      return `<li><a class="${active} ${contactClass}" href="${href}"><span>${label}</span></a></li>`;
     }).join("");
 
     return `
@@ -1151,12 +1151,72 @@
 
   const nav = document.getElementById("navbar");
   const toggle = document.querySelector(".mobile-nav-toggle");
+
+  /**
+   * Three classes, not two -- .navbar-mobile (structure), .sc-nav-animating
+   * (arms the transition), .sc-nav-visible (the actual open/closed target).
+   *
+   * An earlier version used just .navbar-mobile + .sc-nav-visible, with the
+   * transition declared directly on .navbar-mobile. That put the CSS
+   * transition live from the instant .navbar-mobile landed -- which meant
+   * it also caught the very first opacity jump, from the no-class default
+   * down to 0, and tried to animate *that*. A couple of frames later
+   * .sc-nav-visible retargeted it back up to 1, overriding the still-barely-
+   * moved fade-to-0 before it had gone anywhere -- so the menu never
+   * visibly left opacity 1 and just snapped open. Splitting "the transition
+   * is armed" from "the target is visible" into two separate classes, added
+   * on two separate frames, gives the browser an actual committed opacity:0
+   * frame to interpolate away from.
+   *
+   * Two rAFs, not one, for the .sc-nav-animating add: a single rAF can
+   * still land before the browser's next paint, coalescing the opacity:0
+   * (structural) and transition-now-armed styles into one frame with
+   * nothing to interpolate from.
+   *
+   * Closing removes .sc-nav-visible first (transition is still armed, so
+   * the fade-out plays), then strips .sc-nav-animating and .navbar-mobile
+   * together once NAV_TRANSITION_MS has passed -- doing that immediately
+   * would instantly display:none the menu and cut the animation off after
+   * one frame. NAV_TRANSITION_MS must match the CSS transition duration on
+   * .navbar-mobile.sc-nav-animating in site-refresh.css.
+   */
+  const NAV_TRANSITION_MS = 280;
+  let navCloseTimer = null;
+
+  const openNav = () => {
+    clearTimeout(navCloseTimer);
+    nav.classList.add("navbar-mobile");
+    document.body.classList.add("sc-nav-open");
+    toggle.classList.remove("bi-list");
+    toggle.classList.add("bi-x");
+    toggle.setAttribute("aria-label", "Close navigation");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        nav.classList.add("sc-nav-animating");
+        nav.classList.add("sc-nav-visible");
+      });
+    });
+  };
+
+  const closeNav = () => {
+    clearTimeout(navCloseTimer);
+    nav.classList.remove("sc-nav-visible");
+    toggle.classList.remove("bi-x");
+    toggle.classList.add("bi-list");
+    toggle.setAttribute("aria-label", "Open navigation");
+    navCloseTimer = setTimeout(() => {
+      nav.classList.remove("navbar-mobile", "sc-nav-animating");
+      document.body.classList.remove("sc-nav-open");
+      navCloseTimer = null;
+    }, NAV_TRANSITION_MS);
+  };
+
   const toggleNav = () => {
-    nav.classList.toggle("navbar-mobile");
-    toggle.classList.toggle("bi-list");
-    toggle.classList.toggle("bi-x");
-    document.body.classList.toggle("sc-nav-open", nav.classList.contains("navbar-mobile"));
-    toggle.setAttribute("aria-label", nav.classList.contains("navbar-mobile") ? "Close navigation" : "Open navigation");
+    if (nav.classList.contains("sc-nav-visible")) {
+      closeNav();
+    } else {
+      openNav();
+    }
   };
 
   toggle.addEventListener("click", toggleNav);
