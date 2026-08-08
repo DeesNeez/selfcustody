@@ -126,7 +126,7 @@
           "",
           `<span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-exit">EXIT</span><span class="sc-outlined-word sc-hero-fiat" data-text="FIAT"><span class="sc-word-fill">FIAT</span></span></span>
            <span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-enter">ENTER</span><span class="sc-outlined-word sc-hero-command-destination" data-text="BITCOIN"><span class="sc-word-fill">BITCOIN</span></span></span>`,
-          "Your keys, your bitcoin. Learn how to buy it, move it,<br class=\"sc-medium-lead-break\"> and<br class=\"sc-tablet-lead-break\"> protect it without turning security into a full time job.",
+          "<span class=\"sc-home-lead-statement\">Your keys, your bitcoin.</span><br class=\"sc-mobile-lead-break\"> Learn how to buy it, move it,<br class=\"sc-medium-lead-break\"> and<br class=\"sc-tablet-lead-break\"> protect it without turning security into a full time job.",
           `<a class="sc-btn sc-btn-primary" href="guides.html"><span>Explore Guides</span></a>
            <a class="sc-btn sc-btn-ghost" href="contact.html"><span>Get Help</span></a>`,
           {
@@ -1288,33 +1288,35 @@
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-section-head"><div class="sc-dash-section-title"><h2>THE Bitcoin Network</h2><span class="sc-dash-gears" aria-hidden="true"><i class="bi bi-gear-fill"></i><i class="bi bi-gear-fill"></i></span></div><p>Everything below is read live from public Bitcoin data sources and refreshes on its own. Nothing here is advice—it is the same public data your own node would show you.</p></div>
+            <div class="sc-section-head"><div class="sc-dash-section-title"><h2>THE Bitcoin Network</h2><span class="sc-dash-gears" aria-hidden="true"><i class="bi bi-gear-fill"></i><i class="bi bi-gear-fill"></i></span></div><p>A live view of Bitcoin's network, supply, fees, and mining activity.</p></div>
 
-            <div class="row g-4">
-              <div class="col-md-6 col-xl-4">
+            <div class="row g-4 sc-dash-metrics-grid">
+              <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-currency-bitcoin"></i></span><h3 id="dash-sats-title">Sats per dollar</h3><button type="button" class="sc-swap" id="dash-sats-swap" title="Swap units" aria-label="Swap between sats per dollar and dollars per sat"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button></div>
                     <p class="sc-dash-value" id="dash-sats">—</p>
-                    <p class="sc-dash-note" id="dash-sats-note">How many satoshis one dollar buys.</p>
-                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-sats-bar"></span></div>
+                    <div class="sc-dash-parity">
+                      <span>Sat-cent parity</span>
+                      <div class="sc-dash-bar" aria-hidden="true"><span id="dash-sats-bar"></span></div>
+                      <strong id="dash-sats-parity">—%</strong>
+                    </div>
                   </div>
                 </article>
               </div>
 
-              <div class="col-md-6 col-xl-4">
+              <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-box"></i></span><h3>Block height</h3></div>
                     <p class="sc-dash-value" id="dash-height">—</p>
-                    <p class="sc-dash-note" id="dash-height-note">Blocks mined since the genesis block.</p>
-                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-block-bar"></span></div>
+                    <p class="sc-dash-note">Latest confirmed block</p>
                   </div>
                 </article>
               </div>
 
-              <div class="col-md-6 col-xl-4">
-                <article class="sc-card sc-dash-tile">
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile sc-dash-tile-fee">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-speedometer2"></i></span><h3>Lowest next-block fee</h3></div>
                     <p class="sc-dash-value" id="dash-fee">—</p>
@@ -1324,18 +1326,18 @@
                 </article>
               </div>
 
-              <div class="col-md-6 col-xl-4">
+              <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-cpu"></i></span><h3>Network hashrate</h3></div>
                     <p class="sc-dash-value" id="dash-hashrate">—</p>
-                    <p class="sc-dash-note" id="dash-difficulty">Total mining power securing the chain.</p>
-                    <div class="sc-dash-spark" id="dash-hash-spark" aria-hidden="true"></div>
+                    <p class="sc-dash-note">Mining power</p>
+                    <p class="sc-dash-detail"><span>Difficulty</span><strong id="dash-current-difficulty">—</strong></p>
                   </div>
                 </article>
               </div>
 
-              <div class="col-md-6 col-xl-4">
+              <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-arrow-repeat"></i></span><h3>Difficulty adjustment</h3></div>
@@ -1348,7 +1350,7 @@
                 </article>
               </div>
 
-              <div class="col-md-6 col-xl-4">
+              <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile sc-dash-tile-fng">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-emoji-neutral"></i></span><h3>Fear &amp; Greed</h3></div>
@@ -1379,7 +1381,7 @@
                 </article>
               </div>
 
-              <div class="col-md-6 col-xl-4">
+              <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-pie-chart-fill"></i></span><h3>Supply progress</h3></div>
@@ -1395,7 +1397,7 @@
                 </article>
               </div>
 
-              <div class="col-md-6 col-xl-4">
+              <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-hourglass-split"></i></span><h3>Halving countdown</h3></div>
@@ -1411,7 +1413,7 @@
                 </article>
               </div>
 
-              <div class="col-md-6 col-xl-4">
+              <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile sc-dash-tile-mempool">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-stack"></i></span><h3>Mempool backlog</h3></div>
@@ -1648,22 +1650,18 @@
       <div class="container">
         <div class="row g-4">
           <div class="col-lg-5">
-            <h3>Self Custody</h3>
+            <h3 class="sc-footer-brand"><img src="assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
             <p>Clear, practical Bitcoin self custody education. Learn the system, test the recovery, and keep control of the keys.</p>
           </div>
-          <div class="col-6 col-lg-2">
-            <h4>Learn</h4>
-            <ul class="sc-footer-links">
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="index.html">Home</a></li>
               <li><a href="guides.html">Guides</a></li>
               <li><a href="devices.html">Devices</a></li>
               <li><a href="software.html">Software</a></li>
               <li><a href="exchanges.html">Exchanges</a></li>
-            </ul>
-          </div>
-          <div class="col-6 col-lg-2">
-            <h4>Explore</h4>
-            <ul class="sc-footer-links">
-              <li><a href="coinkite.html">Coinkite products</a></li>
+              <li><a href="dashboard.html">Dashboard</a></li>
               <li><a href="contact.html">Get Help</a></li>
             </ul>
           </div>
@@ -1677,7 +1675,7 @@
         </div>
         <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
           <span>© ${currentYear} SelfCustody.ca</span>
-          <span>Ontario, Canada · <a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
         </div>
       </div>
     </footer>`;
@@ -2850,8 +2848,8 @@
       const sats = $("dash-sats");
       if (sats && latest[cur]) {
         const perDollar = 100000000 / latest[cur];
+        const satCentParity = latest[cur] / 1000000 * 100;
         const title = $("dash-sats-title");
-        const note = $("dash-sats-note");
 
         if (satsInverted) {
           /* The same relationship read the other way: what a single satoshi
@@ -2859,19 +2857,18 @@
              of a cent and rounding to cents would just show $0.00. */
           if (title) title.textContent = "Dollars per sat";
           animateValue(sats, latest[cur] / 100000000, v => "$" + v.toFixed(6));
-          if (note) note.textContent = "What one satoshi costs in " + cur + " right now.";
         } else {
           if (title) title.textContent = "Sats per dollar";
           animateValue(sats, perDollar, v => fmtInt(v) + " sats");
-          if (note) note.textContent = "What one " + cur + " dollar buys right now.";
         }
 
         const bar = $("dash-sats-bar");
-        /* Scaled against 10k sats/dollar so the fill reads as "how much a
-           dollar still buys" rather than an arbitrary full bar. Driven by
-           sats-per-dollar in both directions -- it is the same relationship,
-           so the bar should not jump when the unit is flipped. */
-        if (bar) bar.style.width = Math.min(perDollar / 10000 * 100, 100) + "%";
+        const parity = $("dash-sats-parity");
+        /* One sat equalling one cent means a 1,000,000-unit BTC price in the
+           selected currency. This gives the bar a stable, understandable
+           milestone and does not change when the displayed units are flipped. */
+        if (bar) bar.style.width = Math.min(satCentParity, 100) + "%";
+        if (parity) parity.textContent = satCentParity.toFixed(1) + "%";
       }
     };
 
@@ -3081,9 +3078,9 @@
       const tiers = $("dash-fee-tiers");
       if (tiers) {
         tiers.innerHTML =
-          "<span><em>" + fmtFeeNumber(f.hourFee) + "</em>Low priority</span>" +
-          "<span><em>" + fmtFeeNumber(f.halfHourFee) + "</em>Medium priority</span>" +
-          "<span><em>" + fmtFeeNumber(f.fastestFee) + "</em>High priority</span>";
+          "<span><span class=\"sc-dash-fee-label\">Low</span><em>" + fmtFeeRate(f.hourFee) + "</em></span>" +
+          "<span><span class=\"sc-dash-fee-label\">Medium</span><em>" + fmtFeeRate(f.halfHourFee) + "</em></span>" +
+          "<span><span class=\"sc-dash-fee-label\">High</span><em>" + fmtFeeRate(f.fastestFee) + "</em></span>";
       }
     };
 
@@ -3219,12 +3216,6 @@
         if (Number.isFinite(height)) {
           animateValue($("dash-height"), height, v => fmtInt(v));
           paintSupplyAndHalving(height);
-          const HALVING = 1050000;
-          const left = HALVING - height;
-          const note = $("dash-height-note");
-          if (note && left > 0) note.textContent = fmtInt(left) + " blocks to the next halving.";
-          const bar = $("dash-block-bar");
-          if (bar) bar.style.width = (((height % 210000) / 210000) * 100).toFixed(1) + "%";
         }
       } catch (err) { /* tile keeps its placeholder */ }
 
@@ -3384,6 +3375,9 @@
         const m = await fetchJSON("https://mempool.space/api/v1/mining/hashrate/1m");
         if (m && m.currentHashrate) {
           animateValue($("dash-hashrate"), m.currentHashrate / 1e18, v => v.toFixed(0) + " EH/s");
+        }
+        if (m && Number.isFinite(Number(m.currentDifficulty))) {
+          animateValue($("dash-current-difficulty"), Number(m.currentDifficulty) / 1e12, v => v.toFixed(2) + "T");
         }
         const spark = $("dash-hash-spark");
         if (spark && Array.isArray(m.hashrates) && m.hashrates.length > 1) {
