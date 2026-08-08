@@ -6,6 +6,10 @@
   --sc-ink: #ece7e0;
   --sc-ink-soft: #cfc9bd;
   --sc-paper: #1a1918;
+  /* Near-black stage behind the dashboard's blocks strip and price/chart
+     panel. Warm-tinted rather than pure #000 so it sits in the same family as
+     --sc-paper and the panels layered on top of it. */
+  --sc-dash-black: #0b0a09;
   --sc-wash: #211f1c;
   --sc-line: #6e695e;
   --sc-muted: #a49e93;
@@ -1112,8 +1116,20 @@ body[data-page="home"] .sc-hero .sc-lead {
   text-shadow: 0 2px 7px rgba(0, 0, 0, 0.88);
 }
 
-.sc-tablet-lead-break {
+.sc-tablet-lead-break,
+.sc-medium-lead-break {
   display: none;
+}
+
+@media (min-width: 992px) and (max-width: 1100px) {
+  body[data-page="home"] .sc-hero-background-media {
+    top: 72px;
+  }
+
+  .sc-medium-lead-break {
+    display: block;
+  }
+
 }
 
 .sc-hero-actions {
@@ -2482,6 +2498,24 @@ body.site-refresh .sc-cta .sc-btn:hover {
 }
 
 @media (max-width: 575px) {
+  body.site-refresh[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
+    transform: translateY(-28px);
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero h1 {
+    width: max-content;
+    max-width: 100%;
+    font-size: clamp(2.3rem, 9.8vw, 2.65rem);
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero .sc-lead {
+    max-width: 340px;
+    margin-top: calc(clamp(300px, 82vw, 340px) + 9px);
+    margin-right: 0;
+    margin-left: 0;
+    text-align: left;
+  }
+
   body.site-refresh .sc-hero-actions {
     width: 100%;
     flex-direction: column;
@@ -2491,6 +2525,55 @@ body.site-refresh .sc-cta .sc-btn:hover {
   body.site-refresh .sc-hero-actions .sc-btn,
   body.site-refresh .sc-cta .sc-btn {
     width: 100%;
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero-actions {
+    width: max-content;
+    max-width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin: 20px auto 16px;
+    padding: 4px;
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero-actions .sc-btn {
+    width: auto;
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    letter-spacing: 0.015em;
+  }
+
+  /* Pull the cash-vortex environment up through the lead copy, then leave the
+     compact action row below it. A taller box plus cover-fit gives the art
+     real vertical presence instead of confining it to a shallow 3:2 strip;
+     the figure's existing top vignette preserves paragraph contrast. */
+  body.site-refresh[data-page="home"] .sc-hero.has-background-media {
+    min-height: calc(clamp(300px, 82vw, 340px) + 355px);
+    padding-bottom: 60px;
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero-background-media {
+    top: 188px;
+    left: -6%;
+    width: 112%;
+    height: clamp(300px, 82vw, 340px);
+    aspect-ratio: auto;
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero-background-media :is(img, video) {
+    object-fit: cover;
+    object-position: center;
+    transform: none;
+    transform-origin: center;
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero + .sc-section {
+    padding-top: 8px;
   }
 }
 
@@ -2717,26 +2800,75 @@ body.site-refresh .sc-cta .sc-btn:hover::after {
   overflow: hidden;
   padding: 132px 0 56px;
   isolation: isolate;
-  background: var(--sc-paper);
+  background: var(--sc-dash-black);
 }
 
+/* The blocks strip and the price/chart panel share one unbroken black canvas
+   -- no internal fades between them, so the two read as a single dark stage.
+   The only transition on the page happens where that stage ends, handled by
+   the vitals section below. */
 .sc-blocks-top {
-  padding: 104px 0 12px;
-  background: linear-gradient(180deg, var(--sc-wash) 0%, var(--sc-wash) 44%, #1e1c1a 100%);
+  padding: 92px 0 4px;
+  /* Contains the negative margins on .sc-blocks, which exist so the pending
+     block's glow has room to render. Without this the strip would be wider
+     than the viewport and the page would scroll sideways.
+
+     overflow-y MUST be stated explicitly. Left to its default, the axes get
+     paired up: a non-visible overflow-x forces the visible overflow-y to
+     match, so `overflow-x: clip` on its own computed to `hidden` on BOTH
+     axes and this section started clipping vertically -- which cut the
+     pending block's glow off at the bottom, where the mobile padding is 0.
+     `clip` + `visible` is an explicitly permitted pair and is honoured, so
+     spelling both out clips sideways only. */
+  overflow-x: clip;
+  overflow-y: visible;
+  background: var(--sc-dash-black);
 }
+
+/* Right-edge fade marking the strip as scrollable. JS adds .has-more-blocks
+   while content remains past the edge, so it clears at the end of the row and
+   never shows when the strip fits. ::after is spoken for -- it carries the
+   phone aura -- and this has to clear .sc-blocks-container's z-index 2. */
+.sc-blocks-top {
+  position: relative;
+}
+
+.sc-blocks-top::before {
+  content: "";
+  position: absolute;
+  /* Set from the measured card band -- see measureBlocksFade(). The fallbacks
+     keep the fade off the neighbouring content if that never runs. */
+  top: var(--sc-strip-fade-top, 0px);
+  right: 0;
+  bottom: var(--sc-strip-fade-bottom, 100%);
+  z-index: 3;
+  width: 56px;
+  background: linear-gradient(to right, rgba(8, 9, 11, 0), var(--sc-dash-black) 82%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sc-blocks-top.has-more-blocks::before { opacity: 1; }
 
 .sc-blocks-top + .sc-dash-hero {
-  padding-top: 60px;
+  /* Most of the space under the strip lives here rather than in the stage's
+     own 4px bottom padding, so tightening the gap means trimming this. */
+  padding-top: 46px;
   padding-bottom: 36px;
-  background: linear-gradient(180deg, #1e1c1a 0%, var(--sc-paper) 150px, var(--sc-paper) 100%);
+  background: var(--sc-dash-black);
 }
 
+/* Where the black stage hands off to the ordinary page: fade up out of black
+   across the top of this section, then the existing settle into the wash at
+   the bottom. */
 body[data-page="dashboard"] .sc-dash-hero + .sc-section {
   padding-top: 32px;
   padding-bottom: 52px;
   background: linear-gradient(
     180deg,
-    var(--sc-paper) 0%,
+    var(--sc-dash-black) 0%,
+    var(--sc-paper) 190px,
     var(--sc-paper) calc(100% - 140px),
     var(--sc-wash) 100%
   );
@@ -2772,6 +2904,9 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-dash-priceblock {
   position: relative;
+  /* Above the blocks stage, so the pending glow bleeding down from it passes
+     behind the price and controls rather than washing over them. */
+  z-index: 2;
   display: flex;
   min-height: 145px;
   flex-wrap: wrap;
@@ -2782,20 +2917,29 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 }
 
 @media (min-width: 768px) {
-  /* Lift the two headline signals into the open space below the blocks while
-     preserving the price block's flow height. Controls and chart therefore
-  stay pinned to their established positions. */
-  .sc-dash-priceblock { height: 145px; }
-  .sc-dash-price-main,
-  .sc-dash-status,
-  .sc-dash-controls { transform: translateY(-32px); }
-  .sc-dash-price-sub { transform: none; }
+  /* Lifts the headline row into the open space below the blocks strip.
+
+     This used to be a fixed `height: 145px` plus `translateY(-32px)` on the
+     children. Both halves of that were fragile: a transform is not part of
+     layout, so the block still reserved its untransformed box, and the fixed
+     height could not contain the content once the controls wrapped onto a
+     second line (181px of content in a 145px box). The overflow plus
+     `align-items: flex-end` pushed the range buttons ~40px down onto the
+     chart. A negative margin does the same lift but inside layout, and
+     min-height sets the intended proportion without capping content, so the
+     controls always end above the chart no matter how the row wraps. */
+  .sc-dash-priceblock {
+    min-height: 145px;
+    margin-top: -32px;
+    margin-bottom: 14px;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
-  /* At the 768px edge the intrinsic text and control widths exceed the
-     Bootstrap container by a fraction of a pixel. Two fewer gap pixels keep
-     the controls on the price row instead of wrapping over the chart. */
+  /* Slightly tighter gap through the band where the price and the controls
+     only just fit on one row together. Purely spacing now -- wrapping here is
+     safe since the block sizes to its content, so this no longer has to
+     prevent the controls landing on the chart. */
   .sc-dash-priceblock { gap: 24px; }
 }
 
@@ -2970,6 +3114,8 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   outline-offset: 2px;
 }
 
+.sc-seg-ranges .sc-seg-btn { padding-inline: 12px; }
+
 /* Unit swap on the sats tile. */
 .sc-swap {
   display: grid;
@@ -3026,6 +3172,114 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 }
 
 .sc-chart.is-measuring .sc-chart-svg { cursor: ew-resize; }
+
+.sc-chart-zoom-tools {
+  position: absolute;
+  z-index: 4;
+  top: 13px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 30px;
+  pointer-events: none;
+}
+
+.sc-chart-zoom-hint {
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(8, 9, 11, 0.62);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.sc-chart:hover .sc-chart-zoom-hint,
+.sc-chart:focus-within .sc-chart-zoom-hint {
+  opacity: 1;
+  transform: none;
+}
+
+.sc-chart.is-zoomed .sc-chart-zoom-hint { display: none; }
+
+.sc-chart-zoom-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 138, 0, 0.38);
+  border-radius: 999px;
+  color: #ffd39a;
+  background: rgba(20, 13, 7, 0.88);
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.sc-chart-zoom-reset[hidden] { display: none; }
+
+.sc-chart-zoom-reset:hover { border-color: rgba(255, 138, 0, 0.72); color: #fff; }
+
+.sc-chart-zoom-reset:focus-visible {
+  outline: 2px solid var(--sc-orange);
+  outline-offset: 2px;
+}
+
+.sc-chart-zoom-pan {
+  width: clamp(140px, 23vw, 260px);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  cursor: ew-resize;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+
+.sc-chart-zoom-pan[hidden] { display: none; }
+
+.sc-chart-zoom-pan-track {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.38);
+}
+
+.sc-chart-zoom-pan-thumb {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  min-width: 18px;
+  border: 1px solid rgba(255, 172, 73, 0.92);
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f7931a, #ffb14f);
+  box-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+  transition: box-shadow 0.16s ease, filter 0.16s ease;
+}
+
+.sc-chart-zoom-pan:hover .sc-chart-zoom-pan-thumb,
+.sc-chart-zoom-pan:focus-visible .sc-chart-zoom-pan-thumb,
+.sc-chart-zoom-pan.is-dragging .sc-chart-zoom-pan-thumb {
+  filter: brightness(1.1);
+  box-shadow: 0 0 14px rgba(247, 147, 26, 0.48);
+}
+
+.sc-chart-zoom-pan:focus-visible {
+  outline: 2px solid var(--sc-orange);
+  outline-offset: 2px;
+  border-radius: 999px;
+}
 
 .sc-chart.is-measuring.is-gain .sc-chart-tip {
   border-color: rgba(53, 180, 138, 0.55);
@@ -3094,6 +3348,14 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
   pointer-events: none;
   white-space: nowrap;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.sc-chart-tip.is-fading {
+  opacity: 0;
+  transform: translateY(4px);
 }
 
 .sc-chart-tip strong {
@@ -3369,7 +3631,17 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* ---- latest blocks ---- */
 
-.sc-blocks-container { max-width: 1320px; }
+/* The pending block's glow overhangs the bottom of the stage. The hero below
+   is opaque, later in the DOM, and carries isolation:isolate -- so it painted
+   over that overhang and sheared the glow off on a hard horizontal line.
+   Lifting the strip alone (rather than the whole stage, whose opaque
+   background would then cover the price heading) lets the glow bleed into the
+   header. Phones already did this; it now applies at every width. */
+.sc-blocks-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1320px;
+}
 
 /* overflow-x:auto forces overflow-y to auto as well -- CSS won't leave one
    axis visible when the other scrolls -- so this box clips vertically
@@ -3377,12 +3649,24 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    the top. The padding buys room for the lift and its shadow inside the
    scroll box; the negative margins cancel that padding again so the section
    spacing around the strip is unchanged. */
+/* Horizontal padding and negative margin are deliberately equal and large:
+   they cancel out, so the first block still starts exactly where it would
+   with no padding at all, but the scroll box now has ~44px of room around
+   its contents. That matters because the pending block's breathing glow has
+   a 42px blur -- at the old 8px it was being sliced off, most visibly on the
+   left edge on mobile where the first block sits closest to the boundary.
+   .sc-blocks-top clips the resulting overhang so the page never scrolls
+   sideways. */
 .sc-blocks {
   display: flex;
   align-items: center;
   gap: 18px;
-  margin: -22px -8px -12px;
-  padding: 40px 8px 40px;
+  /* The scroller cannot opt out of vertical clipping: overflow-x:auto makes
+     overflow-y compute to auto too. Keep enough internal room for ordinary
+     card shadows; the larger phone aura is painted by .sc-blocks-top so it
+     is not trapped inside this scrolling box. */
+  margin: -38px -56px -28px;
+  padding: 56px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -3395,6 +3679,10 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     overflow: visible;
     transform: translateX(36px);
   }
+
+  /* The strip stops scrolling here, and the last-child mask below already
+     handles the far edge -- the scroll fade would stack on top of it. */
+  .sc-blocks-top::before { content: none; }
 
   /* The chain continues beyond the viewport: keep the near half legible,
      then let the far-right block dissolve instead of ending on a hard edge. */
@@ -3429,6 +3717,14 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* The confirm wash is an absolutely positioned ::after, which would otherwise
+   paint over the card's text. Lifting the real children above it keeps the
+   labels crisp while the colour crossfades behind them. */
+.sc-block > * {
+  position: relative;
+  z-index: 1;
+}
+
 .site-refresh a.sc-block:hover,
 .site-refresh a.sc-block:focus-visible {
   color: inherit;
@@ -3461,6 +3757,14 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-blocks.is-ready .sc-block-confirmed:not(.is-newest) { animation: none; }
 
+/* renderStrip() rebuilds the whole strip on every poll, not just when a block
+   lands. Without this the pending card replayed its slide-up entrance each
+   time -- a card twitching upward every few seconds while nothing around it
+   moved. Keep the pulse, drop the entrance. */
+.sc-blocks.is-ready .sc-block-pending {
+  animation: sc-pending-logo-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite;
+}
+
 .sc-blocks.is-confirming .sc-block-pending {
   z-index: 3;
   animation: sc-block-confirm 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -3482,18 +3786,78 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   animation: sc-connector-sweep 0.48s ease-out both;
 }
 
-.sc-block-pending.is-mined {
-  border-color: rgba(111, 216, 178, 0.92);
+/* The mined green rides on an overlay's opacity rather than on the card's own
+   background. Chrome will not interpolate background-image between two
+   gradients even when their structure matches exactly -- it jumps to the end
+   value on the first frame -- and that jump was the blunt moment mid-flight.
+   Opacity always crossfades. The dark bottom layer flattens the orange
+   underneath so the result reads green rather than a muddy blend. */
+.sc-block-pending::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background:
-    radial-gradient(circle at 25% 18%, rgba(53, 180, 138, 0.25), transparent 44%),
-    linear-gradient(145deg, rgba(53, 180, 138, 0.12), rgba(255, 255, 255, 0.018));
+    radial-gradient(circle at 25% 18%, rgba(53, 180, 138, 0.34), transparent 46%),
+    linear-gradient(145deg, rgba(53, 180, 138, 0.26), rgba(35, 140, 105, 0.12) 72%, rgba(255, 255, 255, 0.02)),
+    linear-gradient(0deg, rgba(10, 11, 13, 0.72), rgba(10, 11, 13, 0.72));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+.sc-block-pending.is-mined { border-color: rgba(111, 216, 178, 0.92); }
+
+.sc-block-pending.is-mined::after { opacity: 1; }
 
 .sc-block-pending.is-mined .sc-block-kicker,
 .sc-block-pending.is-mined .sc-block-age { color: #6fd8b2; }
 
 .sc-block-confirmed.is-newest {
   animation: sc-new-block-land 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* The strip is rebuilt from scratch the moment the flight ends, which threw
+   the mined card's green away in a single frame. The landed card re-paints
+   that same wash and dissolves it, so the swap reads as one continuous cool
+   down rather than a cut. */
+.sc-block-confirmed.is-newest::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 25% 18%, rgba(53, 180, 138, 0.34), transparent 46%),
+    linear-gradient(145deg, rgba(53, 180, 138, 0.26), rgba(35, 140, 105, 0.12) 72%, rgba(255, 255, 255, 0.02)),
+    linear-gradient(0deg, rgba(10, 11, 13, 0.72), rgba(10, 11, 13, 0.72));
+  pointer-events: none;
+  animation: sc-new-block-cool 1.5s ease-in-out both;
+}
+
+.sc-block-confirmed.is-newest .sc-block-kicker {
+  animation: sc-new-block-kicker 1.5s ease-in-out both;
+}
+
+.sc-block-confirmed.is-newest .sc-block-age {
+  animation: sc-new-block-age 1.5s ease-in-out both;
+}
+
+/* Each holds the arrival colour through the card's landing motion, then cools
+   on an even curve. On the easing used for the movement the green was 40% gone
+   within 120ms, which read as a flicker rather than a settle. */
+@keyframes sc-new-block-cool {
+  0%, 22% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes sc-new-block-kicker {
+  0%, 22% { color: #6fd8b2; }
+  100% { color: var(--sc-muted); }
+}
+
+@keyframes sc-new-block-age {
+  0%, 22% { color: #6fd8b2; }
+  100% { color: var(--sc-orange); }
 }
 
 @keyframes sc-block-confirm {
@@ -3593,6 +3957,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  transition: color 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sc-block-pending .sc-block-kicker { color: #ffbd4d; }
@@ -3629,7 +3994,9 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   text-decoration: none;
 }
 
-.sc-block:hover .sc-block-height,
+/* Hover deliberately carries no underline -- the card's border and shadow
+   lift is the affordance. Kept for keyboard focus, where it reinforces the
+   outline. */
 .sc-block:focus-visible .sc-block-height {
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -3645,6 +4012,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  transition: color 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sc-block-age .sc-fee-unit {
@@ -3671,38 +4039,128 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   white-space: nowrap;
 }
 
+@keyframes sc-mobile-pending-aura {
+  0%, 50%, 100% { opacity: 0.56; transform: scale(0.97); }
+  7.5%, 22.5%, 57.5%, 72.5% { opacity: 0.76; transform: scale(1); }
+  15%, 65% { opacity: 1; transform: scale(1.04); }
+  32.5%, 47.5%, 82.5%, 97.5% { opacity: 0.48; transform: scale(0.96); }
+  40%, 90% { opacity: 0.4; transform: scale(0.94); }
+}
+
+@keyframes sc-pending-mobile-card-pulse {
+  0%, 50%, 100% { box-shadow: 0 0 0 1px rgba(255, 153, 0, 0.24), 0 0 12px rgba(255, 153, 0, 0.2); }
+  7.5%, 22.5%, 57.5%, 72.5% { box-shadow: 0 0 0 1px rgba(255, 174, 54, 0.34), 0 0 16px rgba(255, 153, 0, 0.27); }
+  15%, 65% { box-shadow: 0 0 0 1px rgba(255, 189, 77, 0.5), 0 0 20px rgba(255, 153, 0, 0.34); }
+  32.5%, 47.5%, 82.5%, 97.5% { box-shadow: 0 0 0 1px rgba(255, 153, 0, 0.2), 0 0 10px rgba(255, 153, 0, 0.17); }
+  40%, 90% { box-shadow: 0 0 0 1px rgba(255, 153, 0, 0.15), 0 0 8px rgba(255, 153, 0, 0.14); }
+}
+
 @media (max-width: 767px) {
-  .sc-blocks-top { padding: 88px 0 0; }
-  .sc-blocks-top + .sc-dash-hero { padding-top: 30px; }
-  .sc-dash-hero { padding: 112px 0 40px; }
-  .sc-blocks { gap: 13px; }
-  .sc-block {
-    width: 126px;
-    min-height: 160px;
-    flex-basis: 126px;
-    padding: 11px 9px;
-    border-radius: 9px;
+  /* On phones, paint the broad glow outside the horizontal scroller. This
+     layer can continue beneath the section boundary and softly wrap into the
+     Bitcoin price heading without being cut by overflow-x:auto. */
+  .sc-blocks-top {
+    position: relative;
+    padding: 64px 0 0;
   }
-  .sc-block-pending { width: 134px; flex-basis: 134px; }
-  .sc-block-connector { flex-basis: 18px; }
-  .sc-block-kicker { gap: 5px; margin-bottom: 9px; font-size: 0.6rem; }
-  .sc-block-height { font-size: 1.05rem; }
-  .sc-block-age { padding-bottom: 9px; font-size: 0.68rem; }
-  .sc-block-meta { gap: 3px; }
-  .sc-block-meta > div { gap: 7px; }
-  .sc-block-meta dt { font-size: 0.67rem; }
-  .sc-block-meta dd { font-size: 0.69rem; }
-  .sc-block-lowest dd { font-size: 0.6rem; }
+  .sc-blocks-top::after {
+    position: absolute;
+    z-index: 1;
+    top: 34px;
+    /* Offset rather than translated: the aura's keyframes already own
+       `transform` for the pulse, so a transform here would be overwritten. */
+    left: calc(0px - var(--sc-blocks-scroll, 0px));
+    width: 205px;
+    height: 255px;
+    background: radial-gradient(ellipse at 47% 48%, rgba(255, 153, 0, 0.31) 0%, rgba(255, 153, 0, 0.18) 36%, rgba(255, 153, 0, 0.075) 56%, transparent 76%);
+    content: "";
+    transform-origin: 47% 48%;
+    animation: sc-mobile-pending-aura 3.617s linear var(--sc-logo-phase, 0s) infinite;
+    pointer-events: none;
+  }
+  .sc-blocks-top + .sc-dash-hero { padding-top: 10px; }
+  .sc-dash-hero { padding: 112px 0 40px; }
+  /* The outer strip clips horizontal overflow to prevent page-wide scroll.
+     At phone widths the standard container gutter left the pending card only
+     12px from that clip edge, so its 52px pulse ended on a hard vertical
+     line. Keep the scroller's clipping-safe padding, but use 24px more on
+     the leading side: at 375px this places the card at 36px, where the glow
+     has faded naturally, while the first confirmed block still fits. */
+  .sc-blocks { gap: 11px; padding-left: 80px; }
+  .sc-block {
+    width: 116px;
+    min-height: 148px;
+    flex-basis: 116px;
+    padding: 9px 7px;
+    border-radius: 8px;
+  }
+  .sc-block-pending {
+    width: 122px;
+    flex-basis: 122px;
+    animation: sc-block-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both, sc-pending-mobile-card-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite;
+  }
+  .sc-block-connector { flex-basis: 16px; }
+  .sc-block-kicker { gap: 4px; margin-bottom: 7px; font-size: 0.56rem; }
+  .sc-block-height { font-size: 0.98rem; }
+  .sc-block-age { padding-bottom: 7px; font-size: 0.64rem; }
+  .sc-block-meta { gap: 2px; }
+  .sc-block-meta > div { gap: 5px; }
+  .sc-block-meta dt { font-size: 0.63rem; }
+  .sc-block-meta dd { font-size: 0.65rem; }
+  .sc-block-lowest dd { font-size: 0.57rem; }
+  .sc-blocks.is-ready .sc-block-pending {
+    animation: sc-pending-mobile-card-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite;
+  }
   .sc-blocks.is-confirming .sc-block-pending { animation-name: sc-block-confirm-mobile; }
   .sc-blocks.is-confirming .sc-block-confirmed { animation-name: sc-block-shift-right-mobile; }
   .sc-blocks.is-confirming .sc-block-confirmed:last-child { animation-name: sc-block-exit-right-mobile; }
-  .sc-dash-priceblock { align-items: flex-start; margin-bottom: 10px; }
-  .sc-dash-status { position: static; order: 2; }
-  .sc-dash-controls { order: 3; }
-  .sc-dash-controls { width: 100%; }
-  .sc-seg { flex: 1; justify-content: center; }
-  .sc-seg-btn { flex: 1; padding: 8px 10px; }
+  .sc-dash-priceblock {
+    display: flex;
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .sc-dash-price-main { width: 100%; min-width: 0; }
+  .sc-dash-price-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .sc-dash-status {
+    position: static;
+    flex: 0 0 auto;
+    gap: 6px;
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .sc-dash-status .sc-live-dot { width: 7px; height: 7px; }
+  .sc-dash-controls { width: 100%; gap: 5px; }
+  .sc-seg { flex: 0 0 100%; width: 100%; justify-content: center; padding: 4px; }
+  /* The two rows stack directly on top of each other, so they have to share a
+     button height and type size or they read as two unrelated controls. */
+  .sc-seg-btn { flex: 1; padding: 8px 10px; font-size: 0.72rem; }
+  .sc-seg-ranges {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .sc-seg-ranges .sc-seg-btn {
+    min-width: 0;
+    padding-inline: 2px;
+  }
   .sc-chart { height: 290px; padding: 2px; }
+}
+
+@media (hover: none) {
+  .sc-chart-zoom-hint { display: none; }
+}
+
+@media (max-width: 575.98px) {
+  .sc-chart-zoom-tools { left: 10px; right: 10px; }
+  .sc-chart-zoom-pan { width: min(44vw, 170px); }
 }
 
 @keyframes sc-block-confirm-mobile {
@@ -3741,9 +4199,17 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   .sc-dash-spark span,
   .sc-pending-dot,
   .sc-block { animation: none; }
+  /* Outranks .sc-block above, so the pulse needs silencing by name. */
+  .sc-blocks.is-ready .sc-block-pending { animation: none; }
+  .sc-blocks-top::after { animation: none; }
+  .sc-block-confirmed.is-newest::after { animation: none; opacity: 0; }
+  .sc-block-confirmed.is-newest .sc-block-kicker,
+  .sc-block-confirmed.is-newest .sc-block-age { animation: none; }
   #dash-fng-needle,
   #dash-fng-arc,
   .sc-seg-thumb,
   .sc-swap,
-  .sc-dash-bar > span { transition: none; }
+  .sc-dash-bar > span,
+  .sc-block-kicker,
+  .sc-block-age { transition: none; }
 }

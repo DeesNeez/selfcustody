@@ -126,7 +126,7 @@
           "",
           `<span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-exit">EXIT</span><span class="sc-outlined-word sc-hero-fiat" data-text="FIAT"><span class="sc-word-fill">FIAT</span></span></span>
            <span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-enter">ENTER</span><span class="sc-outlined-word sc-hero-command-destination" data-text="BITCOIN"><span class="sc-word-fill">BITCOIN</span></span></span>`,
-          "Your keys, your bitcoin. Learn how to buy it, move it, and<br class=\"sc-tablet-lead-break\"> protect it without turning security into a full time job.",
+          "Your keys, your bitcoin. Learn how to buy it, move it,<br class=\"sc-medium-lead-break\"> and<br class=\"sc-tablet-lead-break\"> protect it without turning security into a full time job.",
           `<a class="sc-btn sc-btn-primary" href="guides.html"><span>Explore Guides</span></a>
            <a class="sc-btn sc-btn-ghost" href="contact.html"><span>Get Help</span></a>`,
           {
@@ -1239,16 +1239,18 @@
           <div class="container">
             <div class="sc-dash-priceblock">
               <div class="sc-dash-price-main">
-                <p class="sc-dash-price-label">Bitcoin price</p>
+                <div class="sc-dash-price-heading">
+                  <p class="sc-dash-price-label">Bitcoin price</p>
+                  <div class="sc-dash-status" id="dash-status">
+                    <span class="sc-live-dot" aria-hidden="true"></span>
+                    <span id="dash-updated">Connecting to the network…</span>
+                  </div>
+                </div>
                 <p class="sc-dash-price" id="dash-price"><span class="sc-dash-skel sc-dash-skel-lg"></span></p>
                 <p class="sc-dash-price-sub">
                   <span id="dash-price-alt" class="sc-dash-price-alt"></span>
                   <span id="dash-change" class="sc-dash-change"></span>
                 </p>
-              </div>
-              <div class="sc-dash-status" id="dash-status">
-                <span class="sc-live-dot" aria-hidden="true"></span>
-                <span id="dash-updated">Connecting to the network…</span>
               </div>
               <div class="sc-dash-controls">
                 <div class="sc-seg" role="group" aria-label="Display currency">
@@ -1256,12 +1258,14 @@
                   <button type="button" class="sc-seg-btn is-active" data-cur="CAD">CAD</button>
                   <button type="button" class="sc-seg-btn" data-cur="USD">USD</button>
                 </div>
-                <div class="sc-seg" role="group" aria-label="Chart time range">
+                <div class="sc-seg sc-seg-ranges" role="group" aria-label="Chart time range">
                   <span class="sc-seg-thumb" aria-hidden="true"></span>
                   <button type="button" class="sc-seg-btn" data-range="24h">24H</button>
                   <button type="button" class="sc-seg-btn is-active" data-range="7d">7D</button>
                   <button type="button" class="sc-seg-btn" data-range="30d">30D</button>
                   <button type="button" class="sc-seg-btn" data-range="1y">1Y</button>
+                  <button type="button" class="sc-seg-btn" data-range="3y">3Y</button>
+                  <button type="button" class="sc-seg-btn" data-range="5y">5Y</button>
                   <button type="button" class="sc-seg-btn" data-range="all">ALL</button>
                 </div>
               </div>
@@ -1270,6 +1274,13 @@
             <div class="sc-chart" id="dash-chart">
               <svg class="sc-chart-svg" id="dash-chart-svg" aria-hidden="true" focusable="false"></svg>
               <div class="sc-chart-state is-loading" id="dash-chart-state"><span>Loading price history…</span></div>
+              <div class="sc-chart-zoom-tools">
+                <span class="sc-chart-zoom-hint">Scroll to zoom</span>
+                <button type="button" class="sc-chart-zoom-reset" id="dash-chart-zoom-reset" aria-label="Reset zoom" hidden><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                <div class="sc-chart-zoom-pan" id="dash-chart-zoom-pan" role="scrollbar" aria-label="Move through the zoomed date range" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0" hidden>
+                  <span class="sc-chart-zoom-pan-track" id="dash-chart-zoom-pan-track" aria-hidden="true"><span class="sc-chart-zoom-pan-thumb" id="dash-chart-zoom-pan-thumb"></span></span>
+                </div>
+              </div>
               <div class="sc-chart-tip" id="dash-chart-tip" hidden></div>
             </div>
           </div>
@@ -1977,6 +1988,7 @@
       history: [],       // [{ t, CAD, USD }] ascending
       currency: "CAD",
       range: "7d",
+      chartWindow: null,
       hover: null,
       tipHeight: null,
       blockTimers: [],
@@ -1994,6 +2006,8 @@
       "7d": 604800,
       "30d": 2592000,
       "1y": 31536000,
+      "3y": 94608000,
+      "5y": 157680000,
       "all": Infinity
     };
 
@@ -2021,6 +2035,23 @@
     const fmtFeeRate = value => {
       const formatted = fmtFeeNumber(value);
       return formatted === "—" ? formatted : formatted + " sat/vB";
+    };
+
+    /* feeRange arrives ascending and spans the projected block's cheapest to
+       dearest transaction, so the ends are the range the next block is being
+       built across. The low end keeps its decimals -- it is routinely under
+       1 sat/vB, where they carry the whole value -- while the top end is in
+       the tens or hundreds and rounds. Collapsed to one number when a single
+       entry or matching ends make a span meaningless. */
+    const fmtFeeSpan = range => {
+      if (!Array.isArray(range) || !range.length) return "—";
+      const lo = fmtFeeNumber(range[0]);
+      if (lo === "—") return "—";
+      if (range.length === 1) return lo;
+      const top = Number(range[range.length - 1]);
+      if (!Number.isFinite(top)) return "—";
+      const hi = fmtInt(top);
+      return lo === hi ? lo : lo + "–" + hi;
     };
 
     /* Maps 0..1 onto a red-yellow-green ramp: hue does the work while
@@ -2108,17 +2139,35 @@
     const svg = $("dash-chart-svg");
     const tip = $("dash-chart-tip");
     const chartState = $("dash-chart-state");
+    const zoomReset = $("dash-chart-zoom-reset");
+    const zoomPan = $("dash-chart-zoom-pan");
+    const zoomPanTrack = $("dash-chart-zoom-pan-track");
+    const zoomPanThumb = $("dash-chart-zoom-pan-thumb");
     const NS = "http://www.w3.org/2000/svg";
 
     let plot = null;   // geometry of the last render, for hit-testing
     let selAnchor = null;  // index a drag-to-measure started from, null when idle
+    let touchCrosshairPinned = false;
+    let touchTipFadeTimer = 0;
+    let touchTipHideTimer = 0;
+
+    const clearTouchTipTimers = () => {
+      clearTimeout(touchTipFadeTimer);
+      clearTimeout(touchTipHideTimer);
+      touchTipFadeTimer = 0;
+      touchTipHideTimer = 0;
+    };
 
     const visibleSeries = () => {
       const cutoff = RANGE_SECONDS[state.range];
       const now = Math.floor(Date.now() / 1000);
       const key = state.currency;
       let pts = state.history.filter(p => p[key] > 0);
-      if (cutoff !== Infinity) pts = pts.filter(p => p.t >= now - cutoff);
+      if (state.chartWindow) {
+        pts = pts.filter(p => p.t >= state.chartWindow.start && p.t <= state.chartWindow.end);
+      } else if (cutoff !== Infinity) {
+        pts = pts.filter(p => p.t >= now - cutoff);
+      }
       if (pts.length < 2) return pts;
       /* Long ranges hold tens of thousands of hourly points; drawing them all
          costs a lot of path data for sub-pixel detail nobody can see. Stride
@@ -2159,6 +2208,9 @@
     const renderChart = (animate = true) => {
       if (!svg || !chartEl) return;
       const pts = visibleSeries();
+      chartEl.classList.toggle("is-zoomed", Boolean(state.chartWindow));
+      if (zoomReset) zoomReset.hidden = !state.chartWindow;
+      if (zoomPan) zoomPan.hidden = !state.chartWindow;
       const w = chartEl.clientWidth;
       const h = chartEl.clientHeight;
       if (!w || !h) return;
@@ -2179,7 +2231,10 @@
       if (chartState) chartState.hidden = true;
 
       const key = state.currency;
-      const padL = 10, padR = 66, padT = 18, padB = 28;
+      /* The zoom controls live in a reserved strip rather than floating over
+         data. Once zoomed, push the plot down far enough that the Reset and
+         proportional pan bar can never cover the line or a hovered point. */
+      const padL = 10, padR = 66, padT = state.chartWindow ? 58 : 18, padB = 28;
       const plotW = w - padL - padR;
       const plotH = h - padT - padB;
 
@@ -2192,8 +2247,8 @@
       min = Math.max(0, min - span * 0.08);
       max += span * 0.08;
 
-      const minT = pts[0].t;
-      const maxT = pts[pts.length - 1].t;
+      const minT = state.chartWindow ? state.chartWindow.start : pts[0].t;
+      const maxT = state.chartWindow ? state.chartWindow.end : pts[pts.length - 1].t;
       const timeSpan = (maxT - minT) || 1;
       const x = i => padL + ((pts[i].t - minT) / timeSpan) * plotW;
       const y = v => padT + (1 - (v - min) / (max - min)) * plotH;
@@ -2248,17 +2303,17 @@
 
       // time labels along the bottom
       const labelCapacity = Math.max(3, Math.min(9, Math.floor(plotW / 130) + 1));
-      const labelTargets = { "24h": 7, "7d": 7, "30d": 8, "1y": 8, "all": 9 };
+      const labelTargets = { "24h": 7, "7d": 7, "30d": 8, "1y": 8, "3y": 9, "5y": 9, "all": 9 };
       const LABELS = Math.min(pts.length, labelCapacity, labelTargets[state.range]);
       for (let i = 0; i < LABELS; i++) {
         const ratio = i / (LABELS - 1);
         const d = new Date((minT + ratio * timeSpan) * 1000);
         let label;
-        if (state.range === "24h") {
+        if (timeSpan <= 172800) {
           label = d.toLocaleTimeString("en-CA", { hour: "numeric", hour12: true });
-        } else if (state.range === "all") {
+        } else if (timeSpan > 189216000) {
           label = d.toLocaleDateString("en-CA", { year: "numeric" });
-        } else if (state.range === "1y") {
+        } else if (timeSpan > 7776000) {
           label = d.toLocaleDateString("en-CA", { month: "short", year: "numeric" });
         } else {
           label = d.toLocaleDateString("en-CA", { month: "short", day: "numeric" });
@@ -2325,6 +2380,7 @@
       if (tip) tip.hidden = true;
       plot = { pts, key, x, y, minT, maxT, padL, padR, padT, padB, plotW, plotH, w, h, cross,
                stroke, sel: { g: sel, rect: selRect, line: selLine, dot: selDot } };
+      updateZoomPan();
     };
 
     const idxFromClientX = clientX => {
@@ -2357,6 +2413,8 @@
 
     const moveCrosshair = clientX => {
       if (!plot) return;
+      clearTouchTipTimers();
+      if (tip) tip.classList.remove("is-fading");
       const idx = idxFromClientX(clientX);
       const p = plot.pts[idx];
       const cx = plot.x(idx), cy = plot.y(p[plot.key]);
@@ -2380,9 +2438,22 @@
       }
     };
 
-    const hideCrosshair = () => {
+    const hideCrosshair = (fade = false) => {
+      touchCrosshairPinned = false;
+      clearTouchTipTimers();
       if (plot) plot.cross.setAttribute("opacity", "0");
-      if (tip) tip.hidden = true;
+      if (!tip) return;
+      if (fade && !reduceMotion && !tip.hidden) {
+        tip.classList.add("is-fading");
+        touchTipHideTimer = setTimeout(() => {
+          tip.hidden = true;
+          tip.classList.remove("is-fading");
+          touchTipHideTimer = 0;
+        }, 400);
+      } else {
+        tip.hidden = true;
+        tip.classList.remove("is-fading");
+      }
     };
 
     /* Press-and-drag measurement, the way the iOS Stocks chart works: the
@@ -2445,20 +2516,142 @@
       if (plot && plot.cross) plot.cross.lastChild.setAttribute("fill", plot.stroke);
       chartEl.classList.remove("is-measuring", "is-gain", "is-loss");
       updateChange();
-      if (canceled || (event && event.pointerType === "touch")) hideCrosshair();
-      else if (event && Number.isFinite(event.clientX)) moveCrosshair(event.clientX);
+      if (canceled) hideCrosshair();
+      else if (event && Number.isFinite(event.clientX)) {
+        moveCrosshair(event.clientX);
+        /* Touch and pen devices have no hover state. Keep the released point
+           briefly, restarting the timeout each time another point is used. */
+        touchCrosshairPinned = event.pointerType !== "mouse";
+        if (touchCrosshairPinned) {
+          touchTipFadeTimer = setTimeout(() => hideCrosshair(true), 4000);
+        }
+      }
     };
+
+    /* Bounds for the selected preset. Wheel zoom may move inside these
+       limits, but never expands beyond the range the visitor chose. */
+    const presetBounds = () => {
+      const key = state.currency;
+      const rows = state.history.filter(p => p[key] > 0);
+      if (rows.length < 2) return null;
+      const cutoff = RANGE_SECONDS[state.range];
+      const end = rows[rows.length - 1].t;
+      const start = cutoff === Infinity
+        ? rows[0].t
+        : Math.max(rows[0].t, Math.floor(Date.now() / 1000) - cutoff);
+      return { start, end };
+    };
+
+    const resetChartZoom = (animate = false) => {
+      if (!state.chartWindow) return;
+      state.chartWindow = null;
+      hideCrosshair();
+      renderChart(animate);
+      updateChange();
+    };
+
+    const updateZoomPan = () => {
+      if (!zoomPan || !zoomPanThumb || !state.chartWindow) return;
+      const bounds = presetBounds();
+      if (!bounds) return;
+      const baseSpan = bounds.end - bounds.start;
+      const viewSpan = state.chartWindow.end - state.chartWindow.start;
+      if (baseSpan <= 0 || viewSpan <= 0) return;
+
+      const available = Math.max(baseSpan - viewSpan, 1);
+      const position = Math.round(Math.min(Math.max((state.chartWindow.start - bounds.start) / available, 0), 1) * 100);
+      const trackWidth = zoomPanTrack ? zoomPanTrack.clientWidth : 0;
+      if (trackWidth) {
+        const visibleRatio = Math.min(Math.max(viewSpan / baseSpan, 0), 1);
+        const thumbWidth = Math.min(trackWidth, Math.max(18, trackWidth * visibleRatio));
+        zoomPanThumb.style.width = thumbWidth + "px";
+        zoomPanThumb.style.left = ((position / 100) * (trackWidth - thumbWidth)) + "px";
+      }
+      const date = seconds => new Date(seconds * 1000).toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" });
+      zoomPan.setAttribute("aria-valuenow", String(position));
+      zoomPan.setAttribute("aria-valuetext", date(state.chartWindow.start) + " to " + date(state.chartWindow.end));
+    };
+
+    const setChartPan = ratio => {
+      if (!state.chartWindow) return;
+      const bounds = presetBounds();
+      if (!bounds) return;
+      const viewSpan = state.chartWindow.end - state.chartWindow.start;
+      const available = Math.max((bounds.end - bounds.start) - viewSpan, 0);
+      const start = bounds.start + Math.min(Math.max(ratio, 0), 1) * available;
+      state.chartWindow = { start: Math.round(start), end: Math.round(start + viewSpan) };
+      hideCrosshair();
+      renderChart(false);
+      updateZoomPan();
+      updateChange();
+    };
+
+    const applyChartZoom = (deltaY, clientX) => {
+      if (!plot || !deltaY) return;
+      const bounds = presetBounds();
+      if (!bounds) return;
+
+      const baseSpan = bounds.end - bounds.start;
+      const currentStart = state.chartWindow ? state.chartWindow.start : plot.minT;
+      const currentEnd = state.chartWindow ? state.chartWindow.end : plot.maxT;
+      const currentSpan = currentEnd - currentStart;
+      if (baseSpan <= 0 || currentSpan <= 0) return;
+
+      const rect = svg.getBoundingClientRect();
+      const ratio = Math.min(Math.max((clientX - rect.left - plot.padL) / plot.plotW, 0), 1);
+      const anchor = currentStart + ratio * currentSpan;
+      const pointStep = currentSpan / Math.max(plot.pts.length - 1, 1);
+      const minSpan = Math.min(baseSpan, Math.max(21600, pointStep * 4));
+      const normalizedDelta = Math.min(Math.max(deltaY, -240), 240);
+      const factor = Math.exp(normalizedDelta * 0.0018);
+      const nextSpan = Math.min(baseSpan, Math.max(minSpan, currentSpan * factor));
+
+      if (nextSpan >= baseSpan * 0.995) {
+        resetChartZoom(false);
+        return;
+      }
+      if (Math.abs(nextSpan - currentSpan) < 1) return;
+
+      let start = anchor - ratio * nextSpan;
+      let end = start + nextSpan;
+      if (start < bounds.start) {
+        end += bounds.start - start;
+        start = bounds.start;
+      }
+      if (end > bounds.end) {
+        start -= end - bounds.end;
+        end = bounds.end;
+      }
+
+      state.chartWindow = { start: Math.round(start), end: Math.round(end) };
+      renderChart(false);
+      updateZoomPan();
+      updateChange();
+      moveCrosshair(clientX);
+    };
+
+    let zoomRaf = 0;
+    let zoomDelta = 0;
+    let zoomClientX = 0;
 
     if (svg) {
       svg.addEventListener("pointerdown", e => {
         if (!plot) return;
         if (e.pointerType === "mouse" && e.button !== 0) return;
+        touchCrosshairPinned = false;
         selAnchor = idxFromClientX(e.clientX);
         chartEl.classList.add("is-measuring");
         chartEl.classList.remove("is-gain", "is-loss");
         /* Capture so a drag that leaves the SVG keeps reporting, and so the
-           release is heard even if it happens outside the chart. */
-        if (svg.setPointerCapture) svg.setPointerCapture(e.pointerId);
+           release is heard even if it happens outside the chart. Guarded
+           because setPointerCapture throws if the pointer is already gone by
+           the time this runs -- without the guard that throw would skip the
+           two paint calls below and the band would not appear until the
+           first move. Losing capture only costs us drags that wander off the
+           element, so it is not worth failing the whole interaction over. */
+        try {
+          if (svg.setPointerCapture) svg.setPointerCapture(e.pointerId);
+        } catch (err) { /* keep measuring without capture */ }
         moveCrosshair(e.clientX);
         paintSelection(selAnchor);
         e.preventDefault();
@@ -2476,9 +2669,89 @@
       svg.addEventListener("pointerleave", () => {
         /* Mid-drag the pointer is captured, so a leave here is just the
            cursor wandering off an idle chart. */
-        if (selAnchor === null) hideCrosshair();
+        if (selAnchor === null && !touchCrosshairPinned) hideCrosshair();
+      });
+      svg.addEventListener("wheel", e => {
+        if (!plot) return;
+        const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? plot.h : 1;
+        zoomDelta += e.deltaY * unit;
+        zoomClientX = e.clientX;
+        if (!zoomRaf) {
+          zoomRaf = requestAnimationFrame(() => {
+            const delta = zoomDelta;
+            const clientX = zoomClientX;
+            zoomDelta = 0;
+            zoomRaf = 0;
+            applyChartZoom(delta, clientX);
+          });
+        }
+        e.preventDefault();
+      }, { passive: false });
+      svg.addEventListener("dblclick", e => {
+        resetChartZoom(false);
+        e.preventDefault();
       });
     }
+
+    if (zoomReset) zoomReset.addEventListener("click", () => resetChartZoom(false));
+
+    if (zoomPan && zoomPanTrack && zoomPanThumb) {
+      let panPointer = null;
+      let panGrabOffset = 0;
+
+      const panFromPointer = clientX => {
+        const trackRect = zoomPanTrack.getBoundingClientRect();
+        const thumbRect = zoomPanThumb.getBoundingClientRect();
+        const travel = Math.max(trackRect.width - thumbRect.width, 0);
+        if (!travel) return;
+        const left = Math.min(Math.max(clientX - trackRect.left - panGrabOffset, 0), travel);
+        setChartPan(left / travel);
+      };
+
+      zoomPan.addEventListener("pointerdown", e => {
+        if (!state.chartWindow || e.button !== 0) return;
+        const thumbRect = zoomPanThumb.getBoundingClientRect();
+        panPointer = e.pointerId;
+        panGrabOffset = e.target === zoomPanThumb
+          ? e.clientX - thumbRect.left
+          : thumbRect.width / 2;
+        try { zoomPan.setPointerCapture(e.pointerId); } catch (err) { /* continue without capture */ }
+        zoomPan.classList.add("is-dragging");
+        panFromPointer(e.clientX);
+        e.preventDefault();
+      });
+      zoomPan.addEventListener("pointermove", e => {
+        if (panPointer !== e.pointerId) return;
+        panFromPointer(e.clientX);
+        e.preventDefault();
+      });
+      const endPan = e => {
+        if (panPointer !== e.pointerId) return;
+        panPointer = null;
+        zoomPan.classList.remove("is-dragging");
+      };
+      zoomPan.addEventListener("pointerup", endPan);
+      zoomPan.addEventListener("pointercancel", endPan);
+      zoomPan.addEventListener("lostpointercapture", endPan);
+      zoomPan.addEventListener("keydown", e => {
+        if (!state.chartWindow) return;
+        const current = Number(zoomPan.getAttribute("aria-valuenow")) / 100;
+        let next = current;
+        if (e.key === "ArrowLeft") next -= 0.04;
+        else if (e.key === "ArrowRight") next += 0.04;
+        else if (e.key === "PageUp") next -= 0.2;
+        else if (e.key === "PageDown") next += 0.2;
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = 1;
+        else return;
+        setChartPan(next);
+        e.preventDefault();
+      });
+    }
+
+    document.addEventListener("pointerdown", e => {
+      if (touchCrosshairPinned && chartEl && !chartEl.contains(e.target)) hideCrosshair(true);
+    }, true);
 
     if ("ResizeObserver" in window && chartEl) {
       let raf = 0;
@@ -2520,6 +2793,7 @@
     document.querySelectorAll("[data-range]").forEach(btn => {
       btn.addEventListener("click", () => {
         state.range = btn.dataset.range;
+        state.chartWindow = null;
         document.querySelectorAll("[data-range]").forEach(b => b.classList.toggle("is-active", b === btn));
         positionThumb(btn.closest(".sc-seg"));
         hideCrosshair();
@@ -2566,7 +2840,12 @@
       if (el.querySelector(".sc-dash-skel")) el.textContent = "";
       animateValue(el, latest[cur], v => fmtMoney(v, cur));
       const altEl = $("dash-price-alt");
-      if (altEl) altEl.textContent = fmtMoney(latest[alt], alt);
+      if (altEl) {
+        const converted = fmtMoney(latest[alt], alt);
+        altEl.textContent = alt === "CAD"
+          ? "CAD " + converted
+          : converted.replace(/^US\$/, "US $");
+      }
 
       const sats = $("dash-sats");
       if (sats && latest[cur]) {
@@ -2602,22 +2881,42 @@
       const pts = visibleSeries();
       if (pts.length < 2) { el.textContent = ""; return; }
       const key = state.currency;
-      const first = pts[0][key], last = latest[key] || pts[pts.length - 1][key];
+      const first = pts[0][key];
+      const last = state.chartWindow ? pts[pts.length - 1][key] : (latest[key] || pts[pts.length - 1][key]);
       const diff = last - first;
       const pct = (diff / first) * 100;
       const up = diff >= 0;
-      const labels = { "24h": "24h", "7d": "7 days", "30d": "30 days", "1y": "1 year", "all": "all time" };
+      const labels = { "24h": "24h", "7d": "7 days", "30d": "30 days", "1y": "1 year", "3y": "3 years", "5y": "5 years", "all": "all time" };
       el.className = "sc-dash-change " + (up ? "is-positive" : "is-negative");
       el.innerHTML = "<i class=\"bi bi-arrow-" + (up ? "up" : "down") + "-right\"></i> " +
-        (up ? "+" : "") + pct.toFixed(2) + "% <span>" + labels[state.range] + "</span>";
+        (up ? "+" : "") + pct.toFixed(2) + "% <span>" + (state.chartWindow ? "visible range" : labels[state.range]) + "</span>";
+    };
+
+    const stampQuery = window.matchMedia("(max-width: 767px)");
+
+    /* Held so the string can be rebuilt at a new width without inventing a
+       fresher update time than the last one we actually received. */
+    let stampedAt = null;
+
+    const renderStamp = () => {
+      const el = $("dash-updated");
+      if (!el || !stampedAt) return;
+      const time = stampedAt.toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" });
+      const compactTime = time.replace(/[.\s]/g, "").toLowerCase();
+      el.textContent = stampQuery.matches ? "Live " + compactTime : "Live · updated " + time;
     };
 
     const stamp = () => {
-      const el = $("dash-updated");
-      if (el) el.textContent = "Live · updated " + new Date().toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" });
+      stampedAt = new Date();
+      renderStamp();
       const status = $("dash-status");
       if (status) status.classList.add("is-live");
     };
+
+    /* The compact/full choice is made when the stamp is written, so a rotation
+       between polls would otherwise leave the wrong-length string in place. */
+    if (stampQuery.addEventListener) stampQuery.addEventListener("change", renderStamp);
+    else stampQuery.addListener(renderStamp);
 
     // ----------------------------------------------------------- data loads
     const fillHistoricalCad = async () => {
@@ -2713,6 +3012,46 @@
       if (feeEl) feeEl.style.color = scaleColor(1 - Math.min(lowestFee, 100) / 100);
     };
 
+    /* The strip is a horizontal scroller with its scrollbar hidden, so nothing
+       tells you the row continues past the right edge -- the last card just
+       reads as clipped. Flag the overflow state and let CSS paint a fade. */
+    let blocksOverflowBound = false;
+    const syncBlocksOverflow = () => {
+      const wrap = $("dash-blocks");
+      const stage = wrap && wrap.closest(".sc-blocks-top");
+      if (!stage) return;
+      const more = wrap.scrollWidth - wrap.clientWidth - wrap.scrollLeft > 4;
+      stage.classList.toggle("has-more-blocks", more);
+      /* The phone aura is painted on the stage rather than inside the scroller
+         -- overflow-x:auto would clip it -- so it does not move when the strip
+         is scrolled, and the glow detaches from the pending card it belongs
+         to. Feed the scroll offset back so it tracks the card. */
+      stage.style.setProperty("--sc-blocks-scroll", wrap.scrollLeft + "px");
+      if (!blocksOverflowBound) {
+        blocksOverflowBound = true;
+        wrap.addEventListener("scroll", syncBlocksOverflow, { passive: true });
+        window.addEventListener("resize", () => { syncBlocksOverflow(); measureBlocksFade(); });
+      }
+    };
+
+    /* The stage box runs well past the cards -- the scroller carries 56px of
+       padding so the pending block's glow has somewhere to render, and the
+       price heading is pulled up into that space. A full-height fade therefore
+       washed over the "Live" chip's right end. Bound it to the cards instead;
+       measuring beats per-breakpoint constants, since the stage padding, the
+       scroller padding and the negative margins all differ by breakpoint. */
+    const measureBlocksFade = () => {
+      const wrap = $("dash-blocks");
+      const stage = wrap && wrap.closest(".sc-blocks-top");
+      const card = wrap && wrap.querySelector(".sc-block");
+      if (!stage || !card) return;
+      const stageBox = stage.getBoundingClientRect();
+      const cardBox = card.getBoundingClientRect();
+      // 8px of bleed so card shadows are not cut off by the fade's own edge.
+      stage.style.setProperty("--sc-strip-fade-top", Math.max(0, cardBox.top - stageBox.top - 8) + "px");
+      stage.style.setProperty("--sc-strip-fade-bottom", Math.max(0, stageBox.bottom - cardBox.bottom - 8) + "px");
+    };
+
     const paintPendingBlock = projected => {
       if (!projected) return;
       state.projectedBlock = projected;
@@ -2724,16 +3063,16 @@
       const age = pendingEl.querySelector(".sc-block-age");
       const values = pendingEl.querySelectorAll("dd");
       if (age && Array.isArray(projected.feeRange) && projected.feeRange.length) {
-        age.innerHTML = fmtFeeNumber(projected.feeRange[0]) + " <span class=\"sc-fee-unit\">sat/vB</span>";
+        age.innerHTML = fmtFeeSpan(projected.feeRange) + " <span class=\"sc-fee-unit\">sat/vB</span>";
       }
       if (values[0] && Number.isFinite(Number(projected.nTx))) {
         values[0].textContent = fmtInt(projected.nTx);
       }
-      if (values[1] && Number.isFinite(Number(projected.blockVSize))) {
-        values[1].textContent = (projected.blockVSize / 1e6).toFixed(2) + " vMB";
+      if (values[1] && Number.isFinite(Number(projected.blockSize))) {
+        values[1].textContent = (projected.blockSize / 1e6).toFixed(2) + " MB";
       }
-      if (values[2] && Number.isFinite(Number(projected.medianFee))) {
-        values[2].textContent = fmtFeeRate(projected.medianFee);
+      if (values[2] && Array.isArray(projected.feeRange) && projected.feeRange.length) {
+        values[2].textContent = fmtFeeRate(projected.feeRange[0]);
       }
     };
 
@@ -2847,7 +3186,9 @@
         animateValue($("dash-mempool"), vmb, v => (next.approximateVsize ? "~" : "") +
           v.toLocaleString("en-CA", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " vMB");
         const blockEquiv = $("dash-mempool-blocks");
-        if (blockEquiv) blockEquiv.textContent = "~" + fmtInt(Math.max(1, Math.ceil(vmb)));
+        /* "≈" rather than "~": at this tile's weight and size a tilde reads as
+           a minus sign, turning the count into an impossible negative. */
+        if (blockEquiv) blockEquiv.textContent = "≈" + fmtInt(Math.max(1, Math.ceil(vmb)));
       }
       const mempoolTx = $("dash-mempool-tx");
       if (mempoolTx && Number.isFinite(next.count)) mempoolTx.textContent = fmtInt(next.count);
@@ -2901,13 +3242,19 @@
         const wrap = $("dash-blocks");
         if (wrap && Array.isArray(blocks)) {
           const pendingTx = projected && Number.isFinite(Number(projected.nTx)) ? fmtInt(projected.nTx) : "—";
-          const pendingSize = projected && Number.isFinite(Number(projected.blockVSize)) ? (projected.blockVSize / 1e6).toFixed(2) + " vMB" : "—";
-          const pendingFee = projected && Array.isArray(projected.feeRange) && projected.feeRange.length ? fmtFeeNumber(projected.feeRange[0]) + " <span class=\"sc-fee-unit\">sat/vB</span>" : "Building";
-          const pendingMedian = projected && Number.isFinite(Number(projected.medianFee)) ? fmtFeeRate(projected.medianFee) : "\u2014";
+          /* blockSize, not blockVSize: the projected block is assembled to the
+             weight limit, so its vsize is pinned near 1 vMB and the tile read
+             "1.00 vMB" no matter what the mempool was doing. blockSize is the
+             serialised size, and matches the "Size" row on confirmed cards. */
+          const pendingSize = projected && Number.isFinite(Number(projected.blockSize)) ? (projected.blockSize / 1e6).toFixed(2) + " MB" : "—";
+          const pendingFee = projected && Array.isArray(projected.feeRange) && projected.feeRange.length ? fmtFeeSpan(projected.feeRange) + " <span class=\"sc-fee-unit\">sat/vB</span>" : "Building";
+          const pendingLowest = projected && Array.isArray(projected.feeRange) && projected.feeRange.length ? fmtFeeRate(projected.feeRange[0]) : "\u2014";
           // The logo's animated SVG begins its own clock during asset paint.
           // Advance the CSS pulse by half a second so its visible peak meets
           // the orange-circle peak instead of trailing it.
           const logoPhase = -(((performance.now() + 500) / 1000) % 3.617).toFixed(3) + "s";
+          const blocksStage = wrap.closest(".sc-blocks-top");
+          if (blocksStage) blocksStage.style.setProperty("--sc-logo-phase", logoPhase);
           const pending =
             "<a class=\"sc-block sc-block-pending\" style=\"--i:0;--sc-logo-phase:" + logoPhase + "\" href=\"https://mempool.space/mempool-block/0\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View the projected next block on mempool.space\">" +
               "<span class=\"sc-block-kicker\"><span class=\"sc-pending-dot\"></span>Pending</span>" +
@@ -2916,11 +3263,13 @@
               "<dl class=\"sc-block-meta\">" +
                 "<div><dt>Transactions</dt><dd>" + pendingTx + "</dd></div>" +
                 "<div><dt>Projected</dt><dd>" + pendingSize + "</dd></div>" +
-                "<div class=\"sc-block-lowest\"><dt>Median</dt><dd>" + pendingMedian + "</dd></div>" +
+                "<div class=\"sc-block-lowest\"><dt>Lowest</dt><dd>" + pendingLowest + "</dd></div>" +
               "</dl></a>";
           const buildConfirmed = fresh => blocks.slice(0, 6).map((b, i) => {
             const mins = Math.max(0, Math.round((Date.now() / 1000 - b.timestamp) / 60));
-            const age = mins < 1 ? "just now" : mins < 60 ? mins + "m ago" : Math.floor(mins / 60) + "h ago";
+            /* Spelled out because .sc-block-age uppercases: a bare "5m ago"
+               renders as "5M AGO", which reads as five months. */
+            const age = mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : Math.floor(mins / 60) + " hr ago";
             const lowest = b.extras && Array.isArray(b.extras.feeRange) && b.extras.feeRange.length ? fmtFeeRate(b.extras.feeRange[0]) : "—";
             return "<a class=\"sc-block sc-block-confirmed" + (fresh && i === 0 ? " is-newest" : "") + "\" style=\"--i:" + (i + 1) + "\" href=\"https://mempool.space/block/" + b.id + "\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View block " + b.height + " on mempool.space\">" +
               "<span class=\"sc-block-kicker\"><i class=\"bi bi-check2-circle\"></i>Confirmed</span>" +
@@ -2937,6 +3286,8 @@
             wrap.classList.remove("is-confirming");
             wrap.classList.add("is-ready");
             wrap.innerHTML = pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
+            syncBlocksOverflow();
+            measureBlocksFade();
           };
 
           const tipHeight = blocks.length ? Number(blocks[0].height) : null;
