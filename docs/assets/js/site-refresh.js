@@ -7,10 +7,10 @@
   const routes = [
     ["home", "Home", "index.html"],
     ["guides", "Guides", "guides.html"],
-    ["services", "Services", "services.html"],
     ["devices", "Devices", "devices.html"],
     ["software", "Software", "software.html"],
     ["exchanges", "Exchanges", "exchanges.html"],
+    ["dashboard", "Dashboard", "dashboard.html"],
     ["contact", "Get Help", "contact.html"]
   ];
 
@@ -75,9 +75,24 @@
       </a>
     </div>`;
 
+  const pricingCard = ({ badge, title, price, priceNote, sessions, text, features, href, linkText = "Book a free call" }) => `
+    <div class="col-lg-4">
+      <a class="sc-card sc-pricing-card sc-path-card-link${badge ? " sc-pricing-featured" : ""}" href="${href}">
+        <div class="sc-card-body">
+          ${badge ? `<span class="sc-eyebrow">${badge}</span>` : ""}
+          <h3>${title}</h3>
+          <p class="sc-price">${price}<small>${priceNote}</small></p>
+          ${sessions ? `<p class="sc-pricing-sessions">${sessions}</p>` : ""}
+          <p>${text}</p>
+          <ul class="sc-check-list">${features.map(f => `<li>${f}</li>`).join("")}</ul>
+          <div class="sc-hero-actions sc-pricing-cta"><span class="sc-btn sc-btn-primary">${linkText}</span></div>
+        </div>
+      </a>
+    </div>`;
+
   const productCard = ({ image, imageAlt, imageWidth, imageHeight, icon = "bi-usb-drive", title, text, tags, href }) => `
     <div class="col-md-6 col-xl-4">
-      <article class="sc-card sc-product-card">
+      <a class="sc-card sc-product-card sc-path-card-link" href="${href}">
         <div class="sc-product-image">
           ${image
             ? `<img src="${image}" alt="${imageAlt || title}" width="${imageWidth}" height="${imageHeight}" loading="lazy">`
@@ -87,12 +102,12 @@
           <h3>${title}</h3>
           <p>${text}</p>
           <div class="sc-tags">${tags.map(tag => `<span class="sc-tag">${tag}</span>`).join("")}</div>
-          <a class="sc-text-link" href="${href}">Read details <i class="bi bi-arrow-right"></i></a>
+          <span class="sc-text-link">Read details <i class="bi bi-arrow-right"></i></span>
         </div>
-      </article>
+      </a>
     </div>`;
 
-  const lastLinkCheck = "July 28, 2026";
+  const lastLinkCheck = "August 6, 2026";
 
   const sourceNote = links => `
     <p class="sc-source-note">
@@ -207,8 +222,8 @@
           "Practical learning path",
           "Learn the system,<br><em>not just the buttons.</em>",
           "A complete beginner-to-confident-owner path. Work through it in order, use small amounts, and stop whenever a step is not clear.",
-          `<a class="sc-btn sc-btn-primary" href="#path">Start at step one</a>
-           <a class="sc-btn sc-btn-ghost" href="contact.html">Ask a question</a>`,
+          `<a class="sc-btn sc-btn-primary" href="#path">Step one</a>
+           <a class="sc-btn sc-btn-ghost" href="contact.html">Get help</a>`,
           {
             src: "assets/img/education-library.jpeg",
             alt: "Bookshelves and a reading lamp in a quiet library",
@@ -321,10 +336,9 @@
       content: `
         ${hero(
           "Hardware wallets and signers",
-          "Different devices solve<br><em>different risks.</em>",
+          `There's many paths<br><em><span class="sc-hero-flip" aria-live="polite" data-flip-phrases='["to sovereignty.","to self custody.","to financial freedom.","to cold storage.","to peace of mind."]'><span class="sc-hero-flip-item is-active">to sovereignty.</span></span></em>`,
           "Compare the security model, transaction-review experience, backup method, connectivity, and learning curve—not just a feature count.",
-          `<a class="sc-btn sc-btn-primary" href="#compare">Compare devices</a>
-           <a class="sc-btn sc-btn-ghost" href="coinkite.html">Explore Coinkite products</a>`,
+          `<a class="sc-btn sc-btn-primary" href="#compare">Compare devices</a>`,
           {
             src: "assets/img/signing-device-circuit.jpeg",
             alt: "Close-up view of components on a circuit board",
@@ -335,22 +349,16 @@
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-callout mb-5">
+            <div class="sc-callout mb-4">
               <h2>Before choosing a brand</h2>
               <p>Buy directly from the manufacturer or a listed authorized reseller. Check tamper evidence and device authenticity, install only official firmware, and never use recovery words supplied by a seller.</p>
             </div>
-            <div class="sc-section-head"><span class="sc-eyebrow">Shortlist</span><h2>Six useful reference points</h2><p>This is not a winner-takes-all ranking. Each device represents a different balance of transparency, convenience, connectivity, and operator skill.</p></div>
-            <div class="row g-4">
-              ${productCard({
-                image: "assets/img/devices/coldcard-q-mk5.png",
-                imageAlt: "COLDCARD Q and Mk5 hardware wallets",
-                imageWidth: 836,
-                imageHeight: 762,
-                title: "COLDCARD Q / Mk5",
-                text: "Bitcoin-only signers built for air-gapped, beginner-to-advanced workflows, with dual secure elements and strong transaction-policy features.",
-                tags: ["Bitcoin only", "Air-gap options", "Advanced"],
-                href: "#coldcard"
-              })}
+            <div class="sc-callout mb-5">
+              <h2>Don't blindly trust the device to generate your seed</h2>
+              <p>A device's random number generator is a single component you can't independently verify. Where supported, rolling your own entropy—50+ rolls of a six-sided die—and combining it with the device's own randomness is a simple way to reduce that trust. Not every device offers this; check the details below before assuming yours does.</p>
+            </div>
+            <div class="sc-section-head"><span class="sc-eyebrow">Shortlist</span><h2>Nine useful reference points</h2><p>This is not a winner-takes-all ranking. Each device represents a different balance of transparency, convenience, connectivity, and operator skill.</p></div>
+            <div class="row g-4 sc-path-options">
               ${productCard({
                 image: "assets/img/devices/trezor-safe-7-shortlist.png",
                 imageAlt: "Trezor Safe 7 hardware wallet",
@@ -360,26 +368,6 @@
                 text: "Premium touchscreen signer with a dedicated Bitcoin-only firmware edition, open-source security, and encrypted Bluetooth.",
                 tags: ["Bitcoin only", "Touchscreen", "Open source"],
                 href: "#trezor"
-              })}
-              ${productCard({
-                image: "assets/img/devices/krux-yahboom.png",
-                imageAlt: "Krux open-source Bitcoin signer running on K210 touchscreen hardware",
-                imageWidth: 312,
-                imageHeight: 440,
-                title: "Krux",
-                text: "Open-source, Bitcoin-only firmware you flash onto off-the-shelf K210 touchscreen hardware, with QR and SD-card air-gapped signing.",
-                tags: ["Bitcoin only", "DIY firmware", "QR air-gap"],
-                href: "#krux"
-              })}
-              ${productCard({
-                image: "assets/img/devices/blockstream-jade-plus.png",
-                imageAlt: "Blockstream Jade Plus hardware wallet",
-                imageWidth: 925,
-                imageHeight: 547,
-                title: "Blockstream Jade Plus",
-                text: "Open-source Bitcoin signer with camera-based QR workflows, USB-C, Bluetooth, SD card support, and a larger display.",
-                tags: ["Bitcoin + Liquid", "QR air-gap", "Open source"],
-                href: "#jade"
               })}
               ${productCard({
                 image: "assets/img/devices/bitkey.png",
@@ -401,6 +389,66 @@
                 tags: ["Bitcoin only", "USB-C", "microSD backup"],
                 href: "#bitbox"
               })}
+              ${productCard({
+                image: "assets/img/devices/blockstream-jade-plus.png",
+                imageAlt: "Blockstream Jade Plus hardware wallet",
+                imageWidth: 925,
+                imageHeight: 547,
+                title: "Blockstream Jade Plus",
+                text: "Open-source Bitcoin signer with camera-based QR workflows, USB-C, Bluetooth, SD card support, and a larger display.",
+                tags: ["Bitcoin + Liquid", "QR air-gap", "Open source"],
+                href: "#jade"
+              })}
+              ${productCard({
+                image: "assets/img/devices/coldcard-q-mk5.png",
+                imageAlt: "COLDCARD Q and Mk5 hardware wallets",
+                imageWidth: 836,
+                imageHeight: 762,
+                title: "COLDCARD Q / Mk5",
+                text: "Bitcoin-only signers built for air-gapped, beginner-to-advanced workflows, with dual secure elements and strong transaction-policy features.",
+                tags: ["Bitcoin only", "Air-gap options", "Advanced"],
+                href: "#coldcard"
+              })}
+              ${productCard({
+                image: "assets/img/devices/prime_light.webp",
+                imageAlt: "Foundation Passport Prime hardware device",
+                imageWidth: 1000,
+                imageHeight: 1000,
+                title: "Foundation Passport",
+                text: "Open-source signer with a camera for QR air-gap, secure element, and NFC backup Keycards—now a multi-purpose device covering Bitcoin, 2FA, and security keys.",
+                tags: ["Bitcoin + more", "QR air-gap", "NFC Keycards"],
+                href: "#passport"
+              })}
+              ${productCard({
+                image: "assets/img/devices/seedsigner.webp",
+                imageAlt: "SeedSigner open-source hardware wallet",
+                imageWidth: 1586,
+                imageHeight: 992,
+                title: "SeedSigner",
+                text: "Open-source, Bitcoin-only firmware you build from an off-the-shelf Raspberry Pi Zero, camera, and screen, using QR codes for fully air-gapped, stateless signing.",
+                tags: ["Bitcoin only", "DIY hardware", "QR air-gap"],
+                href: "#seedsigner"
+              })}
+              ${productCard({
+                image: "assets/img/devices/krux-yahboom.png",
+                imageAlt: "Krux open-source Bitcoin signer running on K210 touchscreen hardware",
+                imageWidth: 312,
+                imageHeight: 440,
+                title: "Krux",
+                text: "Open-source, Bitcoin-only firmware you flash onto off-the-shelf K210 touchscreen hardware, with QR and SD-card air-gapped signing.",
+                tags: ["Bitcoin only", "DIY firmware", "QR air-gap"],
+                href: "#krux"
+              })}
+              ${productCard({
+                image: "assets/img/devices/ledger-stax-face.webp",
+                imageAlt: "Ledger Stax hardware wallet",
+                imageWidth: 504,
+                imageHeight: 480,
+                title: "Ledger",
+                text: "Widely used multi-asset signer line (Nano S Plus, Nano X, Flex, Stax) with a certified secure element, USB and Bluetooth connectivity, and a companion app.",
+                tags: ["Multi-asset", "USB / Bluetooth", "Certified secure element"],
+                href: "#ledger"
+              })}
             </div>
           </div>
         </section>
@@ -418,141 +466,183 @@
                 <thead>
                   <tr>
                     <th scope="col">Feature</th>
-                    <th scope="col" class="sc-coldcard-col">COLDCARD<br>Q / Mk5</th>
                     <th scope="col">Trezor Safe 7<br>Bitcoin-only</th>
-                    <th scope="col">Krux</th>
-                    <th scope="col">Jade<br>Plus</th>
                     <th scope="col">Bitkey</th>
                     <th scope="col">BitBox02<br>Bitcoin-only</th>
+                    <th scope="col">Blockstream<br>Jade Plus</th>
+                    <th scope="col">COLDCARD<br>Q / Mk5</th>
+                    <th scope="col">Foundation<br>Passport</th>
+                    <th scope="col">SeedSigner</th>
+                    <th scope="col">Krux</th>
+                    <th scope="col">Ledger</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="sc-matrix-group"><th colspan="7">Security and auditability</th></tr>
+                  <tr class="sc-matrix-group"><th colspan="10">Security and auditability</th></tr>
                   <tr>
                     <th scope="row">Publicly reviewable firmware</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Public source and reproducible builds</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open-source security design</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open-source firmware</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open hardware and firmware</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Partial">◐</span><small>Commons Clause license; not independently buildable</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Open, deterministic builds</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>MIT plus Commons Clause</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Deterministic builds</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Reproducible builds</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>No third-party audit yet</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Element OS is closed</small></td>
                   </tr>
                   <tr>
-                    <th scope="row">Secure hardware isolation</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Two secure elements from different vendors, plus MCU</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Two secure elements plus MCU</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>No secure element; encrypted storage option</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>Open blind-oracle virtual secure element</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative design">◐</span><small>2-of-3 multisig design, not a single secure element</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Secure chip plus MCU</small></td>
+                    <th scope="row">Dedicated key-isolation chip</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EAL6+ plus TROPIC01</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Secure MCU; 2-of-3 multisig</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EAL6+ secure chip</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Virtual secure element</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Two, different vendors</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Stateless design instead</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Encrypted storage instead</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EAL5+ / EAL6+</small></td>
                   </tr>
                   <tr>
                     <th scope="row">Bitcoin-only operation</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only firmware edition</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Partial">◐</span><small>Bitcoin and Liquid</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Bitcoin-only edition</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Locked at factory</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Plus Liquid</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Plus 2FA, keys, files</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Multi-asset only</small></td>
                   </tr>
                   <tr>
                     <th scope="row">Transaction review on device</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
                   </tr>
 
-                  <tr class="sc-matrix-group"><th colspan="7">Air gap and connectivity</th></tr>
+                  <tr class="sc-matrix-group"><th colspan="10">Air gap and connectivity</th></tr>
                   <tr>
                     <th scope="row">Fully air-gapped signing path</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR on Q; microSD on both</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR or SD card</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>QR or removable media</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>Phone app + NFC, not air-gapped</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>USB or Bluetooth only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Phone app plus NFC</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>USB, or BLE on Nova</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>QR, SD, USB drive</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>QR on Q; microSD both</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>QR only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>QR or SD card</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>USB or Bluetooth only</small></td>
                   </tr>
                   <tr>
                     <th scope="row">Camera-based QR signing</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-partial" aria-label="Model dependent">◐</span><small>Q only</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Q only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
                   </tr>
                   <tr>
                     <th scope="row">Removable media for signing</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>microSD</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>SD card</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>SD card or USB drive</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>microSD is for backup</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Backup only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>SD or USB drive</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>microSD</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No microSD on Prime</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>QR only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>SD card</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
                   </tr>
                   <tr>
                     <th scope="row">USB data connection</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Optional workflow</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>USB for power/flashing only</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>USB-C for charging only</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Charging only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Off by default</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Power only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Power and flashing</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
                   </tr>
                   <tr>
                     <th scope="row">Bluetooth</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Can be disabled</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Nova only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>QuantumLink</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No radios at all</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Not Nano S Plus</small></td>
                   </tr>
                   <tr>
                     <th scope="row">NFC</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Main interface</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Can be disabled</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Backup Keycards</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Stax, Flex, Gen5</small></td>
                   </tr>
 
-                  <tr class="sc-matrix-group"><th colspan="7">Backup and operating model</th></tr>
+                  <tr class="sc-matrix-group"><th colspan="10">Backup and operating model</th></tr>
                   <tr>
                     <th scope="row">Recovery words supported</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Different model">◐</span><small>App + cloud + social recovery, not a single seed phrase</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Multi-share option</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No seed phrase</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Plus dice rolls</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Plus SeedQR</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Plus dice, SeedQR</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
                   </tr>
                   <tr>
                     <th scope="row">Removable-media backup</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>Encrypted microSD backup</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Alternative">◐</span><small>SD card export; not a sole backup</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>SD card / SeedQR options</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span><small>Cloud + social recovery instead</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">✓</span><small>microSD is the default backup</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Words only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Cloud and social</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>microSD default</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>SD or SeedQR</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Encrypted microSD</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Keycards, SeedQR</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Words or SeedQR</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Encrypted SD export</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Words only</small></td>
                   </tr>
                   <tr>
-                    <th scope="row">Stateless signing mode</th>
-                    <td class="sc-coldcard-col"><span class="sc-matrix-mark sc-matrix-no" aria-label="Not standard">—</span><small>Temporary-seed tools exist</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Optional amnesic mode</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional">◐</span><small>Optional SeedQR workflow</small></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not available">—</span></td>
+                    <th scope="row">Runs without storing a seed</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Stateless QR signing</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Temporary seed in RAM</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Core design</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Amnesic by default</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <p class="sc-source-note">Format inspired by <a href="https://coldcard.com/docs/compare-other-wallets/" target="_blank" rel="noopener noreferrer">COLDCARD's comparison</a>; feature wording and device coverage are original to this guide and checked against current manufacturer documentation. A dash does not automatically mean a device is unsafe—it may reflect a different design or workflow.</p>
+            <p class="sc-source-note">Every row was cross-checked against each manufacturer's own current documentation on ${lastLinkCheck}; where a spec varies by model, the note says which models it applies to. No device is ranked or highlighted here—the marks describe design choices, not scores. A dash does not mean a device is unsafe; it usually means the maker chose a different approach, and a feature only matters if it fits how you actually plan to set up, sign, and recover.</p>
           </div>
         </section>
 
@@ -560,31 +650,10 @@
           <div class="container">
             <div class="sc-section-head"><span class="sc-eyebrow">Detailed notes</span><h2>What each device is really optimizing for</h2></div>
 
-            <article id="coldcard" class="sc-detail">
-              <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/coldcard-q-mk5.png" alt="COLDCARD Q and Mk5 hardware wallets" width="836" height="762" loading="lazy"></div></div>
-                <div class="col-lg-7"><span class="sc-eyebrow">Our recommendation</span><h2>COLDCARD Q / Mk5</h2><p>COLDCARD is the device we most often point people to first—not because the others are worse, but because the Q and Mk5 cover the widest range of use: Bitcoin-only signers with dual secure elements from different vendors, publicly reviewable and reproducible firmware, and some of the deepest transaction-policy controls available on a consumer signer, while still working for someone building their first air-gapped setup.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want one device that scales from a first air-gapped wallet to advanced multisig and policy rules.</li><li>Users who value dual, independently-sourced secure elements and open, reproducible firmware.</li><li>Anyone who wants microSD, NFC, and (on the Q) QR/camera air-gap options in a single signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Read the docs to get the most out of its more advanced features.</li><li>Choosing between Q and Mk5 comes down to keyboard-and-camera versus a smaller, simpler form factor—see the full breakdown below.</li></ul><p><a class="sc-text-link" href="coinkite.html#coldcard">Read the full COLDCARD Q vs Mk5 breakdown <i class="bi bi-arrow-right"></i></a></p>${externalLink("https://coldcard.com/")}</div>
-              </div>
-            </article>
-
             <article id="trezor" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/trezor-safe-7-detail.png" alt="Trezor Safe 7" width="660" height="1118" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>Trezor Safe 7 Bitcoin-only</h2><p>Trezor's current premium model is also available as a dedicated Bitcoin-only firmware edition: same hardware as the standard Safe 7—large colour touchscreen, open-source software, two secure elements plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging—with altcoin functionality removed entirely.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Bitcoin-only holders who still want a premium touchscreen experience.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul>${externalLink("https://trezor.io/trezor-safe-7-bitcoin-only")}</div>
-              </div>
-            </article>
-
-            <article id="krux" class="sc-detail">
-              <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/krux-yahboom.png" alt="Krux running on a Yahboom K210 touchscreen device" width="312" height="440" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Krux</h2><p>Krux is open-source, Bitcoin-only firmware that turns off-the-shelf Kendryte K210 devices—such as the Yahboom K210 module or M5StickV—into air-gapped signers using QR codes or an SD card. It has no secure element; protection relies on encryption, and it can run in a stateless mode (load keys each session) or store an encrypted seed on the device.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer.</li><li>QR-based single-sig and multisig workflows.</li><li>Users comfortable flashing firmware and sourcing their own hardware.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The project states it has not yet been formally audited by a third party.</li><li>No secure element—encryption-based protection is a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li></ul>${externalLink("https://selfcustody.github.io/krux/")}</div>
-              </div>
-            </article>
-
-            <article id="jade" class="sc-detail">
-              <div class="row g-5 align-items-center">
-                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/blockstream-jade-plus.png" alt="Blockstream Jade Plus" width="925" height="547" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Blockstream Jade Plus</h2><p>Jade Plus is a Bitcoin and Liquid signer with a larger display, camera, physical controls, QR signing, USB-C, Bluetooth, and SD card support. Its hardware and firmware are open source, and its security architecture uses Blockstream's virtual secure element approach.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based air-gapped signing with a modern screen.</li><li>Users who prefer auditable hardware and firmware.</li><li>Sparrow, Nunchuk, Specter, and Blockstream App workflows.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Learn how PIN unlock, genuine check, and stateless recovery work before deciding on a backup plan.</li></ul>${externalLink("https://blockstream.com/jade/jade-plus/")}</div>
               </div>
             </article>
 
@@ -602,13 +671,58 @@
               </div>
             </article>
 
+            <article id="jade" class="sc-detail">
+              <div class="row g-5 align-items-center">
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/blockstream-jade-plus.png" alt="Blockstream Jade Plus" width="925" height="547" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>Blockstream Jade Plus</h2><p>Jade Plus is a Bitcoin and Liquid signer with a larger display, camera, physical controls, QR signing, USB-C, Bluetooth, and SD card support. Its hardware and firmware are open source, and its security architecture uses Blockstream's virtual secure element approach.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based air-gapped signing with a modern screen.</li><li>Users who prefer auditable hardware and firmware.</li><li>Sparrow, Nunchuk, Specter, and Blockstream App workflows.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Learn how PIN unlock, genuine check, and stateless recovery work before deciding on a backup plan.</li></ul>${externalLink("https://blockstream.com/jade/jade-plus/")}</div>
+              </div>
+            </article>
+
+            <article id="coldcard" class="sc-detail">
+              <div class="row g-5 align-items-center">
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/coldcard-q-mk5.png" alt="COLDCARD Q and Mk5 hardware wallets" width="836" height="762" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>COLDCARD Q / Mk5</h2><p>COLDCARD Q and Mk5 are Bitcoin-only signers with dual secure elements from different vendors, publicly reviewable and reproducible firmware, and some of the deepest transaction-policy controls available on a consumer signer, while still working for someone building their first air-gapped setup.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want one device that scales from a first air-gapped wallet to advanced multisig and policy rules.</li><li>Users who value dual, independently-sourced secure elements and open, reproducible firmware.</li><li>Anyone who wants microSD, NFC, and (on the Q) QR/camera air-gap options in a single signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Read the docs to get the most out of its more advanced features.</li><li>Choosing between Q and Mk5 comes down to keyboard-and-camera versus a smaller, simpler form factor.</li></ul><p><a class="sc-btn sc-btn-primary mt-2" href="coinkite.html">Explore Coinkite products</a></p>${externalLink("https://coldcard.com/")}</div>
+              </div>
+            </article>
+
+            <article id="passport" class="sc-detail">
+              <div class="row g-5 align-items-center">
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/prime_light.webp" alt="Foundation Passport Prime hardware device" width="1000" height="1000" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>Foundation Passport</h2><p>Passport Prime is Foundation's current device, and it is a significant change of direction from the earlier Bitcoin-only Passport. It keeps the open-source approach, the camera for QR-based air-gapped signing, and SeedQR import and export, but it is now a multi-purpose security device: alongside the Bitcoin wallet, its KeyOS firmware also handles 2FA codes, FIDO security keys, and encrypted file storage. It pairs a security processor with a secure element, adds QuantumLink Bluetooth and NFC backup Keycards, and drops the microSD slot the older model used.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based QR air-gapped signing with a large, modern touchscreen.</li><li>Anyone who wants one device for Bitcoin plus 2FA codes, security keys, and encrypted files.</li><li>Envoy companion-app workflows, including Magic Backups and Keycard recovery.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>No longer Bitcoin-only—the extra apps and radios add capability but also attack surface a single-purpose signer avoids.</li><li>Backup moves to NFC Keycards and SeedQR rather than the microSD workflow the earlier Passport used.</li><li>If you specifically want the older Bitcoin-only Passport, check availability first—Foundation's shop currently lists Passport Prime.</li></ul>${externalLink("https://foundation.xyz/passport")}</div>
+              </div>
+            </article>
+
+            <article id="seedsigner" class="sc-detail">
+              <div class="row g-5 align-items-center">
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/seedsigner.webp" alt="SeedSigner open-source hardware wallet" width="1586" height="992" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>SeedSigner</h2><p>SeedSigner is open-source, Bitcoin-only firmware that you build yourself from off-the-shelf parts—typically a Raspberry Pi Zero, a camera module, and a small screen—into a fully air-gapped, QR-code-based signer. It has no secure element and, by design, does not persist your seed on the device: you re-enter it each session from words, dice rolls, or a SeedQR.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer built from cheap, replaceable hardware.</li><li>QR-based single-sig and multisig workflows, including stateless "amnesic" use.</li><li>Users comfortable assembling hardware and flashing firmware themselves.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>No secure element—encryption and process-level protections are a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li><li>Re-entering your seed each session is deliberate, but means you need a reliable physical backup.</li></ul>${externalLink("https://seedsigner.com/")}</div>
+              </div>
+            </article>
+
+            <article id="krux" class="sc-detail">
+              <div class="row g-5 align-items-center">
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/krux-yahboom.png" alt="Krux running on a Yahboom K210 touchscreen device" width="312" height="440" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>Krux</h2><p>Krux is open-source, Bitcoin-only firmware that turns off-the-shelf Kendryte K210 devices—such as the Yahboom K210 module or M5StickV—into air-gapped signers using QR codes or an SD card. It has no secure element; protection relies on encryption. Krux was built amnesic-first—by default it holds nothing between sessions and you load your key each time—with optional encrypted storage on the device or an SD card if you want persistence.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer.</li><li>QR-based single-sig and multisig workflows.</li><li>Users comfortable flashing firmware and sourcing their own hardware.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The project states it has not yet been formally audited by a third party.</li><li>No secure element—encryption-based protection is a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li></ul>${externalLink("https://selfcustody.github.io/krux/")}</div>
+              </div>
+            </article>
+
+            <article id="ledger" class="sc-detail">
+              <div class="row g-5 align-items-center">
+                <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/ledger-stax-face.webp" alt="Ledger Stax hardware wallet" width="504" height="480" loading="lazy"></div></div>
+                <div class="col-lg-7"><h2>Ledger</h2><p>Ledger's current lineup (Nano S Plus, Nano X, Flex, Stax, and the touchscreen Nano Gen5) pairs a certified secure element—EAL5+ on the older Nano models, EAL6+ on the newer touchscreen devices—with the Ledger Live companion app. The individual apps you install are open source, but the underlying secure element operating system, BOLOS, is closed source, so the core security boundary can't be independently reviewed the way a fully open design can. Devices are multi-asset by default rather than shipping a dedicated Bitcoin-only firmware edition.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a widely used, certified-hardware signer with a polished companion app.</li><li>Users who hold multiple assets, not just Bitcoin, on one device.</li><li>Anyone prioritizing a large ecosystem of supported apps and integrations.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The secure element OS is closed source—you're trusting Ledger's certification, not auditing the code yourself.</li><li>No dedicated Bitcoin-only firmware edition, and no air-gapped (QR or SD card) signing path.</li><li>Ledger Recover, an opt-in cloud/social seed-backup service, has drawn criticism; it's optional and can be ignored if you self-custody your own backup.</li></ul>${externalLink("https://www.ledger.com/")}</div>
+              </div>
+            </article>
+
             ${sourceNote([
               ["COLDCARD", "https://coldcard.com/"],
               ["Trezor", "https://trezor.io/trezor-safe-7-bitcoin-only"],
               ["Krux", "https://selfcustody.github.io/krux/"],
               ["Blockstream", "https://blockstream.com/jade/jade-plus/"],
               ["Bitkey", "https://bitkey.world/"],
-              ["BitBox", "https://bitbox.swiss/bitbox02/bitcoin-only/"]
+              ["BitBox", "https://bitbox.swiss/bitbox02/bitcoin-only/"],
+              ["SeedSigner", "https://seedsigner.com/"],
+              ["Foundation", "https://foundation.xyz/passport"],
+              ["Ledger", "https://www.ledger.com/"]
             ])}
           </div>
         </section>`
@@ -728,7 +842,7 @@
 
     software: {
       title: "Bitcoin Wallet Software | Self Custody Canada",
-      description: "Compare Sparrow, BlueWallet, Electrum, Nunchuk, and Cove Wallet by platform, hardware support, privacy, and multisig.",
+      description: "Compare Sparrow, Nunchuk, Cove, Electrum, BlueWallet, Wasabi, and Specter by platform, hardware support, privacy, and multisig.",
       content: `
         ${hero(
           "Wallet software",
@@ -746,30 +860,183 @@
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-section-head"><span class="sc-eyebrow">Four featured wallets</span><h2>Match software to the job</h2><p>Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
-            <div class="row g-4">
-              ${card("bi-diagram-2", "Sparrow Wallet", "Desktop Bitcoin wallet with excellent PSBT, hardware, multisig, coin control, labeling, Tor, and personal-node support.", "#sparrow", "Read Sparrow notes")}
-              ${card("bi-people", "Nunchuk", "Mobile and desktop wallet focused on multisig, shared wallets, hardware keys, recovery planning, and optional inheritance services.", "#nunchuk", "Read Nunchuk notes")}
-              ${card("bi-phone", "Cove Wallet", "Bitcoin-only mobile wallet with UTXO management, labels, hardware-wallet integration, and PSBT signing over QR or NFC.", "#cove", "Read Cove notes")}
-              ${card("bi-lightning", "Electrum", "Long-running desktop Bitcoin wallet with SPV verification, cold-storage workflows, multisig, plugins, and hardware support.", "#electrum", "Read Electrum notes")}
+            <div class="sc-section-head"><span class="sc-eyebrow">Seven featured wallets</span><h2>Match software to the job</h2><p>Shortlisted for strong hardware-wallet support—each one pairs with most signing devices, not just one brand. Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
+            <div class="row g-4 sc-path-options">
+              ${pathCard("bi-diagram-2", "Sparrow Wallet", "Desktop Bitcoin wallet with excellent PSBT, hardware, multisig, coin control, labeling, Tor, and personal-node support.", "#sparrow", "Read Sparrow notes")}
+              ${pathCard("bi-people", "Nunchuk", "Mobile and desktop wallet focused on multisig, shared wallets, hardware keys, recovery planning, and optional inheritance services.", "#nunchuk", "Read Nunchuk notes")}
+              ${pathCard("bi-phone", "Cove Wallet", "Bitcoin-only mobile wallet with UTXO management, labels, hardware-wallet integration, and PSBT signing over QR or NFC.", "#cove", "Read Cove notes")}
+              ${pathCard("bi-lightning", "Electrum", "Long-running desktop Bitcoin wallet with SPV verification, cold-storage workflows, multisig, plugins, and hardware support.", "#electrum", "Read Electrum notes")}
+              ${pathCard("bi-wallet2", "BlueWallet", "Mobile Bitcoin and Lightning wallet with watch-only monitoring, multisig vaults, coin control, and hardware-wallet PSBT support.", "#bluewallet", "Read BlueWallet notes")}
+              ${pathCard("bi-shuffle", "Wasabi Wallet", "Privacy-focused desktop wallet built around CoinJoin, mandatory Tor routing, advanced coin control, and broad hardware-wallet support via HWI.", "#wasabi", "Read Wasabi notes")}
+              ${pathCard("bi-diagram-3", "Specter", "Desktop multisig coordinator built for air-gapped signing, pairing with the widest range of hardware wallets of any option here.", "#specter", "Read Specter notes")}
             </div>
           </div>
         </section>
 
         <section id="software-compare" class="sc-section sc-section-muted">
           <div class="container">
+            <div class="sc-section-head"><span class="sc-eyebrow">Feature matrix</span><h2>Compare privacy and hardware workflow</h2><p>Use the checks as a map, not a score. A feature is valuable only when it fits how you actually plan to hold, sign, and back up.</p></div>
+            <div class="sc-matrix-legend" aria-label="Comparison legend">
+              <span><i class="sc-matrix-mark sc-matrix-yes" aria-hidden="true">✓</i> Available</span>
+              <span><i class="sc-matrix-mark sc-matrix-partial" aria-hidden="true">◐</i> Optional or model-dependent</span>
+              <span><i class="sc-matrix-mark sc-matrix-no" aria-hidden="true">—</i> Not part of the standard workflow</span>
+            </div>
             <div class="sc-table-wrap">
-              <table class="table sc-table">
-                <thead><tr><th>Wallet</th><th>Platforms</th><th>Best at</th><th>Hardware use</th></tr></thead>
+              <table class="table sc-table sc-feature-matrix">
+                <thead>
+                  <tr>
+                    <th scope="col">Feature</th>
+                    <th scope="col">Sparrow</th>
+                    <th scope="col">Nunchuk</th>
+                    <th scope="col">Cove</th>
+                    <th scope="col">Electrum</th>
+                    <th scope="col">BlueWallet</th>
+                    <th scope="col">Wasabi</th>
+                    <th scope="col">Specter</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  <tr><td><strong>Sparrow</strong></td><td>Desktop</td><td>Detailed Bitcoin control and PSBT workflows</td><td>Excellent USB, file, SD, and QR support</td></tr>
-                  <tr><td><strong>Nunchuk</strong></td><td>Mobile, desktop</td><td>Collaborative multisig and inheritance planning</td><td>Broad hardware and NFC support</td></tr>
-                  <tr><td><strong>Cove Wallet</strong></td><td>iOS, Android</td><td>Simple Bitcoin only use with UTXO management and labels</td><td>PSBT, QR, and NFC support for most hardware wallets</td></tr>
-                  <tr><td><strong>Electrum</strong></td><td>Desktop, Android</td><td>Fast, mature Bitcoin wallet with flexible servers</td><td>Broad plugin support</td></tr>
-                  <tr><td><strong>BlueWallet</strong></td><td>iOS, Android</td><td>Mobile self custody and watch only monitoring</td><td>Watch only and PSBT workflows</td></tr>
+                  <tr class="sc-matrix-group"><th colspan="8">Openness and platforms</th></tr>
+                  <tr>
+                    <th scope="row">Publicly reviewable source</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Apache 2.0</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Public repo</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>BDK-based, open</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>MIT</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Open source</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Open source</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Open source</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Desktop app</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Mac, Windows, Linux</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Mobile app</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>iOS and Android</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>iOS and Android</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Android only, no iOS</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>iOS and Android</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                  </tr>
+
+                  <tr class="sc-matrix-group"><th colspan="8">Privacy and network</th></tr>
+                  <tr>
+                    <th scope="row">Personal/private node support</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Bitcoin Core or Electrum server</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Platform-dependent</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Run your own Electrum server</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EPS, ElectrumX, or Electrs</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Bitcoin Core</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Tor support</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Built in</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Desktop and Android only, not iOS</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Proxy flag, not a one-tap toggle</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>All traffic routed through Tor</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">CoinJoin / advanced privacy</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>WabiSabi coordinator</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                  </tr>
+
+                  <tr class="sc-matrix-group"><th colspan="8">Wallet management</th></tr>
+                  <tr>
+                    <th scope="row">Watch-only mode</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Not fully detailed</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Not fully detailed</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Coin control / UTXO management</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Advanced coin control</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Advanced</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Labels (BIP-329)</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                  </tr>
+
+                  <tr class="sc-matrix-group"><th colspan="8">Hardware and advanced signing</th></tr>
+                  <tr>
+                    <th scope="row">Hardware wallet / PSBT support</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Plugin-based</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Via HWI</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Widest range of any wallet here</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Air-gapped QR/SD signing</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>UR standard</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>QR or SD</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>BBQr</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>USB-oriented</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>QR and SD, multiple devices</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Multisig support</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Multi-user</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Core focus</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Lightning support</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Dedicated Lightning wallet</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
+            <p class="sc-source-note">Every row was cross-checked against each project's own current documentation on August 7, 2026. No wallet is ranked or highlighted—the marks describe design choices, not scores. A dash usually means a different design trade-off, not a flaw.</p>
           </div>
         </section>
 
@@ -780,13 +1047,17 @@
             <article id="cove" class="sc-detail"><h2>Cove Wallet</h2><p>Cove is a Bitcoin-only mobile wallet designed for both straightforward on-chain use and more advanced workflows. It supports UTXO management, BIP329 labels, hardware-wallet PSBTs, and signing or wallet imports over QR and NFC.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Bitcoin-only mobile self custody.</li><li>Managing and labeling individual UTXOs.</li><li>Using supported hardware wallets through PSBT, QR, or NFC workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone remains a general-purpose, internet-connected device; use dedicated hardware for long-term savings keys when appropriate.</li><li>Test hardware-wallet and backup workflows with a small amount before relying on them.</li></ul></div></div>${externalLink("https://covebitcoin.com/")}</article>
             <article id="electrum" class="sc-detail"><h2>Electrum</h2><p>Electrum is a mature Bitcoin wallet whose private keys stay encrypted on the local device. It uses decentralized Electrum servers, verifies transaction history with SPV, supports watch-only cold storage, multisig, and hardware-wallet plugins, and can export keys without platform lock-in.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Users who value a mature, lightweight Bitcoin-only desktop wallet.</li><li>Watch-only and offline-signing arrangements.</li><li>Custom server and hardware integrations.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Electrum is frequently impersonated by phishing sites. Use only electrum.org and verify downloads.</li><li>Server selection affects privacy and the trust placed in transaction information.</li></ul></div></div>${externalLink("https://electrum.org/")}</article>
             <article id="bluewallet" class="sc-detail"><h2>BlueWallet</h2><p>BlueWallet is a mobile Bitcoin wallet with watch-only wallets, multisig vaults, coin control, fee tools, batch transactions, hardware-wallet PSBT support, and connections to personal Electrum infrastructure. It is useful both as a spending wallet and as a watch-only interface for cold storage.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Learning on mobile with small amounts.</li><li>Monitoring hardware wallets without importing private keys.</li><li>Creating or moving PSBTs for supported air-gapped devices.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone is a general-purpose internet-connected device; keep long-term savings keys on dedicated hardware.</li><li>Lightning use requires a compatible node or service configuration—understand who controls the keys and channels.</li></ul></div></div>${externalLink("https://bluewallet.io/")}</article>
+            <article id="wasabi" class="sc-detail"><h2>Wasabi Wallet</h2><p>Wasabi is a privacy-focused desktop wallet built around the WabiSabi CoinJoin protocol, with Silent Payments support and mandatory Tor routing for every connection. It pairs advanced coin control and a full labeling system with hardware-wallet support through HWI, covering Trezor, COLDCARD, Ledger, Blockstream Jade, and BitBox02.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want CoinJoin and Tor-by-default as part of normal use, not an add-on.</li><li>Detailed coin control and labeling to avoid mixing tainted history.</li><li>Pairing a hardware signer with a privacy-first coordinator.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>No multisig or air-gapped QR signing—it's a hot-wallet coordinator, not an air-gap tool.</li><li>CoinJoin has real fees and timing trade-offs; read the docs before mixing meaningful amounts.</li></ul></div></div>${externalLink("https://wasabiwallet.io/")}</article>
+            <article id="specter" class="sc-detail"><h2>Specter</h2><p>Specter Desktop is a multisig coordinator built specifically for air-gapped signing, connecting to your own Bitcoin Core node and pairing with one of the widest hardware-wallet lineups of any wallet on this page—SeedSigner, Specter DIY, Blockstream Jade, COLDCARD, BitBox02, Passport, Keystone, Trezor, Ledger, KeepKey, and more, several of them fully air-gapped via QR or SD card.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Multisig setups spanning several different hardware-wallet brands.</li><li>Air-gapped signing as the default workflow, not an exception.</li><li>Running against your own Bitcoin Core node over Tor.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Desktop only—no mobile app, and no Lightning support.</li><li>Built for coordinating hardware signers, not as a general-purpose spending wallet.</li></ul></div></div>${externalLink("https://specter.solutions/")}</article>
             <div class="sc-callout mt-4"><h3>Never import hardware-wallet recovery words into ordinary software just to “connect” it</h3><p>Connect using the hardware integration, xpub, descriptor, wallet file, or PSBT process documented by the device maker. Typing the recovery phrase into an online computer defeats key isolation.</p></div>
             ${sourceNote([
               ["Sparrow", "https://sparrowwallet.com/features/"],
               ["BlueWallet", "https://bluewallet.io/features/"],
               ["Electrum", "https://electrum.org/"],
               ["Nunchuk", "https://nunchuk.io/"],
-              ["Cove", "https://covebitcoin.com/"]
+              ["Cove", "https://covebitcoin.com/"],
+              ["Wasabi", "https://wasabiwallet.io/"],
+              ["Specter", "https://specter.solutions/"]
             ])}
           </div>
         </section>`
@@ -808,9 +1079,9 @@
           <div class="container">
             <div class="sc-callout mb-5"><h2>Prices and fees are intentionally not ranked here</h2><p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p></div>
             <div class="sc-section-head"><span class="sc-eyebrow">Two models</span><h2>Direct-to-wallet versus custodial platform</h2></div>
-            <div class="row g-4">
-              <div class="col-lg-6"><article class="sc-card"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-arrow-right-circle"></i></div><h3>Direct-to-wallet broker</h3><p>You provide a wallet address and purchased bitcoin settles to that address. This reduces time held by the service but requires you to have a tested wallet first.</p><p><strong>Examples:</strong> Bull Bitcoin and Bitcoin Well describe direct self-custody purchase flows.</p></div></article></div>
-              <div class="col-lg-6"><article class="sc-card"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-building-lock"></i></div><h3>Custodial exchange or app</h3><p>The platform credits bitcoin to your account and holds the keys until you withdraw. It can be convenient for trading, but account access and platform solvency remain dependencies.</p><p><strong>Examples:</strong> Shakepay, Ndax, Kraken, and Bitbuy support external withdrawals.</p></div></article></div>
+            <div class="row g-4 sc-path-options">
+              <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-arrow-right-circle"></i></div><h3>Direct-to-wallet broker</h3><p>You provide a wallet address and purchased bitcoin settles to that address. This reduces time held by the service but requires you to have a tested wallet first.</p><p><strong>Examples:</strong> Bull Bitcoin and Bitcoin Well describe direct self-custody purchase flows.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
+              <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-building-lock"></i></div><h3>Custodial exchange or app</h3><p>The platform credits bitcoin to your account and holds the keys until you withdraw. It can be convenient for trading, but account access and platform solvency remain dependencies.</p><p><strong>Examples:</strong> Shakepay, Ndax, Kraken, and Bitbuy support external withdrawals.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
             </div>
           </div>
         </section>
@@ -818,16 +1089,111 @@
         <section id="exchange-compare" class="sc-section sc-section-muted">
           <div class="container">
             <div class="sc-section-head"><span class="sc-eyebrow">Comparison</span><h2>Choose based on the workflow you need</h2></div>
+            <div class="sc-matrix-legend" aria-label="Comparison legend">
+              <span><i class="sc-matrix-mark sc-matrix-yes" aria-hidden="true">&#10003;</i> Available</span>
+              <span><i class="sc-matrix-mark sc-matrix-partial" aria-hidden="true">&#9680;</i> Optional or model-dependent</span>
+              <span><i class="sc-matrix-mark sc-matrix-no" aria-hidden="true">&#8212;</i> Not part of the standard workflow</span>
+            </div>
             <div class="sc-table-wrap">
-              <table class="table sc-table">
-                <thead><tr><th>Platform</th><th>Custody model</th><th>CAD access</th><th>Good fit</th><th>Check before use</th></tr></thead>
+              <table class="table sc-table sc-feature-matrix">
+                <thead>
+                  <tr>
+                    <th scope="col">Platform</th>
+                    <th scope="col">Bull Bitcoin</th>
+                    <th scope="col">Bitcoin Well</th>
+                    <th scope="col">Shakepay</th>
+                    <th scope="col">Ndax</th>
+                    <th scope="col">Kraken</th>
+                    <th scope="col">Bitbuy</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  <tr><td><strong>Bull Bitcoin</strong></td><td>Bitcoin sent directly to your wallet on purchase</td><td>Interac e-Transfer and bank transfer options</td><td>Bitcoin-only, self-custody-first buying and selling</td><td>Quoted rate, spread, network fee, limits</td></tr>
-                  <tr><td><strong>Bitcoin Well</strong></td><td>Automatic self-custody; no customer bitcoin held</td><td>Online portal, Interac flows, cash ATMs, OTC</td><td>Direct-to-wallet purchases and cash access</td><td>Portal vs ATM pricing, verification rules, limits</td></tr>
-                  <tr><td><strong>Shakepay</strong></td><td>Custodial until withdrawn</td><td>Canadian funding with simple app experience</td><td>Easy recurring purchases and beginner workflow</td><td>Quote spread, withdrawal policy, supported assets</td></tr>
-                  <tr><td><strong>Ndax</strong></td><td>Custodial trading platform</td><td>Interac and bank funding</td><td>Order-book trading and transparent posted trading fee</td><td>Spread, asset-specific withdrawal fee, limits</td></tr>
-                  <tr><td><strong>Kraken</strong></td><td>Custodial global exchange</td><td>CAD, Interac, card, wire, and Canada Post options</td><td>Deeper trading tools, liquidity, and many assets</td><td>Simple-buy vs Pro pricing, funding and withdrawal fees</td></tr>
-                  <tr><td><strong>Bitbuy</strong></td><td>Custodial Canadian marketplace</td><td>Interac and bank wire</td><td>Canadian regulation, Express and Pro interfaces</td><td>Quote spread, Pro fees, crypto withdrawal fee</td></tr>
+                  <tr class="sc-matrix-group"><th colspan="7">Custody and asset scope</th></tr>
+                  <tr>
+                    <th scope="row">Direct-to-wallet settlement</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Non-custodial by design</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Non-custodial by design</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Custodial by default; manual transfer to your own wallet</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Custodial trading platform</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Custodial exchange</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Custodial marketplace</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Bitcoin-only platform</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Also ETH and other assets</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>30+ assets</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>175+ assets, plus stocks and futures</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Dozens of assets</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Order-book / pro trading interface</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Simple quoted-rate purchase only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Simple quoted-rate purchase only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No order books, by design</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Kraken Pro</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Bitbuy Pro</small></td>
+                  </tr>
+
+                  <tr class="sc-matrix-group"><th colspan="7">CAD funding</th></tr>
+                  <tr>
+                    <th scope="row">Interac e-Transfer</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Typically under 30 seconds</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>30 seconds or less</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>0% fee</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Bank wire</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Wire and Inbound Bill Payments accepted</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Via OTC desk, $10,000 minimum</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>0% fee, $10,000 minimum</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Cash / ATM access</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>160+ cash ATM locations</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Cash and debit via Canada Post</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                  </tr>
+
+                  <tr class="sc-matrix-group"><th colspan="7">Costs and features</th></tr>
+                  <tr>
+                    <th scope="row">Recurring buys (DCA)</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Recurring Interac e-Transfer</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Zero fees or spread</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Daily, weekly, or monthly, from $1</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Auto-invest</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Not listed in current fee or help docs</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Published flat trading fee</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Quoted rate/spread, not a flat published %</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Portal and ATM pricing differ</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Spread embedded in the quote</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Flat 0.20%, no tiers</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Simple-buy vs. Pro pricing differ</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Pro: 0.50%/0.50% maker/taker; Express embeds spread</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Free or flat-fee crypto withdrawals</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No separate withdrawal—bitcoin settles directly on purchase</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No separate withdrawal—bitcoin settles directly on purchase</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Free on-chain BTC mainnet and Lightning</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Flat amount, not free</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Dynamic, network-based fee</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Mixed: some assets free, BTC/ETH dynamic</small></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -858,70 +1224,212 @@
         </section>`
     },
 
-    services: {
-      title: "Self-Custody Education & Setup Support | Self Custody Canada",
-      description: "Educational sessions for wallet selection, setup planning, test transactions, recovery drills, privacy, and inheritance documentation.",
+    dashboard: {
+      title: "Live Bitcoin Dashboard | Self Custody Canada",
+      description: "Live Bitcoin dashboard: price in CAD and USD, sats per dollar, block height, fee rates, network hashrate, and the Fear & Greed index.",
       content: `
-        ${hero(
-          "Education and setup support",
-          "Get the help you need<br><em>to build a setup you can understand and recover.</em>",
-          "Practical one-on-one guidance for people who want a second set of eyes while choosing tools, planning backups, or rehearsing a transaction—without handing over control.",
-          `<a class="sc-btn sc-btn-primary" href="contact.html">Contact us</a>
-           <a class="sc-btn sc-btn-ghost" href="#boundaries">See service boundaries</a>`,
-          {
-            src: "assets/img/services-notebook.jpeg",
-            alt: "A leather notebook embossed with NOTES, spiral-bound in brass, on a wooden desk",
-            width: 1600,
-            height: 1067
-          }
-        )}
+        <section class="sc-blocks-top" aria-label="Latest Bitcoin blocks">
+          <div class="container sc-blocks-container">
+            <div class="sc-blocks" id="dash-blocks" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="sc-dash-hero">
+          <div class="sc-dash-glow" aria-hidden="true"></div>
+          <div class="container">
+            <div class="sc-dash-priceblock">
+              <div class="sc-dash-price-main">
+                <p class="sc-dash-price-label">Bitcoin price</p>
+                <p class="sc-dash-price" id="dash-price"><span class="sc-dash-skel sc-dash-skel-lg"></span></p>
+                <p class="sc-dash-price-sub">
+                  <span id="dash-price-alt" class="sc-dash-price-alt"></span>
+                  <span id="dash-change" class="sc-dash-change"></span>
+                </p>
+              </div>
+              <div class="sc-dash-status" id="dash-status">
+                <span class="sc-live-dot" aria-hidden="true"></span>
+                <span id="dash-updated">Connecting to the network…</span>
+              </div>
+              <div class="sc-dash-controls">
+                <div class="sc-seg" role="group" aria-label="Display currency">
+                  <span class="sc-seg-thumb" aria-hidden="true"></span>
+                  <button type="button" class="sc-seg-btn is-active" data-cur="CAD">CAD</button>
+                  <button type="button" class="sc-seg-btn" data-cur="USD">USD</button>
+                </div>
+                <div class="sc-seg" role="group" aria-label="Chart time range">
+                  <span class="sc-seg-thumb" aria-hidden="true"></span>
+                  <button type="button" class="sc-seg-btn" data-range="24h">24H</button>
+                  <button type="button" class="sc-seg-btn is-active" data-range="7d">7D</button>
+                  <button type="button" class="sc-seg-btn" data-range="30d">30D</button>
+                  <button type="button" class="sc-seg-btn" data-range="1y">1Y</button>
+                  <button type="button" class="sc-seg-btn" data-range="all">ALL</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sc-chart" id="dash-chart">
+              <svg class="sc-chart-svg" id="dash-chart-svg" aria-hidden="true" focusable="false"></svg>
+              <div class="sc-chart-state is-loading" id="dash-chart-state"><span>Loading price history…</span></div>
+              <div class="sc-chart-tip" id="dash-chart-tip" hidden></div>
+            </div>
+          </div>
+        </section>
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-section-head"><span class="sc-eyebrow">Ways we can help</span><h2>Focused sessions with a clear outcome</h2></div>
+            <div class="sc-section-head"><div class="sc-dash-section-title"><h2>THE Bitcoin Network</h2><span class="sc-dash-gears" aria-hidden="true"><i class="bi bi-gear-fill"></i><i class="bi bi-gear-fill"></i></span></div><p>Everything below is read live from public Bitcoin data sources and refreshes on its own. Nothing here is advice—it is the same public data your own node would show you.</p></div>
+
             <div class="row g-4">
-              ${card("bi-compass", "Wallet selection", "Translate your goals, devices, experience, balance, privacy needs, and recovery constraints into a practical shortlist.", "contact.html", "Discuss your needs")}
-              ${card("bi-shield-check", "Guided setup", "Walk through official setup steps, authenticity checks, backup decisions, test receives, and test sends while you retain control.", "contact.html", "Plan a session")}
-              ${card("bi-arrow-repeat", "Recovery rehearsal", "Create a safe test plan for proving that your backup, passphrase process, wallet configuration, and instructions work.", "contact.html", "Review recovery")}
-              ${card("bi-diagram-3", "Multisig planning", "Map keys, locations, devices, descriptors, quorum, recovery paths, and inheritance before creating a complex wallet.", "contact.html", "Plan carefully")}
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-currency-bitcoin"></i></span><h3 id="dash-sats-title">Sats per dollar</h3><button type="button" class="sc-swap" id="dash-sats-swap" title="Swap units" aria-label="Swap between sats per dollar and dollars per sat"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button></div>
+                    <p class="sc-dash-value" id="dash-sats">—</p>
+                    <p class="sc-dash-note" id="dash-sats-note">How many satoshis one dollar buys.</p>
+                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-sats-bar"></span></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-box"></i></span><h3>Block height</h3></div>
+                    <p class="sc-dash-value" id="dash-height">—</p>
+                    <p class="sc-dash-note" id="dash-height-note">Blocks mined since the genesis block.</p>
+                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-block-bar"></span></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-speedometer2"></i></span><h3>Lowest next-block fee</h3></div>
+                    <p class="sc-dash-value" id="dash-fee">—</p>
+                    <p class="sc-dash-note">Lowest fee rate currently projected to enter the next block.</p>
+                    <div class="sc-dash-fees" id="dash-fee-tiers"></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-cpu"></i></span><h3>Network hashrate</h3></div>
+                    <p class="sc-dash-value" id="dash-hashrate">—</p>
+                    <p class="sc-dash-note" id="dash-difficulty">Total mining power securing the chain.</p>
+                    <div class="sc-dash-spark" id="dash-hash-spark" aria-hidden="true"></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-arrow-repeat"></i></span><h3>Difficulty adjustment</h3></div>
+                    <p class="sc-dash-value" id="dash-diffchange">—</p>
+                    <p class="sc-dash-note" id="dash-diffnote">Difficulty retargets roughly every two weeks.</p>
+                    <div class="sc-dash-fees is-wide" id="dash-diff-tiers"></div>
+                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-diff-bar"></span></div>
+                    <p class="sc-dash-eta" id="dash-diff-eta" aria-live="polite"><span>Est.</span> <strong>Calculating&hellip;</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile sc-dash-tile-fng">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-emoji-neutral"></i></span><h3>Fear &amp; Greed</h3></div>
+                    <div class="sc-gauge">
+                      <svg viewBox="0 0 200 116" class="sc-gauge-svg" aria-hidden="true" focusable="false">
+                        <defs>
+                          <linearGradient id="scGaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#e2564a"></stop>
+                            <stop offset="35%" stop-color="#e8913c"></stop>
+                            <stop offset="65%" stop-color="#e5c343"></stop>
+                            <stop offset="100%" stop-color="#35b48a"></stop>
+                          </linearGradient>
+                        </defs>
+                        <path d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="14" stroke-linecap="round"></path>
+                        <path id="dash-fng-arc" d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="url(#scGaugeGrad)" stroke-width="14" stroke-linecap="round"></path>
+                        <g id="dash-fng-needle" style="transform-origin:100px 100px">
+                          <line x1="100" y1="100" x2="100" y2="46" stroke="var(--sc-ink)" stroke-width="3" stroke-linecap="round"></line>
+                          <circle cx="100" cy="100" r="7" fill="var(--sc-ink)"></circle>
+                        </g>
+                      </svg>
+                      <div class="sc-gauge-readout">
+                        <span class="sc-gauge-value" id="dash-fng">—</span>
+                        <span class="sc-gauge-label" id="dash-fng-label">Loading…</span>
+                      </div>
+                    </div>
+                    <p class="sc-dash-note mb-0">A sentiment gauge, not a signal. Zero is extreme fear, one hundred is extreme greed.</p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-pie-chart-fill"></i></span><h3>Supply progress</h3></div>
+                    <p class="sc-dash-value" id="dash-supply">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-supply-note">Scheduled issuance at the current block height.</p>
+                    <div class="sc-dash-fees is-wide">
+                      <span><em id="dash-supply-pct">&mdash;</em>issued</span>
+                      <span><em id="dash-supply-left">&mdash;</em>remaining</span>
+                      <span><em id="dash-supply-day">&mdash;</em>per day</span>
+                    </div>
+                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-supply-bar"></span></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-hourglass-split"></i></span><h3>Halving countdown</h3></div>
+                    <p class="sc-dash-value" id="dash-halving">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-halving-note">Estimated from the 10-minute block target.</p>
+                    <div class="sc-dash-fees is-wide">
+                      <span><em id="dash-halving-current">&mdash;</em>current</span>
+                      <span><em id="dash-halving-next">&mdash;</em>next</span>
+                      <span><em id="dash-halving-progress">&mdash;</em>epoch</span>
+                    </div>
+                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-halving-bar"></span></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <article class="sc-card sc-dash-tile sc-dash-tile-mempool">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-stack"></i></span><h3>Mempool backlog</h3></div>
+                    <p class="sc-dash-value" id="dash-mempool">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-mempool-note">Transactions waiting to be confirmed.</p>
+                    <div class="sc-dash-fees is-wide">
+                      <span><em id="dash-mempool-tx">&mdash;</em>transactions</span>
+                      <span><em id="dash-mempool-blocks">&mdash;</em>block equiv.</span>
+                      <span><em id="dash-mempool-fees">&mdash;</em>total fees</span>
+                    </div>
+                  </div>
+                </article>
+              </div>
             </div>
+            <p class="sc-source-note">Live data from <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer">mempool.space</a> and the <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener noreferrer">Fear &amp; Greed index</a>. Figures are informational only, refresh automatically, and may lag the chain by a few moments. Always verify anything that matters against your own node.</p>
           </div>
-        </section>
-
-        <section id="boundaries" class="sc-section sc-section-muted">
-          <div class="container">
-            <div class="row g-5">
-              <div class="col-lg-6"><div class="sc-detail h-100"><h2>What we do</h2><ul class="sc-check-list"><li>Teach concepts in plain language.</li><li>Use official vendor documentation and test amounts.</li><li>Help you compare trade-offs and document decisions.</li><li>Guide you while you operate your own devices.</li><li>Review a recovery and inheritance process without collecting secrets.</li></ul></div></div>
-              <div class="col-lg-6"><div class="sc-detail h-100"><h2>What we never need</h2><ul class="sc-caution-list"><li>Your recovery words, private keys, PIN, passphrase, or wallet backup file.</li><li>Remote control of a funded wallet or exchange account.</li><li>Permission to hold, move, or trade bitcoin for you.</li><li>A percentage of your assets or transaction.</li><li>Access to tax, legal, or investment decisions outside educational scope.</li></ul></div></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="sc-section">
-          <div class="container">
-            <div class="sc-section-head"><span class="sc-eyebrow">Before a session</span><h2>Prepare without exposing secrets</h2></div>
-            <div class="row justify-content-center"><div class="col-lg-9">
-              <div class="sc-step"><span class="sc-step-number">1</span><div><h3>Write down the outcome</h3><p>Examples: choose a first hardware wallet, complete a test withdrawal, or design a recovery drill.</p></div></div>
-              <div class="sc-step"><span class="sc-step-number">2</span><div><h3>Use an unfunded or low-value test wallet</h3><p>Learning should not put meaningful savings at risk. Have a small test amount available when transactions are part of the session.</p></div></div>
-              <div class="sc-step"><span class="sc-step-number">3</span><div><h3>Protect the camera and screen</h3><p>Recovery words, PINs, passphrases, QR backups, and private keys must stay out of video calls, screen sharing, recordings, and messages.</p></div></div>
-              <div class="sc-step"><span class="sc-step-number">4</span><div><h3>Bring official documentation</h3><p>Use the manufacturer's current setup and recovery pages so button labels, firmware steps, and supported workflows are not guessed.</p></div></div>
-            </div></div>
-          </div>
-        </section>
-
-        <section class="sc-cta"><div class="container"><div class="row align-items-center"><div class="col-md-8"><h2>Have a specific custody question?</h2><p>Describe the outcome you want, the devices you already own, and your experience level—never include wallet secrets.</p></div><div class="col-md-4 text-md-end"><a class="sc-btn" href="contact.html">Get in touch</a></div></div></div></section>`
+        </section>`
     },
 
     contact: {
-      title: "Contact | Self Custody Canada",
-      description: "Contact Self Custody Canada for educational questions about Bitcoin wallets, hardware devices, withdrawals, backups, and recovery planning.",
+      title: "Contact & Setup Support | Self Custody Canada",
+      description: "Book a free 20-minute discovery call, explore packages and hourly sessions, or email us directly with questions about wallets, devices, and recovery planning.",
       content: `
         ${hero(
           "Contact",
           `Ask your questions while protecting<br><em><span class="sc-hero-flip" aria-live="polite" data-flip-phrases='["your PIN","your private key","your passphrase","your backup","your personal info"]'><span class="sc-hero-flip-item is-active">your PIN</span></span></em>`,
-          "Tell us what you are trying to accomplish and where you are stuck. Never send recovery words, private keys, PINs, passphrases, wallet files, or personal information.",
-          `<a class="sc-btn sc-btn-primary" href="mailto:info@selfcustody.ca">Email info@selfcustody.ca</a>
-           <a class="sc-btn sc-btn-ghost" href="services.html">Review services</a>`,
+          "Practical one-on-one guidance for people who want a second set of eyes while choosing tools, planning backups, or rehearsing a transaction—without handing over control.",
+          `<a class="sc-btn sc-btn-primary" href="#book">Book a free call</a>
+           <a class="sc-btn sc-btn-ghost" href="#packages">See packages</a>`,
           {
             src: "assets/img/hero-lock.webp",
             alt: "A padlock securing a hasp, graded in the site's brand orange",
@@ -930,25 +1438,128 @@
           }
         )}
 
+        <section id="packages" class="sc-section">
+          <div class="container">
+            <div class="sc-section-head centered"><span class="sc-eyebrow">Packages</span><h2>By the hour,<br>or complete packages</h2><p>Every package starts with a free discovery call, so scope is agreed before anything is booked or paid for.</p></div>
+            <div class="row g-4 justify-content-center sc-path-options">
+              ${pricingCard({
+                badge: "Most flexible",
+                title: "Hourly 1:1",
+                price: "Contact for current rate",
+                priceNote: "billed per hour",
+                sessions: "As many hours as you need",
+                text: "For a focused question that doesn't need a full package—one topic, one session, booked directly after your free discovery call.",
+                features: [
+                  "Wallet comparison and recommendation for your situation",
+                  "A guided setup checkpoint on a device you already own",
+                  "A backup or recovery process review",
+                  "A single test-transaction walkthrough"
+                ],
+                href: "#book",
+                linkText: "Book an hourly session"
+              })}
+              ${pricingCard({
+                title: "New Wallet Setup — Single Sig",
+                price: "Starting at $XXX CAD",
+                priceNote: "placeholder — replace with your real price",
+                text: "Choose, set up, and stress-test a single-signature hardware wallet—from first purchase decision to a proven, working setup.",
+                features: [
+                  "Wallet shortlist based on your goals and budget",
+                  "Guided device setup, walked through step by step",
+                  "Passphrase planning and a full recovery rehearsal",
+                  "First test transaction, verified on-device"
+                ],
+                href: "#book",
+                linkText: "Start single sig setup"
+              })}
+              ${pricingCard({
+                title: "New Wallet Setup — Multisig",
+                price: "Starting at $XXX CAD",
+                priceNote: "placeholder — replace with your real price",
+                text: "For larger balances or multiple keys: a multisig quorum you understand and can operate confidently.",
+                features: [
+                  "Multisig quorum and key/device diversity design",
+                  "Key and location mapping across signers",
+                  "Recovery drill across multiple keys",
+                  "Written summary of the quorum and signing procedure"
+                ],
+                href: "#book",
+                linkText: "Start multisig setup"
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section class="sc-section sc-section-muted">
+          <div class="container">
+            <div class="row g-5 align-items-center">
+              <div class="col-lg-7">
+                <span class="sc-eyebrow">No pressure, no pitch</span>
+                <h2>Start with a free 20-minute discovery call</h2>
+                <p>Before any package or paid session, we get on a short call to understand what you're trying to accomplish, what you already own, and whether we're a good fit. There's no obligation, no sales pressure, and we never ask for recovery words, keys, or account access on this call or any other.</p>
+                <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#book">Book a free call</a></div>
+              </div>
+              <div class="col-lg-5">
+                <div class="sc-callout h-100"><h3 class="mt-0">What the call covers</h3><ul class="sc-check-list"><li>Your goals, balance range, and experience level.</li><li>Which devices or software you already have.</li><li>Whether a package, a single hourly session, or just a guide article is the right fit.</li><li>A plain answer if we're not the right fit for what you need.</li></ul></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="sc-section">
           <div class="container">
+            <div class="sc-section-head centered"><span class="sc-eyebrow">Topics we cover</span><h2>Bring any of these to a session</h2><p>Packages bundle sessions toward one outcome; hourly sessions below can focus on just one of these.</p></div>
+            <div class="sc-tags sc-tags-lg justify-content-center">
+              <span class="sc-tag">Hardware wallet selection</span>
+              <span class="sc-tag">Seed generation</span>
+              <span class="sc-tag">Guided device setup</span>
+              <span class="sc-tag">Recovery word backups</span>
+              <span class="sc-tag">Passphrases</span>
+              <span class="sc-tag">Test transactions</span>
+              <span class="sc-tag">Software wallet comparison</span>
+              <span class="sc-tag">Multisig planning</span>
+              <span class="sc-tag">Privacy basics</span>
+              <span class="sc-tag">Seed and device authenticity checks</span>
+              <span class="sc-tag">Exchange withdrawal walkthroughs</span>
+              <span class="sc-tag">Recovery rehearsal / drills</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="sc-section sc-section-muted">
+          <div class="container">
+            <div class="row g-5 align-items-center">
+              <div class="col-lg-6">
+                <span class="sc-eyebrow">Prefer to pay as you go?</span>
+                <h2>Hourly 1:1 sessions</h2>
+                <p>For a focused question that doesn't need a full package—one topic, one session, booked directly after your free discovery call.</p>
+                <p class="sc-price">Contact for current rate<small>billed per hour</small></p>
+                <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#book">Book a free call</a></div>
+              </div>
+              <div class="col-lg-6">
+                <div class="sc-callout h-100"><h3 class="mt-0">What a typical hour covers</h3><ul class="sc-check-list"><li>Wallet comparison and recommendation for your situation.</li><li>A guided setup checkpoint on a device you already own.</li><li>A backup or recovery process review.</li><li>A single test-transaction walkthrough.</li></ul><p class="sc-source-note mb-0">Larger topics (full setup, recovery rehearsal, multisig) usually take more than one hour—see the packages above.</p></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="boundaries" class="sc-section">
+          <div class="container">
+            <div class="sc-section-head centered"><span class="sc-eyebrow">Before you reach out</span><h2>What to expect, and what to have ready</h2><p>Whether you book a call or email us, having this ready up front saves time.</p></div>
             <div class="row g-5">
-              <div class="col-lg-7">
-                <div class="sc-detail">
-                  <span class="sc-eyebrow">A useful first message</span><h2>Include context, not credentials</h2>
+              <div class="col-lg-4"><div class="sc-detail h-100"><h2>What we do</h2><ul class="sc-check-list"><li>Teach concepts in plain language.</li><li>Use official vendor documentation and test amounts.</li><li>Help you compare trade-offs and document decisions.</li><li>Guide you while you operate your own devices.</li><li>Review a recovery process without collecting secrets.</li></ul></div></div>
+              <div class="col-lg-4"><div class="sc-detail h-100"><h2>What we avoid</h2><ul class="sc-caution-list"><li>Your recovery words, private keys, PIN, passphrase, or wallet backup file.</li><li>Remote control of a funded wallet or exchange account.</li><li>A "verification" transaction to an address we provide.</li><li>Permission to hold, move, or trade bitcoin for you.</li><li>A percentage of your assets or transaction.</li><li>Access to tax, legal, or investment decisions outside educational scope.</li></ul></div></div>
+              <div class="col-lg-4">
+                <div class="sc-detail h-100">
+                  <h2>Helpful notes</h2>
                   <ul class="sc-check-list">
                     <li>Your goal: first withdrawal, wallet selection, recovery rehearsal, multisig plan, or another specific outcome.</li>
                     <li>Your experience level and whether you have completed a Bitcoin transaction before.</li>
                     <li>The device and wallet-software names you are considering or already use.</li>
                     <li>Your computer or phone platform, without serial numbers or account details.</li>
-                    <li>The exact public error message, with names, addresses, balances, transaction IDs, and personal data removed.</li>
                   </ul>
-                  <a class="sc-btn sc-btn-primary mt-3" href="mailto:info@selfcustody.ca?subject=Self-custody%20question">Write an email <i class="bi bi-envelope"></i></a>
+                  <div class="sc-hero-actions mt-3"><a class="sc-btn sc-btn-primary" href="mailto:info@selfcustody.ca?subject=Self-custody%20question">Email <i class="bi bi-envelope"></i></a></div>
                 </div>
-              </div>
-              <div class="col-lg-5">
-                <div class="sc-callout"><h3>We will never ask for</h3><ul class="sc-caution-list mb-0"><li>Recovery words or a photo of them</li><li>A private key or wallet backup</li><li>Your PIN or passphrase</li><li>Remote control of a funded wallet</li><li>A “verification” transaction to an address we provide</li></ul></div>
-                <div class="sc-card mt-4"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-geo-alt"></i></div><h3>Based in Ontario, Canada</h3><p>Educational content is written for a Canadian audience, but Bitcoin wallet principles are global.</p><p><a class="sc-text-link" href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></p></div></div>
               </div>
             </div>
           </div>
@@ -956,7 +1567,7 @@
 
         <section class="sc-section sc-section-muted">
           <div class="container">
-            <div class="sc-section-head centered"><span class="sc-eyebrow">Quick answers</span><h2>Before you email</h2></div>
+            <div class="sc-section-head centered"><span class="sc-eyebrow">Quick answers</span><h2>Common questions</h2></div>
             <div class="row g-4">
               <div class="col-md-6"><article class="sc-detail h-100"><h3 class="mt-0">Can you recover lost recovery words?</h3><p>No. A legitimate helper cannot recreate unknown keys or bypass Bitcoin cryptography. Anyone promising guaranteed recovery may be attempting to steal additional information or payment.</p></article></div>
               <div class="col-md-6"><article class="sc-detail h-100"><h3 class="mt-0">Can you choose the best wallet for me?</h3><p>We can compare options against your needs and explain trade-offs. The final decision and custody responsibility stay with you.</p></article></div>
@@ -964,8 +1575,37 @@
               <div class="col-md-6"><article class="sc-detail h-100"><h3 class="mt-0">Is this financial, legal, or tax advice?</h3><p>No. The site is educational. Use a qualified professional for investment, tax, estate, and legal decisions.</p></article></div>
             </div>
           </div>
+        </section>
+
+        <section id="book" class="sc-section">
+          <div class="container">
+            <div class="sc-section-head centered"><span class="sc-eyebrow">Ready when you are</span><h2>Pick a time for your free call</h2></div>
+            <div class="row justify-content-center"><div class="col-lg-8">
+              <div class="sc-callout text-center">
+                <!-- TODO: replace href="#" with your real Calendly (or other booking tool) link -->
+                <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#">Open booking calendar <i class="bi bi-arrow-right"></i></a></div>
+                <p class="sc-source-note mb-0">Prefer email? Use the form above and we'll reply directly.</p>
+              </div>
+            </div></div>
+          </div>
         </section>`
     }
+  };
+
+  /* Temporary holding page. Keep the full contact-page definition above in
+     place so it can be restored when booking and support are ready to open. */
+  pages.contact = {
+    title: "Coming Soon | Self Custody Canada",
+    description: "Self Custody Canada's contact and setup-support page is coming soon.",
+    content: `
+      <section class="sc-coming-soon" aria-labelledby="coming-soon-title">
+        <div class="sc-coming-soon-inner">
+          <h1 id="coming-soon-title">Coming soon</h1>
+          <figure class="sc-coming-soon-mark">
+            <img src="assets/img/self-custody-symbol.svg" alt="Self Custody four-circle logo" width="920" height="320">
+          </figure>
+        </div>
+      </section>`
   };
 
   const renderHeader = () => {
@@ -1013,7 +1653,6 @@
             <h4>Explore</h4>
             <ul class="sc-footer-links">
               <li><a href="coinkite.html">Coinkite products</a></li>
-              <li><a href="services.html">Services</a></li>
               <li><a href="contact.html">Get Help</a></li>
             </ul>
           </div>
@@ -1042,10 +1681,11 @@
   document.getElementById("site-footer").innerHTML = renderFooter();
 
   const header = document.getElementById("header");
-  if (pageKey === "home" && header) {
+  if ((pageKey === "home" || pageKey === "dashboard") && header) {
     let headerFadeFrame = 0;
     const updateHeaderFade = () => {
-      const progress = Math.min(Math.max(window.scrollY / 160, 0), 1);
+      const fadeDistance = pageKey === "dashboard" ? 100 : 160;
+      const progress = Math.min(Math.max(window.scrollY / fadeDistance, 0), 1);
       header.style.setProperty("--sc-header-progress", progress.toFixed(3));
       headerFadeFrame = 0;
     };
@@ -1314,6 +1954,1228 @@
     };
 
     setInterval(advanceFlip, 3900);
+  }
+
+
+  /**
+   * Live Bitcoin dashboard.
+   *
+   * Everything is read client-side from public, CORS-enabled endpoints --
+   * there is no backend here, so each widget degrades on its own: a failed
+   * request leaves that tile showing a dash instead of taking the page down.
+   *
+   * The price history is fetched ONCE (mempool returns hourly points for both
+   * CAD and USD in a single response; USD reaches July 2010 while CAD starts
+   * later. The result is then sliced in memory
+   * for every range button. That is a chunkier first load in exchange for
+   * range switching that costs no network round-trip at all.
+   */
+  if (pageKey === "dashboard") {
+    const $ = id => document.getElementById(id);
+
+    const state = {
+      history: [],       // [{ t, CAD, USD }] ascending
+      currency: "CAD",
+      range: "7d",
+      hover: null,
+      tipHeight: null,
+      blockTimers: [],
+      projectedBlock: null,
+      mempoolStats: null,
+      mempoolSocket: null,
+      socketReconnectTimer: null,
+      socketReconnectMs: 2000,
+      socketStopped: false,
+      blockRefreshQueued: false
+    };
+
+    const RANGE_SECONDS = {
+      "24h": 86400,
+      "7d": 604800,
+      "30d": 2592000,
+      "1y": 31536000,
+      "all": Infinity
+    };
+
+    const HALVING_INTERVAL = 210000;
+    const DISPLAY_SUPPLY_LIMIT = 21000000;
+
+    const fmtMoney = (v, cur) => new Intl.NumberFormat("en-CA", {
+      style: "currency", currency: cur, maximumFractionDigits: 0
+    }).format(v);
+
+    const fmtMoneyPrecise = (v, cur) => new Intl.NumberFormat("en-CA", {
+      style: "currency", currency: cur,
+      minimumFractionDigits: v < 1000 ? 2 : 0, maximumFractionDigits: v < 1000 ? 2 : 0
+    }).format(v);
+
+    const fmtInt = v => new Intl.NumberFormat("en-CA").format(Math.round(v));
+
+    const fmtFeeNumber = value => {
+      if (value === null || value === undefined || value === "") return "—";
+      const fee = Number(value);
+      if (!Number.isFinite(fee)) return "—";
+      return new Intl.NumberFormat("en-CA", { maximumFractionDigits: 2 }).format(fee);
+    };
+
+    const fmtFeeRate = value => {
+      const formatted = fmtFeeNumber(value);
+      return formatted === "—" ? formatted : formatted + " sat/vB";
+    };
+
+    /* Maps 0..1 onto a red-yellow-green ramp: hue does the work while
+       lightness climbs, so the bottom is a deep warning red and the top a
+       bright green rather than both ending up the same muddy weight.
+       Callers pass 0 for the "bad" end, so a scale running the other way
+       (fees) just inverts its input.
+
+       The hue is piecewise for two reasons. The midpoint has to land exactly
+       on yellow (60deg), and the top has to land on 152deg rather than a
+       pure 120deg green -- the site's existing positive green (#6fd8b2 and
+       --sc-success) sits at hue ~158, so a 120deg green read as a different
+       colour sitting next to it. Saturation and lightness are tuned to the
+       same end point, which puts the top of the ramp within a few percent of
+       #6fd8b2. */
+    const scaleColor = t => {
+      const c = Math.min(Math.max(t, 0), 1);
+      const hue = c <= 0.5 ? c * 120 : 60 + (c - 0.5) * 184;
+      return "hsl(" + Math.round(hue) + ", " +
+        Math.round(72 - c * 15) + "%, " +
+        Math.round(43 + c * 21) + "%)";
+    };
+
+    const fetchJSON = async (url, ms = 12000) => {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), ms);
+      try {
+        const res = await fetch(url, { signal: ctrl.signal });
+        if (!res.ok) throw new Error(res.status);
+        return await res.json();
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    const fetchText = async (url, ms = 12000) => {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), ms);
+      try {
+        const res = await fetch(url, { signal: ctrl.signal });
+        if (!res.ok) throw new Error(res.status);
+        return await res.text();
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    /* Count-up so refreshed numbers read as movement rather than a jump cut.
+       Reduced-motion visitors get the final value immediately. */
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const animateValue = (el, to, format, ms = 620) => {
+      if (!el) return;
+      const from = Number(el.dataset.val || 0);
+      el.dataset.val = String(to);
+      if (reduceMotion || !from || from === to) {
+        el.textContent = format(to);
+        return;
+      }
+      const start = performance.now();
+      const tick = now => {
+        const p = Math.min((now - start) / ms, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = format(from + (to - from) * eased);
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    /* Tint the figure green/red for a beat when it moves, then let it settle
+       back to normal ink -- a permanent tint would just read as a colour
+       choice rather than as "this number just changed". */
+    let flashTimer = 0;
+    const flash = (el, up) => {
+      if (!el || reduceMotion) return;
+      el.classList.remove("is-up", "is-down");
+      void el.offsetWidth;
+      el.classList.add(up ? "is-up" : "is-down");
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(() => el.classList.remove("is-up", "is-down"), 1400);
+    };
+
+    // ---------------------------------------------------------------- chart
+    const chartEl = $("dash-chart");
+    const svg = $("dash-chart-svg");
+    const tip = $("dash-chart-tip");
+    const chartState = $("dash-chart-state");
+    const NS = "http://www.w3.org/2000/svg";
+
+    let plot = null;   // geometry of the last render, for hit-testing
+    let selAnchor = null;  // index a drag-to-measure started from, null when idle
+
+    const visibleSeries = () => {
+      const cutoff = RANGE_SECONDS[state.range];
+      const now = Math.floor(Date.now() / 1000);
+      const key = state.currency;
+      let pts = state.history.filter(p => p[key] > 0);
+      if (cutoff !== Infinity) pts = pts.filter(p => p.t >= now - cutoff);
+      if (pts.length < 2) return pts;
+      /* Long ranges hold tens of thousands of hourly points; drawing them all
+         costs a lot of path data for sub-pixel detail nobody can see. Stride
+         down to a sane ceiling, always keeping the newest point. */
+      const MAX = 800;
+      if (pts.length > MAX) {
+        /* Source density changes from weekly historical points to hourly
+           recent points. Sampling by array stride would therefore throw
+           away most early history. Pick the nearest point at evenly spaced
+           timestamps so every era receives equal visual resolution. */
+        const out = [pts[0]];
+        const start = pts[0].t;
+        const end = pts[pts.length - 1].t;
+        let cursor = 1;
+        for (let i = 1; i < MAX - 1; i++) {
+          const target = start + (i / (MAX - 1)) * (end - start);
+          while (cursor < pts.length - 1 && pts[cursor].t < target) cursor++;
+          const before = pts[cursor - 1];
+          const after = pts[cursor];
+          const chosen = Math.abs(before.t - target) <= Math.abs(after.t - target) ? before : after;
+          if (out[out.length - 1] !== chosen) out.push(chosen);
+        }
+        if (out[out.length - 1] !== pts[pts.length - 1]) out.push(pts[pts.length - 1]);
+        return out;
+      }
+      return pts;
+    };
+
+    const setChartState = (message, loading) => {
+      if (!chartState) return;
+      chartState.hidden = false;
+      chartState.classList.toggle("is-loading", Boolean(loading));
+      const label = chartState.querySelector("span");
+      if (label) label.textContent = message;
+      else chartState.textContent = message;
+    };
+
+    const renderChart = (animate = true) => {
+      if (!svg || !chartEl) return;
+      const pts = visibleSeries();
+      const w = chartEl.clientWidth;
+      const h = chartEl.clientHeight;
+      if (!w || !h) return;
+
+      if (pts.length < 2) {
+        svg.replaceChildren();
+        /* Still waiting on the one history request = shimmer. Anything else
+           (empty range, dead endpoint) is a settled result, so it gets plain
+           static text instead of a busy animation. */
+        if (state.history.length) setChartState("No price history for this range.", false);
+        else setChartState("Loading price history…", true);
+        selAnchor = null;
+        chartEl.classList.remove("is-measuring", "is-gain", "is-loss");
+        if (tip) tip.hidden = true;
+        plot = null;
+        return;
+      }
+      if (chartState) chartState.hidden = true;
+
+      const key = state.currency;
+      const padL = 10, padR = 66, padT = 18, padB = 28;
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      let min = Infinity, max = -Infinity;
+      for (const p of pts) {
+        if (p[key] < min) min = p[key];
+        if (p[key] > max) max = p[key];
+      }
+      const span = (max - min) || max || 1;
+      min = Math.max(0, min - span * 0.08);
+      max += span * 0.08;
+
+      const minT = pts[0].t;
+      const maxT = pts[pts.length - 1].t;
+      const timeSpan = (maxT - minT) || 1;
+      const x = i => padL + ((pts[i].t - minT) / timeSpan) * plotW;
+      const y = v => padT + (1 - (v - min) / (max - min)) * plotH;
+
+      const line = [];
+      for (let i = 0; i < pts.length; i++) {
+        line.push((i ? "L" : "M") + x(i).toFixed(1) + " " + y(pts[i][key]).toFixed(1));
+      }
+      const linePath = line.join(" ");
+      const areaPath = linePath + " L" + x(pts.length - 1).toFixed(1) + " " + (padT + plotH) +
+                       " L" + x(0).toFixed(1) + " " + (padT + plotH) + " Z";
+
+      const rising = pts[pts.length - 1][key] >= pts[0][key];
+      const stroke = rising ? "var(--sc-success)" : "#e2564a";
+
+      svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+      svg.setAttribute("width", w);
+      svg.setAttribute("height", h);
+
+      const make = (tag, attrs, text) => {
+        const el = document.createElementNS(NS, tag);
+        for (const k in attrs) el.setAttribute(k, attrs[k]);
+        if (text != null) el.textContent = text;
+        return el;
+      };
+
+      const frag = document.createDocumentFragment();
+
+      const defs = make("defs");
+      const grad = make("linearGradient", { id: "scChartFill", x1: "0", y1: "0", x2: "0", y2: "1" });
+      grad.append(
+        make("stop", { offset: "0%", "stop-color": stroke, "stop-opacity": "0.30" }),
+        make("stop", { offset: "100%", "stop-color": stroke, "stop-opacity": "0" })
+      );
+      defs.append(grad);
+      frag.append(defs);
+
+      // horizontal guides + right-edge price labels
+      const STEPS = 4;
+      for (let i = 0; i <= STEPS; i++) {
+        const v = min + ((max - min) * i) / STEPS;
+        const gy = y(v);
+        frag.append(make("line", {
+          x1: padL, y1: gy.toFixed(1), x2: (padL + plotW).toFixed(1), y2: gy.toFixed(1),
+          stroke: "rgba(255,255,255,0.06)", "stroke-width": "1"
+        }));
+        frag.append(make("text", {
+          x: (padL + plotW + 10).toFixed(1), y: (gy + 4).toFixed(1),
+          fill: "var(--sc-muted)", "font-size": "11", "font-weight": "600"
+        }, fmtMoney(v, key)));
+      }
+
+      // time labels along the bottom
+      const labelCapacity = Math.max(3, Math.min(9, Math.floor(plotW / 130) + 1));
+      const labelTargets = { "24h": 7, "7d": 7, "30d": 8, "1y": 8, "all": 9 };
+      const LABELS = Math.min(pts.length, labelCapacity, labelTargets[state.range]);
+      for (let i = 0; i < LABELS; i++) {
+        const ratio = i / (LABELS - 1);
+        const d = new Date((minT + ratio * timeSpan) * 1000);
+        let label;
+        if (state.range === "24h") {
+          label = d.toLocaleTimeString("en-CA", { hour: "numeric", hour12: true });
+        } else if (state.range === "all") {
+          label = d.toLocaleDateString("en-CA", { year: "numeric" });
+        } else if (state.range === "1y") {
+          label = d.toLocaleDateString("en-CA", { month: "short", year: "numeric" });
+        } else {
+          label = d.toLocaleDateString("en-CA", { month: "short", day: "numeric" });
+        }
+        const tx = Math.min(Math.max(padL + ratio * plotW, padL + 18), padL + plotW - 18);
+        frag.append(make("text", {
+          x: tx.toFixed(1), y: (h - 8).toFixed(1), fill: "var(--sc-muted)",
+          "font-size": "11", "font-weight": "600", "text-anchor": "middle"
+        }, label));
+      }
+
+      frag.append(make("path", { d: areaPath, fill: "url(#scChartFill)" }));
+
+      /* Drag-to-measure band. Sits between the area fill and the line so the
+         highlight reads as behind the price rather than washing over it.
+         Hidden until a drag starts. */
+      const sel = make("g", { id: "scChartSel", opacity: "0" });
+      const selRect = make("rect", {
+        y: padT.toFixed(1), height: plotH.toFixed(1), width: "0",
+        fill: "rgba(255,255,255,0.08)"
+      });
+      const selLine = make("line", {
+        y1: padT.toFixed(1), y2: (padT + plotH).toFixed(1),
+        stroke: "rgba(255,255,255,0.5)", "stroke-width": "1.5"
+      });
+      const selDot = make("circle", {
+        r: "4.5", fill: "var(--sc-paper)", stroke: "rgba(255,255,255,0.85)", "stroke-width": "2"
+      });
+      sel.append(selRect, selLine, selDot);
+      frag.append(sel);
+
+      const path = make("path", {
+        d: linePath, fill: "none", stroke: stroke, "stroke-width": "2.25",
+        "stroke-linejoin": "round", "stroke-linecap": "round"
+      });
+      frag.append(path);
+
+      // crosshair, hidden until pointer entry
+      const cross = make("g", { id: "scChartCross", opacity: "0" });
+      cross.append(make("line", {
+        y1: padT, y2: (padT + plotH).toFixed(1), stroke: "rgba(255,255,255,0.35)",
+        "stroke-width": "1", "stroke-dasharray": "3 3"
+      }));
+      cross.append(make("circle", { r: "5", fill: stroke, stroke: "var(--sc-paper)", "stroke-width": "2.5" }));
+      frag.append(cross);
+
+      svg.replaceChildren(frag);
+
+      if (animate && !reduceMotion) {
+        const len = path.getTotalLength();
+        path.style.transition = "none";
+        path.style.strokeDasharray = len;
+        path.style.strokeDashoffset = len;
+        void path.getBoundingClientRect();
+        path.style.transition = "stroke-dashoffset 900ms cubic-bezier(0.22, 1, 0.36, 1)";
+        path.style.strokeDashoffset = "0";
+      }
+
+      /* A re-render replaces the SVG contents, so any live measurement is
+         gone with it -- drop the anchor too or the next pointermove would
+         measure from an index belonging to the previous range. */
+      selAnchor = null;
+      chartEl.classList.remove("is-measuring", "is-gain", "is-loss");
+      if (tip) tip.hidden = true;
+      plot = { pts, key, x, y, minT, maxT, padL, padR, padT, padB, plotW, plotH, w, h, cross,
+               stroke, sel: { g: sel, rect: selRect, line: selLine, dot: selDot } };
+    };
+
+    const idxFromClientX = clientX => {
+      const rect = svg.getBoundingClientRect();
+      const ratio = Math.min(Math.max((clientX - rect.left - plot.padL) / plot.plotW, 0), 1);
+      const target = plot.minT + ratio * (plot.maxT - plot.minT);
+      let lo = 0, hi = plot.pts.length - 1;
+      while (lo < hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        if (plot.pts[mid].t < target) lo = mid + 1;
+        else hi = mid;
+      }
+      if (lo > 0 && Math.abs(plot.pts[lo - 1].t - target) < Math.abs(plot.pts[lo].t - target)) return lo - 1;
+      return lo;
+    };
+
+    const positionTipAwayFromPoint = (cx, cy, fallbackWidth) => {
+      if (!tip || !plot) return;
+      const gap = 16;
+      const edge = 6;
+      const tw = tip.offsetWidth || fallbackWidth;
+      const th = tip.offsetHeight || 48;
+      const left = Math.min(Math.max(cx - tw / 2, edge), plot.w - tw - edge);
+      let top = cy - th - gap;
+      if (top < edge) top = cy + gap;
+      top = Math.min(Math.max(top, edge), plot.h - th - edge);
+      tip.style.left = left + "px";
+      tip.style.top = top + "px";
+    };
+
+    const moveCrosshair = clientX => {
+      if (!plot) return;
+      const idx = idxFromClientX(clientX);
+      const p = plot.pts[idx];
+      const cx = plot.x(idx), cy = plot.y(p[plot.key]);
+
+      const g = plot.cross;
+      g.setAttribute("opacity", "1");
+      g.firstChild.setAttribute("x1", cx.toFixed(1));
+      g.firstChild.setAttribute("x2", cx.toFixed(1));
+      g.lastChild.setAttribute("cx", cx.toFixed(1));
+      g.lastChild.setAttribute("cy", cy.toFixed(1));
+
+      if (tip) {
+        const d = new Date(p.t * 1000);
+        const dateOptions = state.range === "all"
+          ? { year: "numeric", month: "short", day: "numeric" }
+          : { year: "numeric", month: "short", day: "numeric", hour: "numeric", hour12: true };
+        tip.hidden = false;
+        tip.innerHTML = "<strong>" + fmtMoneyPrecise(p[plot.key], plot.key) + "</strong><span>" +
+          d.toLocaleString("en-CA", dateOptions) + "</span>";
+        positionTipAwayFromPoint(cx, cy, 150);
+      }
+    };
+
+    const hideCrosshair = () => {
+      if (plot) plot.cross.setAttribute("opacity", "0");
+      if (tip) tip.hidden = true;
+    };
+
+    /* Press-and-drag measurement, the way the iOS Stocks chart works: the
+       press sets an anchor, dragging measures from there to wherever the
+       pointer is now, and the header chip reports that instead of the
+       range's own change until the pointer is released. Works in both
+       directions -- drag left from the anchor and it measures backwards. */
+    const paintSelection = idx => {
+      if (!plot || selAnchor === null) return;
+      const s = plot.sel;
+      const ax = plot.x(selAnchor), cx = plot.x(idx);
+      s.g.setAttribute("opacity", "1");
+      s.rect.setAttribute("x", Math.min(ax, cx).toFixed(1));
+      s.rect.setAttribute("width", Math.abs(cx - ax).toFixed(1));
+      s.line.setAttribute("x1", ax.toFixed(1));
+      s.line.setAttribute("x2", ax.toFixed(1));
+      s.dot.setAttribute("cx", ax.toFixed(1));
+      s.dot.setAttribute("cy", plot.y(plot.pts[selAnchor][plot.key]).toFixed(1));
+
+      const from = plot.pts[selAnchor][plot.key];
+      const to = plot.pts[idx][plot.key];
+      const diff = to - from;
+      const up = diff > 0;
+      const down = diff < 0;
+      const tone = up ? "#35b48a" : down ? "#c94b43" : "#ff8a00";
+      const wash = up ? "rgba(53,180,138,0.13)" : down ? "rgba(181,53,47,0.16)" : "rgba(255,138,0,0.11)";
+      const sign = up ? "+" : down ? "-" : "";
+      const pct = Math.abs(from ? (diff / from) * 100 : 0);
+
+      s.rect.setAttribute("fill", wash);
+      s.line.setAttribute("stroke", tone);
+      s.dot.setAttribute("stroke", tone);
+      plot.cross.lastChild.setAttribute("fill", tone);
+      chartEl.classList.toggle("is-gain", up);
+      chartEl.classList.toggle("is-loss", down);
+
+      const el = $("dash-change");
+      if (el) {
+        el.className = "sc-dash-change is-measuring " + (up ? "is-positive" : down ? "is-negative" : "");
+        el.innerHTML = "<i class=\"bi bi-arrow-" + (up ? "up-right" : down ? "down-right" : "right") + "\"></i> " +
+          sign + pct.toFixed(2) + "% <span>" + sign + fmtMoney(Math.abs(diff), plot.key) + "</span>";
+      }
+
+      if (tip) {
+        const dateOptions = state.range === "all"
+          ? { year: "numeric", month: "short", day: "numeric" }
+          : { year: "numeric", month: "short", day: "numeric", hour: "numeric", hour12: true };
+        const formatPoint = p => new Date(p.t * 1000).toLocaleString("en-CA", dateOptions);
+        tip.innerHTML = "<strong>" + sign + pct.toFixed(2) + "% · " + sign +
+          fmtMoneyPrecise(Math.abs(diff), plot.key) + "</strong><span>" +
+          formatPoint(plot.pts[selAnchor]) + " → " + formatPoint(plot.pts[idx]) + "</span>";
+        positionTipAwayFromPoint(cx, plot.y(to), 210);
+      }
+    };
+
+    const endSelection = (event, canceled = false) => {
+      if (selAnchor === null) return;
+      selAnchor = null;
+      if (plot && plot.sel) plot.sel.g.setAttribute("opacity", "0");
+      if (plot && plot.cross) plot.cross.lastChild.setAttribute("fill", plot.stroke);
+      chartEl.classList.remove("is-measuring", "is-gain", "is-loss");
+      updateChange();
+      if (canceled || (event && event.pointerType === "touch")) hideCrosshair();
+      else if (event && Number.isFinite(event.clientX)) moveCrosshair(event.clientX);
+    };
+
+    if (svg) {
+      svg.addEventListener("pointerdown", e => {
+        if (!plot) return;
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+        selAnchor = idxFromClientX(e.clientX);
+        chartEl.classList.add("is-measuring");
+        chartEl.classList.remove("is-gain", "is-loss");
+        /* Capture so a drag that leaves the SVG keeps reporting, and so the
+           release is heard even if it happens outside the chart. */
+        if (svg.setPointerCapture) svg.setPointerCapture(e.pointerId);
+        moveCrosshair(e.clientX);
+        paintSelection(selAnchor);
+        e.preventDefault();
+      });
+      svg.addEventListener("pointermove", e => {
+        moveCrosshair(e.clientX);
+        if (selAnchor !== null) {
+          paintSelection(idxFromClientX(e.clientX));
+          if (e.cancelable) e.preventDefault();
+        }
+      });
+      svg.addEventListener("pointerup", e => endSelection(e));
+      svg.addEventListener("pointercancel", e => endSelection(e, true));
+      svg.addEventListener("lostpointercapture", e => endSelection(e, true));
+      svg.addEventListener("pointerleave", () => {
+        /* Mid-drag the pointer is captured, so a leave here is just the
+           cursor wandering off an idle chart. */
+        if (selAnchor === null) hideCrosshair();
+      });
+    }
+
+    if ("ResizeObserver" in window && chartEl) {
+      let raf = 0;
+      new ResizeObserver(() => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => { raf = 0; renderChart(false); });
+      }).observe(chartEl);
+    }
+
+    // ------------------------------------------------------------- controls
+
+    /* The active pill is one element that slides, so its position has to be
+       measured from the live button rather than declared in CSS. Re-measured
+       on resize and once webfonts land, since both change button widths. */
+    const segs = [...document.querySelectorAll(".sc-seg")];
+
+    const positionThumb = (seg, animate = true) => {
+      const thumb = seg.querySelector(".sc-seg-thumb");
+      const active = seg.querySelector(".sc-seg-btn.is-active");
+      if (!thumb || !active) return;
+      if (!animate) thumb.style.transition = "none";
+      thumb.style.width = active.offsetWidth + "px";
+      thumb.style.transform = "translateX(" + active.offsetLeft + "px)";
+      thumb.classList.add("is-ready");
+      if (!animate) {
+        void thumb.offsetWidth;
+        thumb.style.transition = "";
+      }
+    };
+
+    const positionAllThumbs = (animate = false) => segs.forEach(s => positionThumb(s, animate));
+
+    positionAllThumbs(false);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => positionAllThumbs(false));
+    }
+    window.addEventListener("resize", () => positionAllThumbs(false), { passive: true });
+
+    document.querySelectorAll("[data-range]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.range = btn.dataset.range;
+        document.querySelectorAll("[data-range]").forEach(b => b.classList.toggle("is-active", b === btn));
+        positionThumb(btn.closest(".sc-seg"));
+        hideCrosshair();
+        renderChart(true);
+        updateChange();
+      });
+    });
+
+    document.querySelectorAll("[data-cur]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.currency = btn.dataset.cur;
+        document.querySelectorAll("[data-cur]").forEach(b => b.classList.toggle("is-active", b === btn));
+        positionThumb(btn.closest(".sc-seg"));
+        hideCrosshair();
+        renderChart(true);
+        paintPrice();
+        updateChange();
+      });
+    });
+
+    /* Flips the sats tile between "sats per dollar" and "dollars per sat".
+       The stored count-up baseline is cleared first: animating between 1,105
+       and 0.0009 would just be a meaningless blur of digits. */
+    let satsInverted = false;
+    const satsSwap = $("dash-sats-swap");
+    if (satsSwap) {
+      satsSwap.addEventListener("click", () => {
+        satsInverted = !satsInverted;
+        satsSwap.classList.toggle("is-flipped", satsInverted);
+        const sats = $("dash-sats");
+        if (sats) delete sats.dataset.val;
+        paintPrice();
+      });
+    }
+
+    // ---------------------------------------------------------------- price
+    let latest = { CAD: 0, USD: 0 };
+
+    const paintPrice = () => {
+      const cur = state.currency;
+      const alt = cur === "CAD" ? "USD" : "CAD";
+      const el = $("dash-price");
+      if (!latest[cur]) return;
+      if (el.querySelector(".sc-dash-skel")) el.textContent = "";
+      animateValue(el, latest[cur], v => fmtMoney(v, cur));
+      const altEl = $("dash-price-alt");
+      if (altEl) altEl.textContent = fmtMoney(latest[alt], alt);
+
+      const sats = $("dash-sats");
+      if (sats && latest[cur]) {
+        const perDollar = 100000000 / latest[cur];
+        const title = $("dash-sats-title");
+        const note = $("dash-sats-note");
+
+        if (satsInverted) {
+          /* The same relationship read the other way: what a single satoshi
+             costs. Six decimals because at these prices a sat is a fraction
+             of a cent and rounding to cents would just show $0.00. */
+          if (title) title.textContent = "Dollars per sat";
+          animateValue(sats, latest[cur] / 100000000, v => "$" + v.toFixed(6));
+          if (note) note.textContent = "What one satoshi costs in " + cur + " right now.";
+        } else {
+          if (title) title.textContent = "Sats per dollar";
+          animateValue(sats, perDollar, v => fmtInt(v) + " sats");
+          if (note) note.textContent = "What one " + cur + " dollar buys right now.";
+        }
+
+        const bar = $("dash-sats-bar");
+        /* Scaled against 10k sats/dollar so the fill reads as "how much a
+           dollar still buys" rather than an arbitrary full bar. Driven by
+           sats-per-dollar in both directions -- it is the same relationship,
+           so the bar should not jump when the unit is flipped. */
+        if (bar) bar.style.width = Math.min(perDollar / 10000 * 100, 100) + "%";
+      }
+    };
+
+    const updateChange = () => {
+      const el = $("dash-change");
+      if (!el) return;
+      const pts = visibleSeries();
+      if (pts.length < 2) { el.textContent = ""; return; }
+      const key = state.currency;
+      const first = pts[0][key], last = latest[key] || pts[pts.length - 1][key];
+      const diff = last - first;
+      const pct = (diff / first) * 100;
+      const up = diff >= 0;
+      const labels = { "24h": "24h", "7d": "7 days", "30d": "30 days", "1y": "1 year", "all": "all time" };
+      el.className = "sc-dash-change " + (up ? "is-positive" : "is-negative");
+      el.innerHTML = "<i class=\"bi bi-arrow-" + (up ? "up" : "down") + "-right\"></i> " +
+        (up ? "+" : "") + pct.toFixed(2) + "% <span>" + labels[state.range] + "</span>";
+    };
+
+    const stamp = () => {
+      const el = $("dash-updated");
+      if (el) el.textContent = "Live · updated " + new Date().toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" });
+      const status = $("dash-status");
+      if (status) status.classList.add("is-live");
+    };
+
+    // ----------------------------------------------------------- data loads
+    const fillHistoricalCad = async () => {
+      const fx = await fetchJSON(
+        "https://api.frankfurter.dev/v1/2010-01-01..2015-12-31?base=USD&symbols=CAD",
+        25000
+      );
+      const dailyRates = Object.entries((fx && fx.rates) || {})
+        .map(([date, rates]) => ({
+          t: Math.floor(new Date(date + "T00:00:00Z").getTime() / 1000),
+          rate: Number(rates && rates.CAD)
+        }))
+        .filter(item => Number.isFinite(item.t) && item.rate > 0)
+        .sort((a, b) => a.t - b.t);
+
+      if (!dailyRates.length) return false;
+
+      let rateIndex = 0;
+      let latestRate = dailyRates[0].rate;
+      let filled = 0;
+      state.history.forEach(row => {
+        while (rateIndex + 1 < dailyRates.length && dailyRates[rateIndex + 1].t <= row.t) {
+          rateIndex += 1;
+          latestRate = dailyRates[rateIndex].rate;
+        }
+        if (!(row.CAD > 0) && row.USD > 0 && row.t >= dailyRates[0].t) {
+          row.CAD = row.USD * latestRate;
+          row.CADDerived = true;
+          filled += 1;
+        }
+      });
+      return filled > 0;
+    };
+
+    const loadHistory = async () => {
+      try {
+        const data = await fetchJSON("https://mempool.space/api/v1/historical-price?currency=CAD", 25000);
+        const rows = (data && data.prices) || [];
+        state.history = rows
+          .map(r => ({ t: r.time, CAD: r.CAD, USD: r.USD }))
+          .filter(r => r.t)
+          .sort((a, b) => a.t - b.t);
+        renderChart(true);
+        updateChange();
+        try {
+          if (await fillHistoricalCad()) {
+            renderChart(false);
+            updateChange();
+          }
+        } catch (fxError) {
+          // Native CAD history still renders if the optional historical FX lookup fails.
+        }
+      } catch (err) {
+        setChartState("Price history is unavailable right now.", false);
+      }
+    };
+
+    const loadPrices = async () => {
+      try {
+        const p = await fetchJSON("https://mempool.space/api/v1/prices");
+        const prev = latest[state.currency];
+        latest = { CAD: p.CAD, USD: p.USD };
+        paintPrice();
+        if (prev && p[state.currency] !== prev) flash($("dash-price"), p[state.currency] > prev);
+
+        /* Fold the live tick into the series so the chart's right edge and the
+           headline number never disagree. Same hour updates in place; a new
+           hour appends. */
+        if (state.history.length) {
+          const last = state.history[state.history.length - 1];
+          const nowSec = Math.floor(Date.now() / 1000);
+          if (nowSec - last.t < 3600) {
+            last.CAD = p.CAD; last.USD = p.USD;
+          } else {
+            state.history.push({ t: nowSec, CAD: p.CAD, USD: p.USD });
+          }
+          renderChart(false);
+        }
+        updateChange();
+        stamp();
+      } catch (err) { /* leave the last good value on screen */ }
+    };
+
+    const paintLowestNextBlockFee = projected => {
+      const lowestFee = projected && Array.isArray(projected.feeRange)
+        ? Number(projected.feeRange[0])
+        : NaN;
+      if (!Number.isFinite(lowestFee)) return;
+      const feeEl = $("dash-fee");
+      animateValue(feeEl, lowestFee, v => fmtFeeRate(v));
+      /* Cheap is good here: keep the same green-to-red scale used before,
+         but apply it to the projected entry floor rather than High priority. */
+      if (feeEl) feeEl.style.color = scaleColor(1 - Math.min(lowestFee, 100) / 100);
+    };
+
+    const paintPendingBlock = projected => {
+      if (!projected) return;
+      state.projectedBlock = projected;
+      paintLowestNextBlockFee(projected);
+      const wrap = $("dash-blocks");
+      if (!wrap || wrap.classList.contains("is-confirming")) return;
+      const pendingEl = wrap.querySelector(".sc-block-pending");
+      if (!pendingEl) return;
+      const age = pendingEl.querySelector(".sc-block-age");
+      const values = pendingEl.querySelectorAll("dd");
+      if (age && Array.isArray(projected.feeRange) && projected.feeRange.length) {
+        age.innerHTML = fmtFeeNumber(projected.feeRange[0]) + " <span class=\"sc-fee-unit\">sat/vB</span>";
+      }
+      if (values[0] && Number.isFinite(Number(projected.nTx))) {
+        values[0].textContent = fmtInt(projected.nTx);
+      }
+      if (values[1] && Number.isFinite(Number(projected.blockVSize))) {
+        values[1].textContent = (projected.blockVSize / 1e6).toFixed(2) + " vMB";
+      }
+      if (values[2] && Number.isFinite(Number(projected.medianFee))) {
+        values[2].textContent = fmtFeeRate(projected.medianFee);
+      }
+    };
+
+    const paintFees = f => {
+      if (!f || !Number.isFinite(Number(f.fastestFee))) return;
+      const tiers = $("dash-fee-tiers");
+      if (tiers) {
+        tiers.innerHTML =
+          "<span><em>" + fmtFeeNumber(f.hourFee) + "</em>Low priority</span>" +
+          "<span><em>" + fmtFeeNumber(f.halfHourFee) + "</em>Medium priority</span>" +
+          "<span><em>" + fmtFeeNumber(f.fastestFee) + "</em>High priority</span>";
+      }
+    };
+
+    const loadFees = async () => {
+      try {
+        paintFees(await fetchJSON("https://mempool.space/api/v1/fees/recommended"));
+      } catch (err) { /* tile keeps its last good value */ }
+    };
+
+    const supplyAtHeight = height => {
+      let blocks = Math.max(0, Math.floor(height) + 1);
+      let subsidy = 50;
+      let total = 0;
+      while (blocks > 0 && subsidy > 0) {
+        const inEra = Math.min(blocks, HALVING_INTERVAL);
+        total += inEra * subsidy;
+        blocks -= inEra;
+        subsidy /= 2;
+      }
+      return total;
+    };
+
+    const formatSubsidy = value => {
+      const digits = value >= 10 ? 0 : 4;
+      return Number(value.toFixed(digits)).toLocaleString("en-CA", { maximumFractionDigits: digits }) + " BTC";
+    };
+
+    const paintSupplyAndHalving = height => {
+      if (!Number.isFinite(height) || height < 0) return;
+      const era = Math.floor(height / HALVING_INTERVAL);
+      const subsidy = 50 / Math.pow(2, era);
+      const nextSubsidy = subsidy / 2;
+      const nextHeight = (era + 1) * HALVING_INTERVAL;
+      const blocksLeft = Math.max(0, nextHeight - height);
+      const epochProgress = ((height % HALVING_INTERVAL) / HALVING_INTERVAL) * 100;
+      const supply = supplyAtHeight(height);
+      const supplyPct = Math.min(supply / DISPLAY_SUPPLY_LIMIT * 100, 100);
+      const remaining = Math.max(0, DISPLAY_SUPPLY_LIMIT - supply);
+
+      animateValue($("dash-supply"), supply, v => (v / 1e6).toFixed(2) + "M BTC");
+      const supplyNote = $("dash-supply-note");
+      if (supplyNote) supplyNote.textContent = supplyPct.toFixed(2) + "% of the 21 million limit issued.";
+      const supplyPctEl = $("dash-supply-pct");
+      if (supplyPctEl) supplyPctEl.textContent = supplyPct.toFixed(2) + "%";
+      const supplyLeft = $("dash-supply-left");
+      if (supplyLeft) supplyLeft.textContent = remaining >= 1e6
+        ? (remaining / 1e6).toFixed(2) + "M BTC"
+        : Math.round(remaining / 1000) + "k BTC";
+      const supplyDay = $("dash-supply-day");
+      if (supplyDay) supplyDay.textContent = fmtInt(subsidy * 144) + " BTC";
+      const supplyBar = $("dash-supply-bar");
+      if (supplyBar) supplyBar.style.width = supplyPct.toFixed(2) + "%";
+
+      animateValue($("dash-halving"), blocksLeft, v => fmtInt(v) + " blocks");
+      const estimatedDate = new Date(Date.now() + blocksLeft * 10 * 60 * 1000);
+      const halvingNote = $("dash-halving-note");
+      if (halvingNote) {
+        const monthYear = new Intl.DateTimeFormat("en-CA", { month: "short", year: "numeric" }).format(estimatedDate);
+        halvingNote.textContent = "Est. " + monthYear + " at the 10-minute block target.";
+      }
+      const currentReward = $("dash-halving-current");
+      if (currentReward) currentReward.textContent = formatSubsidy(subsidy);
+      const nextReward = $("dash-halving-next");
+      if (nextReward) nextReward.textContent = formatSubsidy(nextSubsidy);
+      const halvingProgress = $("dash-halving-progress");
+      if (halvingProgress) halvingProgress.textContent = epochProgress.toFixed(1) + "%";
+      const halvingBar = $("dash-halving-bar");
+      if (halvingBar) halvingBar.style.width = epochProgress.toFixed(1) + "%";
+    };
+
+    const paintMempool = (raw, feeUnit = "auto") => {
+      if (!raw) return;
+      const previous = state.mempoolStats || {};
+      const count = Number(raw.count ?? raw.size);
+      const vsize = Number(raw.vsize);
+      const bytes = Number(raw.bytes);
+      const totalFee = Number(raw.total_fee);
+      const next = {
+        count: Number.isFinite(count) ? count : previous.count,
+        vsize: Number.isFinite(vsize) ? vsize : previous.vsize,
+        approximateVsize: Number.isFinite(vsize) ? false : previous.approximateVsize,
+        totalFeeSats: previous.totalFeeSats
+      };
+
+      /* The REST endpoint reports total_fee in satoshis. The socket's Core
+         mempoolInfo reports BTC, so small decimal values are normalized. */
+      if (Number.isFinite(totalFee)) {
+        next.totalFeeSats = feeUnit === "btc" || (feeUnit === "auto" && totalFee < 1000)
+          ? totalFee * 1e8
+          : totalFee;
+      }
+      if (!Number.isFinite(next.vsize) && Number.isFinite(bytes)) {
+        next.vsize = bytes;
+        next.approximateVsize = true;
+      }
+      state.mempoolStats = next;
+
+      if (Number.isFinite(next.vsize)) {
+        const vmb = next.vsize / 1e6;
+        animateValue($("dash-mempool"), vmb, v => (next.approximateVsize ? "~" : "") +
+          v.toLocaleString("en-CA", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " vMB");
+        const blockEquiv = $("dash-mempool-blocks");
+        if (blockEquiv) blockEquiv.textContent = "~" + fmtInt(Math.max(1, Math.ceil(vmb)));
+      }
+      const mempoolTx = $("dash-mempool-tx");
+      if (mempoolTx && Number.isFinite(next.count)) mempoolTx.textContent = fmtInt(next.count);
+      const mempoolNote = $("dash-mempool-note");
+      if (mempoolNote && Number.isFinite(next.count)) {
+        mempoolNote.textContent = fmtInt(next.count) + " unconfirmed transactions waiting.";
+      }
+      const mempoolFees = $("dash-mempool-fees");
+      if (mempoolFees && Number.isFinite(next.totalFeeSats)) {
+        const btc = next.totalFeeSats / 1e8;
+        mempoolFees.textContent = btc.toLocaleString("en-CA", {
+          minimumFractionDigits: btc < 1 ? 3 : 2,
+          maximumFractionDigits: btc < 1 ? 3 : 2
+        }) + " BTC";
+      }
+    };
+
+    const loadMempool = async () => {
+      try {
+        paintMempool(await fetchJSON("https://mempool.space/api/mempool"), "sats");
+      } catch (err) { /* tile keeps its last good value */ }
+    };
+
+    const loadChain = async () => {
+      try {
+        const h = await fetchText("https://mempool.space/api/blocks/tip/height");
+        const height = parseInt(h, 10);
+        if (Number.isFinite(height)) {
+          animateValue($("dash-height"), height, v => fmtInt(v));
+          paintSupplyAndHalving(height);
+          const HALVING = 1050000;
+          const left = HALVING - height;
+          const note = $("dash-height-note");
+          if (note && left > 0) note.textContent = fmtInt(left) + " blocks to the next halving.";
+          const bar = $("dash-block-bar");
+          if (bar) bar.style.width = (((height % 210000) / 210000) * 100).toFixed(1) + "%";
+        }
+      } catch (err) { /* tile keeps its placeholder */ }
+
+      try {
+        const blocks = await fetchJSON("https://mempool.space/api/v1/blocks");
+        let projected = state.projectedBlock;
+        try {
+          const projectedBlocks = await fetchJSON("https://mempool.space/api/v1/fees/mempool-blocks");
+          if (Array.isArray(projectedBlocks) && projectedBlocks.length) projected = projectedBlocks[0];
+        } catch (err) { /* confirmed blocks can still render */ }
+        if (projected) {
+          state.projectedBlock = projected;
+          paintLowestNextBlockFee(projected);
+        }
+        const wrap = $("dash-blocks");
+        if (wrap && Array.isArray(blocks)) {
+          const pendingTx = projected && Number.isFinite(Number(projected.nTx)) ? fmtInt(projected.nTx) : "—";
+          const pendingSize = projected && Number.isFinite(Number(projected.blockVSize)) ? (projected.blockVSize / 1e6).toFixed(2) + " vMB" : "—";
+          const pendingFee = projected && Array.isArray(projected.feeRange) && projected.feeRange.length ? fmtFeeNumber(projected.feeRange[0]) + " <span class=\"sc-fee-unit\">sat/vB</span>" : "Building";
+          const pendingMedian = projected && Number.isFinite(Number(projected.medianFee)) ? fmtFeeRate(projected.medianFee) : "\u2014";
+          // The logo's animated SVG begins its own clock during asset paint.
+          // Advance the CSS pulse by half a second so its visible peak meets
+          // the orange-circle peak instead of trailing it.
+          const logoPhase = -(((performance.now() + 500) / 1000) % 3.617).toFixed(3) + "s";
+          const pending =
+            "<a class=\"sc-block sc-block-pending\" style=\"--i:0;--sc-logo-phase:" + logoPhase + "\" href=\"https://mempool.space/mempool-block/0\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View the projected next block on mempool.space\">" +
+              "<span class=\"sc-block-kicker\"><span class=\"sc-pending-dot\"></span>Pending</span>" +
+              "<span class=\"sc-block-height\">Next block</span>" +
+              "<span class=\"sc-block-age\">" + pendingFee + "</span>" +
+              "<dl class=\"sc-block-meta\">" +
+                "<div><dt>Transactions</dt><dd>" + pendingTx + "</dd></div>" +
+                "<div><dt>Projected</dt><dd>" + pendingSize + "</dd></div>" +
+                "<div class=\"sc-block-lowest\"><dt>Median</dt><dd>" + pendingMedian + "</dd></div>" +
+              "</dl></a>";
+          const buildConfirmed = fresh => blocks.slice(0, 6).map((b, i) => {
+            const mins = Math.max(0, Math.round((Date.now() / 1000 - b.timestamp) / 60));
+            const age = mins < 1 ? "just now" : mins < 60 ? mins + "m ago" : Math.floor(mins / 60) + "h ago";
+            const lowest = b.extras && Array.isArray(b.extras.feeRange) && b.extras.feeRange.length ? fmtFeeRate(b.extras.feeRange[0]) : "—";
+            return "<a class=\"sc-block sc-block-confirmed" + (fresh && i === 0 ? " is-newest" : "") + "\" style=\"--i:" + (i + 1) + "\" href=\"https://mempool.space/block/" + b.id + "\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View block " + b.height + " on mempool.space\">" +
+              "<span class=\"sc-block-kicker\"><i class=\"bi bi-check2-circle\"></i>Confirmed</span>" +
+              "<span class=\"sc-block-height\">" + fmtInt(b.height) + "</span>" +
+              "<span class=\"sc-block-age\">" + age + "</span>" +
+              "<dl class=\"sc-block-meta\">" +
+                "<div><dt>Transactions</dt><dd>" + fmtInt(b.tx_count) + "</dd></div>" +
+                "<div><dt>Size</dt><dd>" + (b.size / 1e6).toFixed(2) + " MB</dd></div>" +
+                "<div class=\"sc-block-lowest\"><dt>Lowest</dt><dd>" + lowest + "</dd></div>" +
+              "</dl></a>";
+          }).join("");
+
+          const renderStrip = fresh => {
+            wrap.classList.remove("is-confirming");
+            wrap.classList.add("is-ready");
+            wrap.innerHTML = pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
+          };
+
+          const tipHeight = blocks.length ? Number(blocks[0].height) : null;
+          const isNewBlock = Number.isFinite(tipHeight) && state.tipHeight !== null && tipHeight > state.tipHeight;
+
+          state.blockTimers.forEach(timer => clearTimeout(timer));
+          state.blockTimers = [];
+
+          if (isNewBlock && !reduceMotion && wrap.querySelector(".sc-block-pending")) {
+            const pendingEl = wrap.querySelector(".sc-block-pending");
+            const newest = blocks[0];
+            wrap.classList.remove("is-ready");
+            wrap.classList.add("is-confirming");
+
+            state.blockTimers.push(setTimeout(() => {
+              pendingEl.classList.add("is-mined");
+              pendingEl.href = "https://mempool.space/block/" + newest.id;
+              pendingEl.setAttribute("aria-label", "View block " + tipHeight + " on mempool.space");
+              const kicker = pendingEl.querySelector(".sc-block-kicker");
+              const height = pendingEl.querySelector(".sc-block-height");
+              const age = pendingEl.querySelector(".sc-block-age");
+              const terms = pendingEl.querySelectorAll("dt");
+              const values = pendingEl.querySelectorAll("dd");
+              if (kicker) kicker.innerHTML = "<i class=\"bi bi-check2-circle\"></i>Confirmed";
+              if (height) height.textContent = fmtInt(tipHeight);
+              if (age) age.textContent = "just now";
+              if (terms[1]) terms[1].textContent = "Size";
+              if (terms[2]) terms[2].textContent = "Lowest";
+              if (values[0]) values[0].textContent = fmtInt(newest.tx_count);
+              if (values[1]) values[1].textContent = (newest.size / 1e6).toFixed(2) + " MB";
+              if (values[2]) {
+                const lowest = newest.extras && Array.isArray(newest.extras.feeRange) && newest.extras.feeRange.length ? newest.extras.feeRange[0] : null;
+                values[2].textContent = fmtFeeRate(lowest);
+              }
+            }, 120));
+
+            state.blockTimers.push(setTimeout(() => renderStrip(false), 850));
+          } else {
+            renderStrip(false);
+          }
+
+          if (Number.isFinite(tipHeight)) state.tipHeight = tipHeight;
+        }
+      } catch (err) { /* strip stays empty */ }
+    };
+
+    const connectMempoolSocket = () => {
+      if (state.socketStopped || !("WebSocket" in window)) return;
+      const current = state.mempoolSocket;
+      if (current && (current.readyState === WebSocket.OPEN || current.readyState === WebSocket.CONNECTING)) return;
+
+      clearTimeout(state.socketReconnectTimer);
+      const socket = new WebSocket("wss://mempool.space/api/v1/ws");
+      state.mempoolSocket = socket;
+
+      socket.addEventListener("open", () => {
+        state.socketReconnectMs = 2000;
+        socket.send(JSON.stringify({ action: "want", data: ["blocks", "mempool-blocks", "stats"] }));
+      });
+
+      socket.addEventListener("message", event => {
+        let payload;
+        try { payload = JSON.parse(event.data); } catch (err) { return; }
+
+        const projectedBlocks = payload && payload["mempool-blocks"];
+        if (Array.isArray(projectedBlocks) && projectedBlocks.length) {
+          paintPendingBlock(projectedBlocks[0]);
+        }
+
+        if (payload && payload.fees) paintFees(payload.fees);
+        if (payload && payload.mempoolInfo) paintMempool(payload.mempoolInfo, "btc");
+
+        const blocks = payload && payload.blocks;
+        const pushedHeight = Array.isArray(blocks) && blocks.length ? Number(blocks[0].height) : null;
+        if (Number.isFinite(pushedHeight) && state.tipHeight !== null &&
+            pushedHeight > state.tipHeight && !state.blockRefreshQueued) {
+          state.blockRefreshQueued = true;
+          loadChain().finally(() => { state.blockRefreshQueued = false; });
+        }
+      });
+
+      socket.addEventListener("close", () => {
+        if (state.mempoolSocket === socket) state.mempoolSocket = null;
+        if (state.socketStopped) return;
+        state.socketReconnectTimer = setTimeout(connectMempoolSocket, state.socketReconnectMs);
+        state.socketReconnectMs = Math.min(state.socketReconnectMs * 2, 30000);
+      });
+
+      socket.addEventListener("error", () => socket.close());
+    };
+
+    const loadMining = async () => {
+      try {
+        const m = await fetchJSON("https://mempool.space/api/v1/mining/hashrate/1m");
+        if (m && m.currentHashrate) {
+          animateValue($("dash-hashrate"), m.currentHashrate / 1e18, v => v.toFixed(0) + " EH/s");
+        }
+        const spark = $("dash-hash-spark");
+        if (spark && Array.isArray(m.hashrates) && m.hashrates.length > 1) {
+          const vals = m.hashrates.map(x => x.avgHashrate);
+          const lo = Math.min(...vals), hi = Math.max(...vals), rng = (hi - lo) || 1;
+          spark.innerHTML = vals.map(v =>
+            "<span style=\"height:" + (18 + ((v - lo) / rng) * 82) + "%\"></span>"
+          ).join("");
+        }
+      } catch (err) { /* tile keeps its placeholder */ }
+
+      try {
+        const d = await fetchJSON("https://mempool.space/api/v1/difficulty-adjustment");
+        const chg = d.difficultyChange;
+        const el = $("dash-diffchange");
+        if (el) {
+          el.textContent = (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%";
+          el.classList.toggle("is-positive", chg >= 0);
+          el.classList.toggle("is-negative", chg < 0);
+        }
+        const note = $("dash-diffnote");
+        if (note) note.textContent = fmtInt(d.remainingBlocks) + " blocks until the next retarget.";
+
+        /* Three more fields the same response already carries. Average block
+           time is the one that explains the headline: above 10 minutes means
+           blocks are running slow, so difficulty drops next retarget, and
+           below means the opposite. */
+        const dTiers = $("dash-diff-tiers");
+        if (dTiers) {
+          /* Minutes and seconds, not decimal minutes: the interesting part is
+             the drift either side of the 10-minute target, and "9m 56s" shows
+             that far more plainly than "9.9m". */
+          let avgMin = "—";
+          if (d.timeAvg) {
+            const totalSec = Math.round(d.timeAvg / 1000);
+            avgMin = Math.floor(totalSec / 60) + "m " + (totalSec % 60) + "s";
+          }
+          const prev = typeof d.previousRetarget === "number"
+            ? (d.previousRetarget >= 0 ? "+" : "") + d.previousRetarget.toFixed(2) + "%"
+            : "—";
+          const at = d.nextRetargetHeight ? fmtInt(d.nextRetargetHeight) : "—";
+          dTiers.innerHTML =
+            "<span><em>" + avgMin + "</em>avg block</span>" +
+            "<span><em>" + prev + "</em>previous</span>" +
+            "<span><em>" + at + "</em>retarget at</span>";
+        }
+
+        const bar = $("dash-diff-bar");
+        if (bar) bar.style.width = Math.min(Math.max(d.progressPercent, 0), 100).toFixed(1) + "%";
+        const eta = $("dash-diff-eta");
+        if (eta) {
+          const rawDate = Number(d.estimatedRetargetDate);
+          const retargetDate = new Date(rawDate < 1e12 ? rawDate * 1000 : rawDate);
+          if (!Number.isNaN(retargetDate.getTime())) {
+            const remainingMs = Math.max(0, retargetDate.getTime() - Date.now());
+            const totalHours = Math.max(1, Math.round(remainingMs / 36e5));
+            const days = Math.floor(totalHours / 24);
+            const hours = totalHours % 24;
+            const countdown = days ? days + "d " + hours + "h" : totalHours + "h";
+            const calendar = new Intl.DateTimeFormat("en-CA", {
+              month: "short",
+              day: "numeric"
+            }).format(retargetDate);
+            const value = eta.querySelector("strong");
+            if (value) value.textContent = countdown + " · " + calendar;
+          }
+        }
+      } catch (err) { /* tile keeps its placeholder */ }
+    };
+
+    const loadFng = async () => {
+      try {
+        const d = await fetchJSON("https://api.alternative.me/fng/?limit=1");
+        const row = d && d.data && d.data[0];
+        if (!row) return;
+        const val = parseInt(row.value, 10);
+        const fng = $("dash-fng");
+        animateValue(fng, val, v => String(Math.round(v)));
+        /* Matches the gauge arc behind it, which already runs red at 0 to
+           green at 100 -- so extreme fear reads red and extreme greed green. */
+        if (fng) fng.style.color = scaleColor(val / 100);
+        const label = $("dash-fng-label");
+        if (label) label.textContent = row.value_classification;
+        /* Needle sweeps -90deg (0) to +90deg (100) across the semicircle. */
+        const needle = $("dash-fng-needle");
+        if (needle) needle.style.transform = "rotate(" + (val / 100 * 180 - 90) + "deg)";
+        const arc = $("dash-fng-arc");
+        if (arc) {
+          const len = arc.getTotalLength();
+          arc.style.strokeDasharray = len;
+          arc.style.strokeDashoffset = len * (1 - val / 100);
+        }
+      } catch (err) { /* gauge keeps its placeholder */ }
+    };
+
+    // ------------------------------------------------------------- schedule
+    loadHistory();
+    loadPrices();
+    loadFees();
+    loadMempool();
+    loadChain().finally(connectMempoolSocket);
+    loadMining();
+    loadFng();
+
+    setInterval(loadPrices, 60000);
+    /* Live fee tiers arrive with the socket's stats stream. REST remains a
+       low-frequency fallback for blocked or suspended WebSocket sessions. */
+    setInterval(loadFees, 300000);
+    /* Socket stats keep the transaction count and fees live; this exact
+       virtual-size snapshot prevents the backlog estimate from drifting. */
+    setInterval(loadMempool, 60000);
+    /* The socket normally announces new blocks immediately. This slower
+       refresh is only a safety net for suspended tabs or blocked sockets. */
+    setInterval(loadChain, 300000);
+    setInterval(loadMining, 300000);
+    setInterval(loadFng, 900000);
+
+    /* A tab left open for hours would otherwise show a stale "updated" time
+       the moment it is looked at again. */
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        loadPrices();
+        loadFees();
+        loadMempool();
+        loadChain();
+        connectMempoolSocket();
+      }
+    });
+
+    window.addEventListener("pagehide", () => {
+      state.socketStopped = true;
+      clearTimeout(state.socketReconnectTimer);
+      if (state.mempoolSocket) state.mempoolSocket.close();
+    });
+
+    window.addEventListener("pageshow", event => {
+      if (!event.persisted) return;
+      state.socketStopped = false;
+      loadPrices();
+      loadFees();
+      loadMempool();
+      loadChain().finally(connectMempoolSocket);
+    });
   }
 
   /**
