@@ -1117,19 +1117,25 @@ body[data-page="home"] .sc-hero .sc-lead {
 }
 
 .sc-tablet-lead-break,
-.sc-medium-lead-break {
+.sc-medium-lead-break,
+.sc-mobile-lead-break {
   display: none;
+}
+
+.sc-home-lead-statement {
+  font-weight: 700;
 }
 
 @media (min-width: 992px) and (max-width: 1100px) {
   body[data-page="home"] .sc-hero-background-media {
     top: 72px;
   }
+}
 
+@media (min-width: 992px) and (max-width: 1320px) {
   .sc-medium-lead-break {
     display: block;
   }
-
 }
 
 .sc-hero-actions {
@@ -1786,6 +1792,19 @@ p.sc-price {
   font-weight: 750;
 }
 
+.sc-footer .sc-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sc-footer-brand img {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+}
+
 .sc-footer a {
   color: rgba(255, 255, 255, 0.68);
 }
@@ -1855,6 +1874,23 @@ p.sc-price {
 
 .sc-footer-links li {
   margin: 8px 0;
+}
+
+.sc-footer-links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 260px;
+  column-gap: 14px;
+}
+
+.sc-footer-explore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sc-footer-explore > h4 {
+  width: 260px;
 }
 
 .sc-footer-bottom {
@@ -2036,6 +2072,18 @@ p.sc-price {
 @media (min-width: 768px) and (max-width: 991px) {
   .sc-tablet-lead-break {
     display: block;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  body.site-refresh[data-page="home"] .sc-hero h1 {
+    width: max-content;
+    max-width: 100%;
+    font-size: clamp(2.85rem, 4.5vw, 3.1rem);
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero-actions {
+    margin-top: 24px;
   }
 }
 
@@ -2510,10 +2558,19 @@ body.site-refresh .sc-cta .sc-btn:hover {
 
   body.site-refresh[data-page="home"] .sc-hero .sc-lead {
     max-width: 340px;
-    margin-top: calc(clamp(300px, 82vw, 340px) + 9px);
-    margin-right: 0;
-    margin-left: 0;
-    text-align: left;
+    margin-top: calc(clamp(300px, 82vw, 340px) + 14px);
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+
+  body.site-refresh[data-page="home"] .sc-mobile-lead-break {
+    display: block;
+  }
+
+  body.site-refresh[data-page="home"] .sc-home-lead-statement {
+    display: inline-block;
+    margin-bottom: 2px;
   }
 
   body.site-refresh .sc-hero-actions {
@@ -2558,7 +2615,7 @@ body.site-refresh .sc-cta .sc-btn:hover {
   }
 
   body.site-refresh[data-page="home"] .sc-hero-background-media {
-    top: 188px;
+    top: 189.25px;
     left: -6%;
     width: 112%;
     height: clamp(300px, 82vw, 340px);
@@ -2878,28 +2935,28 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   padding-top: 52px;
 }
 
-/* Slow-drifting warm bloom behind the price block, so the panel reads as
-   "live" without anything literally blinking. */
+/* A restrained warm bloom ties the pending block to the price readout without
+   tinting the green chart or softening the rest of the black canvas. */
 .sc-dash-glow {
   position: absolute;
   z-index: -1;
-  top: -220px;
-  left: 50%;
-  width: 900px;
-  height: 620px;
-  margin-left: -450px;
+  top: -128px;
+  left: 24%;
+  width: 600px;
+  height: 470px;
+  margin-left: -300px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 138, 0, 0.15), transparent 62%);
-  filter: blur(28px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 36%, #000 58%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent 36%, #000 58%, #000 100%);
+  background: radial-gradient(circle, rgba(255, 138, 0, 0.12), transparent 60%);
+  filter: blur(32px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 26%, #000 48%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 26%, #000 48%, #000 82%, transparent 100%);
   animation: sc-dash-drift 14s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes sc-dash-drift {
-  0%, 100% { transform: translate3d(-30px, 0, 0) scale(1); opacity: 0.85; }
-  50%      { transform: translate3d(30px, 18px, 0) scale(1.08); opacity: 1; }
+  0%, 100% { transform: translate3d(-18px, 0, 0) scale(1); opacity: 0.78; }
+  50%      { transform: translate3d(18px, 10px, 0) scale(1.04); opacity: 1; }
 }
 
 .sc-dash-priceblock {
@@ -3443,6 +3500,30 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-dash-tile .sc-card-body { display: flex; flex-direction: column; height: 100%; }
 
+/* Keep each visual row level, while splitting any spare vertical room evenly
+   above and below the card content instead of leaving a hollow middle. */
+.sc-dash-metrics-grid .sc-dash-tile {
+  height: 100%;
+}
+
+.sc-dash-metrics-grid .sc-dash-tile .sc-card-body {
+  height: 100%;
+  justify-content: flex-start;
+}
+
+/* Preserve the same information hierarchy at every breakpoint. Previously
+   this ordering only applied to the three-column desktop grid, so phones fell
+   back to the older DOM sequence. */
+.sc-dash-metrics-grid > :nth-child(1) { order: 1; }
+.sc-dash-metrics-grid > :nth-child(2) { order: 2; }
+.sc-dash-metrics-grid > :nth-child(4) { order: 3; }
+.sc-dash-metrics-grid > :nth-child(7) { order: 4; }
+.sc-dash-metrics-grid > :nth-child(8) { order: 5; }
+.sc-dash-metrics-grid > :nth-child(9) { order: 6; }
+.sc-dash-metrics-grid > :nth-child(3) { order: 7; }
+.sc-dash-metrics-grid > :nth-child(5) { order: 8; }
+.sc-dash-metrics-grid > :nth-child(6) { order: 9; }
+
 .sc-dash-tile-head {
   display: flex;
   align-items: center;
@@ -3492,6 +3573,25 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   line-height: 1.45;
 }
 
+.sc-dash-detail {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: auto 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--sc-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sc-dash-detail strong {
+  color: #fff;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .sc-dash-bar {
   height: 6px;
   border-radius: 999px;
@@ -3506,6 +3606,25 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   border-radius: inherit;
   background: linear-gradient(90deg, var(--sc-orange-dark), var(--sc-orange));
   transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sc-dash-parity {
+  display: grid;
+  grid-template-columns: max-content minmax(44px, 1fr) max-content;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  color: var(--sc-muted);
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.sc-dash-parity .sc-dash-bar { margin-top: 0; }
+
+.sc-dash-parity strong {
+  color: var(--sc-ink-soft);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .sc-dash-eta {
@@ -3528,18 +3647,16 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-dash-fees,
 .sc-dash-spark { margin-top: 16px; }
 
-/* Tiles in a row all stretch to the tallest one, so shorter tiles used to end
-   with dead space under the bar. Rather than pinning the bar with
-   margin-top:auto -- which collapses its 16px gap to nothing on tiles that
-   have no slack to give -- the element directly above the bar absorbs the
-   slack. The bar keeps its fixed gap and still finishes at the tile's base. */
+/* Keep the title and primary reading at the top while anchoring progress
+   controls at the base, matching the original Difficulty Adjustment card. */
 .sc-dash-tile .sc-card-body > *:has(+ .sc-dash-bar) { margin-bottom: auto; }
 
 .sc-dash-fees { display: flex; gap: 8px; }
 
+.sc-dash-tile-fee .sc-dash-fees,
 .sc-dash-tile-mempool .sc-dash-fees { margin-top: auto; }
 
-.sc-dash-fees span {
+.sc-dash-fees > span {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -3551,6 +3668,36 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   font-size: 0.7rem;
   font-weight: 700;
   text-align: center;
+}
+
+.sc-dash-tile-fee .sc-dash-fees {
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sc-dash-tile-fee .sc-dash-fees > span {
+  flex: none;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.sc-dash-fee-label {
+  color: var(--sc-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sc-dash-tile-fee .sc-dash-fees em {
+  font-size: 0.88rem;
+  white-space: nowrap;
 }
 
 .sc-dash-fees em {
@@ -3745,6 +3892,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   pointer-events: none;
 }
 
+/* Keep confirmed blocks visibly separate from the near-black stage while
+   preserving their quieter hierarchy beside the orange pending block. */
+.sc-block-confirmed {
+  border-color: rgba(255, 255, 255, 0.25);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.025)),
+    #0d0f11;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.085),
+    0 14px 30px rgba(0, 0, 0, 0.28);
+}
+
 .sc-block-pending {
   width: 164px;
   flex-basis: 164px;
@@ -3901,7 +4060,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 @keyframes sc-new-block-land {
   0% { opacity: 0; transform: translateX(-34px) scale(1.06); border-color: rgba(111, 216, 178, 0.95); box-shadow: 0 0 42px rgba(53, 180, 138, 0.36); }
-  100% { opacity: 1; transform: none; border-color: var(--sc-line); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 14px 28px rgba(0, 0, 0, 0.18); }
+  100% { opacity: 1; transform: none; border-color: rgba(255, 255, 255, 0.25); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.085), 0 14px 30px rgba(0, 0, 0, 0.28); }
 }
 
 @keyframes sc-pending-logo-pulse {
