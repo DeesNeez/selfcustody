@@ -2546,19 +2546,41 @@ body.site-refresh .sc-cta .sc-btn:hover {
 }
 
 @media (max-width: 575px) {
+  /* The copy used to be pulled up into the header, leaving the neon title
+     about 10px clear of the navbar. Dropping the pull lets it breathe; the
+     media offset and the next section's overlap below are both shifted to
+     match, since this breakpoint positions them from hard pixel offsets. */
   body.site-refresh[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
-    transform: translateY(-28px);
+    transform: none;
   }
 
+  /* Trimmed from the 108px the ≤767px rule sets, tightening the navbar-to-
+     title gap to 26px. Scoped to the home page so other heroes keep theirs. */
+  body.site-refresh[data-page="home"] .sc-hero {
+    padding-top: 96px;
+  }
+
+  /* The vw term carries the increase, not the floor: at 320px the two lines
+     already sit within ~2px of the container, so raising the minimum would
+     overflow the narrowest phones. Growth starts once there is room for it. */
   body.site-refresh[data-page="home"] .sc-hero h1 {
     width: max-content;
     max-width: 100%;
-    font-size: clamp(2.3rem, 9.8vw, 2.65rem);
+    font-size: clamp(2.3rem, 11.2vw, 2.95rem);
+  }
+
+  /* EXIT FIAT / ENTER BITCOIN are boxed neon signs -- at 0.4em their glows
+     nearly touch, so the pair read as one crowded block. */
+  .sc-hero-command-line + .sc-hero-command-line {
+    margin-top: 0.56em;
   }
 
   body.site-refresh[data-page="home"] .sc-hero .sc-lead {
     max-width: 340px;
-    margin-top: calc(clamp(300px, 82vw, 340px) + 14px);
+    /* Media height plus the title-to-media gap, plus clearance: the lead used
+       to start 4px above the video's bottom edge, which read as cramped. The
+       +58 puts it 20px clear of it. */
+    margin-top: calc(clamp(300px, 82vw, 340px) + 58px);
     margin-right: auto;
     margin-left: auto;
     text-align: center;
@@ -2615,7 +2637,11 @@ body.site-refresh .sc-cta .sc-btn:hover {
   }
 
   body.site-refresh[data-page="home"] .sc-hero-background-media {
-    top: 189.25px;
+    /* Absolute from the hero's top edge, so it does not follow the copy. A
+       fixed offset would unbalance as soon as the title scales, so it tracks
+       the same clamp: 96px hero padding + the title's height (a measured
+       2.64x its font-size across both lines) + a 38px gap. */
+    top: calc(134px + 2.64 * clamp(2.3rem, 11.2vw, 2.95rem));
     left: -6%;
     width: 112%;
     height: clamp(300px, 82vw, 340px);
@@ -2630,6 +2656,9 @@ body.site-refresh .sc-cta .sc-btn:hover {
   }
 
   body.site-refresh[data-page="home"] .sc-hero + .sc-section {
+    /* Overlaps the hero by a fixed amount, so it has to give back the space
+       the copy gained or it would ride up over the buttons. */
+    margin-top: -46px;
     padding-top: 8px;
   }
 }
