@@ -1996,7 +1996,8 @@
       socketReconnectTimer: null,
       socketReconnectMs: 2000,
       socketStopped: false,
-      blockRefreshQueued: false
+      blockRefreshQueued: false,
+      lastSocketMessageAt: null
     };
 
     const RANGE_SECONDS = {
@@ -3028,21 +3029,7 @@
       if (box && cards.length) {
         const gutter = box.getBoundingClientRect().right - parseFloat(getComputedStyle(box).paddingRight);
         const lastRight = cards[cards.length - 1].getBoundingClientRect().right;
-        const hasMore = lastRight > gutter + 1;
-        stage.classList.toggle("has-more-blocks", hasMore);
-
-        /* The card touching the right gutter changes with viewport width and
-           horizontal scrolling, so :last-child is not the visible edge card.
-           Mark the rightmost card that has begun before the gutter and let CSS
-           reveal that exact card while it is being inspected. */
-        let edgeCard = null;
-        cards.forEach(card => {
-          card.classList.remove("is-edge-card");
-          if (card.classList.contains("sc-block-confirmed") && card.getBoundingClientRect().left < gutter + 1) {
-            edgeCard = card;
-          }
-        });
-        if (hasMore && edgeCard) edgeCard.classList.add("is-edge-card");
+        stage.classList.toggle("has-more-blocks", lastRight > gutter + 1);
       }
       stage.style.setProperty("--sc-blocks-scroll", wrap.scrollLeft + "px");
       if (!blocksOverflowBound) {
@@ -3086,9 +3073,10 @@
       if (!box || !card) return;
       const boxRect = box.getBoundingClientRect();
       const cardBox = card.getBoundingClientRect();
-      // 8px of bleed so card shadows are not cut off by the fade's own edge.
-      box.style.setProperty("--sc-strip-fade-top", Math.max(0, cardBox.top - boxRect.top - 8) + "px");
-      box.style.setProperty("--sc-strip-fade-bottom", Math.max(0, boxRect.bottom - cardBox.bottom - 8) + "px");
+      // 90px of bleed so the hover glow (up to a 76px blur, lifted 10px) isn't
+      // cut off by the fade's own edge -- 8px only covered the resting shadow.
+      box.style.setProperty("--sc-strip-fade-top", Math.max(0, cardBox.top - boxRect.top - 90) + "px");
+      box.style.setProperty("--sc-strip-fade-bottom", Math.max(0, boxRect.bottom - cardBox.bottom - 90) + "px");
     };
 
     const paintPendingBlock = projected => {
@@ -3322,6 +3310,12 @@
               "<span class=\"sc-block-ghost\" aria-hidden=\"true\"></span>" +
               pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
             sizeBlockGhost();
+            /* Safe to measure on this frame: nothing in a rebuilt strip carries
+               an entrance transform. The landed card is pinned by animation:none
+               and the rest are held by the :not(.is-newest) rule, so every
+               getBoundingClientRect() here reads a resting position. Only the
+               newest card's colour wash is still animating, and opacity does
+               not move geometry. */
             syncBlocksOverflow();
             measureBlocksFade();
           };
@@ -3358,9 +3352,9 @@
                 const lowest = newest.extras && Array.isArray(newest.extras.feeRange) && newest.extras.feeRange.length ? newest.extras.feeRange[0] : null;
                 values[2].textContent = fmtFeeRate(lowest);
               }
-            }, 120));
+            }, 180));
 
-            state.blockTimers.push(setTimeout(() => renderStrip(false), 850));
+            state.blockTimers.push(setTimeout(() => renderStrip(true), 1400));
           } else {
             renderStrip(false);
           }
@@ -3381,10 +3375,12 @@
 
       socket.addEventListener("open", () => {
         state.socketReconnectMs = 2000;
+        state.lastSocketMessageAt = Date.now();
         socket.send(JSON.stringify({ action: "want", data: ["blocks", "mempool-blocks", "stats"] }));
       });
 
       socket.addEventListener("message", event => {
+        state.lastSocketMessageAt = Date.now();
         let payload;
         try { payload = JSON.parse(event.data); } catch (err) { return; }
 
@@ -3534,9 +3530,34 @@
     /* Socket stats keep the transaction count and fees live; this exact
        virtual-size snapshot prevents the backlog estimate from drifting. */
     setInterval(loadMempool, 60000);
-    /* The socket normally announces new blocks immediately. This slower
-       refresh is only a safety net for suspended tabs or blocked sockets. */
-    setInterval(loadChain, 300000);
+    /* The socket announces new blocks instantly and stays the primary path.
+       This poll still runs unconditionally: a socket can keep chattering on
+       the stats channel -- so it looks open and fresh -- while the blocks
+       push we actually care about is missed, and gating the poll on socket
+       health left the chain stuck in exactly that case.
+
+       Kept polite rather than kept rare: the tip height is a single short
+       text response, and the three-request refresh only follows when that
+       height has actually moved. Steady state is therefore one small request
+       per tick, so a much tighter interval than the old five minutes still
+       costs the API less than the full refresh it replaces. */
+    setInterval(async () => {
+      const socket = state.mempoolSocket;
+      /* readyState can't see a connection that is nominally open but has
+         quietly stopped delivering data; some proxies drop idle sockets
+         without ever firing "close". Force the reconnect path on a gap
+         longer than the stats channel's normal chatter. */
+      if (socket && socket.readyState === WebSocket.OPEN &&
+          state.lastSocketMessageAt !== null &&
+          Date.now() - state.lastSocketMessageAt > 120000) {
+        socket.close();
+      }
+      try {
+        const height = parseInt(await fetchText("https://mempool.space/api/blocks/tip/height"), 10);
+        if (!Number.isFinite(height) || height === state.tipHeight) return;
+      } catch (err) { return; /* next tick tries again */ }
+      loadChain();
+    }, 20000);
     setInterval(loadMining, 300000);
     setInterval(loadFng, 900000);
 
