@@ -3029,21 +3029,7 @@
       if (box && cards.length) {
         const gutter = box.getBoundingClientRect().right - parseFloat(getComputedStyle(box).paddingRight);
         const lastRight = cards[cards.length - 1].getBoundingClientRect().right;
-        const hasMore = lastRight > gutter + 1;
-        stage.classList.toggle("has-more-blocks", hasMore);
-
-        /* The card touching the right gutter changes with viewport width and
-           horizontal scrolling, so :last-child is not the visible edge card.
-           Mark the rightmost card that has begun before the gutter and let CSS
-           reveal that exact card while it is being inspected. */
-        let edgeCard = null;
-        cards.forEach(card => {
-          card.classList.remove("is-edge-card");
-          if (card.classList.contains("sc-block-confirmed") && card.getBoundingClientRect().left < gutter + 1) {
-            edgeCard = card;
-          }
-        });
-        if (hasMore && edgeCard) edgeCard.classList.add("is-edge-card");
+        stage.classList.toggle("has-more-blocks", lastRight > gutter + 1);
       }
       stage.style.setProperty("--sc-blocks-scroll", wrap.scrollLeft + "px");
       if (!blocksOverflowBound) {
@@ -3324,22 +3310,14 @@
               "<span class=\"sc-block-ghost\" aria-hidden=\"true\"></span>" +
               pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
             sizeBlockGhost();
-            /* The newest confirmed card's landing transform (sc-new-block-land)
-               is still mid-flight on this frame, so getBoundingClientRect() here
-               would read its offset/scaled starting position and throw off the
-               right-edge fade math. Wait for that entrance to settle first. */
-            const newest = fresh && wrap.querySelector(".sc-block-confirmed.is-newest");
-            if (newest) {
-              newest.addEventListener("animationend", function onLand(e) {
-                if (e.animationName !== "sc-new-block-land") return;
-                newest.removeEventListener("animationend", onLand);
-                syncBlocksOverflow();
-                measureBlocksFade();
-              });
-            } else {
-              syncBlocksOverflow();
-              measureBlocksFade();
-            }
+            /* Safe to measure on this frame: nothing in a rebuilt strip carries
+               an entrance transform. The landed card is pinned by animation:none
+               and the rest are held by the :not(.is-newest) rule, so every
+               getBoundingClientRect() here reads a resting position. Only the
+               newest card's colour wash is still animating, and opacity does
+               not move geometry. */
+            syncBlocksOverflow();
+            measureBlocksFade();
           };
 
           const tipHeight = blocks.length ? Number(blocks[0].height) : null;
