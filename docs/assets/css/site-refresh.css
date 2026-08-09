@@ -4042,8 +4042,14 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-block-pending.is-mined .sc-block-kicker,
 .sc-block-pending.is-mined .sc-block-age { color: #ffbd4d; }
 
+/* The landed card must not animate in at all: it is replacing a card that was
+   already on screen at this exact spot, so any entrance reads as a blink. This
+   has to be stated rather than left off, because the :not(.is-newest) rule
+   above deliberately exempts this card from that blanket animation:none, which
+   would otherwise drop it back onto .sc-block's sc-block-in slide-and-fade.
+   Only the ::after wash below animates; the card itself simply is. */
 .sc-block-confirmed.is-newest {
-  animation: sc-new-block-land 1.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: none;
 }
 
 /* The strip is rebuilt from scratch the moment the flight ends, which threw
@@ -4126,10 +4132,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   0% { transform: scaleX(0); opacity: 0; }
   20% { opacity: 1; }
   100% { transform: scaleX(1); opacity: 0; }
-}
-
-@keyframes sc-new-block-land {
-  0%, 100% { opacity: 1; transform: none; border-color: rgba(255, 255, 255, 0.25); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.085), 0 14px 30px rgba(0, 0, 0, 0.28); }
 }
 
 @keyframes sc-pending-logo-pulse {
