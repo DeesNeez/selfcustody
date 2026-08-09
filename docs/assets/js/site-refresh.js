@@ -3009,44 +3009,86 @@
       if (feeEl) feeEl.style.color = scaleColor(1 - Math.min(lowestFee, 100) / 100);
     };
 
-    /* The strip is a horizontal scroller with its scrollbar hidden, so nothing
-       tells you the row continues past the right edge -- the last card just
-       reads as clipped. Flag the overflow state and let CSS paint a fade. */
+    /* The phone aura is painted on the stage rather than inside the scroller
+       -- overflow-x:auto would clip it -- so it does not move when the strip
+       is scrolled, and the glow detaches from the pending card it belongs to.
+       Feed the scroll offset back so it tracks the card. */
     let blocksOverflowBound = false;
     const syncBlocksOverflow = () => {
       const wrap = $("dash-blocks");
       const stage = wrap && wrap.closest(".sc-blocks-top");
+      const box = wrap && wrap.closest(".sc-blocks-container");
       if (!stage) return;
-      const more = wrap.scrollWidth - wrap.clientWidth - wrap.scrollLeft > 4;
-      stage.classList.toggle("has-more-blocks", more);
-      /* The phone aura is painted on the stage rather than inside the scroller
-         -- overflow-x:auto would clip it -- so it does not move when the strip
-         is scrolled, and the glow detaches from the pending card it belongs
-         to. Feed the scroll offset back so it tracks the card. */
+      /* Measured against the container's right gutter rather than the
+         scroller's own overflow: above 1200px the strip stops scrolling and
+         overflows visibly instead, so scrollWidth stops being the signal. The
+         fade has to clear once the last block is inside the gutter, or the
+         oldest block could never be read at the end of the row. */
+      const cards = wrap.querySelectorAll(".sc-block");
+      if (box && cards.length) {
+        const gutter = box.getBoundingClientRect().right - parseFloat(getComputedStyle(box).paddingRight);
+        const lastRight = cards[cards.length - 1].getBoundingClientRect().right;
+        const hasMore = lastRight > gutter + 1;
+        stage.classList.toggle("has-more-blocks", hasMore);
+
+        /* The card touching the right gutter changes with viewport width and
+           horizontal scrolling, so :last-child is not the visible edge card.
+           Mark the rightmost card that has begun before the gutter and let CSS
+           reveal that exact card while it is being inspected. */
+        let edgeCard = null;
+        cards.forEach(card => {
+          card.classList.remove("is-edge-card");
+          if (card.classList.contains("sc-block-confirmed") && card.getBoundingClientRect().left < gutter + 1) {
+            edgeCard = card;
+          }
+        });
+        if (hasMore && edgeCard) edgeCard.classList.add("is-edge-card");
+      }
       stage.style.setProperty("--sc-blocks-scroll", wrap.scrollLeft + "px");
       if (!blocksOverflowBound) {
         blocksOverflowBound = true;
         wrap.addEventListener("scroll", syncBlocksOverflow, { passive: true });
-        window.addEventListener("resize", () => { syncBlocksOverflow(); measureBlocksFade(); });
+        window.addEventListener("resize", () => { sizeBlockGhost(); syncBlocksOverflow(); measureBlocksFade(); });
       }
     };
 
-    /* The stage box runs well past the cards -- the scroller carries 56px of
-       padding so the pending block's glow has somewhere to render, and the
+    /* The container box runs well past the cards -- the scroller carries 56px
+       of padding so the pending block's glow has somewhere to render, and the
        price heading is pulled up into that space. A full-height fade therefore
        washed over the "Live" chip's right end. Bound it to the cards instead;
        measuring beats per-breakpoint constants, since the stage padding, the
        scroller padding and the negative margins all differ by breakpoint. */
+    /* The decorative continuation card is intentionally only a sliver. Keep
+       it a little more visible on larger screens, but never let spare row width
+       turn it into another full card. Its height follows the pending card so
+       the two orange edges always line up. */
+    const sizeBlockGhost = () => {
+      const wrap = $("dash-blocks");
+      const box = wrap && wrap.closest(".sc-blocks-container");
+      const ghost = wrap && wrap.querySelector(".sc-block-ghost");
+      const pending = wrap && wrap.querySelector(".sc-block-pending");
+      if (!box || !ghost || !pending) return;
+
+      const pendingHeight = pending.getBoundingClientRect().height;
+      if (pendingHeight) ghost.style.height = pendingHeight + "px";
+
+      if (window.matchMedia("(max-width: 575px)").matches) {
+        ghost.style.width = "10px";
+        return;
+      }
+      ghost.style.width = "30px";
+    };
+
     const measureBlocksFade = () => {
       const wrap = $("dash-blocks");
-      const stage = wrap && wrap.closest(".sc-blocks-top");
+      const box = wrap && wrap.closest(".sc-blocks-container");
       const card = wrap && wrap.querySelector(".sc-block");
-      if (!stage || !card) return;
-      const stageBox = stage.getBoundingClientRect();
+      if (!box || !card) return;
+      const boxRect = box.getBoundingClientRect();
       const cardBox = card.getBoundingClientRect();
       // 8px of bleed so card shadows are not cut off by the fade's own edge.
-      stage.style.setProperty("--sc-strip-fade-top", Math.max(0, cardBox.top - stageBox.top - 8) + "px");
-      stage.style.setProperty("--sc-strip-fade-bottom", Math.max(0, stageBox.bottom - cardBox.bottom - 8) + "px");
+      box.style.setProperty("--sc-strip-fade-top", Math.max(0, cardBox.top - boxRect.top - 8) + "px");
+      box.style.setProperty("--sc-strip-fade-bottom", Math.max(0, boxRect.bottom - cardBox.bottom - 8) + "px");
     };
 
     const paintPendingBlock = projected => {
@@ -3276,7 +3318,10 @@
           const renderStrip = fresh => {
             wrap.classList.remove("is-confirming");
             wrap.classList.add("is-ready");
-            wrap.innerHTML = pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
+            wrap.innerHTML =
+              "<span class=\"sc-block-ghost\" aria-hidden=\"true\"></span>" +
+              pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
+            sizeBlockGhost();
             syncBlocksOverflow();
             measureBlocksFade();
           };
