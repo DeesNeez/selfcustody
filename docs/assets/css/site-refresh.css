@@ -1783,7 +1783,7 @@ p.sc-price {
 .sc-footer {
   padding: 58px 0 26px;
   color: rgba(255, 255, 255, 0.68);
-  background: #202020;
+  background: #141415;
 }
 
 .sc-footer h3,
@@ -3886,14 +3886,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
      chain ran out of blocks before reaching that edge. */
 }
 
-/* The data's final card is often still offscreen; is-edge-card is assigned to
-   whichever confirmed card is actually touching the gutter. Clear the real
-   container fade while that visible card is hovered or keyboard-focused. */
-.sc-blocks-top.has-more-blocks:has(.sc-block-confirmed.is-edge-card:is(:hover, :focus-visible)) .sc-blocks-container::after {
-  opacity: 0;
-  pointer-events: none;
-}
-
 /* Decorative only -- the chain visibly carries on past the left gutter rather
    than starting on a hard edge. Sized by sizeBlockGhost(); no glow, and only
    the right-hand edge is drawn, the rest dissolving away to the left. */
@@ -4005,11 +3997,11 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-blocks.is-confirming .sc-block-pending {
   z-index: 3;
-  animation: sc-block-confirm 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sc-block-confirm 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .sc-blocks.is-confirming .sc-block-confirmed {
-  animation: sc-block-shift-right 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: sc-block-shift-right 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .sc-blocks.is-confirming .sc-block-confirmed:last-child {
@@ -4017,46 +4009,51 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 }
 
 .sc-blocks.is-confirming .sc-block-connector {
-  animation: sc-connector-exit 0.55s ease-out both;
+  animation: sc-connector-exit 0.9s ease-out both;
 }
 
 .sc-blocks.is-confirming .sc-block-connector > span {
-  animation: sc-connector-sweep 0.48s ease-out both;
+  animation: sc-connector-sweep 0.8s ease-out both;
 }
 
-/* The mined green rides on an overlay's opacity rather than on the card's own
+/* The mined wash rides on an overlay's opacity rather than on the card's own
    background. Chrome will not interpolate background-image between two
    gradients even when their structure matches exactly -- it jumps to the end
    value on the first frame -- and that jump was the blunt moment mid-flight.
-   Opacity always crossfades. The dark bottom layer flattens the orange
-   underneath so the result reads green rather than a muddy blend. */
+   Opacity always crossfades. */
 .sc-block-pending::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 25% 18%, rgba(53, 180, 138, 0.34), transparent 46%),
-    linear-gradient(145deg, rgba(53, 180, 138, 0.26), rgba(35, 140, 105, 0.12) 72%, rgba(255, 255, 255, 0.02)),
+    radial-gradient(circle at 25% 18%, rgba(255, 153, 0, 0.34), transparent 46%),
+    linear-gradient(145deg, rgba(255, 153, 0, 0.26), rgba(220, 118, 0, 0.12) 72%, rgba(255, 255, 255, 0.02)),
     linear-gradient(0deg, rgba(10, 11, 13, 0.72), rgba(10, 11, 13, 0.72));
   opacity: 0;
   pointer-events: none;
-  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 650ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.sc-block-pending.is-mined { border-color: rgba(111, 216, 178, 0.92); }
+.sc-block-pending.is-mined { border-color: rgba(255, 189, 77, 0.92); }
 
 .sc-block-pending.is-mined::after { opacity: 1; }
 
 .sc-block-pending.is-mined .sc-block-kicker,
-.sc-block-pending.is-mined .sc-block-age { color: #6fd8b2; }
+.sc-block-pending.is-mined .sc-block-age { color: #ffbd4d; }
 
+/* The landed card must not animate in at all: it is replacing a card that was
+   already on screen at this exact spot, so any entrance reads as a blink. This
+   has to be stated rather than left off, because the :not(.is-newest) rule
+   above deliberately exempts this card from that blanket animation:none, which
+   would otherwise drop it back onto .sc-block's sc-block-in slide-and-fade.
+   Only the ::after wash below animates; the card itself simply is. */
 .sc-block-confirmed.is-newest {
-  animation: sc-new-block-land 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: none;
 }
 
 /* The strip is rebuilt from scratch the moment the flight ends, which threw
-   the mined card's green away in a single frame. The landed card re-paints
+   the mined card's wash away in a single frame. The landed card re-paints
    that same wash and dissolves it, so the swap reads as one continuous cool
    down rather than a cut. */
 .sc-block-confirmed.is-newest::after {
@@ -4065,36 +4062,36 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 25% 18%, rgba(53, 180, 138, 0.34), transparent 46%),
-    linear-gradient(145deg, rgba(53, 180, 138, 0.26), rgba(35, 140, 105, 0.12) 72%, rgba(255, 255, 255, 0.02)),
+    radial-gradient(circle at 25% 18%, rgba(255, 153, 0, 0.34), transparent 46%),
+    linear-gradient(145deg, rgba(255, 153, 0, 0.26), rgba(220, 118, 0, 0.12) 72%, rgba(255, 255, 255, 0.02)),
     linear-gradient(0deg, rgba(10, 11, 13, 0.72), rgba(10, 11, 13, 0.72));
   pointer-events: none;
-  animation: sc-new-block-cool 1.5s ease-in-out both;
+  animation: sc-new-block-cool 2.4s ease-in-out both;
 }
 
 .sc-block-confirmed.is-newest .sc-block-kicker {
-  animation: sc-new-block-kicker 1.5s ease-in-out both;
+  animation: sc-new-block-kicker 2.4s ease-in-out both;
 }
 
 .sc-block-confirmed.is-newest .sc-block-age {
-  animation: sc-new-block-age 1.5s ease-in-out both;
+  animation: sc-new-block-age 2.4s ease-in-out both;
 }
 
 /* Each holds the arrival colour through the card's landing motion, then cools
-   on an even curve. On the easing used for the movement the green was 40% gone
-   within 120ms, which read as a flicker rather than a settle. */
+   on an even curve. On the easing used for the movement the colour was 40%
+   gone within 120ms, which read as a flicker rather than a settle. */
 @keyframes sc-new-block-cool {
   0%, 22% { opacity: 1; }
   100% { opacity: 0; }
 }
 
 @keyframes sc-new-block-kicker {
-  0%, 22% { color: #6fd8b2; }
+  0%, 22% { color: #ffbd4d; }
   100% { color: var(--sc-muted); }
 }
 
 @keyframes sc-new-block-age {
-  0%, 22% { color: #6fd8b2; }
+  0%, 22% { color: #ffbd4d; }
   100% { color: var(--sc-orange); }
 }
 
@@ -4106,19 +4103,19 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   }
   42% {
     border-color: rgba(255, 187, 92, 0.98);
-    box-shadow: -18px 0 34px rgba(255, 138, 0, 0.36), 18px 0 32px rgba(53, 180, 138, 0.18);
+    box-shadow: -18px 0 34px rgba(255, 138, 0, 0.36), 18px 0 32px rgba(255, 153, 0, 0.18);
   }
   100% {
     transform: translateX(224px);
-    border-color: rgba(111, 216, 178, 0.94);
-    box-shadow: -24px 0 38px rgba(53, 180, 138, 0.3);
+    border-color: rgba(255, 189, 77, 0.94);
+    box-shadow: -24px 0 38px rgba(255, 153, 0, 0.3);
   }
 }
 
 @keyframes sc-block-shift-right {
   0% { transform: translateX(0); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 14px 28px rgba(0, 0, 0, 0.18); }
-  55% { box-shadow: -18px 0 30px rgba(53, 180, 138, 0.13); }
-  100% { transform: translateX(176px); box-shadow: -22px 0 34px rgba(53, 180, 138, 0.08); }
+  55% { box-shadow: -18px 0 30px rgba(255, 153, 0, 0.13); }
+  100% { transform: translateX(176px); box-shadow: -22px 0 34px rgba(255, 153, 0, 0.08); }
 }
 
 @keyframes sc-block-exit-right {
@@ -4135,11 +4132,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   0% { transform: scaleX(0); opacity: 0; }
   20% { opacity: 1; }
   100% { transform: scaleX(1); opacity: 0; }
-}
-
-@keyframes sc-new-block-land {
-  0% { opacity: 0; transform: translateX(-34px) scale(1.06); border-color: rgba(111, 216, 178, 0.95); box-shadow: 0 0 42px rgba(53, 180, 138, 0.36); }
-  100% { opacity: 1; transform: none; border-color: rgba(255, 255, 255, 0.25); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.085), 0 14px 30px rgba(0, 0, 0, 0.28); }
 }
 
 @keyframes sc-pending-logo-pulse {
@@ -4165,8 +4157,8 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   inset: -1px 0;
   transform: scaleX(0);
   transform-origin: left center;
-  background: linear-gradient(90deg, #ff8a00, #ffe3a8 58%, #6fd8b2);
-  box-shadow: 0 0 12px rgba(255, 179, 90, 0.85), 0 0 22px rgba(53, 180, 138, 0.38);
+  background: linear-gradient(90deg, #ff8a00, #ffe3a8 58%, #ffbd4d);
+  box-shadow: 0 0 12px rgba(255, 179, 90, 0.85), 0 0 22px rgba(255, 153, 0, 0.38);
 }
 
 .sc-block-connector::before,
@@ -4417,19 +4409,19 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   }
   42% {
     border-color: rgba(255, 187, 92, 0.98);
-    box-shadow: -14px 0 28px rgba(255, 138, 0, 0.34), 14px 0 26px rgba(53, 180, 138, 0.18);
+    box-shadow: -14px 0 28px rgba(255, 138, 0, 0.34), 14px 0 26px rgba(255, 153, 0, 0.18);
   }
   100% {
     transform: translateX(178px);
-    border-color: rgba(111, 216, 178, 0.94);
-    box-shadow: -18px 0 30px rgba(53, 180, 138, 0.28);
+    border-color: rgba(255, 189, 77, 0.94);
+    box-shadow: -18px 0 30px rgba(255, 153, 0, 0.28);
   }
 }
 
 @keyframes sc-block-shift-right-mobile {
   0% { transform: translateX(0); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 12px 24px rgba(0, 0, 0, 0.18); }
-  55% { box-shadow: -14px 0 24px rgba(53, 180, 138, 0.13); }
-  100% { transform: translateX(139px); box-shadow: -18px 0 28px rgba(53, 180, 138, 0.08); }
+  55% { box-shadow: -14px 0 24px rgba(255, 153, 0, 0.13); }
+  100% { transform: translateX(139px); box-shadow: -18px 0 28px rgba(255, 153, 0, 0.08); }
 }
 
 @keyframes sc-block-exit-right-mobile {
