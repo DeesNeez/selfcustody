@@ -2546,19 +2546,41 @@ body.site-refresh .sc-cta .sc-btn:hover {
 }
 
 @media (max-width: 575px) {
+  /* The copy used to be pulled up into the header, leaving the neon title
+     about 10px clear of the navbar. Dropping the pull lets it breathe; the
+     media offset and the next section's overlap below are both shifted to
+     match, since this breakpoint positions them from hard pixel offsets. */
   body.site-refresh[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
-    transform: translateY(-28px);
+    transform: none;
   }
 
+  /* Trimmed from the 108px the ≤767px rule sets, tightening the navbar-to-
+     title gap to 26px. Scoped to the home page so other heroes keep theirs. */
+  body.site-refresh[data-page="home"] .sc-hero {
+    padding-top: 96px;
+  }
+
+  /* The vw term carries the increase, not the floor: at 320px the two lines
+     already sit within ~2px of the container, so raising the minimum would
+     overflow the narrowest phones. Growth starts once there is room for it. */
   body.site-refresh[data-page="home"] .sc-hero h1 {
     width: max-content;
     max-width: 100%;
-    font-size: clamp(2.3rem, 9.8vw, 2.65rem);
+    font-size: clamp(2.3rem, 11.2vw, 2.95rem);
+  }
+
+  /* EXIT FIAT / ENTER BITCOIN are boxed neon signs -- at 0.4em their glows
+     nearly touch, so the pair read as one crowded block. */
+  .sc-hero-command-line + .sc-hero-command-line {
+    margin-top: 0.56em;
   }
 
   body.site-refresh[data-page="home"] .sc-hero .sc-lead {
     max-width: 340px;
-    margin-top: calc(clamp(300px, 82vw, 340px) + 14px);
+    /* Media height plus the title-to-media gap, plus clearance: the lead used
+       to start 4px above the video's bottom edge, which read as cramped. The
+       +58 puts it 20px clear of it. */
+    margin-top: calc(clamp(300px, 82vw, 340px) + 58px);
     margin-right: auto;
     margin-left: auto;
     text-align: center;
@@ -2615,7 +2637,11 @@ body.site-refresh .sc-cta .sc-btn:hover {
   }
 
   body.site-refresh[data-page="home"] .sc-hero-background-media {
-    top: 189.25px;
+    /* Absolute from the hero's top edge, so it does not follow the copy. A
+       fixed offset would unbalance as soon as the title scales, so it tracks
+       the same clamp: 96px hero padding + the title's height (a measured
+       2.64x its font-size across both lines) + a 38px gap. */
+    top: calc(134px + 2.64 * clamp(2.3rem, 11.2vw, 2.95rem));
     left: -6%;
     width: 112%;
     height: clamp(300px, 82vw, 340px);
@@ -2630,6 +2656,9 @@ body.site-refresh .sc-cta .sc-btn:hover {
   }
 
   body.site-refresh[data-page="home"] .sc-hero + .sc-section {
+    /* Overlaps the hero by a fixed amount, so it has to give back the space
+       the copy gained or it would ride up over the buttons. */
+    margin-top: -46px;
     padding-top: 8px;
   }
 }
@@ -2882,31 +2911,50 @@ body.site-refresh .sc-cta .sc-btn:hover::after {
   background: var(--sc-dash-black);
 }
 
-/* Right-edge fade marking the strip as scrollable. JS adds .has-more-blocks
-   while content remains past the edge, so it clears at the end of the row and
-   never shows when the strip fits. ::after is spoken for -- it carries the
-   phone aura -- and this has to clear .sc-blocks-container's z-index 2. */
 .sc-blocks-top {
   position: relative;
 }
 
-.sc-blocks-top::before {
+/* The chain runs past the container and has to stop somewhere. Anchoring the
+   fade to the container rather than the viewport lands it on the same right
+   gutter as the Get Help button, the chart and the price -- mirroring the
+   pending block's alignment on the left. Everything beyond that edge is solid
+   black, so the overrunning cards simply disappear into the page.
+
+   Sized from the container's own coordinate system: 100% is its padding box,
+   so `100% - 12px` is the content edge and the gradient completes exactly
+   there. The 100vw width carries the black out past the viewport edge. */
+.sc-blocks-container::after {
   content: "";
   position: absolute;
   /* Set from the measured card band -- see measureBlocksFade(). The fallbacks
      keep the fade off the neighbouring content if that never runs. */
   top: var(--sc-strip-fade-top, 0px);
-  right: 0;
   bottom: var(--sc-strip-fade-bottom, 100%);
+  /* Short feather: the chain now ends flush on the gutter, so a long gradient
+     would wash out a card that is meant to read as crisply aligned. Its job is
+     just to hide whatever overruns past that edge. */
+  left: calc(100% - 35px);
   z-index: 3;
-  width: 56px;
-  background: linear-gradient(to right, rgba(8, 9, 11, 0), var(--sc-dash-black) 82%);
+  width: 100vw;
+  background: linear-gradient(to right, rgba(8, 9, 11, 0), var(--sc-dash-black) 28px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
 }
 
-.sc-blocks-top.has-more-blocks::before { opacity: 1; }
+/* Cleared once the chain ends inside the gutter -- otherwise scrolling to the
+   end of the row would leave the oldest block permanently half-dissolved. */
+.sc-blocks-top.has-more-blocks .sc-blocks-container::after { opacity: 1; }
+
+/* Blocks dissolved into the gutter still answered the mouse, so hovering the
+   empty black past the last card lit up a card that is not visibly there.
+   Let the fade swallow the pointer instead -- but only while it is actually
+   painted, or an invisible overlay would eat hovers on a chain that fits, and
+   only where hover exists, so a touch drag can still scroll the strip. */
+@media (hover: hover) {
+  .sc-blocks-top.has-more-blocks .sc-blocks-container::after { pointer-events: auto; }
+}
 
 .sc-blocks-top + .sc-dash-hero {
   /* Most of the space under the strip lives here rather than in the stage's
@@ -3784,10 +3832,13 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    Lifting the strip alone (rather than the whole stage, whose opaque
    background would then cover the price heading) lets the glow bleed into the
    header. Phones already did this; it now applies at every width. */
+/* No max-width override: inheriting .container's stepped widths puts this
+   element's content edge on the same gutter as the price, chart and headings
+   below. The scroller's -56px side margins still let the chain bleed past
+   that edge and off the viewport, so only the leading edge is pinned. */
 .sc-blocks-container {
   position: relative;
   z-index: 2;
-  max-width: 1320px;
 }
 
 /* overflow-x:auto forces overflow-y to auto as well -- CSS won't leave one
@@ -3821,22 +3872,50 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-blocks::-webkit-scrollbar { display: none; }
 
 @media (min-width: 1200px) {
+  /* Left-aligned, not centred: centring floated the pending block off the
+     page's gutter, which is the one edge that should stay put. The chain
+     still runs off the right into the mask below. */
   .sc-blocks {
-    justify-content: center;
+    justify-content: flex-start;
     overflow: visible;
-    transform: translateX(36px);
   }
 
-  /* The strip stops scrolling here, and the last-child mask below already
-     handles the far edge -- the scroll fade would stack on top of it. */
-  .sc-blocks-top::before { content: none; }
+  /* The far edge is handled by .sc-blocks-container::after, which sits on the
+     container's gutter. The old last-child mask dissolved whichever card
+     happened to be last, so it faded early -- in open space -- whenever the
+     chain ran out of blocks before reaching that edge. */
+}
 
-  /* The chain continues beyond the viewport: keep the near half legible,
-     then let the far-right block dissolve instead of ending on a hard edge. */
-  .sc-block-confirmed:last-child {
-    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 36%, rgba(0, 0, 0, 0.78) 42%, rgba(0, 0, 0, 0.25) 49%, transparent 56%, transparent 100%);
-    mask-image: linear-gradient(90deg, #000 0%, #000 36%, rgba(0, 0, 0, 0.78) 42%, rgba(0, 0, 0, 0.25) 49%, transparent 56%, transparent 100%);
-  }
+/* The data's final card is often still offscreen; is-edge-card is assigned to
+   whichever confirmed card is actually touching the gutter. Clear the real
+   container fade while that visible card is hovered or keyboard-focused. */
+.sc-blocks-top.has-more-blocks:has(.sc-block-confirmed.is-edge-card:is(:hover, :focus-visible)) .sc-blocks-container::after {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Decorative only -- the chain visibly carries on past the left gutter rather
+   than starting on a hard edge. Sized by sizeBlockGhost(); no glow, and only
+   the right-hand edge is drawn, the rest dissolving away to the left. */
+.sc-block-ghost {
+  flex: 0 0 auto;
+  min-height: 172px;
+  border: 1px solid rgba(255, 153, 0, 0.86);
+  border-left: 0;
+  border-radius: 0 10px 10px 0;
+  /* Its width is whatever the row has left over, which swings from a few
+     pixels to most of a card as the window changes. Painting a card-width
+     fill anchored to the right keeps it reading as the right-hand edge of a
+     card at any of those widths, never as an empty box. */
+  background: linear-gradient(145deg, rgba(255, 153, 0, 0.23), rgba(220, 118, 0, 0.09) 72%, rgba(255, 255, 255, 0.02));
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 158px 100%;
+  /* Fixed distance rather than a percentage, so the dissolve looks the same
+     whatever width the sliver happens to be. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 52px);
+  mask-image: linear-gradient(90deg, transparent 0, #000 52px);
+  pointer-events: none;
 }
 
 .sc-block {
@@ -4239,19 +4318,27 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   }
   .sc-blocks-top + .sc-dash-hero { padding-top: 10px; }
   .sc-dash-hero { padding: 112px 0 40px; }
-  /* The outer strip clips horizontal overflow to prevent page-wide scroll.
-     At phone widths the standard container gutter left the pending card only
-     12px from that clip edge, so its 52px pulse ended on a hard vertical
-     line. Keep the scroller's clipping-safe padding, but use 24px more on
-     the leading side: at 375px this places the card at 36px, where the glow
-     has faded naturally, while the first confirmed block still fits. */
-  .sc-blocks { gap: 11px; padding-left: 80px; }
+  /* The extra 24px of leading padding that used to sit here was protecting a
+     52px pulse from the strip's clip edge -- but that is the desktop
+     keyframe. The phone pulse peaks at 20px of blur, and the broad aura that
+     reads as the glow is painted on .sc-blocks-top, anchored at the viewport
+     edge and unaffected by this padding. Falling back to the shared 56px
+     lines the pending card up on the same gutter as the page's other
+     content, with only the faintest tail of the pulse clipped. */
+  .sc-blocks { gap: 11px; }
   .sc-block {
     width: 116px;
     min-height: 148px;
     flex-basis: 116px;
     padding: 9px 7px;
     border-radius: 8px;
+  }
+  .sc-block-ghost {
+    min-height: 148px;
+    border-radius: 0 8px 8px 0;
+    background-size: 116px 100%;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
+    mask-image: linear-gradient(90deg, transparent 0, #000 8px);
   }
   .sc-block-pending {
     width: 122px;
