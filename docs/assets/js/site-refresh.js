@@ -1288,18 +1288,20 @@
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-section-head"><div class="sc-dash-section-title"><h2>THE Bitcoin Network</h2><span class="sc-dash-gears" aria-hidden="true"><i class="bi bi-gear-fill"></i><i class="bi bi-gear-fill"></i></span></div><p>A live view of Bitcoin's network, supply, fees, and mining activity.</p></div>
+            <div class="sc-section-head"><div class="sc-dash-section-title"><h2>THE Bitcoin Network</h2><span class="sc-dash-gears" aria-hidden="true"><i class="bi bi-gear-fill"></i><i class="bi bi-gear-fill"></i></span></div><p>A live view of Bitcoin's network metrics, supply, fees, and mining activity.</p></div>
 
             <div class="row g-4 sc-dash-metrics-grid">
               <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-currency-bitcoin"></i></span><h3 id="dash-sats-title">Sats per dollar</h3><button type="button" class="sc-swap" id="dash-sats-swap" title="Swap units" aria-label="Swap between sats per dollar and dollars per sat"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button></div>
-                    <p class="sc-dash-value" id="dash-sats">—</p>
+                    <p class="sc-dash-value" id="dash-sats">&mdash;</p>
+                    <p class="sc-dash-note">What a unit of currency buys, and how close a sat is to a cent.</p>
+                    <p class="sc-dash-detail"><span>Five years ago</span><strong id="dash-sats-year">&mdash;</strong></p>
                     <div class="sc-dash-parity">
                       <span>Sat-cent parity</span>
                       <div class="sc-dash-bar" aria-hidden="true"><span id="dash-sats-bar"></span></div>
-                      <strong id="dash-sats-parity">—%</strong>
+                      <strong id="dash-sats-parity">&mdash;%</strong>
                     </div>
                   </div>
                 </article>
@@ -1308,20 +1310,23 @@
               <div class="col-md-6 col-lg-4">
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
-                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-box"></i></span><h3>Block height</h3></div>
-                    <p class="sc-dash-value" id="dash-height">—</p>
-                    <p class="sc-dash-note">Latest confirmed block</p>
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-graph-down-arrow"></i></span><h3>Drawdown from high</h3></div>
+                    <p class="sc-dash-value" id="dash-drawdown">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-drawdown-note">Distance from the highest price ever recorded.</p>
+                    <p class="sc-dash-detail"><span>All-time high</span><strong id="dash-ath">&mdash;</strong></p>
+                    <p class="sc-dash-detail"><span>Previous cycle low</span><strong id="dash-cycle-low">&mdash;</strong></p>
                   </div>
                 </article>
               </div>
 
               <div class="col-md-6 col-lg-4">
-                <article class="sc-card sc-dash-tile sc-dash-tile-fee">
+                <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
-                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-speedometer2"></i></span><h3>Lowest next-block fee</h3></div>
-                    <p class="sc-dash-value" id="dash-fee">—</p>
-                    <p class="sc-dash-note">Lowest fee rate currently projected to enter the next block.</p>
-                    <div class="sc-dash-fees" id="dash-fee-tiers"></div>
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-lightning-charge"></i></span><h3>Hashprice</h3></div>
+                    <p class="sc-dash-value" id="dash-hashprice">&mdash;</p>
+                    <p class="sc-dash-note">Miner revenue per petahash per day.</p>
+                    <p class="sc-dash-detail"><span>Network revenue a day</span><strong id="dash-hashprice-rev">&mdash;</strong></p>
+                    <p class="sc-dash-detail"><span>Issued plus fees a day</span><strong id="dash-hashprice-btc">&mdash;</strong></p>
                   </div>
                 </article>
               </div>
@@ -1330,9 +1335,10 @@
                 <article class="sc-card sc-dash-tile">
                   <div class="sc-card-body">
                     <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-cpu"></i></span><h3>Network hashrate</h3></div>
-                    <p class="sc-dash-value" id="dash-hashrate">—</p>
-                    <p class="sc-dash-note">Mining power</p>
-                    <p class="sc-dash-detail"><span>Difficulty</span><strong id="dash-current-difficulty">—</strong></p>
+                    <p class="sc-dash-value" id="dash-hashrate">&mdash;</p>
+                    <p class="sc-dash-note">Current estimated mining power securing the network.</p>
+                    <div class="sc-dash-spark" id="dash-hash-spark" aria-hidden="true"></div>
+                    <p class="sc-dash-detail"><span>Difficulty</span><strong id="dash-current-difficulty">&mdash;</strong></p>
                   </div>
                 </article>
               </div>
@@ -1424,6 +1430,48 @@
                       <span><em id="dash-mempool-blocks">&mdash;</em>block equiv.</span>
                       <span><em id="dash-mempool-fees">&mdash;</em>total fees</span>
                     </div>
+                    <p class="sc-dash-detail"><span>Clears in, at ten minutes a block</span><strong id="dash-mempool-eta">&mdash;</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile sc-dash-tile-averages">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-graph-up"></i></span><h3>Weekly moving averages</h3></div>
+                    <p class="sc-dash-note">Two long-term weekly averages for the current Bitcoin price.</p>
+                    <div class="sc-dash-average-reading">
+                      <span>200-week average</span>
+                      <p class="sc-dash-value" id="dash-ma200w">&mdash;</p>
+                    </div>
+                    <div class="sc-dash-average-reading">
+                      <span>50-week average</span>
+                      <p class="sc-dash-value" id="dash-ma50w">&mdash;</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-rulers"></i></span><h3>Mayer Multiple</h3></div>
+                    <p class="sc-dash-value" id="dash-mayer">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-mayer-note">Price measured against its 200-day average.</p>
+                    <p class="sc-dash-detail"><span>200-day average</span><strong id="dash-mayer-ma">&mdash;</strong></p>
+                    <p class="sc-dash-detail"><span>Historic average</span><strong>about 1.4</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-pie-chart"></i></span><h3>Fees share of reward</h3></div>
+                    <p class="sc-dash-value" id="dash-feeshare">&mdash;</p>
+                    <p class="sc-dash-note">Fee share of miner revenue across the latest 15 blocks.</p>
+                    <p class="sc-dash-detail"><span>Fees per block</span><strong id="dash-feeshare-fees">&mdash;</strong></p>
+                    <p class="sc-dash-detail"><span>Block subsidy</span><strong id="dash-feeshare-subsidy">&mdash;</strong></p>
                   </div>
                 </article>
               </div>
@@ -1997,7 +2045,11 @@
       socketReconnectMs: 2000,
       socketStopped: false,
       blockRefreshQueued: false,
-      lastSocketMessageAt: null
+      lastSocketMessageAt: null,
+      /* Fed from separate requests; hashprice needs both plus the price. */
+      hashrate: null,
+      avgBlockFees: null,
+      blockSubsidy: null
     };
 
     const RANGE_SECONDS = {
@@ -2810,6 +2862,13 @@
         renderChart(true);
         paintPrice();
         updateChange();
+        /* Both are quoted in the selected currency, so they have to follow the
+           toggle -- the Mayer number itself will not move, being a ratio, but
+           the average underneath it is money. */
+        paintMovingAverages();
+        paintMayerMultiple();
+        paintDrawdown();
+        paintHashprice();
       });
     });
 
@@ -2870,6 +2929,17 @@
            milestone and does not change when the displayed units are flipped. */
         if (bar) bar.style.width = Math.min(satCentParity, 100) + "%";
         if (parity) parity.textContent = satCentParity.toFixed(1) + "%";
+
+        /* The same rate five years back, which is the one comparison here that
+           is not just the headline restated: it says which way the currency
+           has moved against bitcoin, not what today's number is in other
+           units. Five rather than one because a single year is mostly noise at
+           this volatility, while five covers a halving and reads as a trend. */
+        const yearEl = $("dash-sats-year");
+        if (yearEl) {
+          const then = closeAgo(365 * 5, cur);
+          yearEl.textContent = then ? fmtInt(100000000 / then) + " sats" : "—";
+        }
       }
     };
 
@@ -2967,6 +3037,16 @@
         } catch (fxError) {
           // Native CAD history still renders if the optional historical FX lookup fails.
         }
+        /* First point at which the long averages can be worked out at all --
+           they need years of closes, and this is what fetches them. paintPrice
+           is in the list because the sats tile's five-year comparison reads the
+           same history, and the price poll that normally drives that tile
+           finishes long before this request does. */
+        paintPrice();
+        paintMovingAverages();
+        paintMayerMultiple();
+        paintDrawdown();
+        paintHashprice();
       } catch (err) {
         setChartState("Price history is unavailable right now.", false);
       }
@@ -2994,6 +3074,11 @@
           renderChart(false);
         }
         updateChange();
+        /* Keep both long-term averages aligned with the active currency. */
+        paintMovingAverages();
+        paintMayerMultiple();
+        paintDrawdown();
+        paintHashprice();
         stamp();
       } catch (err) { /* leave the last good value on screen */ }
     };
@@ -3010,6 +3095,167 @@
       if (feeEl) feeEl.style.color = scaleColor(1 - Math.min(lowestFee, 100) / 100);
     };
 
+    /* Touch drags the strip natively and a trackpad can swipe it, but a mouse
+       can do neither: the scrollbar is hidden, so without this the blocks past
+       the right-hand fade cannot be reached at all. Pointer events rather than
+       mouse ones, so a stylus behaves too; touch is left to the browser, which
+       already does it better than this would.
+
+       The wrinkle is that every card is a link. A press that turns into a drag
+       must scroll and then NOT open a block when the button comes up, while a
+       press that stays put must still follow the link. A few pixels of slop
+       separates the two. */
+    const bindBlocksDrag = wrap => {
+      const DRAG_SLOP = 5;
+      /* Glide tuning. Speeds are pointer pixels per millisecond; the cap keeps
+         a violent flick from teleporting the strip and the floor decides what
+         is too slow to be worth coasting at all. GLIDE_REACH turns a release
+         speed into a distance -- at the cap, a throw of a little over 400px. */
+      const GLIDE_MAX_SPEED = 2.5;
+      const GLIDE_MIN_SPEED = 0.015;
+      const GLIDE_REACH = 170;
+      const GLIDE_MIN_MS = 260;
+      const GLIDE_MAX_MS = 900;
+      /* scrollLeft lands on whole pixels, so the very end of any easing curve
+         asks for fractions of a pixel per frame and gets rounded into a 1, 0,
+         1, 0 stutter -- worse on a high-refresh display, where the frames are
+         shorter and the fractions smaller. Finish the moment the target is
+         this close instead: the curve is doing under a pixel a frame by then,
+         so closing the gap in one step cannot be seen, and skipping the crawl
+         is what actually makes the ending read as smooth. */
+      const GLIDE_SETTLE_PX = 2;
+      /* How long a pointer may sit still before its last reading is treated as
+         stale rather than as speed. */
+      const GLIDE_STALE_MS = 100;
+
+      let pointerId = null;
+      let startX = 0;
+      let startScroll = 0;
+      let dragging = false;
+      let swallowClick = false;
+      let velocity = 0;
+      let lastX = 0;
+      let lastT = 0;
+      let glideFrame = 0;
+
+      const stopGlide = () => {
+        if (glideFrame) cancelAnimationFrame(glideFrame);
+        glideFrame = 0;
+      };
+
+      /* Eases to a landing point rather than bleeding speed off frame by
+         frame. A decay loop has to quit at some floor while the strip is still
+         moving, and that leftover speed is the abrupt part -- it also reaches
+         either end of the row at full tilt and stops against it. Working out
+         where the coast should land, clamping that into range, then easing to
+         it makes the arrival the curve's own ending: an ease-out cubic is at
+         exactly zero speed as it finishes, so the strip settles rather than
+         stops, and settles into the boundary the same way instead of hitting
+         it. Being a function of elapsed time it also self-corrects -- a tab
+         backgrounded mid-glide resumes at the right place rather than
+         integrating one enormous frame. */
+      const glide = () => {
+        const speed = Math.max(-GLIDE_MAX_SPEED, Math.min(GLIDE_MAX_SPEED, -velocity));
+        const from = wrap.scrollLeft;
+        const limit = wrap.scrollWidth - wrap.clientWidth;
+        const to = Math.max(0, Math.min(limit, from + speed * GLIDE_REACH));
+        const span = to - from;
+        if (Math.abs(span) < 1) return;
+        /* Tied to distance, so a nudge does not take as long to settle as a
+           full-length throw. */
+        const duration = Math.max(GLIDE_MIN_MS, Math.min(GLIDE_MAX_MS, Math.abs(span) * 1.7));
+        const start = performance.now();
+        const step = now => {
+          const t = Math.min(1, (now - start) / duration);
+          /* Squared rather than cubed: both finish at zero speed, but the
+             gentler curve spends far less of its length below a pixel a
+             frame, which is the stretch that cannot be drawn smoothly. */
+          const remaining = span * Math.pow(1 - t, 2);
+          if (t >= 1 || Math.abs(remaining) < GLIDE_SETTLE_PX) {
+            wrap.scrollLeft = to;
+            glideFrame = 0;
+            return;
+          }
+          wrap.scrollLeft = to - remaining;
+          glideFrame = requestAnimationFrame(step);
+        };
+        glideFrame = requestAnimationFrame(step);
+      };
+
+      wrap.addEventListener("pointerdown", e => {
+        if (e.pointerType === "touch" || e.button !== 0) return;
+        /* Catching a moving strip should stop it where it is, the way it does
+           on a phone. */
+        stopGlide();
+        pointerId = e.pointerId;
+        startX = e.clientX;
+        startScroll = wrap.scrollLeft;
+        dragging = false;
+        velocity = 0;
+        lastX = e.clientX;
+        lastT = e.timeStamp;
+        /* Any press begins a fresh gesture, so a suppression left armed by a
+           drag whose click never arrived cannot eat this one's. */
+        swallowClick = false;
+      });
+
+      wrap.addEventListener("pointermove", e => {
+        if (pointerId === null || e.pointerId !== pointerId) return;
+        const dx = e.clientX - startX;
+        if (!dragging) {
+          if (Math.abs(dx) < DRAG_SLOP) return;
+          dragging = true;
+          wrap.classList.add("is-dragging");
+          /* Capture so the drag survives the pointer leaving the strip. It
+             throws if the pointer is no longer active, which is a race we
+             cannot prevent and do not need to survive -- losing capture only
+             means the drag ends early if the cursor leaves. */
+          try { wrap.setPointerCapture(pointerId); } catch (err) { /* not captured */ }
+        }
+        /* Weighted towards the newest sample so the glide follows the flick at
+           the end of the gesture rather than its average over the whole drag --
+           dragging slowly across and snapping at the last moment should throw
+           the strip, and a raw average would swallow that. */
+        const dt = e.timeStamp - lastT;
+        if (dt > 0) {
+          velocity = ((e.clientX - lastX) / dt) * 0.7 + velocity * 0.3;
+          lastX = e.clientX;
+          lastT = e.timeStamp;
+        }
+        wrap.scrollLeft = startScroll - dx;
+        e.preventDefault();
+      });
+
+      const endDrag = e => {
+        if (pointerId === null || e.pointerId !== pointerId) return;
+        try {
+          if (wrap.hasPointerCapture(pointerId)) wrap.releasePointerCapture(pointerId);
+        } catch (err) { /* already released with the pointer */ }
+        pointerId = null;
+        if (!dragging) return;
+        dragging = false;
+        wrap.classList.remove("is-dragging");
+        swallowClick = true;
+        /* A stationary pointer sends no events, so velocity still holds
+           whatever the last movement was -- without this, dragging somewhere,
+           pausing, and letting go would fling the strip on a reading taken
+           who knows how long ago. Going quiet is how a person says stop. */
+        if (e.timeStamp - lastT > GLIDE_STALE_MS) velocity = 0;
+        if (!reduceMotion && Math.abs(velocity) > GLIDE_MIN_SPEED) glide();
+      };
+
+      wrap.addEventListener("pointerup", endDrag);
+      wrap.addEventListener("pointercancel", endDrag);
+
+      /* Capture phase: the click has to die before it reaches the card. */
+      wrap.addEventListener("click", e => {
+        if (!swallowClick) return;
+        swallowClick = false;
+        e.preventDefault();
+        e.stopPropagation();
+      }, true);
+    };
+
     /* The phone aura is painted on the stage rather than inside the scroller
        -- overflow-x:auto would clip it -- so it does not move when the strip
        is scrolled, and the glow detaches from the pending card it belongs to.
@@ -3021,10 +3267,12 @@
       const box = wrap && wrap.closest(".sc-blocks-container");
       if (!stage) return;
       /* Measured against the container's right gutter rather than the
-         scroller's own overflow: above 1200px the strip stops scrolling and
-         overflows visibly instead, so scrollWidth stops being the signal. The
-         fade has to clear once the last block is inside the gutter, or the
-         oldest block could never be read at the end of the row. */
+         scroller's own overflow. scrollWidth would answer a different
+         question: the scroll box is 56px wider than the container on each
+         side, so a card sitting in that margin still overflows the gutter the
+         fade is drawn on while the scroller reports room to spare. The fade
+         has to clear once the last block is inside that gutter, or the oldest
+         block could never be read at the end of the row. */
       const cards = wrap.querySelectorAll(".sc-block");
       if (box && cards.length) {
         const gutter = box.getBoundingClientRect().right - parseFloat(getComputedStyle(box).paddingRight);
@@ -3036,6 +3284,10 @@
         blocksOverflowBound = true;
         wrap.addEventListener("scroll", syncBlocksOverflow, { passive: true });
         window.addEventListener("resize", () => { sizeBlockGhost(); syncBlocksOverflow(); measureBlocksFade(); });
+        /* Bound to the scroller itself, which renderStrip() reuses -- it
+           replaces the cards inside, never this element -- so this survives
+           every rebuild without rebinding. */
+        bindBlocksDrag(wrap);
       }
     };
 
@@ -3079,6 +3331,35 @@
       box.style.setProperty("--sc-strip-fade-bottom", Math.max(0, boxRect.bottom - cardBox.bottom - 90) + "px");
     };
 
+    /* Both projected.totalFees and block.extras.totalFees are transaction-fee
+       totals in satoshis. They do not include the block subsidy. */
+    const fmtBlockFees = totalFees => {
+      const sats = Number(totalFees);
+      if (!Number.isFinite(sats)) return "\u2014";
+      const btc = sats / 1e8;
+      return btc.toLocaleString("en-CA", {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3
+      }) + " BTC";
+    };
+
+    const fmtBlockAge = timestamp => {
+      const seconds = Math.max(0, Math.floor(Date.now() / 1000 - Number(timestamp)));
+      const mins = Math.floor(seconds / 60);
+      if (mins < 1) return "just now";
+      if (mins < 60) return mins + " min ago";
+      return Math.floor(mins / 60) + " hr ago";
+    };
+
+    /* Block timestamps are retained on the cards so their ages keep advancing
+       from the local clock even when the API and socket are quiet. */
+    const tickBlockAges = () => {
+      document.querySelectorAll(".sc-block-confirmed[data-block-timestamp]").forEach(card => {
+        const age = card.querySelector(".sc-block-age");
+        if (age) age.textContent = fmtBlockAge(card.dataset.blockTimestamp);
+      });
+    };
+
     const paintPendingBlock = projected => {
       if (!projected) return;
       state.projectedBlock = projected;
@@ -3095,8 +3376,8 @@
       if (values[0] && Number.isFinite(Number(projected.nTx))) {
         values[0].textContent = fmtInt(projected.nTx);
       }
-      if (values[1] && Number.isFinite(Number(projected.blockSize))) {
-        values[1].textContent = (projected.blockSize / 1e6).toFixed(2) + " MB";
+      if (values[1] && Number.isFinite(Number(projected.totalFees))) {
+        values[1].textContent = fmtBlockFees(projected.totalFees);
       }
       if (values[2] && Array.isArray(projected.feeRange) && projected.feeRange.length) {
         values[2].textContent = fmtFeeRate(projected.feeRange[0]);
@@ -3136,6 +3417,190 @@
     const formatSubsidy = value => {
       const digits = value >= 10 ? 0 : 4;
       return Number(value.toFixed(digits)).toLocaleString("en-CA", { maximumFractionDigits: digits }) + " BTC";
+    };
+
+    /* The price series is sampled weekly in its early years and hourly in its
+       recent ones, so averaging raw points would let the last fortnight weigh
+       as much as a decade. Collapse to one close per UTC day first and average
+       those. Cached because a 1400-day mean is recomputed on every price tick
+       while the series only ever grows at one end. */
+    let dailyCloseCache = { stamp: null, rows: [] };
+    const dailyCloses = () => {
+      const hist = state.history;
+      if (!hist.length) return [];
+      const stamp = hist[hist.length - 1].t;
+      if (dailyCloseCache.stamp === stamp) return dailyCloseCache.rows;
+      const byDay = new Map();
+      /* Later rows overwrite earlier ones, so each day keeps its last print. */
+      hist.forEach(r => byDay.set(Math.floor(r.t / 86400), r));
+      const rows = [...byDay.keys()].sort((a, b) => a - b).map(k => byDay.get(k));
+      dailyCloseCache = { stamp, rows };
+      return rows;
+    };
+
+    /* Windowed by date rather than by row count. The series is not one row per
+       day all the way back -- CAD thins to roughly weekly before about 2023 --
+       so counting rows backwards walks far further into the past than the
+       window asked for. Taking everything newer than a cutoff timestamp gives
+       the window its actual length whatever the sampling was doing. */
+    const movingAverage = (days, cur) => {
+      const rows = dailyCloses();
+      if (!rows.length) return null;
+      const cutoff = rows[rows.length - 1].t - days * 86400;
+      if (rows[0].t > cutoff) return null;
+      let sum = 0;
+      let n = 0;
+      rows.forEach(r => {
+        if (r.t < cutoff) return;
+        const v = Number(r[cur]);
+        if (Number.isFinite(v) && v > 0) { sum += v; n += 1; }
+      });
+      /* Thin coverage inside the window would bias the mean rather than fail
+         outright, so require the days present to be most of the days asked
+         for. Sparse stretches are the reason, not missing prints. */
+      return n >= days * 0.6 ? sum / n : null;
+    };
+
+    /* The close nearest a point in the past, found by timestamp for the same
+       reason. Refuses a match that is not actually near the date wanted, so a
+       gap in the record shows a dash instead of a number from the wrong year. */
+    const closeAgo = (days, cur) => {
+      const rows = dailyCloses();
+      if (!rows.length) return null;
+      const target = rows[rows.length - 1].t - days * 86400;
+      let best = null;
+      let bestGap = Infinity;
+      rows.forEach(r => {
+        const v = Number(r[cur]);
+        if (!Number.isFinite(v) || v <= 0) return;
+        const gap = Math.abs(r.t - target);
+        if (gap < bestGap) { bestGap = gap; best = v; }
+      });
+      return bestGap <= 45 * 86400 ? best : null;
+    };
+
+    const paintMovingAverages = () => {
+      const cur = state.currency;
+      const ma200w = movingAverage(1400, cur);
+      const ma50w = movingAverage(350, cur);
+      const set = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+      set("dash-ma200w", ma200w ? fmtMoney(ma200w, cur) : "—");
+      set("dash-ma50w", ma50w ? fmtMoney(ma50w, cur) : "—");
+    };
+
+    /* Deliberately the 200-day average, not the 200-week one above: the Mayer
+       Multiple is defined against the daily figure, and quoting it off a
+       different window would give a number that cannot be compared with the
+       one everybody else publishes. */
+    const paintMayerMultiple = () => {
+      const cur = state.currency;
+      const ma200d = movingAverage(200, cur);
+      const price = latest[cur];
+      const maEl = $("dash-mayer-ma");
+      if (maEl) maEl.textContent = ma200d ? fmtMoney(ma200d, cur) : "—";
+      const el = $("dash-mayer");
+      if (!el) return;
+      if (!ma200d || !price) { el.textContent = "—"; return; }
+      const mayer = price / ma200d;
+      el.textContent = mayer.toFixed(2) + "×";
+      /* The fee tile's green-to-red scale, read the other way round: a high
+         multiple is the expensive end, not the cheap one. */
+      el.style.color = scaleColor(1 - Math.min(mayer / 3, 1));
+      const note = $("dash-mayer-note");
+      if (note) {
+        note.textContent = mayer < 1
+          ? "Below its 200-day average."
+          : mayer < 2.4
+            ? "Inside the range it has spent most of its history."
+            : "Above 2.4, a level it has rarely held for long.";
+      }
+    };
+
+    const paintDrawdown = () => {
+      const cur = state.currency;
+      const rows = dailyCloses();
+      const price = latest[cur];
+      const set = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+      if (!rows.length || !price) return;
+      let peak = 0;
+      let peakAt = null;
+      let counted = 0;
+      let cycleLow = Infinity;
+      /* Previous bear-market cycle: from the November 2021 peak through the
+         April 2024 halving that opened the current cycle. */
+      const previousCycleStart = Date.UTC(2021, 10, 10) / 1000;
+      const previousCycleEnd = Date.UTC(2024, 3, 20) / 1000;
+      rows.forEach(r => {
+        const v = Number(r[cur]);
+        if (!Number.isFinite(v) || v <= 0) return;
+        counted += 1;
+        if (v > peak) { peak = v; peakAt = r.t; }
+        if (r.t >= previousCycleStart && r.t < previousCycleEnd && v < cycleLow) cycleLow = v;
+      });
+      if (!counted || !peak) return;
+      /* Today counts too, otherwise a fresh high would read as a drawdown from
+         yesterday's peak. */
+      const high = Math.max(peak, price);
+      const off = (price / high - 1) * 100;
+      set("dash-drawdown", off > -0.05 ? "At its high" : off.toFixed(1) + "%");
+      set("dash-ath", fmtMoney(high, cur));
+      set("dash-cycle-low", Number.isFinite(cycleLow) ? fmtMoney(cycleLow, cur) : "—");
+      const note = $("dash-drawdown-note");
+      if (note && peakAt) {
+        const when = new Intl.DateTimeFormat("en-CA", { month: "short", year: "numeric" })
+          .format(new Date(peakAt * 1000));
+        note.textContent = price >= peak
+          ? "Trading at the highest price it has ever reached."
+          : "Below the high set in " + when + ".";
+      }
+    };
+
+    /* Miner pay per unit of work: the whole network's daily take spread across
+       the hashing that earned it. Needs three things that arrive from three
+       different requests -- price, hashrate, and the fee half of the reward --
+       so each of those calls this and it renders once they have all landed. */
+    const paintHashprice = () => {
+      const cur = state.currency;
+      const price = latest[cur];
+      const hashrate = state.hashrate;
+      /* Taken from the fee-share pass rather than derived from state.tipHeight,
+         which is not assigned until the end of loadChain -- long after this
+         first wants to run, so the three inputs would never coincide. */
+      const subsidy = state.blockSubsidy;
+      if (!price || !hashrate || !Number.isFinite(subsidy)) return;
+      const fees = Number.isFinite(state.avgBlockFees) ? state.avgBlockFees : 0;
+      const btcPerDay = (subsidy + fees) * 144;
+      const perDay = btcPerDay * price;
+      const petahashes = hashrate / 1e15;
+      const set = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+      set("dash-hashprice", fmtMoneyPrecise(perDay / petahashes, cur));
+      set("dash-hashprice-rev", fmtMoney(perDay / 1e6, cur) + "M");
+      set("dash-hashprice-btc", fmtInt(btcPerDay) + " BTC");
+    };
+
+    /* Fees against the whole of miner pay, which is the question the halvings
+       eventually force: the subsidy is on its way to zero and this is the only
+       thing left to pay for hashing. Averaged over the block window rather
+       than read off the last block, since a single block's fees swing wildly
+       with whatever happened to be waiting. */
+    const paintFeeShare = (blocks, height) => {
+      if (!Array.isArray(blocks) || !blocks.length || !Number.isFinite(height)) return;
+      const subsidy = 50 / Math.pow(2, Math.floor(height / HALVING_INTERVAL));
+      let fees = 0;
+      let counted = 0;
+      blocks.forEach(b => {
+        const total = b.extras && Number(b.extras.totalFees);
+        if (Number.isFinite(total)) { fees += total / 1e8; counted += 1; }
+      });
+      if (!counted) return;
+      const perBlock = fees / counted;
+      state.avgBlockFees = perBlock;
+      state.blockSubsidy = subsidy;
+      paintHashprice();
+      const set = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+      set("dash-feeshare", (perBlock / (subsidy + perBlock) * 100).toFixed(2) + "%");
+      set("dash-feeshare-fees", perBlock.toFixed(3) + " BTC");
+      set("dash-feeshare-subsidy", subsidy + " BTC");
     };
 
     const paintSupplyAndHalving = height => {
@@ -3212,10 +3677,21 @@
         const vmb = next.vsize / 1e6;
         animateValue($("dash-mempool"), vmb, v => (next.approximateVsize ? "~" : "") +
           v.toLocaleString("en-CA", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " vMB");
+        const blocks = Math.max(1, Math.ceil(vmb));
         const blockEquiv = $("dash-mempool-blocks");
         /* "≈" rather than "~": at this tile's weight and size a tilde reads as
            a minus sign, turning the count into an impossible negative. */
-        if (blockEquiv) blockEquiv.textContent = "≈" + fmtInt(Math.max(1, Math.ceil(vmb)));
+        if (blockEquiv) blockEquiv.textContent = "≈" + fmtInt(blocks);
+        /* The backlog in time rather than in bytes, which is the form the
+           question is usually asked in. Assumes the target block interval and
+           no new arrivals, so it is a floor, not a forecast. */
+        const eta = $("dash-mempool-eta");
+        if (eta) {
+          const mins = blocks * 10;
+          eta.textContent = mins < 60
+            ? mins + " min"
+            : (mins / 60).toFixed(mins < 600 ? 1 : 0) + " hr";
+        }
       }
       const mempoolTx = $("dash-mempool-tx");
       if (mempoolTx && Number.isFinite(next.count)) mempoolTx.textContent = fmtInt(next.count);
@@ -3243,10 +3719,7 @@
       try {
         const h = await fetchText("https://mempool.space/api/blocks/tip/height");
         const height = parseInt(h, 10);
-        if (Number.isFinite(height)) {
-          animateValue($("dash-height"), height, v => fmtInt(v));
-          paintSupplyAndHalving(height);
-        }
+        if (Number.isFinite(height)) paintSupplyAndHalving(height);
       } catch (err) { /* tile keeps its placeholder */ }
 
       try {
@@ -3263,11 +3736,7 @@
         const wrap = $("dash-blocks");
         if (wrap && Array.isArray(blocks)) {
           const pendingTx = projected && Number.isFinite(Number(projected.nTx)) ? fmtInt(projected.nTx) : "—";
-          /* blockSize, not blockVSize: the projected block is assembled to the
-             weight limit, so its vsize is pinned near 1 vMB and the tile read
-             "1.00 vMB" no matter what the mempool was doing. blockSize is the
-             serialised size, and matches the "Size" row on confirmed cards. */
-          const pendingSize = projected && Number.isFinite(Number(projected.blockSize)) ? (projected.blockSize / 1e6).toFixed(2) + " MB" : "—";
+          const pendingFees = projected ? fmtBlockFees(projected.totalFees) : "\u2014";
           const pendingFee = projected && Array.isArray(projected.feeRange) && projected.feeRange.length ? fmtFeeSpan(projected.feeRange) + " <span class=\"sc-fee-unit\">sat/vB</span>" : "Building";
           const pendingLowest = projected && Array.isArray(projected.feeRange) && projected.feeRange.length ? fmtFeeRate(projected.feeRange[0]) : "\u2014";
           // The logo's animated SVG begins its own clock during asset paint.
@@ -3276,29 +3745,40 @@
           const logoPhase = -(((performance.now() + 500) / 1000) % 3.617).toFixed(3) + "s";
           const blocksStage = wrap.closest(".sc-blocks-top");
           if (blocksStage) blocksStage.style.setProperty("--sc-logo-phase", logoPhase);
+          /* The height this block will take once it is mined -- one past the
+             tip. Naming it now is also what makes the confirm transition read
+             as one card: the number the pending card is showing is the number
+             it keeps when it lands. Falls back to a label if the tip is
+             unreadable, since a wrong height is worse than no height. */
+          const tipNow = blocks.length ? Number(blocks[0].height) : NaN;
+          const nextHeight = Number.isFinite(tipNow) ? fmtInt(tipNow + 1) : null;
           const pending =
-            "<a class=\"sc-block sc-block-pending\" style=\"--i:0;--sc-logo-phase:" + logoPhase + "\" href=\"https://mempool.space/mempool-block/0\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View the projected next block on mempool.space\">" +
+            "<a class=\"sc-block sc-block-pending\" draggable=\"false\" style=\"--i:0;--sc-logo-phase:" + logoPhase + "\" href=\"https://mempool.space/mempool-block/0\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View the projected next block" + (nextHeight ? " " + nextHeight : "") + " on mempool.space\">" +
               "<span class=\"sc-block-kicker\"><span class=\"sc-pending-dot\"></span>Pending</span>" +
-              "<span class=\"sc-block-height\">Next block</span>" +
+              "<span class=\"sc-block-height\">" + (nextHeight || "Next block") + "</span>" +
               "<span class=\"sc-block-age\">" + pendingFee + "</span>" +
               "<dl class=\"sc-block-meta\">" +
                 "<div><dt>Transactions</dt><dd>" + pendingTx + "</dd></div>" +
-                "<div><dt>Projected</dt><dd>" + pendingSize + "</dd></div>" +
+                "<div><dt>Projected</dt><dd>" + pendingFees + "</dd></div>" +
                 "<div class=\"sc-block-lowest\"><dt>Lowest</dt><dd>" + pendingLowest + "</dd></div>" +
               "</dl></a>";
-          const buildConfirmed = fresh => blocks.slice(0, 6).map((b, i) => {
-            const mins = Math.max(0, Math.round((Date.now() / 1000 - b.timestamp) / 60));
+          /* /api/v1/blocks returns 15 and we were already fetching all of
+             them, so the extra tail costs nothing on the wire. Only the first
+             few are ever on screen; the rest sit past the right-hand fade and
+             are reached by dragging the strip. */
+          const buildConfirmed = fresh => blocks.slice(0, 15).map((b, i) => {
+            const timestamp = Number.isFinite(Number(b.timestamp)) ? Number(b.timestamp) : Math.floor(Date.now() / 1000);
             /* Spelled out because .sc-block-age uppercases: a bare "5m ago"
                renders as "5M AGO", which reads as five months. */
-            const age = mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : Math.floor(mins / 60) + " hr ago";
+            const age = fmtBlockAge(timestamp);
             const lowest = b.extras && Array.isArray(b.extras.feeRange) && b.extras.feeRange.length ? fmtFeeRate(b.extras.feeRange[0]) : "—";
-            return "<a class=\"sc-block sc-block-confirmed" + (fresh && i === 0 ? " is-newest" : "") + "\" style=\"--i:" + (i + 1) + "\" href=\"https://mempool.space/block/" + b.id + "\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View block " + b.height + " on mempool.space\">" +
+            return "<a class=\"sc-block sc-block-confirmed" + (fresh && i === 0 ? " is-newest" : "") + "\" data-block-timestamp=\"" + timestamp + "\" draggable=\"false\" style=\"--i:" + (i + 1) + "\" href=\"https://mempool.space/block/" + b.id + "\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"View block " + b.height + " on mempool.space\">" +
               "<span class=\"sc-block-kicker\"><i class=\"bi bi-check2-circle\"></i>Confirmed</span>" +
               "<span class=\"sc-block-height\">" + fmtInt(b.height) + "</span>" +
               "<span class=\"sc-block-age\">" + age + "</span>" +
               "<dl class=\"sc-block-meta\">" +
                 "<div><dt>Transactions</dt><dd>" + fmtInt(b.tx_count) + "</dd></div>" +
-                "<div><dt>Size</dt><dd>" + (b.size / 1e6).toFixed(2) + " MB</dd></div>" +
+                "<div><dt>Fees</dt><dd>" + fmtBlockFees(b.extras && b.extras.totalFees) + "</dd></div>" +
                 "<div class=\"sc-block-lowest\"><dt>Lowest</dt><dd>" + lowest + "</dd></div>" +
               "</dl></a>";
           }).join("");
@@ -3306,22 +3786,50 @@
           const renderStrip = fresh => {
             wrap.classList.remove("is-confirming");
             wrap.classList.add("is-ready");
+            /* The arriving card is parked on the container, not inside the
+               strip, so replacing the strip's markup below would leave it
+               behind. This is also the catch-all for a flight cut short by the
+               next block landing mid-animation. */
+            const box = wrap.closest(".sc-blocks-container");
+            const enterClip = box && box.querySelector(".sc-block-enter-clip");
+            if (enterClip) enterClip.remove();
             wrap.innerHTML =
               "<span class=\"sc-block-ghost\" aria-hidden=\"true\"></span>" +
               pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
             sizeBlockGhost();
             /* Safe to measure on this frame: nothing in a rebuilt strip carries
-               an entrance transform. The landed card is pinned by animation:none
-               and the rest are held by the :not(.is-newest) rule, so every
-               getBoundingClientRect() here reads a resting position. Only the
-               newest card's colour wash is still animating, and opacity does
-               not move geometry. */
+               an entrance transform. The landed card's own animation touches
+               only border-color and the rest are held by the :not(.is-newest)
+               rule, so every getBoundingClientRect() here reads a resting
+               position. The wash still running over the newest card animates
+               opacity. Neither of those moves geometry. */
             syncBlocksOverflow();
             measureBlocksFade();
+
+            /* Take the class off once the cool down has played. Its animations
+               are fill-mode:both, and a filled animation outranks every normal
+               declaration -- so while the class is on, the card's border stops
+               answering :hover and that one card lights differently from the
+               rest of the row. The strip is only rebuilt when a block lands,
+               so left alone it would stay that way until the next one, ten
+               minutes of a card that hovers wrong. */
+            const landed = fresh && wrap.querySelector(".sc-block-confirmed.is-newest");
+            if (landed) {
+              landed.addEventListener("animationend", function settled(e) {
+                if (e.target !== landed || e.animationName !== "sc-new-block-edge") return;
+                landed.removeEventListener("animationend", settled);
+                landed.classList.remove("is-newest");
+              });
+            }
           };
 
           const tipHeight = blocks.length ? Number(blocks[0].height) : null;
           const isNewBlock = Number.isFinite(tipHeight) && state.tipHeight !== null && tipHeight > state.tipHeight;
+
+          /* Here rather than beside paintSupplyAndHalving above, because that
+             branch only has the tip height -- the fee totals it needs come
+             with this request. */
+          paintFeeShare(blocks, tipHeight);
 
           state.blockTimers.forEach(timer => clearTimeout(timer));
           state.blockTimers = [];
@@ -3329,11 +3837,55 @@
           if (isNewBlock && !reduceMotion && wrap.querySelector(".sc-block-pending")) {
             const pendingEl = wrap.querySelector(".sc-block-pending");
             const newest = blocks[0];
+
+            /* Bring the next pending card in from one slot off-frame, so the
+               slot the flight vacates is filled by something moving at exactly
+               the flight's own speed. Everything is measured here, before
+               is-confirming lands and while the row is still at rest, because
+               all of it changes with the breakpoint. */
+            const ghostEl = wrap.querySelector(".sc-block-ghost");
+            const boxEl = wrap.closest(".sc-blocks-container");
+            const firstConfirmed = wrap.querySelector(".sc-block-confirmed");
+            if (ghostEl && boxEl && firstConfirmed) {
+              const boxRect = boxEl.getBoundingClientRect();
+              const frame = ghostEl.getBoundingClientRect();
+              const slot = pendingEl.getBoundingClientRect();
+              /* The outgoing card lands on the first confirmed card's spot, so
+                 that gap is the flight's distance. Matching it is what makes
+                 the two travel at one speed instead of merely finishing
+                 together, and it keeps working when the breakpoint changes it. */
+              const distance = firstConfirmed.getBoundingClientRect().left - slot.left;
+              const holder = document.createElement("div");
+              holder.innerHTML = pending;
+              const incoming = holder.firstChild;
+              if (incoming && distance > 0) {
+                const clip = document.createElement("div");
+                clip.className = "sc-block-enter-clip";
+                clip.style.left = (frame.left - boxRect.left) + "px";
+                clip.style.top = (slot.top - boxRect.top - 80) + "px";
+                clip.style.width = (boxRect.right - frame.left) + "px";
+                clip.style.height = (slot.height + 160) + "px";
+
+                /* A second copy of a link the reader can already reach. */
+                incoming.setAttribute("aria-hidden", "true");
+                incoming.setAttribute("tabindex", "-1");
+                incoming.style.left = (slot.left - frame.left) + "px";
+                incoming.style.top = "80px";
+                incoming.style.width = slot.width + "px";
+                incoming.style.height = slot.height + "px";
+                incoming.style.setProperty("--sc-enter-distance", distance + "px");
+
+                clip.appendChild(incoming);
+                boxEl.appendChild(clip);
+              }
+            }
+
             wrap.classList.remove("is-ready");
             wrap.classList.add("is-confirming");
 
             state.blockTimers.push(setTimeout(() => {
               pendingEl.classList.add("is-mined");
+              pendingEl.dataset.blockTimestamp = Number.isFinite(Number(newest.timestamp)) ? Number(newest.timestamp) : Math.floor(Date.now() / 1000);
               pendingEl.href = "https://mempool.space/block/" + newest.id;
               pendingEl.setAttribute("aria-label", "View block " + tipHeight + " on mempool.space");
               const kicker = pendingEl.querySelector(".sc-block-kicker");
@@ -3343,11 +3895,11 @@
               const values = pendingEl.querySelectorAll("dd");
               if (kicker) kicker.innerHTML = "<i class=\"bi bi-check2-circle\"></i>Confirmed";
               if (height) height.textContent = fmtInt(tipHeight);
-              if (age) age.textContent = "just now";
-              if (terms[1]) terms[1].textContent = "Size";
+              if (age) age.textContent = fmtBlockAge(pendingEl.dataset.blockTimestamp);
+              if (terms[1]) terms[1].textContent = "Fees";
               if (terms[2]) terms[2].textContent = "Lowest";
               if (values[0]) values[0].textContent = fmtInt(newest.tx_count);
-              if (values[1]) values[1].textContent = (newest.size / 1e6).toFixed(2) + " MB";
+              if (values[1]) values[1].textContent = fmtBlockFees(newest.extras && newest.extras.totalFees);
               if (values[2]) {
                 const lowest = newest.extras && Array.isArray(newest.extras.feeRange) && newest.extras.feeRange.length ? newest.extras.feeRange[0] : null;
                 values[2].textContent = fmtFeeRate(lowest);
@@ -3416,6 +3968,8 @@
         const m = await fetchJSON("https://mempool.space/api/v1/mining/hashrate/1m");
         if (m && m.currentHashrate) {
           animateValue($("dash-hashrate"), m.currentHashrate / 1e18, v => v.toFixed(0) + " EH/s");
+          state.hashrate = Number(m.currentHashrate);
+          paintHashprice();
         }
         if (m && Number.isFinite(Number(m.currentDifficulty))) {
           animateValue($("dash-current-difficulty"), Number(m.currentDifficulty) / 1e12, v => v.toFixed(2) + "T");
@@ -3530,6 +4084,8 @@
     /* Socket stats keep the transaction count and fees live; this exact
        virtual-size snapshot prevents the backlog estimate from drifting. */
     setInterval(loadMempool, 60000);
+    /* This clock is deliberately independent of network refreshes. */
+    setInterval(tickBlockAges, 15000);
     /* The socket announces new blocks instantly and stays the primary path.
        This poll still runs unconditionally: a socket can keep chattering on
        the stats channel -- so it looks open and fresh -- while the blocks
@@ -3565,6 +4121,7 @@
        the moment it is looked at again. */
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
+        tickBlockAges();
         loadPrices();
         loadFees();
         loadMempool();
