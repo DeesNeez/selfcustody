@@ -598,12 +598,18 @@ body[data-page="home"] .sc-sequence-section {
    blocks run an entrance animation on transform with fill-mode:both, and an
    animation's final keyframe outranks a normal declaration -- a transform
    hover there silently does nothing. */
+/* The block cards take :focus-visible where the other two take :focus-within.
+   A block card is itself the link, so clicking one focused it and left it lit
+   and lifted long after the pointer had gone -- most obviously when a drag off
+   the card meant no click ever landed elsewhere to move focus away.
+   :focus-visible still lights it for keyboard arrival, which is the case the
+   affordance is actually for, and ignores the mouse. */
 .sc-path-options .sc-card:hover,
 .sc-path-options .sc-card:focus-within,
 .sc-dash-tile:hover,
 .sc-dash-tile:focus-within,
 .sc-block:hover,
-.sc-block:focus-within {
+.sc-block:focus-visible {
   border-color: rgba(255, 237, 184, 0.88);
   box-shadow:
     0 22px 50px rgba(0, 0, 0, 0.38),
@@ -3561,16 +3567,30 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* Preserve the same information hierarchy at every breakpoint. Previously
    this ordering only applied to the three-column desktop grid, so phones fell
-   back to the older DOM sequence. */
-.sc-dash-metrics-grid > :nth-child(1) { order: 1; }
-.sc-dash-metrics-grid > :nth-child(2) { order: 2; }
-.sc-dash-metrics-grid > :nth-child(4) { order: 3; }
-.sc-dash-metrics-grid > :nth-child(7) { order: 4; }
-.sc-dash-metrics-grid > :nth-child(8) { order: 5; }
-.sc-dash-metrics-grid > :nth-child(9) { order: 6; }
-.sc-dash-metrics-grid > :nth-child(3) { order: 7; }
-.sc-dash-metrics-grid > :nth-child(5) { order: 8; }
-.sc-dash-metrics-grid > :nth-child(6) { order: 9; }
+   back to the older DOM sequence.
+
+   The tile each nth-child refers to is named, because the markup sequence and
+   the displayed sequence are deliberately different and there is no way to
+   tell which card a bare index moves without counting through the HTML.
+
+   Four rows of three at desktop, each row one idea: where the price stands,
+   why it is scarce, who secures it, what using it costs today. The blank
+   lines below are those rows. */
+.sc-dash-metrics-grid > :nth-child(2) { order: 1; }  /* Drawdown from high */
+.sc-dash-metrics-grid > :nth-child(10) { order: 2; } /* Weekly moving averages */
+.sc-dash-metrics-grid > :nth-child(11) { order: 3; } /* Mayer Multiple */
+
+.sc-dash-metrics-grid > :nth-child(7) { order: 4; }  /* Supply progress */
+.sc-dash-metrics-grid > :nth-child(8) { order: 5; }  /* Halving countdown */
+.sc-dash-metrics-grid > :nth-child(1) { order: 6; }  /* Sats per dollar */
+
+.sc-dash-metrics-grid > :nth-child(4) { order: 7; }  /* Network hashrate */
+.sc-dash-metrics-grid > :nth-child(5) { order: 8; }  /* Difficulty adjustment */
+.sc-dash-metrics-grid > :nth-child(3) { order: 9; }  /* Hashprice */
+
+.sc-dash-metrics-grid > :nth-child(9) { order: 10; }  /* Mempool backlog */
+.sc-dash-metrics-grid > :nth-child(12) { order: 11; } /* Fees share of reward */
+.sc-dash-metrics-grid > :nth-child(6) { order: 12; }  /* Fear & Greed */
 
 .sc-dash-tile-head {
   display: flex;
@@ -3621,12 +3641,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   line-height: 1.45;
 }
 
+/* Fixed top margin rather than the auto it used to carry. auto pushed the
+   detail rows onto the card's bottom edge, which looks deliberate on a card
+   that is nearly full and tears a hole through the middle of one that is not
+   -- and every card has to match the tallest in its row. Packing everything
+   upward puts whatever slack remains at the foot of the card, where it reads
+   as a card with less to say. */
 .sc-dash-detail {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  margin: auto 0 0;
+  margin: 14px 0 0;
   padding-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--sc-muted);
@@ -3638,6 +3664,29 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   color: #fff;
   font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
+}
+
+.sc-dash-average-reading {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sc-dash-average-reading > span {
+  color: var(--sc-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sc-dash-average-reading .sc-dash-value { margin: 3px 0 0; }
+
+/* Lead with the long-term floor; keep the faster average as supporting data. */
+.sc-dash-tile-averages #dash-ma200w { font-size: 2.25rem; }
+
+.sc-dash-tile-averages #dash-ma50w {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 1.35rem;
+  font-weight: 600;
 }
 
 .sc-dash-bar {
@@ -3661,7 +3710,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   grid-template-columns: max-content minmax(44px, 1fr) max-content;
   align-items: center;
   gap: 10px;
-  margin-top: auto;
+  margin-top: 16px;
   color: var(--sc-muted);
   font-size: 0.85rem;
   line-height: 1.2;
@@ -3697,12 +3746,11 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* Keep the title and primary reading at the top while anchoring progress
    controls at the base, matching the original Difficulty Adjustment card. */
-.sc-dash-tile .sc-card-body > *:has(+ .sc-dash-bar) { margin-bottom: auto; }
+.sc-dash-tile .sc-card-body > *:has(+ .sc-dash-bar) { margin-bottom: 14px; }
 
 .sc-dash-fees { display: flex; gap: 8px; }
 
-.sc-dash-tile-fee .sc-dash-fees,
-.sc-dash-tile-mempool .sc-dash-fees { margin-top: auto; }
+.sc-dash-tile-mempool .sc-dash-fees { margin-top: 16px; }
 
 .sc-dash-fees > span {
   flex: 1;
@@ -3786,9 +3834,12 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* ---- fear & greed gauge ---- */
 
-.sc-gauge { position: relative; margin: 4px 0 14px; }
+.sc-gauge { position: relative; margin: 2px 0 10px; }
 
-.sc-gauge-svg { display: block; width: 100%; max-width: 260px; margin: 0 auto; overflow: visible; }
+/* Narrowed from 260px. The dial was the tallest thing in the grid by some
+   way, and every card sharing its row had to stretch to match, which is where
+   their hollow middles came from. */
+.sc-gauge-svg { display: block; width: 100%; max-width: 208px; margin: 0 auto; overflow: visible; }
 
 #dash-fng-needle { transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1); }
 
@@ -3871,19 +3922,58 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-blocks::-webkit-scrollbar { display: none; }
 
+/* Set by bindBlocksDrag() for the length of a mouse drag. The grabbing cursor
+   has to beat the cards' own pointer, or the hand flickers back to a finger
+   every time the pointer crosses one mid-drag. Selection off for the same
+   reason the drag exists: without it a sideways press smears a text highlight
+   across the block labels instead of moving the strip. */
+.sc-blocks.is-dragging,
+.sc-blocks.is-dragging .sc-block {
+  cursor: grabbing;
+  user-select: none;
+}
+
 @media (min-width: 1200px) {
   /* Left-aligned, not centred: centring floated the pending block off the
      page's gutter, which is the one edge that should stay put. The chain
-     still runs off the right into the mask below. */
+     still runs off the right into the mask below.
+
+     overflow is left on the base rule's overflow-x:auto rather than being
+     reset to visible here. It used to be visible because the tail was only
+     ever decoration -- six cards, the last of them dissolving into the fade
+     with nothing behind it worth reaching. The tail is fifteen now, so the
+     part past the fade has to be reachable, which means this has to scroll
+     like every narrower breakpoint already does. */
   .sc-blocks {
     justify-content: flex-start;
-    overflow: visible;
   }
 
   /* The far edge is handled by .sc-blocks-container::after, which sits on the
      container's gutter. The old last-child mask dissolved whichever card
      happened to be last, so it faded early -- in open space -- whenever the
      chain ran out of blocks before reaching that edge. */
+}
+
+/* Holds the arriving pending card while it crosses in from off-frame. Its left
+   edge sits on the chain's visible start and carries the same 52px dissolve as
+   the ghost, so the card is hidden until it reaches frame and then surfaces
+   through the identical fade rather than appearing on a hard edge. The other
+   three sides are pushed well clear of the card so its shadow is never sliced.
+   Lives on .sc-blocks-container, outside the strip, so it neither disturbs the
+   flex row nor shows up in the strip's own .sc-block queries. */
+.sc-block-enter-clip {
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 52px);
+  mask-image: linear-gradient(90deg, transparent 0, #000 52px);
+  pointer-events: none;
+}
+
+.sc-block-enter-clip .sc-block-pending {
+  position: absolute;
+  margin: 0;
+  animation: sc-pending-enter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Decorative only -- the chain visibly carries on past the left gutter rather
@@ -3920,6 +4010,12 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   color: inherit;
   text-decoration: none;
   cursor: pointer;
+  /* Pairs with draggable="false" on the markup. These cards are links, and a
+     link answers a press-and-drag by starting a native drag of itself, which
+     eats the gesture -- no click ever lands, and on a horizontal scroller the
+     obvious thing to do with a press-and-drag is scroll it. Safari wants the
+     property, everything else honours the attribute. */
+  -webkit-user-drag: none;
   overflow: hidden;
   padding: 14px 12px;
   border: 1px solid var(--sc-line);
@@ -3979,9 +4075,26 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   width: 164px;
   flex-basis: 164px;
   border-color: rgba(255, 153, 0, 0.86);
+  /* The closing layer is what .sc-block-confirmed already does with its own
+     #0d0f11, and its absence is why only this card had a problem: both
+     gradients are translucent, so the connector behind carried through at full
+     strength as the card flew over and read as sitting in front of it.
+
+     It stops just short of opaque on purpose. At 0.85 over the stage -- which
+     is this exact colour -- nothing changes at rest. Over the connector it
+     leaves about a sixth of the bar showing, which is enough for it to stay
+     continuously visible while clearly reading as behind glass. Fully opaque
+     and the bar is cut out entirely for the half-second the card spends
+     crossing it, which is the disappear-and-return this avoids.
+
+     Written as rgba rather than a color-mix() of --sc-dash-black (#0b0a09)
+     because an unsupported value inside a multi-layer background shorthand
+     invalidates the whole declaration -- the card would lose its gradients,
+     not just its backing. Keep the two in step if that variable changes. */
   background:
     radial-gradient(circle at 25% 18%, rgba(255, 178, 54, 0.32), transparent 46%),
-    linear-gradient(145deg, rgba(255, 153, 0, 0.23), rgba(220, 118, 0, 0.09) 72%, rgba(255, 255, 255, 0.02));
+    linear-gradient(145deg, rgba(255, 153, 0, 0.23), rgba(220, 118, 0, 0.09) 72%, rgba(255, 255, 255, 0.02)),
+    linear-gradient(0deg, rgba(11, 10, 9, 0.85), rgba(11, 10, 9, 0.85));
   animation: sc-block-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both, sc-pending-logo-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite;
 }
 
@@ -3997,6 +4110,10 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-blocks.is-confirming .sc-block-pending {
   z-index: 3;
+  /* The closing scaleX has to pull the right edge in and leave the left edge
+     on the spot the translate lands it. From the default centre origin it
+     would split the difference and miss by 3px each way. */
+  transform-origin: left center;
   animation: sc-block-confirm 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -4008,12 +4125,20 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   animation-name: sc-block-exit-right;
 }
 
-.sc-blocks.is-confirming .sc-block-connector {
-  animation: sc-connector-exit 0.9s ease-out both;
-}
-
+/* The connector stays behind the flight and stays put -- no fade, no z-index
+   games. What makes both possible at once is the card's closing background
+   layer being a hair short of opaque; see .sc-block-pending. */
 .sc-blocks.is-confirming .sc-block-connector > span {
   animation: sc-connector-sweep 0.8s ease-out both;
+}
+
+/* The sliver steps aside for the arrival rather than sitting under it: it
+   ducks out to the left while the incoming card crosses its ground, then
+   returns from the same direction once that card is clear, so it reads as the
+   next block following the chain in. It has to finish back at rest, because
+   rest is exactly where the rebuild redraws it. */
+.sc-blocks.is-confirming .sc-block-ghost {
+  animation: sc-ghost-cycle 1.4s ease-in-out both;
 }
 
 /* The mined wash rides on an overlay's opacity rather than on the card's own
@@ -4042,14 +4167,20 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-block-pending.is-mined .sc-block-kicker,
 .sc-block-pending.is-mined .sc-block-age { color: #ffbd4d; }
 
-/* The landed card must not animate in at all: it is replacing a card that was
-   already on screen at this exact spot, so any entrance reads as a blink. This
-   has to be stated rather than left off, because the :not(.is-newest) rule
-   above deliberately exempts this card from that blanket animation:none, which
-   would otherwise drop it back onto .sc-block's sc-block-in slide-and-fade.
-   Only the ::after wash below animates; the card itself simply is. */
+/* The landed card must not move at all: it is replacing a card that was already
+   on screen at this exact spot, so any entrance reads as a blink. That is why
+   this animation touches box-shadow and nothing else -- and why it must be
+   declared rather than left off, since the :not(.is-newest) rule above exempts
+   this card from that blanket animation:none and would otherwise drop it back
+   onto .sc-block's sc-block-in slide-and-fade.
+
+   What it carries is the border. The flight hands over a bright yellow rim and
+   the rebuild used to drop straight to the resting grey in one frame, so the
+   perimeter blinked off while the wash inside went on dissolving for two full
+   seconds. Now the rim cools on the same curve. The glow stays inside the card,
+   where the ::after wash below handles it. */
 .sc-block-confirmed.is-newest {
-  animation: none;
+  animation: sc-new-block-edge 2s ease-in-out both;
 }
 
 /* The strip is rebuilt from scratch the moment the flight ends, which threw
@@ -4066,15 +4197,15 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     linear-gradient(145deg, rgba(255, 153, 0, 0.26), rgba(220, 118, 0, 0.12) 72%, rgba(255, 255, 255, 0.02)),
     linear-gradient(0deg, rgba(10, 11, 13, 0.72), rgba(10, 11, 13, 0.72));
   pointer-events: none;
-  animation: sc-new-block-cool 2.4s ease-in-out both;
+  animation: sc-new-block-cool 2s ease-in-out both;
 }
 
 .sc-block-confirmed.is-newest .sc-block-kicker {
-  animation: sc-new-block-kicker 2.4s ease-in-out both;
+  animation: sc-new-block-kicker 2s ease-in-out both;
 }
 
 .sc-block-confirmed.is-newest .sc-block-age {
-  animation: sc-new-block-age 2.4s ease-in-out both;
+  animation: sc-new-block-age 2s ease-in-out both;
 }
 
 /* Each holds the arrival colour through the card's landing motion, then cools
@@ -4095,9 +4226,36 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   100% { color: var(--sc-orange); }
 }
 
+/* Picks up the rim the flight hands over and cools it on the same hold-then-
+   fade shape as the wash inside, so the two finish as one gesture. */
+@keyframes sc-new-block-edge {
+  0%, 22% { border-color: rgba(255, 189, 77, 0.94); }
+  100%    { border-color: rgba(255, 255, 255, 0.25); }
+}
+
+/* Out to the left, wait for the incoming card to pass, then back in from the
+   same side. The hidden stretch spans the crossing; it returns only once the
+   slot ahead of it is clear. Ends where it started, matching the rebuild. */
+@keyframes sc-ghost-cycle {
+  0%   { opacity: 1; transform: translateX(0); }
+  10%  { opacity: 0; transform: translateX(-18px); }
+  62%  { opacity: 0; transform: translateX(-18px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* scaleX closes the 6px the pending card is wider than a confirmed one (164 to
+   158). Animating width instead would reflow the row mid-flight and snap back
+   at the rebuild, so the card is squeezed rather than resized -- under 4%, and
+   only while it is travelling. With the origin on the left edge the scale pulls
+   the right side in and leaves the left where the translate puts it, so the
+   card lands on the confirmed card's exact footprint and the swap has no size
+   step left to make.
+
+   The closing box-shadow is the resting confirmed one: the outer glow is spent
+   on the way over rather than switched off on arrival. */
 @keyframes sc-block-confirm {
   0% {
-    transform: translateX(0);
+    transform: translateX(0) scaleX(1);
     border-color: rgba(255, 138, 0, 0.82);
     box-shadow: 0 0 24px rgba(255, 138, 0, 0.24);
   }
@@ -4106,9 +4264,9 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     box-shadow: -18px 0 34px rgba(255, 138, 0, 0.36), 18px 0 32px rgba(255, 153, 0, 0.18);
   }
   100% {
-    transform: translateX(224px);
+    transform: translateX(224px) scaleX(0.9634);
     border-color: rgba(255, 189, 77, 0.94);
-    box-shadow: -24px 0 38px rgba(255, 153, 0, 0.3);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.085), 0 14px 30px rgba(0, 0, 0, 0.28);
   }
 }
 
@@ -4123,9 +4281,14 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   to { opacity: 0; transform: translateX(176px); }
 }
 
-@keyframes sc-connector-exit {
-  0%, 58% { opacity: 1; }
-  100% { opacity: 0; }
+/* The replacement pending card travels the same distance as the card it is
+   replacing -- one slot, measured in loadChain() -- so the two move at the
+   same speed rather than merely starting and stopping together. It ends on the
+   pending slot's real geometry, which is where the rebuild puts the live card,
+   so the handover at the end of the flight has nothing to jump. */
+@keyframes sc-pending-enter {
+  from { transform: translateX(calc(0px - var(--sc-enter-distance, 224px))); }
+  to   { transform: translateX(0); }
 }
 
 @keyframes sc-connector-sweep {
@@ -4332,6 +4495,11 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
     mask-image: linear-gradient(90deg, transparent 0, #000 8px);
   }
+  /* Same dissolve as the ghost above, so the arrival matches it here too. */
+  .sc-block-enter-clip {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
+    mask-image: linear-gradient(90deg, transparent 0, #000 8px);
+  }
   .sc-block-pending {
     width: 122px;
     flex-basis: 122px;
@@ -4401,9 +4569,10 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   .sc-chart-zoom-pan { width: min(44vw, 170px); }
 }
 
+/* Same trade as the desktop keyframe above; the phone gap is 122 to 116. */
 @keyframes sc-block-confirm-mobile {
   0% {
-    transform: translateX(0);
+    transform: translateX(0) scaleX(1);
     border-color: rgba(255, 138, 0, 0.82);
     box-shadow: 0 0 24px rgba(255, 138, 0, 0.24);
   }
@@ -4412,9 +4581,9 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     box-shadow: -14px 0 28px rgba(255, 138, 0, 0.34), 14px 0 26px rgba(255, 153, 0, 0.18);
   }
   100% {
-    transform: translateX(178px);
+    transform: translateX(178px) scaleX(0.9508);
     border-color: rgba(255, 189, 77, 0.94);
-    box-shadow: -18px 0 30px rgba(255, 153, 0, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 12px 24px rgba(0, 0, 0, 0.18);
   }
 }
 
