@@ -4236,10 +4236,15 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    breath. The fast start is what keeps this safe to lengthen -- the onset
    still lands in the same first 100-150ms either way, so the extra time
    goes entirely into the peak and settle, not into reopening the gap. */
+/* 2.4s and ease-in-out, not the 1.3s spring the movement uses. The lift is the
+   back half of a hold-then-rise (see sc-pending-ignite), and a front-loaded
+   curve spends almost all of its travel in the first moments after the hold
+   releases -- which reads as the glow snapping on rather than coming up. An
+   even curve leaves the hold gently. */
 .sc-blocks.is-ready.is-fresh .sc-block-pending {
   animation:
     sc-pending-logo-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite,
-    sc-pending-ignite 1.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    sc-pending-ignite 2.4s ease-in-out both;
 }
 
 .sc-blocks.is-confirming .sc-block-pending {
@@ -4301,18 +4306,27 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   animation: sc-connector-hold 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* The sliver holds completely still through the flight -- no animation here on
-   purpose. It used to advance and hide, and before that duck aside, because the
-   replacement card slid the full slot-distance in from off-frame and crossed
-   directly over its ground; the sliver had to get out of the way of something
-   passing through it.
+/* The sliver advances too, because it is a block, not an ornament.
 
-   Nothing passes through it now. The replacement is uncovered in place in its
-   own slot (see .sc-block-enter-clip .sc-block-pending), so the sliver has
-   nothing to dodge, and holding still is what makes it read as this block's
-   leading edge rather than a separate decoration that flinches when a card goes
-   by. It is the fixed marker that the chain carries on past the gutter, and the
-   new card grows rightward out of the same edge it occupies. */
+   At rest it is the leading edge of the block queued behind the pending one,
+   the rest of it off-frame past the gutter. When a block lands, that queued
+   block is exactly what becomes the new pending card -- which is why the
+   replacement starts its travel on this sliver's right edge. So the sliver
+   cannot also stay where it is: whatever sits at the gutter afterwards is the
+   *next* block again, one further back, and it has to arrive the same way
+   everything else does.
+
+   Hence the same shape as sc-pending-enter: in from off-frame left by the same
+   measured distance, on the same duration and easing as every other card in the
+   row. It reads as one continuous feed -- the block at the gutter moves up into
+   the pending slot, and another slides in behind it to take the gutter.
+
+   Nothing else about it changes. It stays unhoverable (pointer-events: none on
+   the base rule) and unlit -- no pulse, no glow -- so it still reads as a block
+   seen edge-on rather than a second card competing for attention. */
+.sc-blocks.is-confirming .sc-block-ghost {
+  animation: sc-ghost-advance 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 
 /* The mined overlay is an exact copy of the resting pending interior. Its solid
    final layer prevents the copy from compositing with the orange background
@@ -4593,6 +4607,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   to   { transform: translateX(0); }
 }
 
+/* Deliberately identical to sc-pending-enter, off the same measured distance.
+   The sliver and the replacement card are consecutive blocks in one queue, so
+   they travel as one: the card starts on the sliver's right edge and moves up
+   into the pending slot, and the sliver moves into the gutter position the card
+   just left. Same distance, duration and easing keeps their spacing fixed the
+   whole way, which is what makes it read as a chain rather than two things
+   moving independently. */
+@keyframes sc-ghost-advance {
+  from { transform: translateX(calc(0px - var(--sc-enter-distance, 182px))); }
+  to   { transform: translateX(0); }
+}
+
 @keyframes sc-connector-sweep {
   0% { transform: scaleX(0); opacity: 0; }
   20% { opacity: 1; }
@@ -4676,8 +4702,23 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    steady-state one after it; the ask was to drop that and just match the
    rest, so this now only ever asks for as much glow as any later breath
    already shows. */
+/* Holds low, then lifts -- it does not begin lifting at the rebuild.
+
+   The landed card is still glowing at that point: sc-new-block-cool runs 2s,
+   holding full to 22% and easing out from there, so its wash is only about
+   nine tenths gone by ~1.7s. Ramping this one from the first frame put both
+   cards climbing and cooling at once, and the strip had two competing glows.
+   The hold keeps the replacement dim while attention belongs to the block that
+   just landed, then hands it over.
+
+   62% of 2.4s starts the lift at ~1.49s -- deliberately a little before the
+   landed card is fully dark rather than after it, so the two overlap by a
+   couple of tenths and the strip is never left without a lit card. 0.45 is not
+   dark: the pulse is running underneath at that strength the whole time, so
+   the card is breathing quietly before it brightens. */
 @keyframes sc-pending-ignite {
   0%   { --sc-glow-strength: 0.45; }
+  62%  { --sc-glow-strength: 0.45; }
   100% { --sc-glow-strength: 1; }
 }
 
