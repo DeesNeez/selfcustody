@@ -3935,11 +3935,14 @@
           /* A second copy of a link the reader can already reach. */
           incoming.setAttribute("aria-hidden", "true");
           incoming.setAttribute("tabindex", "-1");
+          /* Parked directly on the resting pending slot. It does not travel --
+             the mask on it uncovers it in place -- so this is both where it
+             starts and where it ends, and the rebuild drops a real card on the
+             same coordinates a frame later with nothing to jump. */
           incoming.style.left = (slot.left - frame.left) + "px";
           incoming.style.top = "80px";
           incoming.style.width = slot.width + "px";
           incoming.style.height = slot.height + "px";
-          incoming.style.setProperty("--sc-enter-distance", distance + "px");
 
           clip.appendChild(incoming);
           boxEl.appendChild(clip);

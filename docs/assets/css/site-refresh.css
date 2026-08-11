@@ -4023,10 +4023,41 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   pointer-events: none;
 }
 
+/* The replacement card does not travel. It is already sitting in the pending
+   slot with its text laid out, and what animates is how much of it has been
+   uncovered -- a soft-edged sweep running left to right, from the side the
+   sliver is on and in the direction the chain reads.
+
+   It used to slide the full slot-distance in from off-frame, which meant it
+   crossed the sliver's ground and passed over the top of it: two separate
+   objects, one sliding across the other, when the sliver is supposed to be
+   this very block's leading edge already on screen. Uncovering it in place
+   removes the crossing entirely -- nothing overlaps the sliver, and the card
+   grows rightward out of the same edge the sliver occupies rather than
+   arriving from somewhere else.
+
+   #000 first, transparent second: opaque on the left, growing right. Reversed,
+   this is a wipe that *hides* left-to-right -- it opens with the card almost
+   fully painted and erases it as the sweep advances, which reads as the card
+   vanishing and the rebuilt one appearing from nothing a frame later. Keep the
+   black stop first. */
 .sc-block-enter-clip .sc-block-pending {
   position: absolute;
   margin: 0;
-  animation: sc-pending-enter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 var(--sc-pending-reveal), transparent calc(var(--sc-pending-reveal) + 40%));
+  mask-image: linear-gradient(90deg, #000 0%, #000 var(--sc-pending-reveal), transparent calc(var(--sc-pending-reveal) + 40%));
+  animation: sc-pending-reveal 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Registered so --sc-pending-reveal can be animated at all. An unregistered
+   custom property has no type, so the browser cannot interpolate a percentage
+   and would jump from hidden to shown in a single frame -- exactly the blink
+   this exists to avoid. Distinct from --sc-reveal-delay, which is an unrelated
+   per-card entrance stagger elsewhere in this file. */
+@property --sc-pending-reveal {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
 }
 
 /* Decorative only -- the chain visibly carries on past the left gutter rather
@@ -4278,20 +4309,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   animation: sc-connector-hold 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* The sliver advances with the chain instead of dodging it. Everything else in
-   this animation travels right -- the mined card, the cards behind it, the
-   replacement arriving from off-frame -- so a sliver that ducked left was the
-   one element moving against the current, and it read as leaving rather than
-   advancing.
+/* The sliver holds completely still through the flight -- no animation here on
+   purpose. It used to advance and hide, and before that duck aside, because the
+   replacement card slid the full slot-distance in from off-frame and crossed
+   directly over its ground; the sliver had to get out of the way of something
+   passing through it.
 
-   It has to finish back at rest, because rest is exactly where the rebuild
-   redraws it, so it cannot simply keep going. It gets there without ever moving
-   left on screen: out to the right and fade, reposition while invisible, then
-   back to rest from the left -- which is itself a rightward move, and the same
-   one the incoming card is making. Both entrances point the same way. */
-.sc-blocks.is-confirming .sc-block-ghost {
-  animation: sc-ghost-cycle 1.4s ease-in-out both;
-}
+   Nothing passes through it now. The replacement is uncovered in place in its
+   own slot (see .sc-block-enter-clip .sc-block-pending), so the sliver has
+   nothing to dodge, and holding still is what makes it read as this block's
+   leading edge rather than a separate decoration that flinches when a card goes
+   by. It is the fixed marker that the chain carries on past the gutter, and the
+   new card grows rightward out of the same edge it occupies. */
 
 /* The mined overlay is an exact copy of the resting pending interior. Its solid
    final layer prevents the copy from compositing with the orange background
@@ -4415,50 +4444,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 @keyframes sc-new-block-edge {
   0%, 22% { border-color: rgba(255, 189, 77, 0.94); }
   100%    { border-color: rgba(255, 255, 255, 0.25); }
-}
-
-/* Right and out, hold hidden while the arrival crosses, then right and back in.
-
-   The advance is exactly one gap -- 18px here, 11px on the phone -- so the
-   sliver's right edge travels to the pending slot's left edge and stops on it.
-   It was 22px, which was chosen to land on the x where the arriving card's
-   dissolve goes solid; that overshot the slot by 4px and drew the sliver's rim
-   as a bright vertical line *inside* the card it was supposed to be merging
-   into. Flush is the furthest it can go without becoming a line in the block.
-
-   The rim is also gone well before then. It fades out by 12%, while the sliver
-   is still in open gap, because it is the brightest thing about a sliver whose
-   fill is a masked gradient at well under half strength -- carrying it any
-   further would just slide a hard edge under the arriving card. What crosses is
-   a soft fill with no edge on it, which is what makes the two merge rather than
-   overlap. It comes back at 63%, under cover of opacity 0, so the returning
-   sliver has its edge from the moment it is visible again.
-
-   The reposition at 62% is a jump, deliberately. Opacity is 0 on both sides of
-   it so there is nothing to see, and it buys the return the same rightward
-   direction as the departure. The hold before it spans the crossing; the sliver
-   comes back only once the slot ahead of it is clear. */
-/* Both properties used to fade out on their own separate, gradual timelines --
-   border-color over 0%-12% (~168ms), opacity over a slower 0%-22% (~308ms) --
-   so the sliver's right edge was still visibly dissolving well after it
-   should have simply been gone, right where the incoming card's own border was
-   arriving. Now both drop in the same single step, at 2% (~28ms): no fade to
-   see, and early enough in the 1.4s flight that the incoming card -- which
-   starts even further off-screen and has that much further to travel -- can't
-   have reached this position yet. */
-@keyframes sc-ghost-cycle {
-  /* steps(1, jump-end) on this segment only: the animation's own ease-in-out
-     still shapes a plain 0%-to-4% move, which at 56ms is short enough to look
-     instant but is not actually a hard cut. This holds flat at the 0% values
-     for the full 56ms, then jumps -- genuinely no interpolated frame between
-     visible and gone. Was 2% (28ms) -- the cut was landing a hair before the
-     incoming card's border actually reached it, cutting the sliver a beat too
-     soon. */
-  0%   { opacity: 1; transform: translateX(0); border-color: rgba(255, 153, 0, 0.86); animation-timing-function: steps(1, jump-end); }
-  4%   { opacity: 0; transform: translateX(var(--sc-ghost-advance, 18px)); border-color: rgba(255, 153, 0, 0); }
-  62%  { opacity: 0; transform: translateX(var(--sc-ghost-advance, 18px)); border-color: rgba(255, 153, 0, 0); }
-  63%  { opacity: 0; transform: translateX(calc(var(--sc-ghost-advance, 18px) * -0.72)); border-color: rgba(255, 153, 0, 0.86); }
-  100% { opacity: 1; transform: translateX(0); border-color: rgba(255, 153, 0, 0.86); }
 }
 
 /* Closes the 6px the pending card is wider than a confirmed one (164 to 158) by
@@ -4603,12 +4588,21 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   to { opacity: 0; transform: translateX(182px); }
 }
 
-/* The new pending card advances from beyond the orange sliver by the same
-   measured distance as the outgoing card, preserving a constant separation.
-   Both use the same timing and easing, so every card lands together. */
-@keyframes sc-pending-enter {
-  from { transform: translateX(calc(0px - var(--sc-enter-distance, 224px))); }
-  to   { transform: translateX(0); }
+/* Reads against the mask on .sc-block-enter-clip .sc-block-pending, whose two
+   stops are max(0, reveal) and reveal + 40%.
+
+   -30% therefore opens with the solid stop clamped to 0% and the fade ending
+   at 10%: a thin, soft-edged strip of the card's own left border and nothing
+   else -- the seed, deliberately matched to what the sliver beside it already
+   shows, so the card begins as an edge and grows out of it.
+
+   100% closes with the fade's far end at 140%, well past the right border, so
+   the final frame is uniformly opaque with no gradient still crossing the
+   card. The rebuild swaps in a plain, unmasked card on the very next frame,
+   and anything left mid-fade here would show as a step. */
+@keyframes sc-pending-reveal {
+  from { --sc-pending-reveal: -30%; }
+  to   { --sc-pending-reveal: 100%; }
 }
 
 @keyframes sc-connector-sweep {
@@ -4913,9 +4907,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     background-size: 116px 100%;
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
     mask-image: linear-gradient(90deg, transparent 0, #000 8px);
-    /* This row's gap, the same rule as desktop's 18px: far enough to reach the
-       pending slot's left edge, never far enough to draw inside it. */
-    --sc-ghost-advance: 11px;
   }
   .sc-block-enter-clip {
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
