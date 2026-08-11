@@ -4013,51 +4013,43 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* Holds the arriving pending card from the stage-left orange sliver through its
    resting slot. The sliver-side mask gives the card a soft emergence instead
-   of exposing a hard off-stage edge; the vertical room keeps its glow intact. */
+   of exposing a hard off-stage edge; the vertical room keeps its glow intact.
+
+   52px, deliberately the same dissolve .sc-block-ghost carries below and
+   measured from the same x, because the card's first visible frame has to be
+   mistakable for the sliver itself. At the old 18px the card's leading edge
+   reached full strength three times sooner than the sliver does at the same
+   position, so the thing emerging was plainly brighter than the thing it was
+   supposed to be growing out of. Matched dissolves, matched appearance. */
 .sc-block-enter-clip {
   position: absolute;
   z-index: 2;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px);
-  mask-image: linear-gradient(90deg, transparent 0, #000 18px);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 52px);
+  mask-image: linear-gradient(90deg, transparent 0, #000 52px);
   pointer-events: none;
 }
 
-/* The replacement card does not travel. It is already sitting in the pending
-   slot with its text laid out, and what animates is how much of it has been
-   uncovered -- a soft-edged sweep running left to right, from the side the
-   sliver is on and in the direction the chain reads.
+/* The replacement card starts as the sliver and slides right out of it.
 
-   It used to slide the full slot-distance in from off-frame, which meant it
-   crossed the sliver's ground and passed over the top of it: two separate
-   objects, one sliding across the other, when the sliver is supposed to be
-   this very block's leading edge already on screen. Uncovering it in place
-   removes the crossing entirely -- nothing overlaps the sliver, and the card
-   grows rightward out of the same edge the sliver occupies rather than
-   arriving from somewhere else.
+   Its travel is measured so the card's *right* edge begins exactly on the
+   sliver's right edge -- not so its left edge begins somewhere off-frame. That
+   one detail is the whole effect: at the first frame the only part of the card
+   inside the clip is its own leading 30px, sitting precisely where the sliver
+   sits and carrying the same dissolve, so the two are indistinguishable. The
+   card then moves right and the rest of it emerges from the left-hand fade.
 
-   #000 first, transparent second: opaque on the left, growing right. Reversed,
-   this is a wipe that *hides* left-to-right -- it opens with the card almost
-   fully painted and erases it as the sweep advances, which reads as the card
-   vanishing and the rebuilt one appearing from nothing a frame later. Keep the
-   black stop first. */
+   The two wrong versions this replaces are worth naming. Starting the card a
+   full slot-distance out put its right edge well left of the sliver, so it
+   approached from further away and crossed over the top of the sliver -- two
+   objects, one sliding across the other. Parking it in the resting slot and
+   uncovering it in place fixed the crossing but put it underneath the outgoing
+   card, so it appeared to come out from behind it. Beginning on the sliver's
+   own edge is the only start that is neither. */
 .sc-block-enter-clip .sc-block-pending {
   position: absolute;
   margin: 0;
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 var(--sc-pending-reveal), transparent calc(var(--sc-pending-reveal) + 40%));
-  mask-image: linear-gradient(90deg, #000 0%, #000 var(--sc-pending-reveal), transparent calc(var(--sc-pending-reveal) + 40%));
-  animation: sc-pending-reveal 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-/* Registered so --sc-pending-reveal can be animated at all. An unregistered
-   custom property has no type, so the browser cannot interpolate a percentage
-   and would jump from hidden to shown in a single frame -- exactly the blink
-   this exists to avoid. Distinct from --sc-reveal-delay, which is an unrelated
-   per-card entrance stagger elsewhere in this file. */
-@property --sc-pending-reveal {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 0%;
+  animation: sc-pending-enter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Decorative only -- the chain visibly carries on past the left gutter rather
@@ -4588,21 +4580,17 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   to { opacity: 0; transform: translateX(182px); }
 }
 
-/* Reads against the mask on .sc-block-enter-clip .sc-block-pending, whose two
-   stops are max(0, reveal) and reveal + 40%.
-
-   -30% therefore opens with the solid stop clamped to 0% and the fade ending
-   at 10%: a thin, soft-edged strip of the card's own left border and nothing
-   else -- the seed, deliberately matched to what the sliver beside it already
-   shows, so the card begins as an edge and grows out of it.
-
-   100% closes with the fade's far end at 140%, well past the right border, so
-   the final frame is uniformly opaque with no gradient still crossing the
-   card. The rebuild swaps in a plain, unmasked card on the very next frame,
-   and anything left mid-fade here would show as a step. */
-@keyframes sc-pending-reveal {
-  from { --sc-pending-reveal: -30%; }
-  to   { --sc-pending-reveal: 100%; }
+/* --sc-enter-distance is measured per flight in startConfirmFlight(), not
+   assumed here: it is whatever puts the card's right edge on the sliver's
+   right edge at the first frame. The card therefore begins as the sliver and
+   travels rightward out of it, uncovering itself against the clip's left-hand
+   fade as it goes, and ends on the resting pending slot -- which is exactly
+   where the rebuild paints the live card a frame later, so the handover has
+   nothing to jump. The fallback only matters if the measurement is somehow
+   missing. */
+@keyframes sc-pending-enter {
+  from { transform: translateX(calc(0px - var(--sc-enter-distance, 182px))); }
+  to   { transform: translateX(0); }
 }
 
 @keyframes sc-connector-sweep {

@@ -3909,18 +3909,31 @@
       if (!pendingEl) return;
       const newest = blocks[0];
 
-      /* Bring the next pending card from beyond the orange continuation sliver.
-         It travels the same measured distance, duration and easing as the
-         outgoing pending card, preserving their spacing throughout the move
-         instead of letting the incoming card crowd its leading neighbour. */
+      /* The next pending card begins as the orange continuation sliver and
+         slides right out of it. */
       const ghostEl = wrap.querySelector(".sc-block-ghost");
       const boxEl = wrap.closest(".sc-blocks-container");
-      const firstConfirmed = wrap.querySelector(".sc-block-confirmed");
-      if (ghostEl && boxEl && firstConfirmed) {
+      if (ghostEl && boxEl) {
         const boxRect = boxEl.getBoundingClientRect();
         const frame = ghostEl.getBoundingClientRect();
         const slot = pendingEl.getBoundingClientRect();
-        const distance = firstConfirmed.getBoundingClientRect().left - slot.left;
+        /* Measured so the card's RIGHT edge starts on the sliver's right edge,
+           rather than so its left edge starts a slot away. At the first frame
+           the only part of it inside the clip is then its own leading edge,
+           lying exactly over the sliver and carrying the clip's matching
+           dissolve -- the sliver and the card's front are the same thing. It
+           ends on the resting slot, which is where the rebuild paints the live
+           card, so the handover has nothing to jump.
+
+           Deliberately shorter than the outgoing card's own travel, and that
+           is correct rather than a mismatch: the two are moving to different
+           destinations. This one lands in the pending slot with only a gap
+           behind the sliver, while the outgoing one lands in the confirmed
+           slot with the connector between. Their separation therefore has to
+           open from one gap to gap-connector-gap over the flight -- the
+           connector's space appearing between them is the chain advancing, not
+           a drift. */
+        const distance = slot.left + slot.width - frame.right;
         const holder = document.createElement("div");
         holder.innerHTML = pending;
         const incoming = holder.firstChild;
@@ -3935,14 +3948,11 @@
           /* A second copy of a link the reader can already reach. */
           incoming.setAttribute("aria-hidden", "true");
           incoming.setAttribute("tabindex", "-1");
-          /* Parked directly on the resting pending slot. It does not travel --
-             the mask on it uncovers it in place -- so this is both where it
-             starts and where it ends, and the rebuild drops a real card on the
-             same coordinates a frame later with nothing to jump. */
           incoming.style.left = (slot.left - frame.left) + "px";
           incoming.style.top = "80px";
           incoming.style.width = slot.width + "px";
           incoming.style.height = slot.height + "px";
+          incoming.style.setProperty("--sc-enter-distance", distance + "px");
 
           clip.appendChild(incoming);
           boxEl.appendChild(clip);
