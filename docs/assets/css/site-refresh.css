@@ -3105,21 +3105,36 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    not just the corner. Fixing the chip at the section level meant paying for
    it everywhere else the strip and the hero touch.
 
-   Fixed here at the chip instead: pushed down far enough to clear the fade's
-   real lower bound, and nothing else lives in this corner for it to run into
-   -- the chip's column is empty below it until the controls row, well over
-   60px further down even after this push. Hero stays out of the stacking
-   fight entirely, so the strip keeps ranking above it exactly as before, and
-   the glow bleeds through unbroken.
+   Pushing the chip down out of the fade's reach was tried instead, and it did
+   work, but it solved a layering problem by moving furniture: the chip sat 56px
+   below the corner it is designed to occupy. It belongs at top: 0.
 
-   56px: the fade's lower bound tracks .sc-blocks-container's own bottom edge,
-   which is set by the 90px of bottom padding on .sc-blocks a few rules up --
-   padding added there for a matching reason, to give the same hover glow room
-   to clip cleanly instead of mid-blur. The two numbers are coupled for that
-   reason: raise the padding again and this needs to follow it back up. */
+   So the hero is raised after all -- but the reason raising it broke the glow
+   is removed first. That break was never about z-index alone; it was that the
+   hero's background is opaque, so once it outranked the strip it painted over
+   the glow overhanging into it. Take the background out of the overlap and the
+   ranking costs nothing.
+
+   Hence the gradient: the hero paints no background at all for its first 64px,
+   which is more than the 58px the two boxes actually overlap, so its opaque
+   part now begins below .sc-blocks-container's bottom edge entirely and can
+   never cover the strip. .sc-blocks-top fills that band instead, with a
+   zero-blur box-shadow dropped straight down from its own edge -- shadows are
+   not clipped by the element's own overflow, and it sits at z-index auto,
+   below both the strip and the hero, so the strip's glow still lands on top of
+   it. The two sections already share rgb(11, 10, 9) exactly, so the seam is
+   invisible; the page behind them is a lighter rgb(26, 25, 24), which is
+   precisely why the band cannot simply be left transparent.
+
+   Keep the two 64px values equal, and both above the real overlap. */
 @media (min-width: 768px) {
-  .sc-dash-status {
-    top: 56px;
+  .sc-blocks-top {
+    box-shadow: 0 64px 0 var(--sc-dash-black);
+  }
+
+  .sc-blocks-top + .sc-dash-hero {
+    z-index: 2;
+    background: linear-gradient(to bottom, transparent 0 64px, var(--sc-dash-black) 64px);
   }
 }
 
