@@ -3105,21 +3105,36 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    not just the corner. Fixing the chip at the section level meant paying for
    it everywhere else the strip and the hero touch.
 
-   Fixed here at the chip instead: pushed down far enough to clear the fade's
-   real lower bound, and nothing else lives in this corner for it to run into
-   -- the chip's column is empty below it until the controls row, well over
-   60px further down even after this push. Hero stays out of the stacking
-   fight entirely, so the strip keeps ranking above it exactly as before, and
-   the glow bleeds through unbroken.
+   Pushing the chip down out of the fade's reach was tried instead, and it did
+   work, but it solved a layering problem by moving furniture: the chip sat 56px
+   below the corner it is designed to occupy. It belongs at top: 0.
 
-   56px: the fade's lower bound tracks .sc-blocks-container's own bottom edge,
-   which is set by the 90px of bottom padding on .sc-blocks a few rules up --
-   padding added there for a matching reason, to give the same hover glow room
-   to clip cleanly instead of mid-blur. The two numbers are coupled for that
-   reason: raise the padding again and this needs to follow it back up. */
+   So the hero is raised after all -- but the reason raising it broke the glow
+   is removed first. That break was never about z-index alone; it was that the
+   hero's background is opaque, so once it outranked the strip it painted over
+   the glow overhanging into it. Take the background out of the overlap and the
+   ranking costs nothing.
+
+   Hence the gradient: the hero paints no background at all for its first 64px,
+   which is more than the 58px the two boxes actually overlap, so its opaque
+   part now begins below .sc-blocks-container's bottom edge entirely and can
+   never cover the strip. .sc-blocks-top fills that band instead, with a
+   zero-blur box-shadow dropped straight down from its own edge -- shadows are
+   not clipped by the element's own overflow, and it sits at z-index auto,
+   below both the strip and the hero, so the strip's glow still lands on top of
+   it. The two sections already share rgb(11, 10, 9) exactly, so the seam is
+   invisible; the page behind them is a lighter rgb(26, 25, 24), which is
+   precisely why the band cannot simply be left transparent.
+
+   Keep the two 64px values equal, and both above the real overlap. */
 @media (min-width: 768px) {
-  .sc-dash-status {
-    top: 56px;
+  .sc-blocks-top {
+    box-shadow: 0 64px 0 var(--sc-dash-black);
+  }
+
+  .sc-blocks-top + .sc-dash-hero {
+    z-index: 2;
+    background: linear-gradient(to bottom, transparent 0 64px, var(--sc-dash-black) 64px);
   }
 }
 
@@ -4013,20 +4028,60 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* Holds the arriving pending card from the stage-left orange sliver through its
    resting slot. The sliver-side mask gives the card a soft emergence instead
-   of exposing a hard off-stage edge; the vertical room keeps its glow intact. */
+   of exposing a hard off-stage edge; the vertical room keeps its glow intact.
+
+   52px, deliberately the same dissolve .sc-block-ghost carries below and
+   measured from the same x, because the card's first visible frame has to be
+   mistakable for the sliver itself. At the old 18px the card's leading edge
+   reached full strength three times sooner than the sliver does at the same
+   position, so the thing emerging was plainly brighter than the thing it was
+   supposed to be growing out of. Matched dissolves, matched appearance. */
 .sc-block-enter-clip {
   position: absolute;
   z-index: 2;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px);
-  mask-image: linear-gradient(90deg, transparent 0, #000 18px);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 52px);
+  mask-image: linear-gradient(90deg, transparent 0, #000 52px);
   pointer-events: none;
 }
 
+/* The replacement card starts as the sliver and slides right out of it.
+
+   Its travel is measured so the card's *right* edge begins exactly on the
+   sliver's right edge -- not so its left edge begins somewhere off-frame. That
+   one detail is the whole effect: at the first frame the only part of the card
+   inside the clip is its own leading 30px, sitting precisely where the sliver
+   sits and carrying the same dissolve, so the two are indistinguishable. The
+   card then moves right and the rest of it emerges from the left-hand fade.
+
+   The two wrong versions this replaces are worth naming. Starting the card a
+   full slot-distance out put its right edge well left of the sliver, so it
+   approached from further away and crossed over the top of the sliver -- two
+   objects, one sliding across the other. Parking it in the resting slot and
+   uncovering it in place fixed the crossing but put it underneath the outgoing
+   card, so it appeared to come out from behind it. Beginning on the sliver's
+   own edge is the only start that is neither. */
 .sc-block-enter-clip .sc-block-pending {
   position: absolute;
   margin: 0;
   animation: sc-pending-enter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* The sliver travels here rather than in the strip, so that it emerges through
+   the clip's fixed gutter fade instead of appearing in the padding beside it.
+
+   mask-image: none is required, not tidying. The clip's own 52px fade is
+   measured from the same x this sliver rests on, so at rest the two describe
+   the identical ramp -- 30px of a 52px gradient, 58% at the right edge. Leaving
+   the sliver's own mask on would apply that ramp twice, landing it near 34%,
+   and the rebuild would then swap in a strip sliver at the full 58% and jump.
+   One mask, one ramp, and the handover is invisible. */
+.sc-block-enter-clip .sc-block-ghost {
+  position: absolute;
+  margin: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+  animation: sc-ghost-advance 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Decorative only -- the chain visibly carries on past the left gutter rather
@@ -4213,10 +4268,15 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    breath. The fast start is what keeps this safe to lengthen -- the onset
    still lands in the same first 100-150ms either way, so the extra time
    goes entirely into the peak and settle, not into reopening the gap. */
+/* 2.4s and ease-in-out, not the 1.3s spring the movement uses. The lift is the
+   back half of a hold-then-rise (see sc-pending-ignite), and a front-loaded
+   curve spends almost all of its travel in the first moments after the hold
+   releases -- which reads as the glow snapping on rather than coming up. An
+   even curve leaves the hold gently. */
 .sc-blocks.is-ready.is-fresh .sc-block-pending {
   animation:
     sc-pending-logo-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite,
-    sc-pending-ignite 1.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    sc-pending-ignite 2.4s ease-in-out both;
 }
 
 .sc-blocks.is-confirming .sc-block-pending {
@@ -4278,19 +4338,37 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   animation: sc-connector-hold 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* The sliver advances with the chain instead of dodging it. Everything else in
-   this animation travels right -- the mined card, the cards behind it, the
-   replacement arriving from off-frame -- so a sliver that ducked left was the
-   one element moving against the current, and it read as leaving rather than
-   advancing.
+/* The sliver advances too, because it is a block, not an ornament.
 
-   It has to finish back at rest, because rest is exactly where the rebuild
-   redraws it, so it cannot simply keep going. It gets there without ever moving
-   left on screen: out to the right and fade, reposition while invisible, then
-   back to rest from the left -- which is itself a rightward move, and the same
-   one the incoming card is making. Both entrances point the same way. */
+   At rest it is the leading edge of the block queued behind the pending one,
+   the rest of it off-frame past the gutter. When a block lands, that queued
+   block is exactly what becomes the new pending card -- which is why the
+   replacement starts its travel on this sliver's right edge. So the sliver
+   cannot also stay where it is: whatever sits at the gutter afterwards is the
+   *next* block again, one further back, and it has to arrive the same way
+   everything else does.
+
+   Hence the same shape as sc-pending-enter: in from off-frame left by the same
+   measured distance, on the same duration and easing as every other card in the
+   row. It reads as one continuous feed -- the block at the gutter moves up into
+   the pending slot, and another slides in behind it to take the gutter.
+
+   Nothing else about it changes. It stays unhoverable (pointer-events: none on
+   the base rule) and unlit -- no pulse, no glow -- so it still reads as a block
+   seen edge-on rather than a second card competing for attention. */
+/* The one in the strip stands down for the flight; the copy inside
+   .sc-block-enter-clip does the travelling. This element cannot do it itself:
+   it lives in .sc-blocks, which carries 56px of left padding so the pending
+   card's glow has somewhere to render, and overflow clips at the padding box
+   rather than at the content edge. Sliding it in from off-frame therefore made
+   it visible 56px early, out in the margin left of the gutter -- across the
+   line the price and every heading below align to, which is exactly the edge
+   the chain is supposed to emerge from rather than overrun.
+
+   The clip is already pinned to that gutter with the matching fade, so the copy
+   emerges through the line instead of in front of it. */
 .sc-blocks.is-confirming .sc-block-ghost {
-  animation: sc-ghost-cycle 1.4s ease-in-out both;
+  opacity: 0;
 }
 
 /* The mined overlay is an exact copy of the resting pending interior. Its solid
@@ -4321,17 +4399,25 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* Each changed information line crossfades independently. The outgoing copies
    sit exactly on the updated originals, keeping total line opacity nearly
-   constant so the change reads as a soft text handoff, never a card-wide blink. */
+   constant so the change reads as a soft text handoff, never a card-wide blink.
+
+   The two easings are complements on purpose, and both were linear before.
+   Opacity does not add where the copies overlap -- two glyphs at 0.5 composite
+   to 0.75, not 1 -- so a pair of linear fades dips a quarter of the way to the
+   background at the midpoint, and on text that dip is exactly what reads as a
+   blink. Holding the outgoing copy high early (ease-in) while bringing the
+   incoming up fast (ease-out) puts both near 0.8 at the crossing, which
+   composites to about 0.94 and closes most of the gap. */
 .sc-block-copy-old {
   position: absolute;
   z-index: 2;
   margin: 0;
   pointer-events: none;
-  animation: sc-block-copy-out 220ms linear both;
+  animation: sc-block-copy-out 220ms ease-in both;
 }
 
 .sc-block-copy-new {
-  animation: sc-block-copy-in 220ms linear both;
+  animation: sc-block-copy-in 220ms ease-out both;
 }
 
 @keyframes sc-block-copy-out {
@@ -4356,8 +4442,15 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    perimeter blinked off while the wash inside went on dissolving for two full
    seconds. Now the rim cools on the same curve. The glow stays inside the card,
    where the ::after wash below handles it. */
+/* Two animations, two properties, no overlap: the edge cools the border over
+   2s, the glow finishes the outer spills the flight handed over. The 370ms one
+   firing animationend first is harmless -- the JS that strips .is-newest
+   filters on sc-new-block-edge by name, so the 2s cooldown still owns when the
+   class comes off. */
 .sc-block-confirmed.is-newest {
-  animation: sc-new-block-edge 2s ease-in-out both;
+  animation:
+    sc-new-block-edge 2s ease-in-out both,
+    sc-new-block-glow 370ms linear both;
 }
 
 /* The strip is rebuilt from scratch the moment the flight ends. Repainting the
@@ -4407,50 +4500,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 @keyframes sc-new-block-edge {
   0%, 22% { border-color: rgba(255, 189, 77, 0.94); }
   100%    { border-color: rgba(255, 255, 255, 0.25); }
-}
-
-/* Right and out, hold hidden while the arrival crosses, then right and back in.
-
-   The advance is exactly one gap -- 18px here, 11px on the phone -- so the
-   sliver's right edge travels to the pending slot's left edge and stops on it.
-   It was 22px, which was chosen to land on the x where the arriving card's
-   dissolve goes solid; that overshot the slot by 4px and drew the sliver's rim
-   as a bright vertical line *inside* the card it was supposed to be merging
-   into. Flush is the furthest it can go without becoming a line in the block.
-
-   The rim is also gone well before then. It fades out by 12%, while the sliver
-   is still in open gap, because it is the brightest thing about a sliver whose
-   fill is a masked gradient at well under half strength -- carrying it any
-   further would just slide a hard edge under the arriving card. What crosses is
-   a soft fill with no edge on it, which is what makes the two merge rather than
-   overlap. It comes back at 63%, under cover of opacity 0, so the returning
-   sliver has its edge from the moment it is visible again.
-
-   The reposition at 62% is a jump, deliberately. Opacity is 0 on both sides of
-   it so there is nothing to see, and it buys the return the same rightward
-   direction as the departure. The hold before it spans the crossing; the sliver
-   comes back only once the slot ahead of it is clear. */
-/* Both properties used to fade out on their own separate, gradual timelines --
-   border-color over 0%-12% (~168ms), opacity over a slower 0%-22% (~308ms) --
-   so the sliver's right edge was still visibly dissolving well after it
-   should have simply been gone, right where the incoming card's own border was
-   arriving. Now both drop in the same single step, at 2% (~28ms): no fade to
-   see, and early enough in the 1.4s flight that the incoming card -- which
-   starts even further off-screen and has that much further to travel -- can't
-   have reached this position yet. */
-@keyframes sc-ghost-cycle {
-  /* steps(1, jump-end) on this segment only: the animation's own ease-in-out
-     still shapes a plain 0%-to-4% move, which at 56ms is short enough to look
-     instant but is not actually a hard cut. This holds flat at the 0% values
-     for the full 56ms, then jumps -- genuinely no interpolated frame between
-     visible and gone. Was 2% (28ms) -- the cut was landing a hair before the
-     incoming card's border actually reached it, cutting the sliver a beat too
-     soon. */
-  0%   { opacity: 1; transform: translateX(0); border-color: rgba(255, 153, 0, 0.86); animation-timing-function: steps(1, jump-end); }
-  4%   { opacity: 0; transform: translateX(var(--sc-ghost-advance, 18px)); border-color: rgba(255, 153, 0, 0); }
-  62%  { opacity: 0; transform: translateX(var(--sc-ghost-advance, 18px)); border-color: rgba(255, 153, 0, 0); }
-  63%  { opacity: 0; transform: translateX(calc(var(--sc-ghost-advance, 18px) * -0.72)); border-color: rgba(255, 153, 0, 0.86); }
-  100% { opacity: 1; transform: translateX(0); border-color: rgba(255, 153, 0, 0.86); }
 }
 
 /* Closes the 6px the pending card is wider than a confirmed one (164 to 158) by
@@ -4545,6 +4594,43 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   100% {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.085),
+      -18px 0 34px rgba(255, 138, 0, 0.143),
+      18px 0 32px rgba(255, 153, 0, 0.072),
+      0 14px 30px rgba(0, 0, 0, 0.28);
+  }
+}
+
+/* The rest of that same decay, continued on the landed card.
+
+   The flight used to take the spills all the way to zero by 100%, which meant
+   the whole fall from 0.36 happened inside the 560ms left after the 60% peak
+   -- 0.64 alpha per second, against the resting pulse's 0.39. It was the
+   fastest glow on the strip by a wide margin, and the only one that reached
+   zero at all, which is what made it read as switching off rather than
+   settling.
+
+   Matching the pulse's rate needs 930ms for a 0.36 drop, and only 560ms of the
+   flight remain after the peak. Moving the peak earlier would buy the time but
+   costs more than it gains -- 60% is where the interior wash finishes arriving,
+   and that alignment is the whole reason the peak sits there. So the decay
+   simply carries on past the landing instead: the flight hands over at 0.143
+   and 0.072, exactly 39.8% of the way from the peak, and this finishes the
+   remaining 370ms at the same constant rate.
+
+   Structure-matched to sc-confirm-glow's own final keyframe so the handover is
+   still a no-op, and linear for the same reason it is linear there: a rate
+   that is meant to match another animation's cannot be eased. */
+@keyframes sc-new-block-glow {
+  from {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.085),
+      -18px 0 34px rgba(255, 138, 0, 0.143),
+      18px 0 32px rgba(255, 153, 0, 0.072),
+      0 14px 30px rgba(0, 0, 0, 0.28);
+  }
+  to {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.085),
       -18px 0 34px rgba(255, 138, 0, 0),
       18px 0 32px rgba(255, 153, 0, 0),
       0 14px 30px rgba(0, 0, 0, 0.28);
@@ -4595,11 +4681,28 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   to { opacity: 0; transform: translateX(182px); }
 }
 
-/* The new pending card advances from beyond the orange sliver by the same
-   measured distance as the outgoing card, preserving a constant separation.
-   Both use the same timing and easing, so every card lands together. */
+/* --sc-enter-distance is measured per flight in startConfirmFlight(), not
+   assumed here: it is whatever puts the card's right edge on the sliver's
+   right edge at the first frame. The card therefore begins as the sliver and
+   travels rightward out of it, uncovering itself against the clip's left-hand
+   fade as it goes, and ends on the resting pending slot -- which is exactly
+   where the rebuild paints the live card a frame later, so the handover has
+   nothing to jump. The fallback only matters if the measurement is somehow
+   missing. */
 @keyframes sc-pending-enter {
-  from { transform: translateX(calc(0px - var(--sc-enter-distance, 224px))); }
+  from { transform: translateX(calc(0px - var(--sc-enter-distance, 182px))); }
+  to   { transform: translateX(0); }
+}
+
+/* Deliberately identical to sc-pending-enter, off the same measured distance.
+   The sliver and the replacement card are consecutive blocks in one queue, so
+   they travel as one: the card starts on the sliver's right edge and moves up
+   into the pending slot, and the sliver moves into the gutter position the card
+   just left. Same distance, duration and easing keeps their spacing fixed the
+   whole way, which is what makes it read as a chain rather than two things
+   moving independently. */
+@keyframes sc-ghost-advance {
+  from { transform: translateX(calc(0px - var(--sc-enter-distance, 182px))); }
   to   { transform: translateX(0); }
 }
 
@@ -4660,34 +4763,38 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   initial-value: 1;
 }
 
-/* Opening at strength 1 outright was tried and rejected: a brand new element's
-   first painted frame has nothing to transition from, so a keyframe of 1 at 0%
-   just paints the card already fully lit -- a blink, not a fade, no matter how
-   correct the final value is.
+/* Fade in, hold low, then lift. Three parts, each answering a separate
+   failure.
 
-   Opening at 0 was rejected earlier for the opposite reason: the card it is
-   replacing is mid-flight right up until the swap, still carrying its own
-   glow (sc-confirm-glow), so a dark opening created a real dip nothing in the
-   outgoing card ever had.
+   It does not touch box-shadow, so it never fights the pulse for it. The pulse
+   runs from the first frame on its own absolute-clock phase; this only says how
+   much of it to show. Rises to 1 and stops -- no overshoot, so the first breath
+   is the same size as every steady-state one after it.
 
-   0.45 splits the difference deliberately, not as a compromise but because it
-   answers both complaints at once: there is real, visible glow in the very
-   first frame (no dark gap to fall into), and it is far enough under the
-   resting strength of 1 that the climb from there to the 1.42 peak is an
-   actual fade a viewer can see happen, not a value that merely happens to
-   already be 1 that swaps in unchanged.
+   0% is 0, and the 12% ramp is not decoration. The copy that flies in lives in
+   .sc-block-enter-clip, whose rule replaces the whole animation list with
+   sc-pending-enter -- no pulse, so that card carries no orange glow whatsoever.
+   The rebuild then swaps in a real card that does. Opening this keyframe at
+   0.45 therefore meant going from no glow to real glow in a single frame. The
+   old shape climbed away from that instantly and hid it; the hold below parks
+   on it and exposes it as a blink. Ramping up from 0 over ~290ms removes the
+   step entirely rather than masking it again.
 
-   It does not touch box-shadow, so it does not fight the pulse for it. The
-   pulse runs from the first frame on its normal phase; this only says how much
-   of it to show.
+   The hold exists because the landed card is still lit at the rebuild:
+   sc-new-block-cool runs 2s, holding full to 22% and easing out from there, so
+   its wash is only about nine tenths gone by ~1.7s. Lifting straight away put
+   both cards changing at once and the strip carried two competing glows. 0.45
+   is not dark -- the pulse breathes underneath at that strength -- so the
+   replacement stays quietly alive while attention belongs to the block that
+   just landed.
 
-   Rises straight to 1 and stops -- no overshoot. An earlier version peaked
-   past 1 and held there, so the first breath read as bigger than every
-   steady-state one after it; the ask was to drop that and just match the
-   rest, so this now only ever asks for as much glow as any later breath
-   already shows. */
+   62% of 2.4s starts the lift at ~1.49s, deliberately a little before the
+   landed card is fully dark rather than after it, so the two overlap by a
+   couple of tenths and the strip is never left without a lit card. */
 @keyframes sc-pending-ignite {
-  0%   { --sc-glow-strength: 0.45; }
+  0%   { --sc-glow-strength: 0; }
+  12%  { --sc-glow-strength: 0.45; }
+  62%  { --sc-glow-strength: 0.45; }
   100% { --sc-glow-strength: 1; }
 }
 
@@ -4800,7 +4907,11 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 }
 
 .sc-block-meta { display: flex; flex-direction: column; gap: 5px; margin: 0; }
-.sc-block-meta > div { display: flex; justify-content: space-between; gap: 10px; }
+/* position: relative so a confirmation crossfade can park an absolutely
+   positioned copy of a single dt or dd against this row. copyLine() measures
+   the clone's offset from its own parent, so without a positioned row the
+   clone would anchor to .sc-block-meta instead and land a row or two off. */
+.sc-block-meta > div { position: relative; display: flex; justify-content: space-between; gap: 10px; }
 .sc-block-meta dt { color: var(--sc-muted); font-size: 0.76rem; font-weight: 600; }
 .sc-block-meta dd {
   margin: 0;
@@ -4901,9 +5012,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     background-size: 116px 100%;
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
     mask-image: linear-gradient(90deg, transparent 0, #000 8px);
-    /* This row's gap, the same rule as desktop's 18px: far enough to reach the
-       pending slot's left edge, never far enough to draw inside it. */
-    --sc-ghost-advance: 11px;
   }
   .sc-block-enter-clip {
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
@@ -4963,6 +5071,9 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   .sc-blocks.is-confirming .sc-block-confirmed { animation-name: sc-block-shift-right-mobile; }
   .sc-blocks.is-confirming .sc-block-connector + .sc-block-confirmed { animation-name: sc-block-shift-right-mobile, sc-neighbour-glow-mobile; }
   .sc-blocks.is-confirming .sc-block-confirmed:last-child { animation-name: sc-block-exit-right-mobile; }
+  /* Name list only -- the 2s/370ms durations and easings come from the desktop
+     shorthand. Both names are required or the carry-over glow is dropped. */
+  .sc-block-confirmed.is-newest { animation-name: sc-new-block-edge, sc-new-block-glow-mobile; }
   .sc-dash-priceblock {
     display: flex;
     align-items: start;
@@ -5015,8 +5126,19 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 /* Same resize-don't-scale trade as the desktop keyframe above; the phone step is
    122 to 116, and 10px to 7px of padding holds the content box at 100px the
    whole way across. The 6px it gives up is added back in the two -mobile shift
-   keyframes below, 139 to 145, for the reason spelled out on
-   sc-block-shift-right. */
+   keyframes below, 127 to 133, for the reason spelled out on
+   sc-block-shift-right.
+
+   160px is this row's own geometry: the pending card (122) plus a gap (11),
+   the connector (16) and another gap (11) -- the distance from this card's
+   left edge to the first confirmed card's, which is the slot it has to land
+   on. It was 178, a figure that matched nothing here, so the flight overshot
+   by 18px while the replacement card entering behind it travelled the real
+   160 measured by loadChain(). Same duration and easing, different distances,
+   means different speeds: the gap between the two opened from 38px to 56px
+   across the flight and then snapped shut at the rebuild. Desktop never showed
+   it because its 224 does derive from its own row. Keep all three -mobile
+   distances in step with the widths above if they ever change. */
 @keyframes sc-block-confirm-mobile {
   0% {
     transform: translateX(0);
@@ -5029,7 +5151,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     border-color: rgba(255, 187, 92, 0.98);
   }
   100% {
-    transform: translateX(178px);
+    transform: translateX(160px);
     flex-basis: 116px;
     width: 116px;
     padding-inline: 7px;
@@ -5060,6 +5182,26 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   100% {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.045),
+      -14px 0 28px rgba(255, 138, 0, 0.135),
+      14px 0 26px rgba(255, 153, 0, 0.072),
+      0 12px 24px rgba(0, 0, 0, 0.18);
+  }
+}
+
+/* The phone's half of the same carry-over. Same 39.8% handover point off this
+   variant's own 0.34 and 0.18 peaks, and the same closing drop shadow, so the
+   handover is a no-op here too. */
+@keyframes sc-new-block-glow-mobile {
+  from {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.045),
+      -14px 0 28px rgba(255, 138, 0, 0.135),
+      14px 0 26px rgba(255, 153, 0, 0.072),
+      0 12px 24px rgba(0, 0, 0, 0.18);
+  }
+  to {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.045),
       -14px 0 28px rgba(255, 138, 0, 0),
       14px 0 26px rgba(255, 153, 0, 0),
       0 12px 24px rgba(0, 0, 0, 0.18);
@@ -5087,14 +5229,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   }
 }
 
+/* 133px: one confirmed slot at this breakpoint (116 + 11 gap = 127) plus the
+   6px the flying card ahead of these shrinks by, exactly as the desktop
+   keyframe adds 6 to its own 176. Was 145, which did not derive from this
+   row's geometry at any step. */
 @keyframes sc-block-shift-right-mobile {
   from { transform: translateX(0); }
-  to { transform: translateX(145px); }
+  to { transform: translateX(133px); }
 }
 
 @keyframes sc-block-exit-right-mobile {
   from { opacity: 1; transform: translateX(0); }
-  to { opacity: 0; transform: translateX(145px); }
+  to { opacity: 0; transform: translateX(133px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

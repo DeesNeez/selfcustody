@@ -3325,10 +3325,28 @@
       if (!box || !card) return;
       const boxRect = box.getBoundingClientRect();
       const cardBox = card.getBoundingClientRect();
-      // 90px of bleed so the hover glow (up to a 76px blur, lifted 10px) isn't
-      // cut off by the fade's own edge -- 8px only covered the resting shadow.
+      /* 90px of bleed so the hover glow (up to a 76px blur, lifted 10px) isn't
+         cut off by the fade's own edge -- 8px only covered the resting shadow.
+
+         Below the cards that figure has to shrink on phones. The scroller
+         reserves exactly 90px of bottom padding for that same hover glow, so
+         subtracting a 90px bleed from a 90px gap leaves an inset of zero and
+         the fade runs the full height of its container -- roughly 90px below
+         the cards, into a stretch the strip's own negative bottom margin has
+         already handed to the hero. On desktop nothing is there to catch it.
+         In the mobile layout the "Live - updated" chip is, and its right end
+         sat under the gradient.
+
+         30px is safe here because the thing the big bleed protects does not
+         exist at this width: there is no hover lift, and the one card with a
+         bright glow is the pending card, which is always leftmost and never
+         reaches the right gutter this fade covers. What does overrun there is
+         confirmed cards, whose shadows are black on a black stage -- masking
+         them changes nothing visible. Their bright content stops at the card's
+         own border box, well inside 30px. */
+      const bleedBelow = window.matchMedia("(max-width: 767px)").matches ? 30 : 90;
       box.style.setProperty("--sc-strip-fade-top", Math.max(0, cardBox.top - boxRect.top - 90) + "px");
-      box.style.setProperty("--sc-strip-fade-bottom", Math.max(0, boxRect.bottom - cardBox.bottom - 90) + "px");
+      box.style.setProperty("--sc-strip-fade-bottom", Math.max(0, boxRect.bottom - cardBox.bottom - bleedBelow) + "px");
     };
 
     /* Both projected.totalFees and block.extras.totalFees are transaction-fee
@@ -3891,18 +3909,31 @@
       if (!pendingEl) return;
       const newest = blocks[0];
 
-      /* Bring the next pending card from beyond the orange continuation sliver.
-         It travels the same measured distance, duration and easing as the
-         outgoing pending card, preserving their spacing throughout the move
-         instead of letting the incoming card crowd its leading neighbour. */
+      /* The next pending card begins as the orange continuation sliver and
+         slides right out of it. */
       const ghostEl = wrap.querySelector(".sc-block-ghost");
       const boxEl = wrap.closest(".sc-blocks-container");
-      const firstConfirmed = wrap.querySelector(".sc-block-confirmed");
-      if (ghostEl && boxEl && firstConfirmed) {
+      if (ghostEl && boxEl) {
         const boxRect = boxEl.getBoundingClientRect();
         const frame = ghostEl.getBoundingClientRect();
         const slot = pendingEl.getBoundingClientRect();
-        const distance = firstConfirmed.getBoundingClientRect().left - slot.left;
+        /* Measured so the card's RIGHT edge starts on the sliver's right edge,
+           rather than so its left edge starts a slot away. At the first frame
+           the only part of it inside the clip is then its own leading edge,
+           lying exactly over the sliver and carrying the clip's matching
+           dissolve -- the sliver and the card's front are the same thing. It
+           ends on the resting slot, which is where the rebuild paints the live
+           card, so the handover has nothing to jump.
+
+           Deliberately shorter than the outgoing card's own travel, and that
+           is correct rather than a mismatch: the two are moving to different
+           destinations. This one lands in the pending slot with only a gap
+           behind the sliver, while the outgoing one lands in the confirmed
+           slot with the connector between. Their separation therefore has to
+           open from one gap to gap-connector-gap over the flight -- the
+           connector's space appearing between them is the chain advancing, not
+           a drift. */
+        const distance = slot.left + slot.width - frame.right;
         const holder = document.createElement("div");
         holder.innerHTML = pending;
         const incoming = holder.firstChild;
@@ -3923,6 +3954,23 @@
           incoming.style.height = slot.height + "px";
           incoming.style.setProperty("--sc-enter-distance", distance + "px");
 
+          /* The block queued behind this one, riding the same measured
+             distance so the pair holds its spacing across the flight. It
+             travels in here rather than in the strip because the clip is
+             pinned to the content gutter: inside it the sliver emerges
+             through that fixed fade, where in the strip it would have come
+             up 56px early, out in the scroller's padding. The one still in
+             the strip is hidden for the duration (see the is-confirming
+             rule) and the rebuild restores it at rest. */
+          const trailing = ghostEl.cloneNode(true);
+          trailing.setAttribute("aria-hidden", "true");
+          trailing.style.left = "0px";
+          trailing.style.top = (frame.top - slot.top + 80) + "px";
+          trailing.style.width = frame.width + "px";
+          trailing.style.height = frame.height + "px";
+          trailing.style.setProperty("--sc-enter-distance", distance + "px");
+
+          clip.appendChild(trailing);
           clip.appendChild(incoming);
           boxEl.appendChild(clip);
         }
@@ -3940,7 +3988,6 @@
         const age = pendingEl.querySelector(".sc-block-age");
         const terms = pendingEl.querySelectorAll("dt");
         const values = pendingEl.querySelectorAll("dd");
-        const rows = pendingEl.querySelectorAll(".sc-block-meta > div");
         const timestamp = Number.isFinite(Number(newest.timestamp)) ? Number(newest.timestamp) : Math.floor(Date.now() / 1000);
         const nextHeight = fmtInt(tipHeight);
         const nextAge = fmtBlockAge(timestamp);
@@ -3948,14 +3995,27 @@
         const nextFees = fmtBlockFees(newest.extras && newest.extras.totalFees);
         const lowest = newest.extras && Array.isArray(newest.extras.feeRange) && newest.extras.feeRange.length ? newest.extras.feeRange[0] : null;
         const nextLowest = fmtFeeRate(lowest);
+        /* Compared per element, never per row. Each meta row holds a label and
+           a value, and only one of the three rows changes its label at all --
+           "Projected" becomes "Fees", while "Transactions" and "Lowest" are the
+           same word on both sides. Crossfading whole rows therefore dragged two
+           unchanged labels through a fade for no reason, which is most of what
+           made the card look like it blinked as a whole rather than updating
+           the few figures that actually moved. The height line is usually
+           unchanged too: the pending card already displays the height this
+           block is about to take, so the comparison drops it on its own. */
         const changingLines = [];
         const changes = (line, next) => line && line.textContent.trim() !== String(next).trim();
-        if (changes(kicker, "Confirmed")) changingLines.push(kicker);
-        if (changes(height, nextHeight)) changingLines.push(height);
-        if (changes(age, nextAge)) changingLines.push(age);
-        if (rows[0] && changes(values[0], nextTransactions)) changingLines.push(rows[0]);
-        if (rows[1] && (changes(terms[1], "Fees") || changes(values[1], nextFees))) changingLines.push(rows[1]);
-        if (rows[2] && (changes(terms[2], "Lowest") || changes(values[2], nextLowest))) changingLines.push(rows[2]);
+        const fadeIfChanged = (line, next) => { if (changes(line, next)) changingLines.push(line); };
+        fadeIfChanged(kicker, "Confirmed");
+        fadeIfChanged(height, nextHeight);
+        fadeIfChanged(age, nextAge);
+        fadeIfChanged(terms[0], "Transactions");
+        fadeIfChanged(values[0], nextTransactions);
+        fadeIfChanged(terms[1], "Fees");
+        fadeIfChanged(values[1], nextFees);
+        fadeIfChanged(terms[2], "Lowest");
+        fadeIfChanged(values[2], nextLowest);
 
         const copyLine = line => {
           if (!line) return null;
