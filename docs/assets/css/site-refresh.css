@@ -4321,17 +4321,25 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* Each changed information line crossfades independently. The outgoing copies
    sit exactly on the updated originals, keeping total line opacity nearly
-   constant so the change reads as a soft text handoff, never a card-wide blink. */
+   constant so the change reads as a soft text handoff, never a card-wide blink.
+
+   The two easings are complements on purpose, and both were linear before.
+   Opacity does not add where the copies overlap -- two glyphs at 0.5 composite
+   to 0.75, not 1 -- so a pair of linear fades dips a quarter of the way to the
+   background at the midpoint, and on text that dip is exactly what reads as a
+   blink. Holding the outgoing copy high early (ease-in) while bringing the
+   incoming up fast (ease-out) puts both near 0.8 at the crossing, which
+   composites to about 0.94 and closes most of the gap. */
 .sc-block-copy-old {
   position: absolute;
   z-index: 2;
   margin: 0;
   pointer-events: none;
-  animation: sc-block-copy-out 220ms linear both;
+  animation: sc-block-copy-out 220ms ease-in both;
 }
 
 .sc-block-copy-new {
-  animation: sc-block-copy-in 220ms linear both;
+  animation: sc-block-copy-in 220ms ease-out both;
 }
 
 @keyframes sc-block-copy-out {
@@ -4800,7 +4808,11 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 }
 
 .sc-block-meta { display: flex; flex-direction: column; gap: 5px; margin: 0; }
-.sc-block-meta > div { display: flex; justify-content: space-between; gap: 10px; }
+/* position: relative so a confirmation crossfade can park an absolutely
+   positioned copy of a single dt or dd against this row. copyLine() measures
+   the clone's offset from its own parent, so without a positioned row the
+   clone would anchor to .sc-block-meta instead and land a row or two off. */
+.sc-block-meta > div { position: relative; display: flex; justify-content: space-between; gap: 10px; }
 .sc-block-meta dt { color: var(--sc-muted); font-size: 0.76rem; font-weight: 600; }
 .sc-block-meta dd {
   margin: 0;
