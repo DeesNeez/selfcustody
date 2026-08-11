@@ -3325,10 +3325,28 @@
       if (!box || !card) return;
       const boxRect = box.getBoundingClientRect();
       const cardBox = card.getBoundingClientRect();
-      // 90px of bleed so the hover glow (up to a 76px blur, lifted 10px) isn't
-      // cut off by the fade's own edge -- 8px only covered the resting shadow.
+      /* 90px of bleed so the hover glow (up to a 76px blur, lifted 10px) isn't
+         cut off by the fade's own edge -- 8px only covered the resting shadow.
+
+         Below the cards that figure has to shrink on phones. The scroller
+         reserves exactly 90px of bottom padding for that same hover glow, so
+         subtracting a 90px bleed from a 90px gap leaves an inset of zero and
+         the fade runs the full height of its container -- roughly 90px below
+         the cards, into a stretch the strip's own negative bottom margin has
+         already handed to the hero. On desktop nothing is there to catch it.
+         In the mobile layout the "Live - updated" chip is, and its right end
+         sat under the gradient.
+
+         30px is safe here because the thing the big bleed protects does not
+         exist at this width: there is no hover lift, and the one card with a
+         bright glow is the pending card, which is always leftmost and never
+         reaches the right gutter this fade covers. What does overrun there is
+         confirmed cards, whose shadows are black on a black stage -- masking
+         them changes nothing visible. Their bright content stops at the card's
+         own border box, well inside 30px. */
+      const bleedBelow = window.matchMedia("(max-width: 767px)").matches ? 30 : 90;
       box.style.setProperty("--sc-strip-fade-top", Math.max(0, cardBox.top - boxRect.top - 90) + "px");
-      box.style.setProperty("--sc-strip-fade-bottom", Math.max(0, boxRect.bottom - cardBox.bottom - 90) + "px");
+      box.style.setProperty("--sc-strip-fade-bottom", Math.max(0, boxRect.bottom - cardBox.bottom - bleedBelow) + "px");
     };
 
     /* Both projected.totalFees and block.extras.totalFees are transaction-fee
