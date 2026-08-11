@@ -3786,6 +3786,11 @@
           const renderStrip = fresh => {
             wrap.classList.remove("is-confirming");
             wrap.classList.add("is-ready");
+            /* Only the rebuild that follows a landing brings the glow up from
+               nothing -- the replacement card arrives dark, since the clipped
+               copy that flew in carries no pulse. Ordinary poll rebuilds swap a
+               lit card for a lit one and must not restage that. */
+            wrap.classList.toggle("is-fresh", !!fresh);
             /* The arriving card is parked on the container, not inside the
                strip, so replacing the strip's markup below would leave it
                behind. This is also the catch-all for a flight cut short by the
@@ -3835,78 +3840,35 @@
           state.blockTimers = [];
 
           if (isNewBlock && !reduceMotion && wrap.querySelector(".sc-block-pending")) {
-            const pendingEl = wrap.querySelector(".sc-block-pending");
-            const newest = blocks[0];
+            /* The breathing pulse (sc-pending-logo-pulse) runs on its own
+               shared, absolute clock, unrelated to when a block happens to
+               land -- so without this, the confirm flight's own glow
+               (sc-confirm-glow) could start at any point in that breath,
+               including its brightest. Both animations own box-shadow, and
+               swapping the animation-name list is a hard cut, not a
+               transition: whatever the pulse's box-shadow was on the frame
+               before cuts straight to sc-confirm-glow's 0% value with no
+               interpolation between them, since the two don't even share a
+               shadow layer structure to interpolate across (see
+               sc-confirm-glow's own comment on that constraint). Catching the
+               pulse mid-peak made that cut a visible brightness drop -- a
+               stutter right as the flight begins.
 
-            /* Bring the next pending card in from one slot off-frame, so the
-               slot the flight vacates is filled by something moving at exactly
-               the flight's own speed. Everything is measured here, before
-               is-confirming lands and while the row is still at rest, because
-               all of it changes with the breakpoint. */
-            const ghostEl = wrap.querySelector(".sc-block-ghost");
-            const boxEl = wrap.closest(".sc-blocks-container");
-            const firstConfirmed = wrap.querySelector(".sc-block-confirmed");
-            if (ghostEl && boxEl && firstConfirmed) {
-              const boxRect = boxEl.getBoundingClientRect();
-              const frame = ghostEl.getBoundingClientRect();
-              const slot = pendingEl.getBoundingClientRect();
-              /* The outgoing card lands on the first confirmed card's spot, so
-                 that gap is the flight's distance. Matching it is what makes
-                 the two travel at one speed instead of merely finishing
-                 together, and it keeps working when the breakpoint changes it. */
-              const distance = firstConfirmed.getBoundingClientRect().left - slot.left;
-              const holder = document.createElement("div");
-              holder.innerHTML = pending;
-              const incoming = holder.firstChild;
-              if (incoming && distance > 0) {
-                const clip = document.createElement("div");
-                clip.className = "sc-block-enter-clip";
-                clip.style.left = (frame.left - boxRect.left) + "px";
-                clip.style.top = (slot.top - boxRect.top - 80) + "px";
-                clip.style.width = (boxRect.right - frame.left) + "px";
-                clip.style.height = (slot.height + 160) + "px";
+               sc-confirm-glow's own 0% is close to the pulse's 0%/50%/100%
+               resting keyframe, so waiting for the pulse to next land there
+               is what makes the handover unremarkable rather than eliminating
+               the cut outright (a hard cut between two structurally different
+               shadow lists can't be interpolated away). The wait is at most
+               half the pulse's 3.617s period, and it is computed fresh here
+               rather than read from --sc-logo-phase because that variable is
+               only ever set on a full renderStrip() and can be stale by the
+               time a block actually lands. */
+            const PULSE_PERIOD = 3.617;
+            const PULSE_HALF = PULSE_PERIOD / 2;
+            const cycleElapsed = (performance.now() / 1000 + 0.5) % PULSE_PERIOD;
+            const startDelayMs = ((PULSE_HALF - (cycleElapsed % PULSE_HALF)) % PULSE_HALF) * 1000;
 
-                /* A second copy of a link the reader can already reach. */
-                incoming.setAttribute("aria-hidden", "true");
-                incoming.setAttribute("tabindex", "-1");
-                incoming.style.left = (slot.left - frame.left) + "px";
-                incoming.style.top = "80px";
-                incoming.style.width = slot.width + "px";
-                incoming.style.height = slot.height + "px";
-                incoming.style.setProperty("--sc-enter-distance", distance + "px");
-
-                clip.appendChild(incoming);
-                boxEl.appendChild(clip);
-              }
-            }
-
-            wrap.classList.remove("is-ready");
-            wrap.classList.add("is-confirming");
-
-            state.blockTimers.push(setTimeout(() => {
-              pendingEl.classList.add("is-mined");
-              pendingEl.dataset.blockTimestamp = Number.isFinite(Number(newest.timestamp)) ? Number(newest.timestamp) : Math.floor(Date.now() / 1000);
-              pendingEl.href = "https://mempool.space/block/" + newest.id;
-              pendingEl.setAttribute("aria-label", "View block " + tipHeight + " on mempool.space");
-              const kicker = pendingEl.querySelector(".sc-block-kicker");
-              const height = pendingEl.querySelector(".sc-block-height");
-              const age = pendingEl.querySelector(".sc-block-age");
-              const terms = pendingEl.querySelectorAll("dt");
-              const values = pendingEl.querySelectorAll("dd");
-              if (kicker) kicker.innerHTML = "<i class=\"bi bi-check2-circle\"></i>Confirmed";
-              if (height) height.textContent = fmtInt(tipHeight);
-              if (age) age.textContent = fmtBlockAge(pendingEl.dataset.blockTimestamp);
-              if (terms[1]) terms[1].textContent = "Fees";
-              if (terms[2]) terms[2].textContent = "Lowest";
-              if (values[0]) values[0].textContent = fmtInt(newest.tx_count);
-              if (values[1]) values[1].textContent = fmtBlockFees(newest.extras && newest.extras.totalFees);
-              if (values[2]) {
-                const lowest = newest.extras && Array.isArray(newest.extras.feeRange) && newest.extras.feeRange.length ? newest.extras.feeRange[0] : null;
-                values[2].textContent = fmtFeeRate(lowest);
-              }
-            }, 180));
-
-            state.blockTimers.push(setTimeout(() => renderStrip(true), 1400));
+            state.blockTimers.push(setTimeout(() => startConfirmFlight(wrap, blocks, tipHeight, pending, renderStrip), startDelayMs));
           } else {
             renderStrip(false);
           }
@@ -3914,6 +3876,169 @@
           if (Number.isFinite(tipHeight)) state.tipHeight = tipHeight;
         }
       } catch (err) { /* strip stays empty */ }
+    };
+
+    /* Everything that flies the pending card over to the confirmed slot once a
+       new block lands. Split out from loadChain() so the pulse-phase wait
+       above it can delay this as one unit without indenting the whole thing
+       another level. pending and renderStrip are passed explicitly rather
+       than closed over -- this runs after loadChain() has already returned,
+       and both are declared local to that call (renderStrip is defined fresh
+       inside its try block, not shared across calls the way the fmt* helpers
+       are), so nothing here could reach them any other way. */
+    const startConfirmFlight = (wrap, blocks, tipHeight, pending, renderStrip) => {
+      const pendingEl = wrap.querySelector(".sc-block-pending");
+      if (!pendingEl) return;
+      const newest = blocks[0];
+
+      /* Bring the next pending card from beyond the orange continuation sliver.
+         It travels the same measured distance, duration and easing as the
+         outgoing pending card, preserving their spacing throughout the move
+         instead of letting the incoming card crowd its leading neighbour. */
+      const ghostEl = wrap.querySelector(".sc-block-ghost");
+      const boxEl = wrap.closest(".sc-blocks-container");
+      const firstConfirmed = wrap.querySelector(".sc-block-confirmed");
+      if (ghostEl && boxEl && firstConfirmed) {
+        const boxRect = boxEl.getBoundingClientRect();
+        const frame = ghostEl.getBoundingClientRect();
+        const slot = pendingEl.getBoundingClientRect();
+        const distance = firstConfirmed.getBoundingClientRect().left - slot.left;
+        const holder = document.createElement("div");
+        holder.innerHTML = pending;
+        const incoming = holder.firstChild;
+        if (incoming && distance > 0) {
+          const clip = document.createElement("div");
+          clip.className = "sc-block-enter-clip";
+          clip.style.left = (frame.left - boxRect.left) + "px";
+          clip.style.top = (slot.top - boxRect.top - 80) + "px";
+          clip.style.width = (boxRect.right - frame.left) + "px";
+          clip.style.height = (slot.height + 160) + "px";
+
+          /* A second copy of a link the reader can already reach. */
+          incoming.setAttribute("aria-hidden", "true");
+          incoming.setAttribute("tabindex", "-1");
+          incoming.style.left = (slot.left - frame.left) + "px";
+          incoming.style.top = "80px";
+          incoming.style.width = slot.width + "px";
+          incoming.style.height = slot.height + "px";
+          incoming.style.setProperty("--sc-enter-distance", distance + "px");
+
+          clip.appendChild(incoming);
+          boxEl.appendChild(clip);
+        }
+      }
+
+      wrap.classList.remove("is-ready");
+      wrap.classList.add("is-confirming");
+
+      /* Crossfade each individual line whose content changes at confirmation.
+         Clones preserve the outgoing text while the updated originals fade in
+         underneath; unchanged lines and the card itself never blink. */
+      state.blockTimers.push(setTimeout(() => {
+        const kicker = pendingEl.querySelector(".sc-block-kicker");
+        const height = pendingEl.querySelector(".sc-block-height");
+        const age = pendingEl.querySelector(".sc-block-age");
+        const terms = pendingEl.querySelectorAll("dt");
+        const values = pendingEl.querySelectorAll("dd");
+        const rows = pendingEl.querySelectorAll(".sc-block-meta > div");
+        const timestamp = Number.isFinite(Number(newest.timestamp)) ? Number(newest.timestamp) : Math.floor(Date.now() / 1000);
+        const nextHeight = fmtInt(tipHeight);
+        const nextAge = fmtBlockAge(timestamp);
+        const nextTransactions = fmtInt(newest.tx_count);
+        const nextFees = fmtBlockFees(newest.extras && newest.extras.totalFees);
+        const lowest = newest.extras && Array.isArray(newest.extras.feeRange) && newest.extras.feeRange.length ? newest.extras.feeRange[0] : null;
+        const nextLowest = fmtFeeRate(lowest);
+        const changingLines = [];
+        const changes = (line, next) => line && line.textContent.trim() !== String(next).trim();
+        if (changes(kicker, "Confirmed")) changingLines.push(kicker);
+        if (changes(height, nextHeight)) changingLines.push(height);
+        if (changes(age, nextAge)) changingLines.push(age);
+        if (rows[0] && changes(values[0], nextTransactions)) changingLines.push(rows[0]);
+        if (rows[1] && (changes(terms[1], "Fees") || changes(values[1], nextFees))) changingLines.push(rows[1]);
+        if (rows[2] && (changes(terms[2], "Lowest") || changes(values[2], nextLowest))) changingLines.push(rows[2]);
+
+        const copyLine = line => {
+          if (!line) return null;
+          const parent = line.parentElement;
+          if (!parent) return null;
+          const parentBox = parent.getBoundingClientRect();
+          const lineBox = line.getBoundingClientRect();
+          const copy = line.cloneNode(true);
+          copy.classList.add("sc-block-copy-old");
+          copy.setAttribute("aria-hidden", "true");
+          copy.style.left = (lineBox.left - parentBox.left - parent.clientLeft) + "px";
+          copy.style.top = (lineBox.top - parentBox.top - parent.clientTop) + "px";
+          copy.style.width = lineBox.width + "px";
+          copy.style.height = lineBox.height + "px";
+          copy.style.color = getComputedStyle(line).color;
+          parent.appendChild(copy);
+          return copy;
+        };
+        const oldCopies = changingLines.map(copyLine).filter(Boolean);
+
+        pendingEl.classList.add("is-mined");
+        pendingEl.dataset.blockTimestamp = timestamp;
+        pendingEl.href = "https://mempool.space/block/" + newest.id;
+        pendingEl.setAttribute("aria-label", "View block " + tipHeight + " on mempool.space");
+        if (kicker) kicker.innerHTML = "<i class=\"bi bi-check2-circle\"></i>Confirmed";
+        if (height) height.textContent = nextHeight;
+        if (age) age.textContent = nextAge;
+        if (terms[1]) terms[1].textContent = "Fees";
+        if (terms[2]) terms[2].textContent = "Lowest";
+        if (values[0]) values[0].textContent = nextTransactions;
+        if (values[1]) values[1].textContent = nextFees;
+        if (values[2]) values[2].textContent = nextLowest;
+        changingLines.forEach(line => line.classList.add("sc-block-copy-new"));
+        state.blockTimers.push(setTimeout(() => {
+          oldCopies.forEach(copy => copy.remove());
+          changingLines.forEach(line => line.classList.remove("sc-block-copy-new"));
+        }, 240));
+      }, 180));
+
+      /* Was setTimeout(..., 1400) -- the same 1.4s the flight's CSS
+         animations declare. It fired early every time: the timer counts
+         from this synchronous script, but the animations don't actually
+         start until the browser's next paint, so their real clock began
+         a frame or so later and animationend was still ~15-20ms out
+         when the timer went off. renderStrip() tore the flight down and
+         swapped in the rebuilt, rest-position markup while the old
+         elements were still short of their final values -- a connector
+         whose position is pure layout reflow (no easing of its own to
+         hide the gap) visibly hopped the rest of the way, and the
+         linear glow lost its last slice mid-fade instead of reaching
+         zero.
+
+         animationend fires when the browser's own clock says the
+         animation is actually done, so there is no gap left to fall
+         into. Filtered to one animation because .sc-block-pending carries
+         two (the flight and its glow) and both fire animationend on the
+         same element -- without a filter this would run twice.
+
+         Matched by prefix, not by exact name: under 768px the stylesheet
+         swaps the whole name list for the -mobile variants, so the events
+         arrive as sc-confirm-glow-mobile. An exact comparison silently
+         never matched there and every phone landing fell through to the
+         1700ms safety net below -- not a visible break, since that still
+         rebuilds, but a ~280ms freeze on the finished flight before the
+         strip caught up. The prefix covers both spellings. */
+      let flightSettled = false;
+      const finishFlight = () => {
+        if (flightSettled) return;
+        flightSettled = true;
+        renderStrip(true);
+      };
+      pendingEl.addEventListener("animationend", function onFlightEnd(e) {
+        if (e.animationName.indexOf("sc-confirm-glow") !== 0) return;
+        pendingEl.removeEventListener("animationend", onFlightEnd);
+        finishFlight();
+      });
+      /* Safety net, not the primary trigger: covers a tab that throttled
+         or skipped the animationend (backgrounded, reduced-motion toggled
+         mid-flight, or any other browser quirk) so the strip can't get
+         stuck showing the flight forever. Comfortably past 1.4s -- the
+         observed slip was under 20ms -- so it never fires ahead of the
+         real thing in normal operation. */
+      state.blockTimers.push(setTimeout(finishFlight, 1700));
     };
 
     const connectMempoolSocket = () => {
