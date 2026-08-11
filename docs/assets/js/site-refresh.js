@@ -3934,6 +3934,11 @@
            connector's space appearing between them is the chain advancing, not
            a drift. */
         const distance = slot.left + slot.width - frame.right;
+        /* The sliver is the block queued behind this one and rides the same
+           measured distance (see sc-ghost-advance), so the pair keeps its
+           spacing across the flight. Set before is-confirming lands, or the
+           animation would start against the fallback. */
+        ghostEl.style.setProperty("--sc-enter-distance", distance + "px");
         const holder = document.createElement("div");
         holder.innerHTML = pending;
         const incoming = holder.firstChild;
