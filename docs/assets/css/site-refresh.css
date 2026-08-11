@@ -4052,6 +4052,23 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   animation: sc-pending-enter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* The sliver travels here rather than in the strip, so that it emerges through
+   the clip's fixed gutter fade instead of appearing in the padding beside it.
+
+   mask-image: none is required, not tidying. The clip's own 52px fade is
+   measured from the same x this sliver rests on, so at rest the two describe
+   the identical ramp -- 30px of a 52px gradient, 58% at the right edge. Leaving
+   the sliver's own mask on would apply that ramp twice, landing it near 34%,
+   and the rebuild would then swap in a strip sliver at the full 58% and jump.
+   One mask, one ramp, and the handover is invisible. */
+.sc-block-enter-clip .sc-block-ghost {
+  position: absolute;
+  margin: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+  animation: sc-ghost-advance 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* Decorative only -- the chain visibly carries on past the left gutter rather
    than starting on a hard edge. Sized by sizeBlockGhost(); no glow, and only
    the right-hand edge is drawn, the rest dissolving away to the left. */
@@ -4324,8 +4341,19 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    Nothing else about it changes. It stays unhoverable (pointer-events: none on
    the base rule) and unlit -- no pulse, no glow -- so it still reads as a block
    seen edge-on rather than a second card competing for attention. */
+/* The one in the strip stands down for the flight; the copy inside
+   .sc-block-enter-clip does the travelling. This element cannot do it itself:
+   it lives in .sc-blocks, which carries 56px of left padding so the pending
+   card's glow has somewhere to render, and overflow clips at the padding box
+   rather than at the content edge. Sliding it in from off-frame therefore made
+   it visible 56px early, out in the margin left of the gutter -- across the
+   line the price and every heading below align to, which is exactly the edge
+   the chain is supposed to emerge from rather than overrun.
+
+   The clip is already pinned to that gutter with the matching fade, so the copy
+   emerges through the line instead of in front of it. */
 .sc-blocks.is-confirming .sc-block-ghost {
-  animation: sc-ghost-advance 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  opacity: 0;
 }
 
 /* The mined overlay is an exact copy of the resting pending interior. Its solid
@@ -4676,48 +4704,37 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   initial-value: 1;
 }
 
-/* Opening at strength 1 outright was tried and rejected: a brand new element's
-   first painted frame has nothing to transition from, so a keyframe of 1 at 0%
-   just paints the card already fully lit -- a blink, not a fade, no matter how
-   correct the final value is.
+/* Fade in, hold low, then lift. Three parts, each answering a separate
+   failure.
 
-   Opening at 0 was rejected earlier for the opposite reason: the card it is
-   replacing is mid-flight right up until the swap, still carrying its own
-   glow (sc-confirm-glow), so a dark opening created a real dip nothing in the
-   outgoing card ever had.
+   It does not touch box-shadow, so it never fights the pulse for it. The pulse
+   runs from the first frame on its own absolute-clock phase; this only says how
+   much of it to show. Rises to 1 and stops -- no overshoot, so the first breath
+   is the same size as every steady-state one after it.
 
-   0.45 splits the difference deliberately, not as a compromise but because it
-   answers both complaints at once: there is real, visible glow in the very
-   first frame (no dark gap to fall into), and it is far enough under the
-   resting strength of 1 that the climb from there to the 1.42 peak is an
-   actual fade a viewer can see happen, not a value that merely happens to
-   already be 1 that swaps in unchanged.
+   0% is 0, and the 12% ramp is not decoration. The copy that flies in lives in
+   .sc-block-enter-clip, whose rule replaces the whole animation list with
+   sc-pending-enter -- no pulse, so that card carries no orange glow whatsoever.
+   The rebuild then swaps in a real card that does. Opening this keyframe at
+   0.45 therefore meant going from no glow to real glow in a single frame. The
+   old shape climbed away from that instantly and hid it; the hold below parks
+   on it and exposes it as a blink. Ramping up from 0 over ~290ms removes the
+   step entirely rather than masking it again.
 
-   It does not touch box-shadow, so it does not fight the pulse for it. The
-   pulse runs from the first frame on its normal phase; this only says how much
-   of it to show.
+   The hold exists because the landed card is still lit at the rebuild:
+   sc-new-block-cool runs 2s, holding full to 22% and easing out from there, so
+   its wash is only about nine tenths gone by ~1.7s. Lifting straight away put
+   both cards changing at once and the strip carried two competing glows. 0.45
+   is not dark -- the pulse breathes underneath at that strength -- so the
+   replacement stays quietly alive while attention belongs to the block that
+   just landed.
 
-   Rises straight to 1 and stops -- no overshoot. An earlier version peaked
-   past 1 and held there, so the first breath read as bigger than every
-   steady-state one after it; the ask was to drop that and just match the
-   rest, so this now only ever asks for as much glow as any later breath
-   already shows. */
-/* Holds low, then lifts -- it does not begin lifting at the rebuild.
-
-   The landed card is still glowing at that point: sc-new-block-cool runs 2s,
-   holding full to 22% and easing out from there, so its wash is only about
-   nine tenths gone by ~1.7s. Ramping this one from the first frame put both
-   cards climbing and cooling at once, and the strip had two competing glows.
-   The hold keeps the replacement dim while attention belongs to the block that
-   just landed, then hands it over.
-
-   62% of 2.4s starts the lift at ~1.49s -- deliberately a little before the
+   62% of 2.4s starts the lift at ~1.49s, deliberately a little before the
    landed card is fully dark rather than after it, so the two overlap by a
-   couple of tenths and the strip is never left without a lit card. 0.45 is not
-   dark: the pulse is running underneath at that strength the whole time, so
-   the card is breathing quietly before it brightens. */
+   couple of tenths and the strip is never left without a lit card. */
 @keyframes sc-pending-ignite {
-  0%   { --sc-glow-strength: 0.45; }
+  0%   { --sc-glow-strength: 0; }
+  12%  { --sc-glow-strength: 0.45; }
   62%  { --sc-glow-strength: 0.45; }
   100% { --sc-glow-strength: 1; }
 }
