@@ -3934,11 +3934,6 @@
            connector's space appearing between them is the chain advancing, not
            a drift. */
         const distance = slot.left + slot.width - frame.right;
-        /* The sliver is the block queued behind this one and rides the same
-           measured distance (see sc-ghost-advance), so the pair keeps its
-           spacing across the flight. Set before is-confirming lands, or the
-           animation would start against the fallback. */
-        ghostEl.style.setProperty("--sc-enter-distance", distance + "px");
         const holder = document.createElement("div");
         holder.innerHTML = pending;
         const incoming = holder.firstChild;
@@ -3959,6 +3954,23 @@
           incoming.style.height = slot.height + "px";
           incoming.style.setProperty("--sc-enter-distance", distance + "px");
 
+          /* The block queued behind this one, riding the same measured
+             distance so the pair holds its spacing across the flight. It
+             travels in here rather than in the strip because the clip is
+             pinned to the content gutter: inside it the sliver emerges
+             through that fixed fade, where in the strip it would have come
+             up 56px early, out in the scroller's padding. The one still in
+             the strip is hidden for the duration (see the is-confirming
+             rule) and the rebuild restores it at rest. */
+          const trailing = ghostEl.cloneNode(true);
+          trailing.setAttribute("aria-hidden", "true");
+          trailing.style.left = "0px";
+          trailing.style.top = (frame.top - slot.top + 80) + "px";
+          trailing.style.width = frame.width + "px";
+          trailing.style.height = frame.height + "px";
+          trailing.style.setProperty("--sc-enter-distance", distance + "px");
+
+          clip.appendChild(trailing);
           clip.appendChild(incoming);
           boxEl.appendChild(clip);
         }
