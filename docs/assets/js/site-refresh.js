@@ -3958,7 +3958,6 @@
         const age = pendingEl.querySelector(".sc-block-age");
         const terms = pendingEl.querySelectorAll("dt");
         const values = pendingEl.querySelectorAll("dd");
-        const rows = pendingEl.querySelectorAll(".sc-block-meta > div");
         const timestamp = Number.isFinite(Number(newest.timestamp)) ? Number(newest.timestamp) : Math.floor(Date.now() / 1000);
         const nextHeight = fmtInt(tipHeight);
         const nextAge = fmtBlockAge(timestamp);
@@ -3966,14 +3965,27 @@
         const nextFees = fmtBlockFees(newest.extras && newest.extras.totalFees);
         const lowest = newest.extras && Array.isArray(newest.extras.feeRange) && newest.extras.feeRange.length ? newest.extras.feeRange[0] : null;
         const nextLowest = fmtFeeRate(lowest);
+        /* Compared per element, never per row. Each meta row holds a label and
+           a value, and only one of the three rows changes its label at all --
+           "Projected" becomes "Fees", while "Transactions" and "Lowest" are the
+           same word on both sides. Crossfading whole rows therefore dragged two
+           unchanged labels through a fade for no reason, which is most of what
+           made the card look like it blinked as a whole rather than updating
+           the few figures that actually moved. The height line is usually
+           unchanged too: the pending card already displays the height this
+           block is about to take, so the comparison drops it on its own. */
         const changingLines = [];
         const changes = (line, next) => line && line.textContent.trim() !== String(next).trim();
-        if (changes(kicker, "Confirmed")) changingLines.push(kicker);
-        if (changes(height, nextHeight)) changingLines.push(height);
-        if (changes(age, nextAge)) changingLines.push(age);
-        if (rows[0] && changes(values[0], nextTransactions)) changingLines.push(rows[0]);
-        if (rows[1] && (changes(terms[1], "Fees") || changes(values[1], nextFees))) changingLines.push(rows[1]);
-        if (rows[2] && (changes(terms[2], "Lowest") || changes(values[2], nextLowest))) changingLines.push(rows[2]);
+        const fadeIfChanged = (line, next) => { if (changes(line, next)) changingLines.push(line); };
+        fadeIfChanged(kicker, "Confirmed");
+        fadeIfChanged(height, nextHeight);
+        fadeIfChanged(age, nextAge);
+        fadeIfChanged(terms[0], "Transactions");
+        fadeIfChanged(values[0], nextTransactions);
+        fadeIfChanged(terms[1], "Fees");
+        fadeIfChanged(values[1], nextFees);
+        fadeIfChanged(terms[2], "Lowest");
+        fadeIfChanged(values[2], nextLowest);
 
         const copyLine = line => {
           if (!line) return null;
