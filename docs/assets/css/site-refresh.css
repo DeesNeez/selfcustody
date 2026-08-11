@@ -5027,8 +5027,19 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 /* Same resize-don't-scale trade as the desktop keyframe above; the phone step is
    122 to 116, and 10px to 7px of padding holds the content box at 100px the
    whole way across. The 6px it gives up is added back in the two -mobile shift
-   keyframes below, 139 to 145, for the reason spelled out on
-   sc-block-shift-right. */
+   keyframes below, 127 to 133, for the reason spelled out on
+   sc-block-shift-right.
+
+   160px is this row's own geometry: the pending card (122) plus a gap (11),
+   the connector (16) and another gap (11) -- the distance from this card's
+   left edge to the first confirmed card's, which is the slot it has to land
+   on. It was 178, a figure that matched nothing here, so the flight overshot
+   by 18px while the replacement card entering behind it travelled the real
+   160 measured by loadChain(). Same duration and easing, different distances,
+   means different speeds: the gap between the two opened from 38px to 56px
+   across the flight and then snapped shut at the rebuild. Desktop never showed
+   it because its 224 does derive from its own row. Keep all three -mobile
+   distances in step with the widths above if they ever change. */
 @keyframes sc-block-confirm-mobile {
   0% {
     transform: translateX(0);
@@ -5041,7 +5052,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     border-color: rgba(255, 187, 92, 0.98);
   }
   100% {
-    transform: translateX(178px);
+    transform: translateX(160px);
     flex-basis: 116px;
     width: 116px;
     padding-inline: 7px;
@@ -5099,14 +5110,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   }
 }
 
+/* 133px: one confirmed slot at this breakpoint (116 + 11 gap = 127) plus the
+   6px the flying card ahead of these shrinks by, exactly as the desktop
+   keyframe adds 6 to its own 176. Was 145, which did not derive from this
+   row's geometry at any step. */
 @keyframes sc-block-shift-right-mobile {
   from { transform: translateX(0); }
-  to { transform: translateX(145px); }
+  to { transform: translateX(133px); }
 }
 
 @keyframes sc-block-exit-right-mobile {
   from { opacity: 1; transform: translateX(0); }
-  to { opacity: 0; transform: translateX(145px); }
+  to { opacity: 0; transform: translateX(133px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
