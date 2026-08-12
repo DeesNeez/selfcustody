@@ -2971,7 +2971,9 @@
       if (!el || !stampedAt) return;
       const time = stampedAt.toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" });
       const compactTime = time.replace(/[.\s]/g, "").toLowerCase();
-      el.textContent = stampQuery.matches ? "Live " + compactTime : "Live · updated " + time;
+      /* Just the time after the label. "updated" said nothing the timestamp
+         beside a live indicator did not already imply. */
+      el.textContent = stampQuery.matches ? "Live " + compactTime : "Live · " + time;
     };
 
     const stamp = () => {
@@ -3105,6 +3107,32 @@
        must scroll and then NOT open a block when the button comes up, while a
        press that stays put must still follow the link. A few pixels of slop
        separates the two. */
+    /* Five taps on the strip's backdrop opens the block simulator -- the same
+       strip, plus a button that confirms a block on demand and a monitor
+       narrating what the page does about it. The write-up of how the blank-card
+       bug was found is one link away from there, rather than in the way.
+
+       Deliberately unlinked from anywhere else on the site. Taps that land on a
+       card are ignored, because those are links to mempool.space and stealing
+       them would break the strip's actual job. The window resets after a
+       second, so ordinary poking at the page never accumulates five. */
+    const bindLabEasterEgg = stage => {
+      if (!stage) return;
+      let taps = 0;
+      let reset = null;
+      stage.addEventListener("click", e => {
+        if (e.target.closest(".sc-block")) return;
+        taps += 1;
+        clearTimeout(reset);
+        if (taps >= 5) {
+          taps = 0;
+          window.location.href = "lab-demo.html";
+          return;
+        }
+        reset = setTimeout(() => { taps = 0; }, 1000);
+      });
+    };
+
     const bindBlocksDrag = wrap => {
       const DRAG_SLOP = 5;
       /* Glide tuning. Speeds are pointer pixels per millisecond; the cap keeps
@@ -3288,6 +3316,7 @@
            replaces the cards inside, never this element -- so this survives
            every rebuild without rebinding. */
         bindBlocksDrag(wrap);
+        bindLabEasterEgg(stage);
       }
     };
 
@@ -3341,8 +3370,8 @@
          the fade runs the full height of its container -- roughly 90px below
          the cards, into a stretch the strip's own negative bottom margin has
          already handed to the hero. On desktop nothing is there to catch it.
-         In the mobile layout the "Live - updated" chip is, and its right end
-         sat under the gradient.
+         In the mobile layout the "Live" chip is, and its right end sat under
+         the gradient.
 
          30px is safe here because the thing the big bleed protects does not
          exist at this width: there is no hover lift, and the one card with a
@@ -3740,6 +3769,10 @@
       } catch (err) { /* tile keeps its last good value */ }
     };
 
+    const PENDING_PULSE_SECONDS = 3.617;
+    const pendingPulsePhase = () =>
+      -(((performance.now() + 500) / 1000) % PENDING_PULSE_SECONDS).toFixed(3) + "s";
+
     const loadChain = async () => {
       try {
         const h = await fetchText("https://mempool.space/api/blocks/tip/height");
@@ -3767,7 +3800,7 @@
           // The logo's animated SVG begins its own clock during asset paint.
           // Advance the CSS pulse by half a second so its visible peak meets
           // the orange-circle peak instead of trailing it.
-          const logoPhase = -(((performance.now() + 500) / 1000) % 3.617).toFixed(3) + "s";
+          const logoPhase = pendingPulsePhase();
           const blocksStage = wrap.closest(".sc-blocks-top");
           if (blocksStage) blocksStage.style.setProperty("--sc-logo-phase", logoPhase);
           /* The height this block will take once it is mined -- one past the
@@ -3811,11 +3844,6 @@
           const renderStrip = fresh => {
             wrap.classList.remove("is-confirming");
             wrap.classList.add("is-ready");
-            /* Only the rebuild that follows a landing brings the glow up from
-               nothing -- the replacement card arrives dark, since the clipped
-               copy that flew in carries no pulse. Ordinary poll rebuilds swap a
-               lit card for a lit one and must not restage that. */
-            wrap.classList.toggle("is-fresh", !!fresh);
             /* The arriving card is parked on the container, not inside the
                strip, so replacing the strip's markup below would leave it
                behind. This is also the catch-all for a flight cut short by the
@@ -3826,6 +3854,12 @@
             wrap.innerHTML =
               "<span class=\"sc-block-ghost\" aria-hidden=\"true\"></span>" +
               pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
+            /* This is a new node, so its CSS animation gets a new start time.
+               Recalculate the negative delay at insertion instead of reusing
+               the value captured when the request began; that keeps its breath
+               on the same absolute clock as the travelling copy and stage aura. */
+            const rebuiltPending = wrap.querySelector(".sc-block-pending");
+            if (rebuiltPending) rebuiltPending.style.setProperty("--sc-logo-phase", pendingPulsePhase());
             sizeBlockGhost();
             /* Safe to measure on this frame: nothing in a rebuilt strip carries
                an entrance transform. The landed card's own animation touches
@@ -3888,9 +3922,8 @@
                rather than read from --sc-logo-phase because that variable is
                only ever set on a full renderStrip() and can be stale by the
                time a block actually lands. */
-            const PULSE_PERIOD = 3.617;
-            const PULSE_HALF = PULSE_PERIOD / 2;
-            const cycleElapsed = (performance.now() / 1000 + 0.5) % PULSE_PERIOD;
+            const PULSE_HALF = PENDING_PULSE_SECONDS / 2;
+            const cycleElapsed = (performance.now() / 1000 + 0.5) % PENDING_PULSE_SECONDS;
             const startDelayMs = ((PULSE_HALF - (cycleElapsed % PULSE_HALF)) % PULSE_HALF) * 1000;
 
             state.blockTimers.push(setTimeout(() => startConfirmFlight(wrap, blocks, tipHeight, pending, renderStrip), startDelayMs));
@@ -4007,6 +4040,10 @@
         holder.innerHTML = pending;
         const incoming = holder.firstChild;
         if (incoming && distance > 0) {
+          /* The markup was built before the pulse-alignment wait. Refresh the
+             delay now so the arriving card joins the breath at its current
+             phase rather than replaying an earlier one. */
+          incoming.style.setProperty("--sc-logo-phase", pendingPulsePhase());
           const clip = document.createElement("div");
           clip.className = "sc-block-enter-clip";
           clip.style.left = (frame.left - boxRect.left) + "px";

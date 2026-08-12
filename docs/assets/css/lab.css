@@ -1,0 +1,429 @@
+/* Styling for the lab pages -- the write-up, the exhibits, and the panel on
+   lab-demo.html. Loaded only by those pages; the site proper never sees it. */
+
+.lab-panel {
+  position: relative;
+  width: 100%;
+  margin: -28px 0 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: var(--sc-dash-black);
+  box-shadow: none;
+}
+
+.lab-tape {
+  width: min(calc(100% - 24px), 1320px);
+  height: 22px;
+  margin: 0 auto;
+  border-bottom: 1px solid #000;
+  background: repeating-linear-gradient(135deg, #f6c514 0 20px, #111 20px 40px);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 42px, #000 calc(100% - 42px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 42px, #000 calc(100% - 42px), transparent 100%);
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.55);
+}
+
+.lab-tape-bottom {
+  border-top: 1px solid #000;
+  border-bottom: 0;
+  box-shadow: 0 -3px 9px rgba(0, 0, 0, 0.5);
+}
+
+.lab-rig {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.75fr) minmax(340px, 1.25fr);
+  align-items: stretch;
+  width: min(100%, 1116px);
+  margin: 0 auto;
+  box-sizing: border-box;
+  gap: 28px;
+  padding: 26px 30px 28px;
+  background: var(--sc-dash-black);
+}
+
+/* The simulator sits between the strip and the normal hero. Recreate the
+   hero's dashboard spacing here so its glow stays with the price rather than
+   being pulled up behind the simulator. */
+.lab-panel + .sc-dash-hero {
+  padding-top: 68px;
+  padding-bottom: 36px;
+  background: var(--sc-dash-black);
+}
+
+@media (min-width: 768px) {
+  .lab-panel + .sc-dash-hero {
+    z-index: 2;
+    background: var(--sc-dash-black);
+  }
+}
+
+.lab-console,
+.lab-computer { min-width: 0; }
+
+.lab-console {
+  padding: 4px 2px 0;
+}
+
+.lab-console h2 {
+  margin: 0;
+  color: #f4f1e9;
+  font-family: "Jost", sans-serif;
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+}
+
+.lab-note {
+  max-width: 35rem;
+  margin: 8px 0 0;
+  color: #9ba0a7;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+.lab-note b { color: #f6c514; }
+
+.lab-offset {
+  min-height: 1.35em;
+  margin: 7px 0 0;
+  color: #f6c514;
+  font-size: 0.66rem;
+  line-height: 1.4;
+}
+
+.lab-button-bay {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 230px);
+  min-height: 150px;
+  margin: 16px auto 0;
+  padding: 18px;
+  overflow: hidden;
+  border-radius: 12px;
+  /* Cut from the monitor's bezel (#25282c), and carrying the same drop shadow,
+     so the button housing and the screen housing read as one machine rather
+     than as two unrelated boxes. The old gradient closed on #0b0c0e against a
+     #0b0a09 panel -- the same colour to the eye, so it had no edge at all. */
+  background:
+    radial-gradient(circle at 50% 50%, rgba(198, 17, 23, 0.1), transparent 60%),
+    linear-gradient(145deg, #2b2e33, #1e2125);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 14px 26px rgba(0, 0, 0, 0.28),
+    0 13px 30px rgba(0, 0, 0, 0.5);
+}
+
+.lab-fire {
+  position: relative;
+  z-index: 2;
+  width: 102px;
+  height: 102px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #30343a 0 65%, #1b1e22 66% 100%);
+  cursor: pointer;
+  box-shadow:
+    0 0 0 2px #070809,
+    0 0 26px rgba(224, 26, 30, 0.48),
+    0 0 52px rgba(192, 12, 18, 0.22),
+    0 12px 20px rgba(0, 0, 0, 0.55),
+    inset 0 2px 3px rgba(255, 255, 255, 0.08),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.5);
+  animation: lab-button-glow 2.4s ease-in-out infinite;
+}
+
+.lab-fire::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 4px solid #62080a;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 27%, #ff7770 0 7%, transparent 8%),
+    radial-gradient(circle at 50% 42%, #e73535, #b80e13 62%, #75070a 100%);
+  box-shadow:
+    0 7px 11px rgba(0, 0, 0, 0.5),
+    inset 0 3px 4px rgba(255, 255, 255, 0.25),
+    inset 0 -8px 12px rgba(54, 0, 2, 0.36);
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+  pointer-events: none;
+}
+
+.lab-fire:hover::before { filter: brightness(1.11); }
+.lab-fire:focus-visible { outline: 3px solid #f6c514; outline-offset: 7px; }
+.lab-fire:active::before {
+  transform: scale(0.92);
+  filter: brightness(0.82);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.28),
+    inset 0 7px 14px rgba(52, 0, 2, 0.62),
+    inset 0 0 10px rgba(20, 0, 1, 0.36);
+}
+
+@keyframes lab-button-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px #070809,
+      0 0 22px rgba(224, 26, 30, 0.38),
+      0 0 42px rgba(192, 12, 18, 0.16),
+      0 12px 20px rgba(0, 0, 0, 0.55),
+      inset 0 2px 3px rgba(255, 255, 255, 0.08),
+      inset 0 -5px 8px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px #070809,
+      0 0 32px rgba(255, 49, 52, 0.64),
+      0 0 64px rgba(208, 16, 22, 0.3),
+      0 12px 20px rgba(0, 0, 0, 0.55),
+      inset 0 2px 3px rgba(255, 255, 255, 0.1),
+      inset 0 -5px 8px rgba(0, 0, 0, 0.46);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-fire { animation: none; }
+}
+
+.lab-computer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.lab-monitor {
+  position: relative;
+  min-height: 238px;
+  padding: 12px;
+  border: 8px solid #25282c;
+  border-bottom-width: 12px;
+  border-radius: 12px;
+  background: #050807;
+  box-shadow:
+    0 13px 30px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 0 22px rgba(89, 255, 150, 0.04);
+}
+
+.lab-monitor::after {
+  content: "";
+  position: absolute;
+  inset: 43px 12px 12px;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(139, 255, 173, 0.018) 3px 4px);
+}
+
+.lab-monitor-bar {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  padding: 0 7px;
+  border: 1px solid #173624;
+  border-bottom: 0;
+  background: #08110c;
+  color: #70df96;
+  font: 700 0.55rem/1 ui-monospace, Menlo, monospace;
+  letter-spacing: 0.08em;
+}
+.lab-monitor-bar span { width: 7px; height: 7px; border-radius: 50%; background: #48ef82; box-shadow: 0 0 8px #48ef82; }
+.lab-monitor-bar b { font: inherit; }
+.lab-monitor-bar em { color: #f6c514; font-style: normal; }
+
+.lab-panel textarea {
+  display: block;
+  width: 100%;
+  height: 194px;
+  box-sizing: border-box;
+  padding: 9px;
+  border: 1px solid #173624;
+  border-radius: 0 0 3px 3px;
+  outline: 0;
+  background: #030705;
+  color: #70df96;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 9px;
+  line-height: 1.4;
+  resize: none;
+  text-shadow: 0 0 6px rgba(77, 243, 131, 0.18);
+}
+
+.lab-monitor-stand {
+  width: 74px;
+  height: 13px;
+  margin: 0 auto;
+  border-radius: 0 0 5px 5px;
+  background: linear-gradient(90deg, #17191c, #34373b, #17191c);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.35);
+}
+.lab-monitor-stand::after {
+  content: "";
+  display: block;
+  width: 126px;
+  height: 6px;
+  margin: 10px 0 0 -26px;
+  border-radius: 50%;
+  background: #1d2023;
+}
+
+/* space-between rather than one flush-right cluster, so "leave the page"
+   (close) reads as a separate action from "reset what's on screen" (clear) --
+   they do different things and were starting to look like one group of three
+   equally-weighted buttons. */
+.lab-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.lab-actions > div { display: flex; gap: 8px; }
+
+/* .lab-back.lab-back, not .lab-back: .site-refresh a (site-refresh.css) sets
+   link colour at class+element specificity, which a single-class selector on
+   an <a> cannot outrank regardless of stylesheet order. Repeating the class
+   is what wins -- .lab-clear is a <button>, so it was never affected and does
+   not need it. Discovered because .lab-close needed the same fix and turned
+   out to already be silently orange here too. */
+.lab-clear,
+.lab-back.lab-back,
+.lab-close {
+  padding: 8px 11px;
+  border: 1px solid #30343a;
+  border-radius: 6px;
+  background: #111316;
+  color: #cfd3d7;
+  font: 600 0.68rem/1.2 "Open Sans", sans-serif;
+  text-decoration: none;
+}
+.lab-clear { cursor: pointer; }
+.lab-clear:hover,
+.lab-close:hover { border-color: #585e66; color: #fff; }
+
+/* The site's own link colour, on purpose this time -- it read this way by
+   accident before the specificity fix above, and turned out to be the right
+   call: it marks "Lab notes" as the one link here that leaves the simulator
+   for an ordinary page, distinct from Clear (a neutral in-place action) and
+   Close (a red exit that also discards the simulated block). */
+.lab-back.lab-back { border-color: rgba(255, 154, 31, 0.35); color: var(--sc-link); }
+.lab-back.lab-back:hover { border-color: rgba(255, 154, 31, 0.6); color: var(--sc-link-hover); }
+
+/* The one exit that discards the simulated block and returns to the real
+   dashboard, so it gets the accent colour the button bay's glow already uses
+   rather than blending into the neutral housekeeping buttons beside it.
+
+   .site-refresh a (site-refresh.css) sets link colour at class+element
+   specificity, which outranks a bare .lab-close -- body carries site-refresh,
+   so without the repeated class here the orange link colour would win over
+   this regardless of which stylesheet loads last. */
+.lab-close.lab-close {
+  border-color: rgba(224, 26, 30, 0.4);
+  color: #ff8a8d;
+}
+.lab-close.lab-close:hover {
+  border-color: rgba(224, 26, 30, 0.7);
+  color: #ffb3b5;
+}
+
+@media (max-width: 767px) {
+  .lab-panel { width: 100%; margin: -112px 0 -14px; border-radius: 0; }
+  .lab-panel + .sc-dash-hero { padding-top: 0; }
+  .lab-tape {
+    width: calc(100% - 10px);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22px, #000 calc(100% - 22px), transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 22px, #000 calc(100% - 22px), transparent 100%);
+  }
+  .lab-rig { grid-template-columns: 1fr; gap: 12px; padding: 8px 14px; }
+  .lab-console { display: grid; grid-template-columns: minmax(0, 1fr) 142px; column-gap: 14px; }
+  .lab-console h2, .lab-note, .lab-offset { grid-column: 1; }
+  .lab-button-bay { grid-column: 2; grid-row: 1 / span 3; width: 142px; min-height: 152px; margin: 0; padding: 14px; }
+  .lab-fire { width: 86px; height: 86px; }
+  .lab-note { font-size: 0.68rem; }
+  .lab-computer { padding-top: 0; }
+  .lab-monitor { min-height: 218px; padding: 8px; border-width: 6px; border-bottom-width: 10px; }
+  .lab-monitor::after { inset: 39px 8px 8px; }
+  .lab-panel textarea { height: 180px; font-size: 8px; }
+  .lab-actions { margin-top: 6px; }
+}
+
+@media (max-width: 420px) {
+  .lab-console { grid-template-columns: minmax(0, 1fr) 124px; column-gap: 9px; }
+  .lab-button-bay { width: 124px; }
+  .lab-console h2 { font-size: 1.05rem; }
+  .lab-note { font-size: 0.64rem; line-height: 1.42; }
+  .lab-fire { width: 78px; height: 78px; }
+  .lab-actions { justify-content: center; }
+}
+
+/* ---- the write-up ------------------------------------------------------- */
+.lab-page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 40px 18px 80px;
+  color: #e6e8ea;
+  font-family: "Open Sans", -apple-system, system-ui, sans-serif;
+  line-height: 1.6;
+}
+.lab-page h1 { font-family: "Jost", sans-serif; font-size: 1.7rem; margin: 0 0 6px; }
+.lab-page h2 {
+  font-family: "Jost", sans-serif;
+  font-size: 1.1rem;
+  margin: 34px 0 10px;
+  color: #ffbd4d;
+}
+.lab-page p { margin: 0 0 14px; font-size: 0.92rem; }
+.lab-page .lab-lede { color: #9aa0a6; font-size: 0.95rem; }
+.lab-page code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #16181c;
+  color: #ffbd4d;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.82em;
+}
+.lab-page pre {
+  overflow-x: auto;
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid #2a2d31;
+  border-radius: 8px;
+  background: #0e1013;
+  color: #cfd3d7;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+.lab-page a { color: #ff9900; }
+
+.lab-cards { display: grid; gap: 12px; margin: 0 0 16px; }
+.lab-card {
+  display: block;
+  padding: 16px;
+  border: 1px solid #2a2d31;
+  border-radius: 10px;
+  background: #16181c;
+  color: #fff;
+  text-decoration: none;
+}
+.lab-card b { display: block; color: #ff9900; font-size: 0.98rem; }
+.lab-card span { display: block; margin-top: 4px; color: #9aa0a6; font-size: 0.78rem; }
+
+.lab-verdict {
+  margin: 0 0 16px;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.82rem;
+}
+.lab-verdict th,
+.lab-verdict td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #2a2d31;
+  text-align: left;
+  vertical-align: top;
+}
+.lab-verdict th { color: #9aa0a6; font-weight: 600; }
+.lab-pass { color: #4ade80; font-weight: 700; }
+.lab-fail { color: #f87171; font-weight: 700; }
