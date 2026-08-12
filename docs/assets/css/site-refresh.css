@@ -4064,7 +4064,12 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-block-enter-clip .sc-block-pending {
   position: absolute;
   margin: 0;
-  animation: sc-pending-enter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* Keep the replacement block on the same absolute-clock breathing phase
+     while it travels in. The movement owns transform and the pulse owns
+     box-shadow, so the two animations can run together without competing. */
+  animation:
+    sc-pending-enter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both,
+    sc-pending-logo-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite;
 }
 
 /* The sliver travels here rather than in the strip, so that it emerges through
@@ -4268,41 +4273,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    moved. Keep the pulse, drop the entrance. */
 .sc-blocks.is-ready .sc-block-pending {
   animation: sc-pending-logo-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite;
-}
-
-/* is-fresh marks the one rebuild that follows a landing, so only that card
-   lights up; the rebuild on every ordinary poll keeps the plain rule above and
-   stays lit throughout. Two animations, two properties, no overlap -- the pulse
-   keeps box-shadow and its phase, the ignite raises the strength it is scaled
-   by.
-
-   Fast-start curve, the same one the flight's own arrival uses (see
-   sc-block-confirm), not the slow-both-ends ease this started on. That old
-   curve spent its first tenth or so essentially flat -- fine on its own, but
-   this fires the instant the just-landed card's own glow (sc-confirm-glow)
-   finishes decaying to zero, so a slow start here stacked directly onto that
-   decay's own tail: neither card had any glow for a stretch of several
-   hundred ms around the handoff, read as a stall rather than one card handing
-   off to the next. A fast-start curve puts real brightness back within the
-   first 100-150ms instead -- it still opens at strength 0 and rises, just
-   quickly enough that there's no gap left for both cards to be dark in at
-   once.
-
-   1.3s, not 0.9: sc-pending-ignite now overshoots and holds before settling
-   (a bigger, slightly longer first breath), and that hold needs the extra
-   room or it gets compressed into something closer to a flicker than a
-   breath. The fast start is what keeps this safe to lengthen -- the onset
-   still lands in the same first 100-150ms either way, so the extra time
-   goes entirely into the peak and settle, not into reopening the gap. */
-/* 2.4s and ease-in-out, not the 1.3s spring the movement uses. The lift is the
-   back half of a hold-then-rise (see sc-pending-ignite), and a front-loaded
-   curve spends almost all of its travel in the first moments after the hold
-   releases -- which reads as the glow snapping on rather than coming up. An
-   even curve leaves the hold gently. */
-.sc-blocks.is-ready.is-fresh .sc-block-pending {
-  animation:
-    sc-pending-logo-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite,
-    sc-pending-ignite 2.4s ease-in-out both;
 }
 
 .sc-blocks.is-confirming .sc-block-pending {
@@ -4736,83 +4706,38 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   to   { transform: translateX(6px); }
 }
 
-/* Every alpha is scaled by --sc-glow-strength, which rests at 1 and changes
-   nothing. It exists so the glow can be brought up from nothing without the
-   pulse having to stop, pause or restart -- see sc-pending-ignite. Multiplying
-   inside the keyframes is what keeps the two independent: the pulse still owns
-   box-shadow outright and still runs on its own absolute-clock phase, and the
-   fade-in is a separate animation touching a separate property. */
+/* The breathing glow on the pending card. Every alpha used to be multiplied by
+   a --sc-glow-strength custom property, which existed so sc-pending-ignite
+   could bring the glow up from nothing without the pulse having to stop or
+   restart. That ramp is gone -- the card that flies in now carries this pulse
+   itself, so there is no dark-to-lit step left to hide -- and with nothing
+   driving the multiplier it stayed pinned at 1. Alphas are written directly. */
 @keyframes sc-pending-logo-pulse {
   0%, 50%, 100% {
     box-shadow:
-      0 0 0 1px rgba(255, 153, 0, calc(0.24 * var(--sc-glow-strength, 1))),
-      0 0 36px rgba(255, 153, 0, calc(0.28 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 153, 0, 0.24),
+      0 0 36px rgba(255, 153, 0, 0.28);
   }
   7.5%, 22.5%, 57.5%, 72.5% {
     box-shadow:
-      0 0 0 1px rgba(255, 174, 54, calc(0.34 * var(--sc-glow-strength, 1))),
-      0 0 43px rgba(255, 153, 0, calc(0.39 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 174, 54, 0.34),
+      0 0 43px rgba(255, 153, 0, 0.39);
   }
   15%, 65% {
     box-shadow:
-      0 0 0 1px rgba(255, 189, 77, calc(0.5 * var(--sc-glow-strength, 1))),
-      0 0 52px rgba(255, 153, 0, calc(0.52 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 189, 77, 0.5),
+      0 0 52px rgba(255, 153, 0, 0.52);
   }
   32.5%, 47.5%, 82.5%, 97.5% {
     box-shadow:
-      0 0 0 1px rgba(255, 153, 0, calc(0.2 * var(--sc-glow-strength, 1))),
-      0 0 31px rgba(255, 153, 0, calc(0.23 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 153, 0, 0.2),
+      0 0 31px rgba(255, 153, 0, 0.23);
   }
   40%, 90% {
     box-shadow:
-      0 0 0 1px rgba(255, 153, 0, calc(0.15 * var(--sc-glow-strength, 1))),
-      0 0 25px rgba(255, 153, 0, calc(0.17 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 153, 0, 0.15),
+      0 0 25px rgba(255, 153, 0, 0.17);
   }
-}
-
-/* Registered so it can be animated at all. An unregistered custom property has
-   no type, so the browser cannot interpolate it -- it would flip from 0 to 1 at
-   the halfway mark and reinstate exactly the blink this removes. Browsers
-   without @property degrade to that single step; everything current has it. */
-@property --sc-glow-strength {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 1;
-}
-
-/* Fade in, hold low, then lift. Three parts, each answering a separate
-   failure.
-
-   It does not touch box-shadow, so it never fights the pulse for it. The pulse
-   runs from the first frame on its own absolute-clock phase; this only says how
-   much of it to show. Rises to 1 and stops -- no overshoot, so the first breath
-   is the same size as every steady-state one after it.
-
-   0% is 0, and the 12% ramp is not decoration. The copy that flies in lives in
-   .sc-block-enter-clip, whose rule replaces the whole animation list with
-   sc-pending-enter -- no pulse, so that card carries no orange glow whatsoever.
-   The rebuild then swaps in a real card that does. Opening this keyframe at
-   0.45 therefore meant going from no glow to real glow in a single frame. The
-   old shape climbed away from that instantly and hid it; the hold below parks
-   on it and exposes it as a blink. Ramping up from 0 over ~290ms removes the
-   step entirely rather than masking it again.
-
-   The hold exists because the landed card is still lit at the rebuild:
-   sc-new-block-cool runs 2s, holding full to 22% and easing out from there, so
-   its wash is only about nine tenths gone by ~1.7s. Lifting straight away put
-   both cards changing at once and the strip carried two competing glows. 0.45
-   is not dark -- the pulse breathes underneath at that strength -- so the
-   replacement stays quietly alive while attention belongs to the block that
-   just landed.
-
-   62% of 2.4s starts the lift at ~1.49s, deliberately a little before the
-   landed card is fully dark rather than after it, so the two overlap by a
-   couple of tenths and the strip is never left without a lit card. */
-@keyframes sc-pending-ignite {
-  0%   { --sc-glow-strength: 0; }
-  12%  { --sc-glow-strength: 0.45; }
-  62%  { --sc-glow-strength: 0.45; }
-  100% { --sc-glow-strength: 1; }
 }
 
 /* Wide enough that the two end caps clear each other. At the old 8px the
@@ -4954,32 +4879,33 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   40%, 90% { opacity: 0.4; transform: scale(0.94); }
 }
 
-/* Scaled by --sc-glow-strength for the same reason as the desktop pulse. */
+/* The phone's shorter-blur twin of sc-pending-logo-pulse, sharing its keyframe
+   stops and its phase so the two are interchangeable across the breakpoint. */
 @keyframes sc-pending-mobile-card-pulse {
   0%, 50%, 100% {
     box-shadow:
-      0 0 0 1px rgba(255, 153, 0, calc(0.24 * var(--sc-glow-strength, 1))),
-      0 0 12px rgba(255, 153, 0, calc(0.2 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 153, 0, 0.24),
+      0 0 12px rgba(255, 153, 0, 0.2);
   }
   7.5%, 22.5%, 57.5%, 72.5% {
     box-shadow:
-      0 0 0 1px rgba(255, 174, 54, calc(0.34 * var(--sc-glow-strength, 1))),
-      0 0 16px rgba(255, 153, 0, calc(0.27 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 174, 54, 0.34),
+      0 0 16px rgba(255, 153, 0, 0.27);
   }
   15%, 65% {
     box-shadow:
-      0 0 0 1px rgba(255, 189, 77, calc(0.5 * var(--sc-glow-strength, 1))),
-      0 0 20px rgba(255, 153, 0, calc(0.34 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 189, 77, 0.5),
+      0 0 20px rgba(255, 153, 0, 0.34);
   }
   32.5%, 47.5%, 82.5%, 97.5% {
     box-shadow:
-      0 0 0 1px rgba(255, 153, 0, calc(0.2 * var(--sc-glow-strength, 1))),
-      0 0 10px rgba(255, 153, 0, calc(0.17 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 153, 0, 0.2),
+      0 0 10px rgba(255, 153, 0, 0.17);
   }
   40%, 90% {
     box-shadow:
-      0 0 0 1px rgba(255, 153, 0, calc(0.15 * var(--sc-glow-strength, 1))),
-      0 0 8px rgba(255, 153, 0, calc(0.14 * var(--sc-glow-strength, 1)));
+      0 0 0 1px rgba(255, 153, 0, 0.15),
+      0 0 8px rgba(255, 153, 0, 0.14);
   }
 }
 
@@ -5089,10 +5015,10 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   .sc-blocks.is-ready .sc-block-pending {
     animation: sc-pending-mobile-card-pulse 3.617s linear var(--sc-logo-phase, 0s) infinite;
   }
-  /* Name list only; the desktop shorthand supplies both durations, both
-     easings and the infinite-then-once iteration pair. */
-  .sc-blocks.is-ready.is-fresh .sc-block-pending {
-    animation-name: sc-pending-mobile-card-pulse, sc-pending-ignite;
+  /* Preserve the travelling replacement card's pulse with the phone-sized
+     shadow keyframes. The base shorthand supplies matching timing and phase. */
+  .sc-block-enter-clip .sc-block-pending {
+    animation-name: sc-pending-enter, sc-pending-mobile-card-pulse;
   }
   /* Name lists only -- the durations, easings and fill modes come from the
      desktop shorthands, and those lists are two long now. Swap one name and

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Safari wash stacking test</title>
+<style>
+  body {
+    margin: 0;
+    padding: 16px 12px 40px;
+    background: #08090b;
+    color: #fff;
+    font-family: -apple-system, system-ui, sans-serif;
+  }
+  h1 { margin: 0 0 10px; font-size: 0.95rem; }
+  h2 { margin: 22px 0 8px; font-size: 0.8rem; color: #ffbd4d; }
+  p.lede { margin: 0 0 10px; font-size: 0.75rem; color: #9aa0a6; line-height: 1.45; }
+  #readout {
+    margin: 0;
+    padding: 10px;
+    border: 1px solid #2a2d31;
+    border-radius: 6px;
+    background: #0e1013;
+    color: #cfd3d7;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.66rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 12px; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .label { font-size: 0.7rem; font-weight: 700; color: #ffbd4d; text-align: center; }
+
+  /* Structure copied from .sc-block / .sc-block-pending in site-refresh.css */
+  .card {
+    position: relative;
+    width: 122px;
+    min-height: 140px;
+    padding: 9px 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(255, 153, 0, 0.86);
+    border-radius: 8px;
+    background: linear-gradient(0deg, rgba(11, 10, 9, 0.85), rgba(11, 10, 9, 0.85));
+  }
+  /* The rule that is supposed to hold the text above the wash. */
+  .card > * { position: relative; z-index: 1; }
+
+  .kicker { margin-bottom: 6px; font-size: 0.56rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #ffbd4d; }
+  .height { font-size: 0.98rem; font-weight: 700; }
+  .age { margin-bottom: auto; padding-bottom: 6px; font-size: 0.64rem; font-weight: 800; color: #ff9900; text-transform: uppercase; }
+  dl { display: flex; flex-direction: column; gap: 2px; margin: 0; }
+  dl > div { position: relative; display: flex; justify-content: space-between; gap: 5px; }
+  dt { font-size: 0.63rem; color: #9aa0a6; }
+  dd { margin: 0; font-size: 0.65rem; font-weight: 700; }
+
+  /* The wash. Solid magenta so there is no mistaking whether it covers the
+     text: readable text = wash is behind it, solid magenta block = wash is on
+     top. The real site uses a near-black orange gradient here, which is far too
+     close to the card's own colour to judge by eye. */
+  .wash-css::after,
+  .wash-el > .wash {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: #d81b93;
+  }
+
+  /* Row 1: wash simply sits at full opacity. No animation involved at all. */
+  .static .wash-css-target { opacity: 1; }
+  .static.wash-css::after,
+  .static .wash { opacity: 1; }
+
+  /* Row 2: wash ARRIVES at full opacity via an opacity animation, then holds.
+     Animating opacity is what promotes the layer, which is the condition I
+     think Safari mis-stacks. Final state is static, so it is easy to photograph. */
+  .animated.wash-css::after,
+  .animated .wash { animation: wash 1200ms ease-in-out both; }
+  @keyframes wash { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Variants */
+  .v-b > * { transform: translateZ(0); }   /* promote the text too */
+  .v-c { isolation: isolate; }             /* explicit stacking context */
+  .v-d > .wash { z-index: 0; }             /* real element, not ::after */
+</style>
+</head>
+<body>
+  <h1>Safari wash stacking test</h1>
+  <p class="lede">
+    Eight cards. In each, a solid magenta overlay is at full opacity. If the
+    text is readable, the overlay is correctly behind it. If you see a solid
+    magenta rectangle, the overlay is covering the text &mdash; that is the bug.
+    Nothing here moves; no waiting required.
+  </p>
+  <pre id="readout">measuring…</pre>
+
+  <h2>Row 1 &mdash; overlay never animated</h2>
+  <div class="grid" id="row-static"></div>
+
+  <h2>Row 2 &mdash; overlay faded in by an animation</h2>
+  <div class="grid" id="row-animated"></div>
+
+<script>
+(function () {
+  var VARIANTS = [
+    { key: "A", cls: "wash-css v-a", el: false, note: "current" },
+    { key: "B", cls: "wash-css v-b", el: false, note: "translateZ" },
+    { key: "C", cls: "wash-css v-c", el: false, note: "isolate" },
+    { key: "D", cls: "wash-el v-d",  el: true,  note: "real span" }
+  ];
+
+  function buildCard(variant, mode) {
+    var cell = document.createElement("div");
+    cell.className = "cell";
+    var card = document.createElement("div");
+    card.className = "card " + mode + " " + variant.cls;
+    card.id = mode + "-" + variant.key;
+    var inner = "";
+    if (variant.el) inner += '<span class="wash"></span>';
+    inner +=
+      '<span class="kicker">Pending</span>' +
+      '<span class="height">962,156</span>' +
+      '<span class="age">0.61&ndash;44 sat/vB</span>' +
+      '<dl>' +
+        '<div><dt>Transactions</dt><dd>4,804</dd></div>' +
+        '<div><dt>Projected</dt><dd>0.012</dd></div>' +
+        '<div><dt>Lowest</dt><dd>0.61</dd></div>' +
+      '</dl>';
+    card.innerHTML = inner;
+    var label = document.createElement("div");
+    label.className = "label";
+    label.textContent = mode.charAt(0).toUpperCase() + variant.key + " — " + variant.note;
+    cell.appendChild(card);
+    cell.appendChild(label);
+    return cell;
+  }
+
+  VARIANTS.forEach(function (v) {
+    document.getElementById("row-static").appendChild(buildCard(v, "static"));
+    document.getElementById("row-animated").appendChild(buildCard(v, "animated"));
+  });
+
+  /* Does a CSS animation actually advance on this device? Sampled rather than
+     assumed, because "nothing appeared to move" is exactly the report this
+     needs to distinguish from "it moved but looked the same". */
+  var probe = document.createElement("div");
+  probe.style.cssText = "position:absolute;left:-9999px;width:10px;height:10px;animation:wash 400ms linear both";
+  document.body.appendChild(probe);
+
+  function washOpacity(id) {
+    var card = document.getElementById(id);
+    if (!card) return "?";
+    var real = card.querySelector(".wash");
+    var cs = real ? getComputedStyle(real) : getComputedStyle(card, "::after");
+    return cs.opacity;
+  }
+
+  var lines = [];
+  function report() {
+    var out = lines.concat([
+      "",
+      "wash opacity (should be 1 everywhere):",
+      "  static   A=" + washOpacity("static-A") + "  B=" + washOpacity("static-B") +
+        "  C=" + washOpacity("static-C") + "  D=" + washOpacity("static-D"),
+      "  animated A=" + washOpacity("animated-A") + "  B=" + washOpacity("animated-B") +
+        "  C=" + washOpacity("animated-C") + "  D=" + washOpacity("animated-D")
+    ]);
+    document.getElementById("readout").textContent = out.join("\n");
+  }
+
+  lines.push("ua: " + navigator.userAgent);
+  lines.push("viewport: " + innerWidth + "x" + innerHeight + " dpr=" + devicePixelRatio);
+  lines.push("reduced-motion: " + matchMedia("(prefers-reduced-motion: reduce)").matches);
+  lines.push("Element.animate: " + !!Element.prototype.animate);
+  lines.push("probe opacity t0: " + getComputedStyle(probe).opacity);
+
+  setTimeout(function () {
+    lines.push("probe opacity t200: " + getComputedStyle(probe).opacity + "   (expect ~0.5; 0 = frozen)");
+    report();
+  }, 200);
+  setTimeout(function () {
+    lines.push("probe opacity t600: " + getComputedStyle(probe).opacity + "   (expect 1; 0 = frozen)");
+    report();
+  }, 600);
+  report();
+})();
+</script>
+  <p style="margin-top:28px"><a href="lab.html" style="color:#ff9900;font-size:0.85rem">&larr; Back to the lab</a></p>
+</body>
+</html>
