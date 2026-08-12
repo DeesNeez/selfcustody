@@ -2971,7 +2971,9 @@
       if (!el || !stampedAt) return;
       const time = stampedAt.toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" });
       const compactTime = time.replace(/[.\s]/g, "").toLowerCase();
-      el.textContent = stampQuery.matches ? "Live " + compactTime : "Live · updated " + time;
+      /* Just the time after the label. "updated" said nothing the timestamp
+         beside a live indicator did not already imply. */
+      el.textContent = stampQuery.matches ? "Live " + compactTime : "Live · " + time;
     };
 
     const stamp = () => {
@@ -3105,6 +3107,32 @@
        must scroll and then NOT open a block when the button comes up, while a
        press that stays put must still follow the link. A few pixels of slop
        separates the two. */
+    /* Five taps on the strip's backdrop opens the block simulator -- the same
+       strip, plus a button that confirms a block on demand and a monitor
+       narrating what the page does about it. The write-up of how the blank-card
+       bug was found is one link away from there, rather than in the way.
+
+       Deliberately unlinked from anywhere else on the site. Taps that land on a
+       card are ignored, because those are links to mempool.space and stealing
+       them would break the strip's actual job. The window resets after a
+       second, so ordinary poking at the page never accumulates five. */
+    const bindLabEasterEgg = stage => {
+      if (!stage) return;
+      let taps = 0;
+      let reset = null;
+      stage.addEventListener("click", e => {
+        if (e.target.closest(".sc-block")) return;
+        taps += 1;
+        clearTimeout(reset);
+        if (taps >= 5) {
+          taps = 0;
+          window.location.href = "lab-demo.html";
+          return;
+        }
+        reset = setTimeout(() => { taps = 0; }, 1000);
+      });
+    };
+
     const bindBlocksDrag = wrap => {
       const DRAG_SLOP = 5;
       /* Glide tuning. Speeds are pointer pixels per millisecond; the cap keeps
@@ -3288,6 +3316,7 @@
            replaces the cards inside, never this element -- so this survives
            every rebuild without rebinding. */
         bindBlocksDrag(wrap);
+        bindLabEasterEgg(stage);
       }
     };
 
@@ -3341,8 +3370,8 @@
          the fade runs the full height of its container -- roughly 90px below
          the cards, into a stretch the strip's own negative bottom margin has
          already handed to the hero. On desktop nothing is there to catch it.
-         In the mobile layout the "Live - updated" chip is, and its right end
-         sat under the gradient.
+         In the mobile layout the "Live" chip is, and its right end sat under
+         the gradient.
 
          30px is safe here because the thing the big bleed protects does not
          exist at this width: there is no hover lift, and the one card with a
@@ -3740,6 +3769,10 @@
       } catch (err) { /* tile keeps its last good value */ }
     };
 
+    const PENDING_PULSE_SECONDS = 3.617;
+    const pendingPulsePhase = () =>
+      -(((performance.now() + 500) / 1000) % PENDING_PULSE_SECONDS).toFixed(3) + "s";
+
     const loadChain = async () => {
       try {
         const h = await fetchText("https://mempool.space/api/blocks/tip/height");
@@ -3767,7 +3800,7 @@
           // The logo's animated SVG begins its own clock during asset paint.
           // Advance the CSS pulse by half a second so its visible peak meets
           // the orange-circle peak instead of trailing it.
-          const logoPhase = -(((performance.now() + 500) / 1000) % 3.617).toFixed(3) + "s";
+          const logoPhase = pendingPulsePhase();
           const blocksStage = wrap.closest(".sc-blocks-top");
           if (blocksStage) blocksStage.style.setProperty("--sc-logo-phase", logoPhase);
           /* The height this block will take once it is mined -- one past the
@@ -3811,11 +3844,6 @@
           const renderStrip = fresh => {
             wrap.classList.remove("is-confirming");
             wrap.classList.add("is-ready");
-            /* Only the rebuild that follows a landing brings the glow up from
-               nothing -- the replacement card arrives dark, since the clipped
-               copy that flew in carries no pulse. Ordinary poll rebuilds swap a
-               lit card for a lit one and must not restage that. */
-            wrap.classList.toggle("is-fresh", !!fresh);
             /* The arriving card is parked on the container, not inside the
                strip, so replacing the strip's markup below would leave it
                behind. This is also the catch-all for a flight cut short by the
@@ -3826,6 +3854,12 @@
             wrap.innerHTML =
               "<span class=\"sc-block-ghost\" aria-hidden=\"true\"></span>" +
               pending + "<div class=\"sc-block-connector\" aria-hidden=\"true\"><span></span></div>" + buildConfirmed(fresh);
+            /* This is a new node, so its CSS animation gets a new start time.
+               Recalculate the negative delay at insertion instead of reusing
+               the value captured when the request began; that keeps its breath
+               on the same absolute clock as the travelling copy and stage aura. */
+            const rebuiltPending = wrap.querySelector(".sc-block-pending");
+            if (rebuiltPending) rebuiltPending.style.setProperty("--sc-logo-phase", pendingPulsePhase());
             sizeBlockGhost();
             /* Safe to measure on this frame: nothing in a rebuilt strip carries
                an entrance transform. The landed card's own animation touches
@@ -3888,9 +3922,8 @@
                rather than read from --sc-logo-phase because that variable is
                only ever set on a full renderStrip() and can be stale by the
                time a block actually lands. */
-            const PULSE_PERIOD = 3.617;
-            const PULSE_HALF = PULSE_PERIOD / 2;
-            const cycleElapsed = (performance.now() / 1000 + 0.5) % PULSE_PERIOD;
+            const PULSE_HALF = PENDING_PULSE_SECONDS / 2;
+            const cycleElapsed = (performance.now() / 1000 + 0.5) % PENDING_PULSE_SECONDS;
             const startDelayMs = ((PULSE_HALF - (cycleElapsed % PULSE_HALF)) % PULSE_HALF) * 1000;
 
             state.blockTimers.push(setTimeout(() => startConfirmFlight(wrap, blocks, tipHeight, pending, renderStrip), startDelayMs));
@@ -3901,6 +3934,68 @@
           if (Number.isFinite(tipHeight)) state.tipHeight = tipHeight;
         }
       } catch (err) { /* strip stays empty */ }
+    };
+
+    /* Fades a set of updated lines up while the clones of their previous text
+       fade out over them. Driven from script rather than by adding a CSS class
+       whose animation carries fill-mode: both, and torn down from the
+       animations' own completion rather than from a timer.
+
+       Both of those are the fix for a card that landed with no text on it at
+       all. The class-based version parked each updated line on the 0% keyframe
+       -- opacity 0 -- and depended on a 240ms timer to take the class back off.
+       That timer was pushed onto state.blockTimers, which every loadChain()
+       clears, so a poll or a socket refresh arriving inside the crossfade
+       cancelled it outright; and 240ms over a 220ms animation is a 20ms margin,
+       thin enough for one slow frame to beat. Neither shows up in a browser
+       that runs the fade to completion, because the fill mode then holds the
+       line at opacity 1 either way -- but where the fade did not play out, the
+       line kept holding 0 and the whole card read as blank until the strip was
+       rebuilt at the end of the flight. Reported on iOS Safari.
+
+       So: no class to get stuck on, and a teardown that cannot be cancelled by
+       anything else. Only the outgoing clones need forwards fill to stay hidden
+       after their fade; the updated lines use backwards, so once the active
+       phase is over they sit on their own opacity rather than on a filled
+       keyframe. The worst case left is a crossfade that does not play, which
+       reads as a plain text swap -- never a card with its text missing. */
+    const CROSSFADE_MS = 220;
+    const crossfadeLines = (newLines, oldCopies) => {
+      const drop = () => oldCopies.forEach(copy => copy.remove());
+      if (typeof Element === "undefined" || !Element.prototype.animate) { drop(); return; }
+      /* Complementary easings, deliberately not both linear -- see the note on
+         .sc-block-copy-old in the stylesheet for why the pair has to hold high
+         through the crossing. */
+      const running = oldCopies.map(copy => copy.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: CROSSFADE_MS, easing: "ease-in", fill: "forwards" }
+      )).concat(newLines.map(line => line.animate(
+        [{ opacity: 0 }, { opacity: 1 }],
+        { duration: CROSSFADE_MS, easing: "ease-out", fill: "backwards" }
+      )));
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        drop();
+        /* Returns the updated lines to their own opacity even if their fade
+           never ran. Cancelling an animation that already finished is a no-op
+           here: with backwards fill there is nothing left holding a value. */
+        running.forEach(anim => { try { anim.cancel(); } catch (err) { /* already gone */ } });
+      };
+      Promise.all(running.map(anim => anim.finished)).then(settle, settle);
+      /* Deliberately a bare setTimeout, not one of state.blockTimers: this is
+         the guarantee that the clones come off and the lines come back, so it
+         must survive whatever else decides to clear those.
+
+         600ms against a 220ms fade. Comfortable enough that it never pre-empts
+         the animations in normal operation -- their start would have to slip
+         most of 400ms first -- and if it ever does, it only cuts the fade
+         short and leaves the text sitting at full opacity, which is the
+         direction to fail in. Kept tight for the same reason: this is the
+         ceiling on how long a card could show no text at all if the fade does
+         not run, so it should not be generous. */
+      setTimeout(settle, 600);
     };
 
     /* Everything that flies the pending card over to the confirmed slot once a
@@ -3945,6 +4040,10 @@
         holder.innerHTML = pending;
         const incoming = holder.firstChild;
         if (incoming && distance > 0) {
+          /* The markup was built before the pulse-alignment wait. Refresh the
+             delay now so the arriving card joins the breath at its current
+             phase rather than replaying an earlier one. */
+          incoming.style.setProperty("--sc-logo-phase", pendingPulsePhase());
           const clip = document.createElement("div");
           clip.className = "sc-block-enter-clip";
           clip.style.left = (frame.left - boxRect.left) + "px";
@@ -4055,11 +4154,7 @@
         if (values[0]) values[0].textContent = nextTransactions;
         if (values[1]) values[1].textContent = nextFees;
         if (values[2]) values[2].textContent = nextLowest;
-        changingLines.forEach(line => line.classList.add("sc-block-copy-new"));
-        state.blockTimers.push(setTimeout(() => {
-          oldCopies.forEach(copy => copy.remove());
-          changingLines.forEach(line => line.classList.remove("sc-block-copy-new"));
-        }, 240));
+        crossfadeLines(changingLines, oldCopies);
       }, 180));
 
       /* Was setTimeout(..., 1400) -- the same 1.4s the flight's CSS
