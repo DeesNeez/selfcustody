@@ -3903,6 +3903,68 @@
       } catch (err) { /* strip stays empty */ }
     };
 
+    /* Fades a set of updated lines up while the clones of their previous text
+       fade out over them. Driven from script rather than by adding a CSS class
+       whose animation carries fill-mode: both, and torn down from the
+       animations' own completion rather than from a timer.
+
+       Both of those are the fix for a card that landed with no text on it at
+       all. The class-based version parked each updated line on the 0% keyframe
+       -- opacity 0 -- and depended on a 240ms timer to take the class back off.
+       That timer was pushed onto state.blockTimers, which every loadChain()
+       clears, so a poll or a socket refresh arriving inside the crossfade
+       cancelled it outright; and 240ms over a 220ms animation is a 20ms margin,
+       thin enough for one slow frame to beat. Neither shows up in a browser
+       that runs the fade to completion, because the fill mode then holds the
+       line at opacity 1 either way -- but where the fade did not play out, the
+       line kept holding 0 and the whole card read as blank until the strip was
+       rebuilt at the end of the flight. Reported on iOS Safari.
+
+       So: no class to get stuck on, and a teardown that cannot be cancelled by
+       anything else. Only the outgoing clones need forwards fill to stay hidden
+       after their fade; the updated lines use backwards, so once the active
+       phase is over they sit on their own opacity rather than on a filled
+       keyframe. The worst case left is a crossfade that does not play, which
+       reads as a plain text swap -- never a card with its text missing. */
+    const CROSSFADE_MS = 220;
+    const crossfadeLines = (newLines, oldCopies) => {
+      const drop = () => oldCopies.forEach(copy => copy.remove());
+      if (typeof Element === "undefined" || !Element.prototype.animate) { drop(); return; }
+      /* Complementary easings, deliberately not both linear -- see the note on
+         .sc-block-copy-old in the stylesheet for why the pair has to hold high
+         through the crossing. */
+      const running = oldCopies.map(copy => copy.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: CROSSFADE_MS, easing: "ease-in", fill: "forwards" }
+      )).concat(newLines.map(line => line.animate(
+        [{ opacity: 0 }, { opacity: 1 }],
+        { duration: CROSSFADE_MS, easing: "ease-out", fill: "backwards" }
+      )));
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        drop();
+        /* Returns the updated lines to their own opacity even if their fade
+           never ran. Cancelling an animation that already finished is a no-op
+           here: with backwards fill there is nothing left holding a value. */
+        running.forEach(anim => { try { anim.cancel(); } catch (err) { /* already gone */ } });
+      };
+      Promise.all(running.map(anim => anim.finished)).then(settle, settle);
+      /* Deliberately a bare setTimeout, not one of state.blockTimers: this is
+         the guarantee that the clones come off and the lines come back, so it
+         must survive whatever else decides to clear those.
+
+         600ms against a 220ms fade. Comfortable enough that it never pre-empts
+         the animations in normal operation -- their start would have to slip
+         most of 400ms first -- and if it ever does, it only cuts the fade
+         short and leaves the text sitting at full opacity, which is the
+         direction to fail in. Kept tight for the same reason: this is the
+         ceiling on how long a card could show no text at all if the fade does
+         not run, so it should not be generous. */
+      setTimeout(settle, 600);
+    };
+
     /* Everything that flies the pending card over to the confirmed slot once a
        new block lands. Split out from loadChain() so the pulse-phase wait
        above it can delay this as one unit without indenting the whole thing
@@ -4055,11 +4117,7 @@
         if (values[0]) values[0].textContent = nextTransactions;
         if (values[1]) values[1].textContent = nextFees;
         if (values[2]) values[2].textContent = nextLowest;
-        changingLines.forEach(line => line.classList.add("sc-block-copy-new"));
-        state.blockTimers.push(setTimeout(() => {
-          oldCopies.forEach(copy => copy.remove());
-          changingLines.forEach(line => line.classList.remove("sc-block-copy-new"));
-        }, 240));
+        crossfadeLines(changingLines, oldCopies);
       }, 180));
 
       /* Was setTimeout(..., 1400) -- the same 1.4s the flight's CSS
