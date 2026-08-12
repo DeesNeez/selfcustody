@@ -3311,7 +3311,14 @@
       const pendingHeight = pending.getBoundingClientRect().height;
       if (pendingHeight) ghost.style.height = pendingHeight + "px";
 
-      if (window.matchMedia("(max-width: 575px)").matches) {
+      /* 767px, matching the stylesheet's own mobile breakpoint, not 575.
+         Everything that dresses this sliver -- its dissolve, its radius, the
+         card widths it is sized against -- switches at 767px, so sizing it at
+         575 left a band from 576 to 767 where a 30px sliver wore the phone's
+         much shorter dissolve. That is roughly three quarters of it at full
+         opacity behind a hard little feather, where every other width has it
+         fading out well before its own edge. */
+      if (window.matchMedia("(max-width: 767px)").matches) {
         ghost.style.width = "10px";
         return;
       }
