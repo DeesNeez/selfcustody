@@ -4147,6 +4147,32 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   z-index: 1;
 }
 
+/* z-index alone is not enough while the card is moving. WebKit composites the
+   flying card, and paints the opaque ::after wash above the text inside that
+   layer -- the card kept its border, its glow and its background, and lost
+   every word, including the labels that never change. Reported on iOS Safari
+   18.7 and reproduced there in isolation.
+
+   Promoting the text into its own layer is what fixes it, and it is the only
+   thing that did. Three other candidates were built and all still went blank on
+   the device: isolation:isolate on the card (which changes nothing, because
+   .sc-blocks.is-confirming already gives it z-index:3 and therefore a stacking
+   context in exactly this state), moving the wash out of ::after and into a
+   real child element, and dropping the width/flex-basis/padding channels so
+   only transform animated. That last one is what rules out the layout
+   animation: movement plus an opaque overlay is sufficient on its own. Related:
+   WebKit bug 260981, paint failures under transform keyframes inside
+   overflow-clipped containers.
+
+   Scoped to the flight rather than applied to every card, because the wash is
+   only ever painted over a card that is moving. The landed card's own wash
+   (.sc-block-confirmed.is-newest::after) animates over a stationary card and
+   composites correctly -- tested -- so there is no reason to hold a promoted
+   layer per line on all sixteen cards for the sake of one. */
+.sc-blocks.is-confirming .sc-block-pending > * {
+  transform: translateZ(0);
+}
+
 .site-refresh a.sc-block:hover,
 .site-refresh a.sc-block:focus-visible {
   color: inherit;
