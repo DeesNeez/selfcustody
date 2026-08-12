@@ -4407,27 +4407,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    background at the midpoint, and on text that dip is exactly what reads as a
    blink. Holding the outgoing copy high early (ease-in) while bringing the
    incoming up fast (ease-out) puts both near 0.8 at the crossing, which
-   composites to about 0.94 and closes most of the gap. */
+   composites to about 0.94 and closes most of the gap.
+
+   Only the placement lives here now. The fades themselves moved to
+   crossfadeLines(), which runs them from script so their teardown can be tied
+   to their own completion instead of to a cancellable timer -- see the note
+   there. The two easings and the 220ms are unchanged; they are just declared in
+   the call rather than in a keyframe. */
 .sc-block-copy-old {
   position: absolute;
   z-index: 2;
   margin: 0;
   pointer-events: none;
-  animation: sc-block-copy-out 220ms ease-in both;
-}
-
-.sc-block-copy-new {
-  animation: sc-block-copy-in 220ms ease-out both;
-}
-
-@keyframes sc-block-copy-out {
-  from { opacity: 1; }
-  to   { opacity: 0; }
-}
-
-@keyframes sc-block-copy-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
 }
 
 /* The landed card must not move at all: it is replacing a card that was already
