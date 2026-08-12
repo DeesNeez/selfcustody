@@ -80,8 +80,20 @@
 }
 .lab-note b { color: #f6c514; }
 
+/* Two lines' worth held open whether or not there is anything to say, because
+   this line appears only after the first press and the button is directly
+   below it on desktop -- reserving one line meant the message wrapped to two
+   and shoved the button 15px down at the exact moment you were aiming at it.
+   2.8em is 2 x the 1.4 line-height, and the message measures two lines at
+   every desktop width down to the narrowest console column (256px at the
+   768px breakpoint), for counts well past anything anyone will click to.
+
+   The phone layout is already immune -- the button bay sits in its own grid
+   column spanning all three rows there, so this growing pushes nothing -- but
+   the reservation is harmless at that width and not worth a media query to
+   undo. */
 .lab-offset {
-  min-height: 1.35em;
+  min-height: 2.8em;
   margin: 7px 0 0;
   color: #f6c514;
   font-size: 0.66rem;
