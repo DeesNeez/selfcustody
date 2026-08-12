@@ -5006,16 +5006,29 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     padding: 9px 7px;
     border-radius: 8px;
   }
+  /* 17px, not 8. The dissolve is what makes this read as a chain continuing
+     off-frame rather than a solid nub parked at the gutter, and that depends
+     on it being longer than the sliver is wide: desktop fades over 52px across
+     a 30px sliver, so the far edge tops out around 58% and it never fully
+     materialises. At 8px against a 10px sliver the phone did the opposite --
+     opaque by 8px with 2px of hard edge past it. 17px restores the same ratio
+     and the same ~59% ceiling.
+
+     Both selectors have to carry the identical value. The sliver copy that
+     travels inside the clip runs with mask-image: none and leans entirely on
+     the clip's mask, so if these two drift apart the travelling sliver and the
+     resting one stop matching and the rebuild swaps one for the other
+     visibly. */
   .sc-block-ghost {
     min-height: 148px;
     border-radius: 0 8px 8px 0;
     background-size: 116px 100%;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
-    mask-image: linear-gradient(90deg, transparent 0, #000 8px);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 17px);
+    mask-image: linear-gradient(90deg, transparent 0, #000 17px);
   }
   .sc-block-enter-clip {
-    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8px);
-    mask-image: linear-gradient(90deg, transparent 0, #000 8px);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 17px);
+    mask-image: linear-gradient(90deg, transparent 0, #000 17px);
   }
   .sc-block-pending {
     width: 122px;
