@@ -1,5 +1,6 @@
-/* Styling for the lab pages -- the write-up, the exhibits, and the panel on
-   lab-demo.html. Loaded only by those pages; the site proper never sees it. */
+/* Styling for the block-confirmation simulator panel on lab-demo.html -- the
+   only lab page left after the write-up and exhibit pages were deleted.
+   Loaded only by that page; the site proper never sees it. */
 
 .lab-panel {
   position: relative;
@@ -292,16 +293,12 @@
   margin-top: 13px;
 }
 
-.lab-actions > div { display: flex; gap: 8px; }
-
-/* .lab-back.lab-back, not .lab-back: .site-refresh a (site-refresh.css) sets
-   link colour at class+element specificity, which a single-class selector on
-   an <a> cannot outrank regardless of stylesheet order. Repeating the class
-   is what wins -- .lab-clear is a <button>, so it was never affected and does
-   not need it. Discovered because .lab-close needed the same fix and turned
-   out to already be silently orange here too. */
+/* .lab-close.lab-close, not .lab-close: .site-refresh a (site-refresh.css)
+   sets link colour at class+element specificity, which a single-class
+   selector on an <a> cannot outrank regardless of stylesheet order. Repeating
+   the class is what wins -- .lab-clear is a <button>, so it was never
+   affected and does not need it. */
 .lab-clear,
-.lab-back.lab-back,
 .lab-close {
   padding: 8px 11px;
   border: 1px solid #30343a;
@@ -314,14 +311,6 @@
 .lab-clear { cursor: pointer; }
 .lab-clear:hover,
 .lab-close:hover { border-color: #585e66; color: #fff; }
-
-/* The site's own link colour, on purpose this time -- it read this way by
-   accident before the specificity fix above, and turned out to be the right
-   call: it marks "Lab notes" as the one link here that leaves the simulator
-   for an ordinary page, distinct from Clear (a neutral in-place action) and
-   Close (a red exit that also discards the simulated block). */
-.lab-back.lab-back { border-color: rgba(255, 154, 31, 0.35); color: var(--sc-link); }
-.lab-back.lab-back:hover { border-color: rgba(255, 154, 31, 0.6); color: var(--sc-link-hover); }
 
 /* The one exit that discards the simulated block and returns to the real
    dashboard, so it gets the accent colour the button bay's glow already uses
@@ -369,73 +358,3 @@
   .lab-fire { width: 78px; height: 78px; }
   .lab-actions { justify-content: center; }
 }
-
-/* ---- the write-up ------------------------------------------------------- */
-.lab-page {
-  max-width: 46rem;
-  margin: 0 auto;
-  padding: 40px 18px 80px;
-  color: #e6e8ea;
-  font-family: "Open Sans", -apple-system, system-ui, sans-serif;
-  line-height: 1.6;
-}
-.lab-page h1 { font-family: "Jost", sans-serif; font-size: 1.7rem; margin: 0 0 6px; }
-.lab-page h2 {
-  font-family: "Jost", sans-serif;
-  font-size: 1.1rem;
-  margin: 34px 0 10px;
-  color: #ffbd4d;
-}
-.lab-page p { margin: 0 0 14px; font-size: 0.92rem; }
-.lab-page .lab-lede { color: #9aa0a6; font-size: 0.95rem; }
-.lab-page code {
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: #16181c;
-  color: #ffbd4d;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 0.82em;
-}
-.lab-page pre {
-  overflow-x: auto;
-  margin: 0 0 16px;
-  padding: 12px;
-  border: 1px solid #2a2d31;
-  border-radius: 8px;
-  background: #0e1013;
-  color: #cfd3d7;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 0.72rem;
-  line-height: 1.5;
-}
-.lab-page a { color: #ff9900; }
-
-.lab-cards { display: grid; gap: 12px; margin: 0 0 16px; }
-.lab-card {
-  display: block;
-  padding: 16px;
-  border: 1px solid #2a2d31;
-  border-radius: 10px;
-  background: #16181c;
-  color: #fff;
-  text-decoration: none;
-}
-.lab-card b { display: block; color: #ff9900; font-size: 0.98rem; }
-.lab-card span { display: block; margin-top: 4px; color: #9aa0a6; font-size: 0.78rem; }
-
-.lab-verdict {
-  margin: 0 0 16px;
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 0.82rem;
-}
-.lab-verdict th,
-.lab-verdict td {
-  padding: 7px 8px;
-  border-bottom: 1px solid #2a2d31;
-  text-align: left;
-  vertical-align: top;
-}
-.lab-verdict th { color: #9aa0a6; font-weight: 600; }
-.lab-pass { color: #4ade80; font-weight: 700; }
-.lab-fail { color: #f87171; font-weight: 700; }

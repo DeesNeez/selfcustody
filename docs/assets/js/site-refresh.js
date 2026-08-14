@@ -4356,13 +4356,33 @@
     };
 
     // ------------------------------------------------------------- schedule
-    loadHistory();
-    loadPrices();
+    /* Small requests first -- a few hundred bytes each, 29KB for the blocks --
+       and every one of them paints something a visitor sees immediately. */
+    const pricesReady = loadPrices();
     loadFees();
     loadMempool();
-    loadChain().finally(connectMempoolSocket);
+    const chainReady = loadChain().finally(connectMempoolSocket);
     loadMining();
     loadFng();
+
+    /* The CAD history is ~1.4MB, roughly fifty times everything else on this
+       page put together, and it used to be requested first. On a fast link
+       that is invisible; on a weak phone connection it holds the pipe long
+       enough to starve the requests behind it, and since those give up after
+       12s the page settled into the worst possible shape -- an empty block
+       strip and "Price history is unavailable", from a network that was
+       working, just slowly.
+
+       Starting it after the small ones removes the contention. It costs the
+       chart a couple of hundred ms on a good connection, which is the right
+       trade against the strip and price failing outright on a bad one.
+
+       allSettled, not all: a rejection here must not cancel the history, and
+       these two already fail softly on their own. Waiting on the price and the
+       strip specifically rather than all six -- those are what the big request
+       was starving, and every one of them is capped by fetchJSON's own timeout,
+       so this cannot defer the chart indefinitely. */
+    Promise.allSettled([pricesReady, chainReady]).then(loadHistory);
 
     setInterval(loadPrices, 60000);
     /* Live fee tiers arrive with the socket's stats stream. REST remains a
