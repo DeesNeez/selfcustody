@@ -1656,8 +1656,8 @@
   /* Temporary holding page. Keep the full contact-page definition above in
      place so it can be restored when booking and support are ready to open. */
   pages.contact = {
-    title: "Coming Soon | Self Custody Canada",
-    description: "Self Custody Canada's contact and setup-support page is coming soon.",
+    title: "Contact | SelfCustody.ca",
+    description: "Contact and setup support for SelfCustody.ca.",
     content: `
       <section class="sc-coming-soon" aria-labelledby="coming-soon-title">
         <div class="sc-coming-soon-inner">

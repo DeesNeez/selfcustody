@@ -22,14 +22,6 @@
   --sc-shadow: 0 18px 50px rgba(28, 28, 28, 0.09);
 }
 
-@font-face {
-  font-family: "boxicons";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("../vendor/boxicons/fonts/boxicons.woff2") format("woff2");
-}
-
 html {
   scroll-behavior: smooth;
   /* Reserve the scrollbar gutter permanently so that locking the page
