@@ -607,7 +607,7 @@ body[data-page="home"] .sc-sequence-section {
 .sc-path-options .sc-card:hover,
 .sc-path-options .sc-card:focus-within,
 .sc-dash-tile:hover,
-.sc-dash-tile:focus-within,
+.sc-dash-tile:has(:focus-visible),
 .sc-block:hover,
 .sc-block:focus-visible {
   border-color: rgba(255, 237, 184, 0.88);
@@ -2399,7 +2399,7 @@ p.sc-price {
   .sc-path-options .sc-card:hover,
   .sc-path-options .sc-card:focus-within,
   .sc-dash-tile:hover,
-  .sc-dash-tile:focus-within,
+  .sc-dash-tile:has(:focus-visible),
   .sc-block:hover,
   .sc-block:focus-within {
     translate: none;
@@ -3248,9 +3248,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   background:
     linear-gradient(135deg, #ff940f, #d56200) padding-box,
     linear-gradient(135deg, #ffc36f, #7f3200) border-box;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.24),
-    0 9px 24px rgba(255, 122, 0, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
   opacity: 0;
   pointer-events: none;
   transition:
@@ -3260,6 +3258,12 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 }
 
 .sc-seg-thumb.is-ready { opacity: 1; }
+
+/* Currency toggle no longer needs the shared orange thumb -- its own
+   coloured box plus the white active-ring (.sc-currency-btn.is-active,
+   below) already show which one is selected, and the thumb's orange fill
+   was peeking out 2px past the box's edge as a stray orange sliver. */
+.sc-seg:not(.sc-seg-ranges) .sc-seg-thumb { display: none; }
 
 .sc-seg-btn {
   position: relative;
@@ -3280,8 +3284,9 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-seg-btn.is-active { color: #fff; }
 
-/* Currency buttons use simple national-color fields. A dark wash and text
-   shadow keep the codes legible while the orange rim marks the selection. */
+/* Currency buttons use bright national-color fields (see .sc-currency-cad/
+   usd::before below). Text shadow keeps the codes legible over them, while
+   a white ring marks the selection -- orange clashed against the red field. */
 .sc-currency-btn {
   min-width: 64px;
   overflow: hidden;
@@ -3295,22 +3300,36 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   position: absolute;
   inset: 2px;
   z-index: -1;
+  border: 1px solid transparent;
   border-radius: 6px;
   opacity: 1;
 }
 
+/* Same two-layer treatment as .sc-seg-thumb's orange pill (bright fill on
+   padding-box, lighter rim on border-box, inset sheen, colour-matched glow)
+   just recoloured per national flag instead of orange. */
 .sc-currency-cad::before {
-  background: linear-gradient(rgba(5, 7, 10, 0.22), rgba(5, 7, 10, 0.22)), #c51f32;
+  background:
+    linear-gradient(135deg, #ff4d4d, #b5122a) padding-box,
+    linear-gradient(135deg, #ffa3a3, #6e0014) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 9px 24px rgba(213, 26, 47, 0.28);
 }
 
 .sc-currency-usd::before {
-  background: linear-gradient(rgba(5, 7, 10, 0.22), rgba(5, 7, 10, 0.22)), #264a86;
+  background:
+    linear-gradient(135deg, #3d7bf5, #1a3f8f) padding-box,
+    linear-gradient(135deg, #93b8ff, #0a2358) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 9px 24px rgba(38, 91, 199, 0.28);
 }
 
 .sc-currency-btn:hover { color: #fff; }
 
 .sc-currency-btn.is-active {
-  box-shadow: inset 0 0 0 1px rgba(255, 182, 82, 0.68);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.85);
 }
 
 .sc-seg-btn:focus-visible {
@@ -3724,8 +3743,8 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   transition: color 0.6s ease;
 }
 
-.sc-dash-value.is-positive { color: #6fd8b2; }
-.sc-dash-value.is-negative { color: #f08a80; }
+.sc-dash-value.is-positive { color: #35b48a; }
+.sc-dash-value.is-negative { color: #c9463b; }
 
 .sc-dash-note {
   margin: 0;
