@@ -1255,8 +1255,8 @@
               <div class="sc-dash-controls">
                 <div class="sc-seg" role="group" aria-label="Display currency">
                   <span class="sc-seg-thumb" aria-hidden="true"></span>
-                  <button type="button" class="sc-seg-btn is-active" data-cur="CAD">CAD</button>
-                  <button type="button" class="sc-seg-btn" data-cur="USD">USD</button>
+                  <button type="button" class="sc-seg-btn sc-currency-btn sc-currency-cad" data-cur="CAD">CAD</button>
+                  <button type="button" class="sc-seg-btn sc-currency-btn sc-currency-usd is-active" data-cur="USD">USD</button>
                 </div>
                 <div class="sc-seg sc-seg-ranges" role="group" aria-label="Chart time range">
                   <span class="sc-seg-thumb" aria-hidden="true"></span>
@@ -2032,7 +2032,7 @@
 
     const state = {
       history: [],       // [{ t, CAD, USD }] ascending
-      currency: "CAD",
+      currency: "USD",
       range: "7d",
       chartWindow: null,
       hover: null,
@@ -2066,11 +2066,14 @@
     const DISPLAY_SUPPLY_LIMIT = 21000000;
 
     const fmtMoney = (v, cur) => new Intl.NumberFormat("en-CA", {
-      style: "currency", currency: cur, maximumFractionDigits: 0
+      style: "currency", currency: cur,
+      currencyDisplay: cur === "USD" ? "narrowSymbol" : "symbol",
+      maximumFractionDigits: 0
     }).format(v);
 
     const fmtMoneyPrecise = (v, cur) => new Intl.NumberFormat("en-CA", {
       style: "currency", currency: cur,
+      currencyDisplay: cur === "USD" ? "narrowSymbol" : "symbol",
       minimumFractionDigits: v < 1000 ? 2 : 0, maximumFractionDigits: v < 1000 ? 2 : 0
     }).format(v);
 
@@ -2900,9 +2903,7 @@
       const altEl = $("dash-price-alt");
       if (altEl) {
         const converted = fmtMoney(latest[alt], alt);
-        altEl.textContent = alt === "CAD"
-          ? "CAD " + converted
-          : converted.replace(/^US\$/, "US $");
+        altEl.textContent = alt + " " + converted;
       }
 
       const sats = $("dash-sats");
