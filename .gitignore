@@ -10,11 +10,8 @@ docs/assets/img/hero-boxlock.webp
 docs/assets/img/hero-iceberg.webp
 docs/favicon.ico
 
-# Image sources kept for re-export, not served. social-preview.png is the
-# lossless master the JPEG in the same folder is exported from -- the site
-# references the .jpg.
+# Image sources kept for re-export, not served.
 work/
-docs/assets/img/social-preview.png
 docs/assets/img/Landing.png
 
 # Local capture jig for regenerating the social preview image.
