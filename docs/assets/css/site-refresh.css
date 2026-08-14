@@ -3280,6 +3280,39 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-seg-btn.is-active { color: #fff; }
 
+/* Currency buttons use simple national-color fields. A dark wash and text
+   shadow keep the codes legible while the orange rim marks the selection. */
+.sc-currency-btn {
+  min-width: 64px;
+  overflow: hidden;
+  color: #fff;
+  text-shadow: 0 1px 4px #000, 0 0 2px rgba(0, 0, 0, 0.95);
+  isolation: isolate;
+}
+
+.sc-currency-btn::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  border-radius: 6px;
+  opacity: 1;
+}
+
+.sc-currency-cad::before {
+  background: linear-gradient(rgba(5, 7, 10, 0.22), rgba(5, 7, 10, 0.22)), #c51f32;
+}
+
+.sc-currency-usd::before {
+  background: linear-gradient(rgba(5, 7, 10, 0.22), rgba(5, 7, 10, 0.22)), #264a86;
+}
+
+.sc-currency-btn:hover { color: #fff; }
+
+.sc-currency-btn.is-active {
+  box-shadow: inset 0 0 0 1px rgba(255, 182, 82, 0.68);
+}
+
 .sc-seg-btn:focus-visible {
   outline: 2px solid var(--sc-orange);
   outline-offset: 2px;
