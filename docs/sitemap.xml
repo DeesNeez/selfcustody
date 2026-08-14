@@ -31,9 +31,9 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://selfcustody.ca/services.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <loc>https://selfcustody.ca/dashboard.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://selfcustody.ca/contact.html</loc>

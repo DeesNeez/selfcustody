@@ -4,15 +4,9 @@ docs/assets/img/cash-vortex/*
 !docs/assets/img/cash-vortex/exchanges-cash-vortex-final3.mp4
 !docs/assets/img/cash-vortex/exchanges-cash-vortex.png
 
-docs/assets/img/bitcoin-mark.svg
-docs/assets/img/cash-bundles-background.png
-docs/assets/img/hero-boxlock.webp
-docs/assets/img/hero-iceberg.webp
-docs/favicon.ico
+# Not referenced today, but wanted back when the contact page opens up.
+docs/assets/img/money-coins.jpeg
+docs/assets/img/services-notebook.jpeg
 
-# Image sources kept for re-export, not served.
+# Scratch space for image sources and re-exports, never served.
 work/
-docs/assets/img/Landing.png
-
-# Local capture jig for regenerating the social preview image.
-docs/og-capture.html
