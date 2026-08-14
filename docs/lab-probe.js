@@ -62,11 +62,31 @@
     head.extras.feeRange = [lowest, mid, high];
   }
 
+  /* Failures are logged, not just successes. The monitor used to attach only a
+     fulfilment handler, so a request that rejected -- the interesting case,
+     since site-refresh.js's fetchJSON aborts on its own timeout and the page
+     then quietly falls back to an empty strip or "Price history is
+     unavailable" -- passed through leaving no trace at all. A monitor that
+     shows every request that worked and none that didn't is worse than no
+     monitor, because it reads as though nothing was attempted.
+
+     The rejection is re-thrown, not swallowed: the page's own error handling
+     is what puts those fallback states on screen, and it has to keep seeing
+     the failure exactly as it would without this file in the way. */
   var origFetch = window.fetch.bind(window);
   window.fetch = function (input, init) {
     var url = typeof input === "string" ? input : (input && input.url) || "";
     var began = Date.now();
-    return origFetch(input, init).then(function (res) {
+    return origFetch(input, init).catch(function (err) {
+      lastActivity = Date.now();
+      var why = err && err.name === "AbortError"
+        ? "TIMED OUT (page gave up waiting)"
+        : "FAILED " + ((err && err.name) || "") + " " + ((err && err.message) || "");
+      log.push("GET " + shortUrl(url) + "  " + why + "  after " + (Date.now() - began) + "ms");
+      if (log.length > 160) log = log.slice(-160);
+      render();
+      throw err;
+    }).then(function (res) {
       lastActivity = Date.now();
       log.push("GET " + shortUrl(url) + "  " + res.status + "  " + (Date.now() - began) + "ms");
       if (log.length > 160) log = log.slice(-160);
@@ -423,10 +443,10 @@
                here. That is also why it is a link, not a button with a click
                handler: nothing in this script needs to run when it's used. */
             '<a class="lab-close" href="dashboard.html">Close simulator</a>' +
-            '<div>' +
-              '<button id="lab-clear" class="lab-clear">Clear monitor</button>' +
-              '<a class="lab-back" href="lab.html">&larr; Lab notes</a>' +
-            '</div>' +
+            /* lab.html (the write-up this linked back to) and the exhibit pages
+               are gone -- this demo is now the only lab page left, so there is
+               nowhere left for a "back to notes" link to go. */
+            '<button id="lab-clear" class="lab-clear">Clear monitor</button>' +
           '</div>' +
         '</div>' +
       '</div>' +
