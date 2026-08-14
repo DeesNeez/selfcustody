@@ -1656,8 +1656,8 @@
   /* Temporary holding page. Keep the full contact-page definition above in
      place so it can be restored when booking and support are ready to open. */
   pages.contact = {
-    title: "Coming Soon | Self Custody Canada",
-    description: "Self Custody Canada's contact and setup-support page is coming soon.",
+    title: "Contact | SelfCustody.ca",
+    description: "Contact and setup support for SelfCustody.ca.",
     content: `
       <section class="sc-coming-soon" aria-labelledby="coming-soon-title">
         <div class="sc-coming-soon-inner">
@@ -1699,7 +1699,7 @@
         <div class="row g-4">
           <div class="col-lg-5">
             <h3 class="sc-footer-brand"><img src="assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
-            <p>Clear, practical Bitcoin self custody education. Learn the system, test the recovery, and keep control of the keys.</p>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
           </div>
           <div class="col-12 col-lg-4 sc-footer-explore">
             <h4>Explore</h4>
@@ -3597,7 +3597,21 @@
          yesterday's peak. */
       const high = Math.max(peak, price);
       const off = (price / high - 1) * 100;
-      set("dash-drawdown", off > -0.05 ? "At its high" : off.toFixed(1) + "%");
+      /* Hair space (U+200A) after the minus sign -- flush against the digit it
+         reads as a dash mashed into the number, not a negative sign. */
+      set("dash-drawdown", off > -0.05 ? "At its high" : "- " + Math.abs(off).toFixed(1) + "%");
+      const valEl = $("dash-drawdown");
+      /* Pure red ramp (not the red-yellow-green scaleColor): an 80%+ drawdown
+         is as deep red as it gets, fading to a light red near a fresh high. */
+      if (valEl) {
+        /* Backloaded toward the 80% cap so light drawdowns stay light, but
+           less aggressively than a square -- midpoint reads as clearly red,
+           not barely tinted. */
+        const lin = Math.min(Math.abs(off), 80) / 80;
+        const t = Math.pow(lin, 1.5);
+        valEl.style.color = off > -0.05 ? ""
+          : "hsl(0, " + Math.round(20 + t * 65) + "%, " + Math.round(75 - t * 45) + "%)";
+      }
       set("dash-ath", fmtMoney(high, cur));
       set("dash-cycle-low", Number.isFinite(cycleLow) ? fmtMoney(cycleLow, cur) : "—");
       const note = $("dash-drawdown-note");
@@ -4277,7 +4291,9 @@
         const chg = d.difficultyChange;
         const el = $("dash-diffchange");
         if (el) {
-          el.textContent = (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%";
+          /* Hair space (U+200A) after the sign -- a full space read as too
+             wide a gap, flush read as the minus mashed into the digit. */
+          el.textContent = (chg >= 0 ? "+ " : "- ") + Math.abs(chg).toFixed(2) + "%";
           el.classList.toggle("is-positive", chg >= 0);
           el.classList.toggle("is-negative", chg < 0);
         }
