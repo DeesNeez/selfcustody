@@ -1521,8 +1521,8 @@
               })}
               ${pricingCard({
                 title: "New Wallet Setup — Single Sig",
-                price: "Starting at $XXX CAD",
-                priceNote: "placeholder — replace with your real price",
+                price: "Contact for current rate",
+                priceNote: "quoted after your free discovery call",
                 text: "Choose, set up, and stress-test a single-signature hardware wallet—from first purchase decision to a proven, working setup.",
                 features: [
                   "Wallet shortlist based on your goals and budget",
@@ -1535,8 +1535,8 @@
               })}
               ${pricingCard({
                 title: "New Wallet Setup — Multisig",
-                price: "Starting at $XXX CAD",
-                priceNote: "placeholder — replace with your real price",
+                price: "Contact for current rate",
+                priceNote: "quoted after your free discovery call",
                 text: "For larger balances or multiple keys: a multisig quorum you understand and can operate confidently.",
                 features: [
                   "Multisig quorum and key/device diversity design",
