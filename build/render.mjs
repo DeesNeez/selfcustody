@@ -3,18 +3,21 @@
 
    Only the <body> containers are rewritten -- <head> is left exactly as it is,
    so og: tags, canonicals, JSON-LD and cache-busters stay hand-maintained. */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { pages, renderHeader, renderFooter } from './content.mjs';
 
+/* file -> page key. Several files can share a key: lab-demo.html is the same
+   dashboard markup wrapped with lab-probe.js. */
 const FILES = {
-  home: 'index.html',
-  guides: 'guides.html',
-  devices: 'devices.html',
-  software: 'software.html',
-  exchanges: 'exchanges.html',
-  dashboard: 'dashboard.html',
-  contact: 'contact.html',
-  coinkite: 'coinkite.html',
+  'index.html': 'home',
+  'guides.html': 'guides',
+  'devices.html': 'devices',
+  'software.html': 'software',
+  'exchanges.html': 'exchanges',
+  'dashboard.html': 'dashboard',
+  'contact.html': 'contact',
+  'coinkite.html': 'coinkite',
+  'lab-demo.html': 'dashboard',
 };
 
 /* The whole container block, anchored on the <noscript> that always follows it.
@@ -23,8 +26,18 @@ const FILES = {
    the build has to be greedy here to stay idempotent. */
 const SHELL = /<div id="site-header">[\s\S]*<\/div>(?=\s*<noscript)/;
 
+/* Any page carrying the shell but missing from FILES would be left with three
+   empty divs and no script to fill them, so fail loudly rather than ship it. */
+const missed = readdirSync('docs')
+  .filter(f => f.endsWith('.html') && !f.startsWith('_') && !(f in FILES))
+  .filter(f => /<div id="site-header">\s*<\/div>/.test(readFileSync(`docs/${f}`, 'utf8')));
+if (missed.length) {
+  console.error(`  ABORT: these have an empty shell but are not in FILES: ${missed.join(', ')}`);
+  process.exit(1);
+}
+
 let changed = 0;
-for (const [key, file] of Object.entries(FILES)) {
+for (const [file, key] of Object.entries(FILES)) {
   const path = `docs/${file}`;
   const html = readFileSync(path, 'utf8');
   const page = pages[key] || pages.home;
