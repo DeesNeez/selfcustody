@@ -30,11 +30,218 @@
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/css/style.css" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260808-110" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260815-200" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="exchanges">
-  <div id="site-header"></div><main id="main-content"></main><div id="site-footer"></div>
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li><a class=" " href="guides.html"><span>Guides</span></a></li><li><a class=" " href="devices.html"><span>Devices</span></a></li><li><a class=" " href="software.html"><span>Software</span></a></li><li><a class="active " href="exchanges.html"><span>Exchanges</span></a></li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+        
+      <section class="sc-hero">
+        
+        <div class="container">
+          
+      <span class="sc-eyebrow">Canadian purchase routes</span>
+      <h1>Buying is one step.<br><em>Withdrawing is the custody decision.</em></h1>
+      <p class="sc-lead">Compare brokers and exchanges by what happens after the purchase: where bitcoin sits, how it reaches your wallet, what the full cost includes, and which records you need to keep.</p>
+      <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#exchange-compare">Compare platforms</a>
+           <a class="sc-btn sc-btn-ghost" href="guides.html">Withdrawal checklist</a></div>
+        </div>
+      </section>
+
+        <section class="sc-section">
+          <div class="container">
+            <div class="sc-callout mb-5"><h2>Prices and fees are intentionally not ranked here</h2><p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p></div>
+            <div class="sc-section-head"><span class="sc-eyebrow">Two models</span><h2>Direct-to-wallet versus custodial platform</h2></div>
+            <div class="row g-4 sc-path-options">
+              <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-arrow-right-circle"></i></div><h3>Direct-to-wallet broker</h3><p>You provide a wallet address and purchased bitcoin settles to that address. This reduces time held by the service but requires you to have a tested wallet first.</p><p><strong>Examples:</strong> Bull Bitcoin and Bitcoin Well describe direct self-custody purchase flows.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
+              <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-building-lock"></i></div><h3>Custodial exchange or app</h3><p>The platform credits bitcoin to your account and holds the keys until you withdraw. It can be convenient for trading, but account access and platform solvency remain dependencies.</p><p><strong>Examples:</strong> Shakepay, Ndax, Kraken, and Bitbuy support external withdrawals.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="exchange-compare" class="sc-section sc-section-muted">
+          <div class="container">
+            <div class="sc-section-head"><span class="sc-eyebrow">Comparison</span><h2>Choose based on the workflow you need</h2></div>
+            <div class="sc-matrix-legend" aria-label="Comparison legend">
+              <span><i class="sc-matrix-mark sc-matrix-yes" aria-hidden="true">&#10003;</i> Available</span>
+              <span><i class="sc-matrix-mark sc-matrix-partial" aria-hidden="true">&#9680;</i> Optional or model-dependent</span>
+              <span><i class="sc-matrix-mark sc-matrix-no" aria-hidden="true">&#8212;</i> Not part of the standard workflow</span>
+            </div>
+            <div class="sc-table-wrap">
+              <table class="table sc-table sc-feature-matrix">
+                <thead>
+                  <tr>
+                    <th scope="col">Platform</th>
+                    <th scope="col">Bull Bitcoin</th>
+                    <th scope="col">Bitcoin Well</th>
+                    <th scope="col">Shakepay</th>
+                    <th scope="col">Ndax</th>
+                    <th scope="col">Kraken</th>
+                    <th scope="col">Bitbuy</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="sc-matrix-group"><th colspan="7">Custody and asset scope</th></tr>
+                  <tr>
+                    <th scope="row">Direct-to-wallet settlement</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Non-custodial by design</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Non-custodial by design</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Custodial by default; manual transfer to your own wallet</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Custodial trading platform</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Custodial exchange</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Custodial marketplace</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Bitcoin-only platform</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Also ETH and other assets</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>30+ assets</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>175+ assets, plus stocks and futures</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Dozens of assets</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Order-book / pro trading interface</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Simple quoted-rate purchase only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Simple quoted-rate purchase only</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No order books, by design</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Kraken Pro</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Bitbuy Pro</small></td>
+                  </tr>
+
+                  <tr class="sc-matrix-group"><th colspan="7">CAD funding</th></tr>
+                  <tr>
+                    <th scope="row">Interac e-Transfer</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Typically under 30 seconds</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>30 seconds or less</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>0% fee</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Bank wire</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Wire and Inbound Bill Payments accepted</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Via OTC desk, $10,000 minimum</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>0% fee, $10,000 minimum</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Cash / ATM access</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>160+ cash ATM locations</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Cash and debit via Canada Post</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span></td>
+                  </tr>
+
+                  <tr class="sc-matrix-group"><th colspan="7">Costs and features</th></tr>
+                  <tr>
+                    <th scope="row">Recurring buys (DCA)</th>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Recurring Interac e-Transfer</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Zero fees or spread</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Daily, weekly, or monthly, from $1</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Auto-invest</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Not listed in current fee or help docs</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Published flat trading fee</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Quoted rate/spread, not a flat published %</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Portal and ATM pricing differ</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Spread embedded in the quote</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Flat 0.20%, no tiers</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Simple-buy vs. Pro pricing differ</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Pro: 0.50%/0.50% maker/taker; Express embeds spread</small></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Free or flat-fee crypto withdrawals</th>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No separate withdrawal—bitcoin settles directly on purchase</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>No separate withdrawal—bitcoin settles directly on purchase</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Free on-chain BTC mainnet and Lightning</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Flat amount, not free</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Dynamic, network-based fee</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Mixed: some assets free, BTC/ETH dynamic</small></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="sc-section">
+          <div class="container">
+            <div class="row g-4">
+              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bull Bitcoin</h2><p>A Canadian Bitcoin-only broker that sends purchased bitcoin directly to an address you control. It supports Interac e-Transfer, larger bank transfers, recurring buys, on-chain Bitcoin, Lightning, and Liquid workflows.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>No exchange bitcoin balance to withdraw later in the normal purchase flow.</li><li>Bitcoin-focused support and direct settlement.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The all-in quoted rate and network fee for your order size.</li><li>Your address and wallet backup before placing the order.</li></ul><a class="sc-text-link" href="https://www.bullbitcoin.com/buy" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bitcoin Well</h2><p>A Canadian self-custody Bitcoin company offering an online portal, recurring buys, an OTC desk, and a network of cash ATMs. Its published model delivers purchased bitcoin to a wallet you control rather than providing custody.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>Automatic direct-to-wallet settlement.</li><li>Online, recurring, OTC, and cash purchase options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Online-portal and ATM pricing are different products.</li><li>Verification requirements and limits depend on the transaction method and amount.</li></ul><a class="sc-text-link" href="https://bitcoinwell.com/about" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Shakepay</h2><p>A Canadian app focused on a simple buy, earn, and withdraw experience. Shakepay currently advertises free Bitcoin mainnet withdrawals and Lightning transfers, but bitcoin is custodial until you send it to your wallet.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Simple onboarding, recurring buys, and Canadian app experience.</li><li>Beginner-friendly withdrawal flow.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The effective spread in the quote even when a separate trading fee is not shown.</li><li>Current withdrawal minimums and policy before relying on free withdrawals.</li></ul><a class="sc-text-link" href="https://shakepay.com/bitcoin" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Ndax</h2><p>A Canadian order-execution platform with CAD funding, an order book, multiple assets, and external withdrawals. Ndax currently publishes a flat 0.20% trading fee, while crypto withdrawals use asset-specific flat fees.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Visible order-book workflow and posted trading fee.</li><li>CAD Interac and bank-transfer options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The bid-ask spread and asset withdrawal fee, not just the trading percentage.</li><li>Whether a smaller withdrawal is economical after the flat fee.</li></ul><a class="sc-text-link" href="https://ndax.io/en/fees" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Kraken</h2><p>A large global exchange with Canadian CAD support, Interac e-Transfer, cards, wire transfers, Canada Post funding, simple purchases, recurring buys, and advanced Kraken Pro trading tools.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Deep product range, liquidity, advanced order types, and broad asset support.</li><li>Multiple Canadian funding methods.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Simple-buy pricing can differ materially from Kraken Pro.</li><li>Funding and withdrawal charges vary by method and asset.</li></ul><a class="sc-text-link" href="https://www.kraken.com/ca/lp/kraken-in-canada" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bitbuy</h2><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul><a class="sc-text-link" href="https://bitbuy.ca/en-ca/fees" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+            </div>
+
+            <div class="sc-callout mt-5"><h3>Canadian recordkeeping</h3><p>Keep trade confirmations, CAD funding records, withdrawal transaction IDs, wallet labels, and the CAD value at acquisition and disposal. This site does not provide tax advice; use CRA guidance or a qualified Canadian tax professional for your situation.</p></div>
+            
+    <p class="sc-source-note">
+      Product details checked against <a href="https://www.bullbitcoin.com/buy" target="_blank" rel="noopener">Bull Bitcoin</a>, <a href="https://bitcoinwell.com/about" target="_blank" rel="noopener">Bitcoin Well</a>, <a href="https://shakepay.com/bitcoin" target="_blank" rel="noopener">Shakepay</a>, <a href="https://ndax.io/en/fees" target="_blank" rel="noopener">Ndax</a>, <a href="https://www.kraken.com/ca/lp/kraken-in-canada" target="_blank" rel="noopener">Kraken Canada</a>, <a href="https://bitbuy.ca/en-ca/fees" target="_blank" rel="noopener">Bitbuy</a>.
+      Features, availability, and pricing can change.
+      <span class="sc-source-note-date">Links checked August 6, 2026.</span>
+    </p>
+          </div>
+        </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="guides.html">Guides</a></li>
+              <li><a href="devices.html">Devices</a></li>
+              <li><a href="software.html">Software</a></li>
+              <li><a href="exchanges.html">Exchanges</a></li>
+              <li><a href="dashboard.html">Dashboard</a></li>
+              <li><a href="contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
   <noscript><div class="container py-5"><h1>Exchanges</h1><p>Please enable JavaScript to view this educational site.</p></div></noscript>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script><script src="assets/js/site-refresh.js?v=20260808-88"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script><script src="assets/js/site-refresh.js?v=20260815-200"></script>
 </body>
 </html>

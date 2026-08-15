@@ -10,3 +10,7 @@ docs/assets/img/services-notebook.jpeg
 
 # Scratch space for image sources and re-exports, never served.
 work/
+
+# Node + build scratch
+node_modules/
+.baseline/
