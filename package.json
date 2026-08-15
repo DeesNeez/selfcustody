@@ -1,0 +1,8 @@
+{
+  "name": "selfcustody",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build/render.mjs"
+  }
+}
