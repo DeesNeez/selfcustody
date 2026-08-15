@@ -2954,6 +2954,33 @@ body.site-refresh .sc-cta .sc-btn:hover::after {
   .sc-blocks-top.has-more-blocks .sc-blocks-container::after { pointer-events: auto; }
 }
 
+/* Mirror of ::after on the leading edge: once the strip has been scrolled,
+   the pending card (and whatever now sits at the gutter) needs the same
+   dissolve into the black stage, or it cuts off on a hard line instead of
+   matching the feather on the trailing edge. Stays off at rest, where the
+   pending card sits flush against the gutter with nothing to hide. */
+.sc-blocks-container::before {
+  content: "";
+  position: absolute;
+  top: var(--sc-strip-fade-top, 0px);
+  bottom: var(--sc-strip-fade-bottom, 100%);
+  right: calc(100% - 35px);
+  z-index: 3;
+  width: 100vw;
+  background: linear-gradient(to left, rgba(8, 9, 11, 0), var(--sc-dash-black) 28px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+/* Set once the scroller has moved off its resting position -- see
+   syncBlocksOverflow(). */
+.sc-blocks-top.has-scrolled-blocks .sc-blocks-container::before { opacity: 1; }
+
+@media (hover: hover) {
+  .sc-blocks-top.has-scrolled-blocks .sc-blocks-container::before { pointer-events: auto; }
+}
+
 .sc-blocks-top + .sc-dash-hero {
   /* Most of the space under the strip lives here rather than in the stage's
      own 4px bottom padding, so tightening the gap means trimming this. */
