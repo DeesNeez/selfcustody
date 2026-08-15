@@ -14,3 +14,6 @@ work/
 # Node + build scratch
 node_modules/
 .baseline/
+
+# Local-only preview of the real contact page (see build/preview-contact.mjs).
+docs/_contact-preview.html

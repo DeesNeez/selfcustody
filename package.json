@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node build/render.mjs"
+    "build": "node build/render.mjs",
+    "preview:contact": "node build/preview-contact.mjs"
   }
 }
