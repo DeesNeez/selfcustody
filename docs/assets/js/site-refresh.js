@@ -3308,6 +3308,7 @@
         const lastRight = cards[cards.length - 1].getBoundingClientRect().right;
         stage.classList.toggle("has-more-blocks", lastRight > gutter + 1);
       }
+      stage.classList.toggle("has-scrolled-blocks", wrap.scrollLeft > 1);
       stage.style.setProperty("--sc-blocks-scroll", wrap.scrollLeft + "px");
       if (!blocksOverflowBound) {
         blocksOverflowBound = true;
