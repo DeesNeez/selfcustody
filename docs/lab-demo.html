@@ -14,15 +14,315 @@
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/css/style.css" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260812-167" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260815-200" rel="stylesheet">
   <link href="assets/css/lab.css?v=20260812-23" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="dashboard">
-  <div id="site-header"></div><main id="main-content"></main><div id="site-footer"></div>
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li><a class=" " href="guides.html"><span>Guides</span></a></li><li><a class=" " href="devices.html"><span>Devices</span></a></li><li><a class=" " href="software.html"><span>Software</span></a></li><li><a class=" " href="exchanges.html"><span>Exchanges</span></a></li><li><a class="active " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+        <section class="sc-blocks-top" aria-label="Latest Bitcoin blocks">
+          <div class="container sc-blocks-container">
+            <div class="sc-blocks" id="dash-blocks" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="sc-dash-hero">
+          <div class="sc-dash-glow" aria-hidden="true"></div>
+          <div class="container">
+            <div class="sc-dash-priceblock">
+              <div class="sc-dash-price-main">
+                <div class="sc-dash-price-heading">
+                  <p class="sc-dash-price-label">Bitcoin price</p>
+                  <div class="sc-dash-status" id="dash-status">
+                    <span class="sc-live-dot" aria-hidden="true"></span>
+                    <span id="dash-updated">Connecting to the network…</span>
+                  </div>
+                </div>
+                <p class="sc-dash-price" id="dash-price"><span class="sc-dash-skel sc-dash-skel-lg"></span></p>
+                <p class="sc-dash-price-sub">
+                  <span id="dash-price-alt" class="sc-dash-price-alt"></span>
+                  <span id="dash-change" class="sc-dash-change"></span>
+                </p>
+              </div>
+              <div class="sc-dash-controls">
+                <div class="sc-seg" role="group" aria-label="Display currency">
+                  <span class="sc-seg-thumb" aria-hidden="true"></span>
+                  <button type="button" class="sc-seg-btn sc-currency-btn sc-currency-cad" data-cur="CAD">CAD</button>
+                  <button type="button" class="sc-seg-btn sc-currency-btn sc-currency-usd is-active" data-cur="USD">USD</button>
+                </div>
+                <div class="sc-seg sc-seg-ranges" role="group" aria-label="Chart time range">
+                  <span class="sc-seg-thumb" aria-hidden="true"></span>
+                  <button type="button" class="sc-seg-btn" data-range="24h">24H</button>
+                  <button type="button" class="sc-seg-btn is-active" data-range="7d">7D</button>
+                  <button type="button" class="sc-seg-btn" data-range="30d">30D</button>
+                  <button type="button" class="sc-seg-btn" data-range="1y">1Y</button>
+                  <button type="button" class="sc-seg-btn" data-range="3y">3Y</button>
+                  <button type="button" class="sc-seg-btn" data-range="5y">5Y</button>
+                  <button type="button" class="sc-seg-btn" data-range="all">ALL</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sc-chart" id="dash-chart">
+              <svg class="sc-chart-svg" id="dash-chart-svg" aria-hidden="true" focusable="false"></svg>
+              <div class="sc-chart-state is-loading" id="dash-chart-state"><span>Loading price history…</span></div>
+              <div class="sc-chart-zoom-tools">
+                <span class="sc-chart-zoom-hint">Scroll to zoom</span>
+                <button type="button" class="sc-chart-zoom-reset" id="dash-chart-zoom-reset" aria-label="Reset zoom" hidden><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                <div class="sc-chart-zoom-pan" id="dash-chart-zoom-pan" role="scrollbar" aria-label="Move through the zoomed date range" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0" hidden>
+                  <span class="sc-chart-zoom-pan-track" id="dash-chart-zoom-pan-track" aria-hidden="true"><span class="sc-chart-zoom-pan-thumb" id="dash-chart-zoom-pan-thumb"></span></span>
+                </div>
+              </div>
+              <div class="sc-chart-tip" id="dash-chart-tip" hidden></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sc-section">
+          <div class="container">
+            <div class="sc-section-head"><div class="sc-dash-section-title"><h2>THE Bitcoin Network</h2><span class="sc-dash-gears" aria-hidden="true"><i class="bi bi-gear-fill"></i><i class="bi bi-gear-fill"></i></span></div><p>A live view of Bitcoin's network metrics, supply, fees, and mining activity.</p></div>
+
+            <div class="row g-4 sc-dash-metrics-grid">
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-currency-bitcoin"></i></span><h3 id="dash-sats-title">Sats per dollar</h3><button type="button" class="sc-swap" id="dash-sats-swap" title="Swap units" aria-label="Swap between sats per dollar and dollars per sat"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button></div>
+                    <p class="sc-dash-value" id="dash-sats">&mdash;</p>
+                    <p class="sc-dash-note">What a unit of currency buys, and how close a sat is to a cent.</p>
+                    <p class="sc-dash-detail"><span>Five years ago</span><strong id="dash-sats-year">&mdash;</strong></p>
+                    <div class="sc-dash-parity">
+                      <span>Sat-cent parity</span>
+                      <div class="sc-dash-bar" aria-hidden="true"><span id="dash-sats-bar"></span></div>
+                      <strong id="dash-sats-parity">&mdash;%</strong>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-graph-down-arrow"></i></span><h3>Drawdown from high</h3></div>
+                    <p class="sc-dash-value" id="dash-drawdown">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-drawdown-note">Distance from the highest price ever recorded.</p>
+                    <p class="sc-dash-detail"><span>All-time high</span><strong id="dash-ath">&mdash;</strong></p>
+                    <p class="sc-dash-detail"><span>Previous cycle low</span><strong id="dash-cycle-low">&mdash;</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-lightning-charge"></i></span><h3>Hashprice</h3></div>
+                    <p class="sc-dash-value" id="dash-hashprice">&mdash;</p>
+                    <p class="sc-dash-note">Miner revenue per petahash per day.</p>
+                    <p class="sc-dash-detail"><span>Network revenue a day</span><strong id="dash-hashprice-rev">&mdash;</strong></p>
+                    <p class="sc-dash-detail"><span>Issued plus fees a day</span><strong id="dash-hashprice-btc">&mdash;</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-cpu"></i></span><h3>Network hashrate</h3></div>
+                    <p class="sc-dash-value" id="dash-hashrate">&mdash;</p>
+                    <p class="sc-dash-note">Current estimated mining power securing the network.</p>
+                    <div class="sc-dash-spark" id="dash-hash-spark" aria-hidden="true"></div>
+                    <p class="sc-dash-detail"><span>Difficulty</span><strong id="dash-current-difficulty">&mdash;</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-arrow-repeat"></i></span><h3>Difficulty adjustment</h3></div>
+                    <p class="sc-dash-value" id="dash-diffchange">—</p>
+                    <p class="sc-dash-note" id="dash-diffnote">Difficulty retargets roughly every two weeks.</p>
+                    <div class="sc-dash-fees is-wide" id="dash-diff-tiers"></div>
+                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-diff-bar"></span></div>
+                    <p class="sc-dash-eta" id="dash-diff-eta" aria-live="polite"><span>Est.</span> <strong>Calculating&hellip;</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile sc-dash-tile-fng">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-emoji-neutral"></i></span><h3>Fear &amp; Greed</h3></div>
+                    <div class="sc-gauge">
+                      <svg viewBox="0 0 200 116" class="sc-gauge-svg" aria-hidden="true" focusable="false">
+                        <defs>
+                          <linearGradient id="scGaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#e2564a"></stop>
+                            <stop offset="35%" stop-color="#e8913c"></stop>
+                            <stop offset="65%" stop-color="#e5c343"></stop>
+                            <stop offset="100%" stop-color="#35b48a"></stop>
+                          </linearGradient>
+                        </defs>
+                        <path d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="14" stroke-linecap="round"></path>
+                        <path id="dash-fng-arc" d="M18 100 A82 82 0 0 1 182 100" fill="none" stroke="url(#scGaugeGrad)" stroke-width="14" stroke-linecap="round"></path>
+                        <g id="dash-fng-needle" style="transform-origin:100px 100px">
+                          <line x1="100" y1="100" x2="100" y2="46" stroke="var(--sc-ink)" stroke-width="3" stroke-linecap="round"></line>
+                          <circle cx="100" cy="100" r="7" fill="var(--sc-ink)"></circle>
+                        </g>
+                      </svg>
+                      <div class="sc-gauge-readout">
+                        <span class="sc-gauge-value" id="dash-fng">—</span>
+                        <span class="sc-gauge-label" id="dash-fng-label">Loading…</span>
+                      </div>
+                    </div>
+                    <p class="sc-dash-note mb-0">A sentiment gauge, not a signal. Zero is extreme fear, one hundred is extreme greed.</p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-pie-chart-fill"></i></span><h3>Supply progress</h3></div>
+                    <p class="sc-dash-value" id="dash-supply">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-supply-note">Scheduled issuance at the current block height.</p>
+                    <div class="sc-dash-fees is-wide">
+                      <span><em id="dash-supply-pct">&mdash;</em>issued</span>
+                      <span><em id="dash-supply-left">&mdash;</em>remaining</span>
+                      <span><em id="dash-supply-day">&mdash;</em>per day</span>
+                    </div>
+                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-supply-bar"></span></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-hourglass-split"></i></span><h3>Halving countdown</h3></div>
+                    <p class="sc-dash-value" id="dash-halving">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-halving-note">Estimated from the 10-minute block target.</p>
+                    <div class="sc-dash-fees is-wide">
+                      <span><em id="dash-halving-current">&mdash;</em>current</span>
+                      <span><em id="dash-halving-next">&mdash;</em>next</span>
+                      <span><em id="dash-halving-progress">&mdash;</em>epoch</span>
+                    </div>
+                    <div class="sc-dash-bar" aria-hidden="true"><span id="dash-halving-bar"></span></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile sc-dash-tile-mempool">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-stack"></i></span><h3>Mempool backlog</h3></div>
+                    <p class="sc-dash-value" id="dash-mempool">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-mempool-note">Transactions waiting to be confirmed.</p>
+                    <div class="sc-dash-fees is-wide">
+                      <span><em id="dash-mempool-tx">&mdash;</em>transactions</span>
+                      <span><em id="dash-mempool-blocks">&mdash;</em>block equiv.</span>
+                      <span><em id="dash-mempool-fees">&mdash;</em>total fees</span>
+                    </div>
+                    <p class="sc-dash-detail"><span>Clears in, at ten minutes a block</span><strong id="dash-mempool-eta">&mdash;</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile sc-dash-tile-averages">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-graph-up"></i></span><h3>Weekly moving averages</h3></div>
+                    <p class="sc-dash-note">Two long-term weekly averages for the current Bitcoin price.</p>
+                    <div class="sc-dash-average-reading">
+                      <span>200-week average</span>
+                      <p class="sc-dash-value" id="dash-ma200w">&mdash;</p>
+                    </div>
+                    <div class="sc-dash-average-reading">
+                      <span>50-week average</span>
+                      <p class="sc-dash-value" id="dash-ma50w">&mdash;</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-rulers"></i></span><h3>Mayer Multiple</h3></div>
+                    <p class="sc-dash-value" id="dash-mayer">&mdash;</p>
+                    <p class="sc-dash-note" id="dash-mayer-note">Price measured against its 200-day average.</p>
+                    <p class="sc-dash-detail"><span>200-day average</span><strong id="dash-mayer-ma">&mdash;</strong></p>
+                    <p class="sc-dash-detail"><span>Historic average</span><strong>about 1.4</strong></p>
+                  </div>
+                </article>
+              </div>
+
+              <div class="col-md-6 col-lg-4">
+                <article class="sc-card sc-dash-tile">
+                  <div class="sc-card-body">
+                    <div class="sc-dash-tile-head"><span class="sc-dash-tile-icon"><i class="bi bi-pie-chart"></i></span><h3>Fees share of reward</h3></div>
+                    <p class="sc-dash-value" id="dash-feeshare">&mdash;</p>
+                    <p class="sc-dash-note">Fee share of miner revenue across the latest 15 blocks.</p>
+                    <p class="sc-dash-detail"><span>Fees per block</span><strong id="dash-feeshare-fees">&mdash;</strong></p>
+                    <p class="sc-dash-detail"><span>Block subsidy</span><strong id="dash-feeshare-subsidy">&mdash;</strong></p>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <p class="sc-source-note">Live data from <a href="https://mempool.space/" target="_blank" rel="noopener noreferrer">mempool.space</a> and the <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener noreferrer">Fear &amp; Greed index</a>. Figures are informational only, refresh automatically, and may lag the chain by a few moments. Always verify anything that matters against your own node.</p>
+          </div>
+        </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="guides.html">Guides</a></li>
+              <li><a href="devices.html">Devices</a></li>
+              <li><a href="software.html">Software</a></li>
+              <li><a href="exchanges.html">Exchanges</a></li>
+              <li><a href="dashboard.html">Dashboard</a></li>
+              <li><a href="contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
   <noscript><div class="container py-5"><h1>Lab</h1><p>Please enable JavaScript.</p></div></noscript>
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <!-- Must precede site-refresh.js: the probe wraps fetch and WebSocket. -->
   <script src="lab-probe.js?v=20260812-20"></script>
-  <script src="assets/js/site-refresh.js?v=20260812-128"></script>
+  <script src="assets/js/site-refresh.js?v=20260815-200"></script>
 </body>
 </html>
