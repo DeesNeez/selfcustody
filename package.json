@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "node build/render.mjs",
-    "preview:contact": "node build/preview-contact.mjs"
+    "preview:contact": "node build/preview-contact.mjs",
+    "icons:subset": "node build/subset-icons.mjs"
   }
 }
