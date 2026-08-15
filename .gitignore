@@ -10,3 +10,10 @@ docs/assets/img/services-notebook.jpeg
 
 # Scratch space for image sources and re-exports, never served.
 work/
+
+# Node + build scratch
+node_modules/
+.baseline/
+
+# Local-only preview of the real contact page (see build/preview-contact.mjs).
+docs/_contact-preview.html

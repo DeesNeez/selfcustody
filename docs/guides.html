@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A practical, step-by-step learning path for buying bitcoin, setting up a wallet, withdrawing safely, testing recovery, and maintaining self-custody.">
-  <title>Guides | Self Custody Canada</title>
+  <title>Guides | SelfCustody.ca</title>
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://selfcustody.ca/guides.html">
   <meta property="og:type" content="article">
@@ -30,11 +30,217 @@
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="assets/css/style.css" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260808-110" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260815-200" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="guides">
-  <div id="site-header"></div><main id="main-content"></main><div id="site-footer"></div>
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li><a class="active " href="guides.html"><span>Guides</span></a></li><li><a class=" " href="devices.html"><span>Devices</span></a></li><li><a class=" " href="software.html"><span>Software</span></a></li><li><a class=" " href="exchanges.html"><span>Exchanges</span></a></li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+        
+      <section class="sc-hero has-media">
+        
+        <div class="container">
+          
+            <div class="row g-5 align-items-center">
+                  <div class="col-lg-7 sc-hero-copy">
+      <span class="sc-eyebrow">Practical learning path</span>
+      <h1>Learn the system,<br><em>not just the buttons.</em></h1>
+      <p class="sc-lead">A complete beginner-to-confident-owner path. Work through it in order, use small amounts, and stop whenever a step is not clear.</p>
+      <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#path">Step one</a>
+           <a class="sc-btn sc-btn-ghost" href="contact.html">Get help</a></div></div>
+                  <div class="col-lg-5">
+                    <figure class="sc-hero-media">
+                      <img src="assets/img/education-library.jpeg" alt="Bookshelves and a reading lamp in a quiet library" width="1600" height="2400" fetchpriority="high">
+                    </figure>
+                  </div>
+                </div>
+        </div>
+      </section>
+
+        <section id="path" class="sc-section">
+          <div class="container">
+            <div class="sc-section-head">
+              <span class="sc-eyebrow">The complete path</span>
+              <h2>Five steps from exchange account to tested self-custody</h2>
+              <p>Each step has one outcome. Do not move on until you can explain that outcome in your own words.</p>
+            </div>
+
+            <article class="sc-detail">
+              <div class="row g-4">
+                <div class="col-lg-4"><span class="sc-step-number">1</span><h2 class="mt-3">Understand what you own</h2></div>
+                <div class="col-lg-8">
+                  <p>A bitcoin wallet does not hold coins like a physical wallet. It manages keys and constructs transactions. The network records bitcoin outputs; your keys authorize spending them.</p>
+                  <h3>Know these terms</h3>
+                  <ul class="sc-check-list">
+                    <li><strong>Private key:</strong> the secret that authorizes a spend.</li>
+                    <li><strong>Recovery words:</strong> human-readable backup material from which wallet keys can be recreated.</li>
+                    <li><strong>Address:</strong> a destination you can share to receive bitcoin.</li>
+                    <li><strong>UTXO:</strong> an individual chunk of bitcoin your wallet can spend.</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <article class="sc-detail">
+              <div class="row g-4">
+                <div class="col-lg-4"><span class="sc-step-number">2</span><h2 class="mt-3">Choose the setup</h2></div>
+                <div class="col-lg-8">
+                  <p>Use a mobile software wallet for learning and modest spending amounts. Use a hardware signer when you want keys isolated (air-gapped) from an internet-connected computer or phone. Consider multisig only when you can confidently back up every key and the wallet configuration.</p>
+                  <div class="sc-tags"><span class="sc-tag">Mobile: convenient</span><span class="sc-tag">Hardware: air gapped keys</span><span class="sc-tag">Multisig: removes one key as a single point of failure</span></div>
+                  <p><a class="sc-text-link" href="devices.html">Compare hardware <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="software.html">Compare wallet software <i class="bi bi-arrow-right"></i></a></p>
+                </div>
+              </div>
+            </article>
+
+            <article class="sc-detail">
+              <div class="row g-4">
+                <div class="col-lg-4"><span class="sc-step-number">3</span><h2 class="mt-3">Set up and back up</h2></div>
+                <div class="col-lg-8">
+                  <ul class="sc-check-list">
+                    <li>Inspect packaging and authenticate the device using the maker's official app or process.</li>
+                    <li>Generate a new wallet on the device; never use words supplied in the box.</li>
+                    <li>Write the recovery words offline, in order, without photographing them.</li>
+                    <li>Confirm the backup when prompted and record any passphrase policy separately.</li>
+                    <li>Store device and backup separately so one theft, fire, or flood does not take both.</li>
+                  </ul>
+                  <div class="sc-callout mt-4"><h3>A passphrase is not a casual extra password</h3><p>A forgotten or mistyped BIP39 passphrase creates a different wallet. Use one only when you understand the recovery procedure and have a durable way to preserve it.</p></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="sc-detail">
+              <div class="row g-4">
+                <div class="col-lg-4"><span class="sc-step-number">4</span><h2 class="mt-3">Withdraw carefully</h2></div>
+                <div class="col-lg-8">
+                  <ul class="sc-check-list">
+                    <li>Create a fresh receive address in your wallet.</li>
+                    <li>Verify the full address on the hardware device, not only on the computer screen.</li>
+                    <li>Send a small test withdrawal and wait for confirmation.</li>
+                    <li>Confirm the received transaction in your wallet before sending a larger amount.</li>
+                    <li>Understand the platform fee, withdrawal fee, and Bitcoin network fee before approving.</li>
+                  </ul>
+                  <p class="mt-3"><a class="sc-text-link" href="exchanges.html">Compare Canadian purchase routes <i class="bi bi-arrow-right"></i></a></p>
+                </div>
+              </div>
+            </article>
+
+            <article class="sc-detail">
+              <div class="row g-4">
+                <div class="col-lg-4"><span class="sc-step-number">5</span><h2 class="mt-3">Prove you can recover</h2></div>
+                <div class="col-lg-8">
+                  <p>A backup you have never tested is an assumption. After the first small transaction, follow your device maker's documented recovery-check procedure or restore into a wiped spare device. Confirm the expected wallet fingerprint, addresses, or balance before relying on the setup.</p>
+                  <h3>Maintain it</h3>
+                  <ul class="sc-check-list">
+                    <li>Review backups for legibility and environmental damage.</li>
+                    <li>Keep an inheritance instruction that explains the process without exposing the secret.</li>
+                    <li>Download wallet software only from official sources and verify releases when supported.</li>
+                    <li>Re-evaluate single-signature versus multisig as the value and consequences change.</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="sc-section sc-section-muted">
+          <div class="container">
+            <div class="sc-section-head centered"><span class="sc-eyebrow">Common failure modes</span><h2>What not to normalize</h2></div>
+            <div class="row g-4">
+              
+    <div class="col-md-6 col-xl-3">
+      <article class="sc-card">
+        <div class="sc-card-body">
+          <div class="sc-icon"><i class="bi bi-camera"></i></div>
+          <h3>Digital seed copies</h3>
+          <p>Photos, cloud notes, email drafts, printers, and ordinary password managers create copies you may not be able to track.</p>
+          <a class="sc-text-link" href="#path">Keep recovery material offline <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </article>
+    </div>
+              
+    <div class="col-md-6 col-xl-3">
+      <article class="sc-card">
+        <div class="sc-card-body">
+          <div class="sc-icon"><i class="bi bi-box-seam"></i></div>
+          <h3>Pre-filled recovery words</h3>
+          <p>A legitimate wallet should generate new words during setup. Words included in a package are a theft attempt.</p>
+          <a class="sc-text-link" href="#path">Generate on-device <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </article>
+    </div>
+              
+    <div class="col-md-6 col-xl-3">
+      <article class="sc-card">
+        <div class="sc-card-body">
+          <div class="sc-icon"><i class="bi bi-arrow-left-right"></i></div>
+          <h3>Skipping the test send</h3>
+          <p>A small test catches the wrong network, address errors, unfamiliar withdrawal screens, and fee surprises.</p>
+          <a class="sc-text-link" href="#path">Test first <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </article>
+    </div>
+              
+    <div class="col-md-6 col-xl-3">
+      <article class="sc-card">
+        <div class="sc-card-body">
+          <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
+          <h3>Complexity without recovery</h3>
+          <p>A sophisticated setup that nobody can restore is less secure than a simpler setup that has been tested.</p>
+          <a class="sc-text-link" href="#path">Earn complexity <i class="bi bi-arrow-right"></i></a>
+        </div>
+      </article>
+    </div>
+            </div>
+          </div>
+        </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="guides.html">Guides</a></li>
+              <li><a href="devices.html">Devices</a></li>
+              <li><a href="software.html">Software</a></li>
+              <li><a href="exchanges.html">Exchanges</a></li>
+              <li><a href="dashboard.html">Dashboard</a></li>
+              <li><a href="contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
   <noscript><div class="container py-5"><h1>Guides</h1><p>Please enable JavaScript to view this educational site.</p></div></noscript>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script><script src="assets/js/site-refresh.js?v=20260808-88"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script><script src="assets/js/site-refresh.js?v=20260815-200"></script>
 </body>
 </html>
