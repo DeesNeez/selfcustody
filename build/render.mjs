@@ -60,3 +60,28 @@ for (const [file, key] of Object.entries(FILES)) {
   console.log(`  ${file.padEnd(16)} ${Math.round(out.length / 1024)} KB`);
 }
 console.log(`\n${changed} file(s) written`);
+
+/* The icon font is subset to the glyphs in use, so an icon added later would
+   render as a blank box. Catch that here rather than in someone's browser.
+   Two names are built by concatenation in site-refresh.js and cannot be found
+   by scanning, so they are listed explicitly. */
+const iconCss = readFileSync('docs/assets/vendor/bootstrap-icons/bootstrap-icons.css', 'utf8');
+const available = new Set([...iconCss.matchAll(/\.(bi-[a-z0-9-]+)::before/g)].map(m => m[1]));
+
+let scan = readFileSync('build/content.mjs', 'utf8') + readFileSync('docs/assets/js/site-refresh.js', 'utf8');
+for (const f of readdirSync('docs')) if (f.endsWith('.html') && !f.startsWith('_')) scan += readFileSync(`docs/${f}`, 'utf8');
+for (const f of ['docs/assets/css/site-refresh.css', 'docs/assets/css/lab.css', 'docs/lab-probe.js']) {
+  try { scan += readFileSync(f, 'utf8'); } catch {}
+}
+
+const referenced = new Set(['bi-arrow-up-right', 'bi-arrow-down-right', 'bi-arrow-right']);
+for (const m of scan.matchAll(/\bbi-[a-z0-9]+(?:-[a-z0-9]+)*/g)) referenced.add(m[0]);
+referenced.delete('bi-arrow');   // truncated match from the concatenations above
+
+const absent = [...referenced].filter(n => !available.has(n));
+if (absent.length) {
+  console.error(`\n  ABORT: these icons are used but not in the subset font: ${absent.join(', ')}`);
+  console.error('  Run "npm run icons:subset", then re-subset the woff2 (see build/subset-icons.mjs).');
+  process.exit(1);
+}
+console.log(`icon check: all ${referenced.size} referenced glyphs present in the subset font`);
