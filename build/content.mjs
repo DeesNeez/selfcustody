@@ -1242,6 +1242,7 @@ const currentYear = new Date().getFullYear();
             <div class="sc-dash-priceblock">
               <div class="sc-dash-price-main">
                 <div class="sc-dash-price-heading">
+                  <h1 class="visually-hidden">Live Bitcoin Dashboard</h1>
                   <p class="sc-dash-price-label">Bitcoin price</p>
                   <div class="sc-dash-status" id="dash-status">
                     <span class="sc-live-dot" aria-hidden="true"></span>
