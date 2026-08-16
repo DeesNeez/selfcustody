@@ -4,7 +4,7 @@
    Only the <body> containers are rewritten -- <head> is left exactly as it is,
    so og: tags, canonicals, JSON-LD and cache-busters stay hand-maintained. */
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
-import { pages, renderHeader, renderFooter } from './content.mjs';
+import { pages, renderHeader, renderFooter, routes } from './content.mjs';
 
 /* file -> page key. Several files can share a key: lab-demo.html is the same
    dashboard markup wrapped with lab-probe.js. */
@@ -25,6 +25,23 @@ const FILES = {
    already-built file, where the header contains nested divs of its own -- so
    the build has to be greedy here to stay idempotent. */
 const SHELL = /<div id="site-header">[\s\S]*<\/div>(?=\s*<noscript)/;
+const NOSCRIPT = /<noscript>[\s\S]*?<\/noscript>/;
+
+/* The old fallback said "enable JavaScript to view this site", which stopped
+   being true once the pages were prerendered -- and its <h1> gave every page a
+   second one. What genuinely still needs JS is the nav: below 992px
+   `.navbar ul` is display:none and only the toggle script reveals it, so
+   without JS there is no way off the page. So the fallback carries the links
+   itself. No heading, to keep one <h1> per page. */
+const noscriptFor = key => {
+  const links = routes
+    .map(([, label, href]) => `<li><a href="${href}">${label}</a></li>`)
+    .join('');
+  const live = key === 'dashboard'
+    ? ' The live network figures on this page also need JavaScript.'
+    : '';
+  return `<noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong>${live} Every page:</p><ul>${links}</ul></div></noscript>`;
+};
 
 /* Any page carrying the shell but missing from FILES would be left with three
    empty divs and no script to fill them, so fail loudly rather than ship it. */
@@ -52,7 +69,8 @@ for (const [file, key] of Object.entries(FILES)) {
     `    <main id="main-content">${page.content}</main>\n` +
     `    <div id="site-footer">${renderFooter()}</div>`;
 
-  const out = html.replace(SHELL, () => filled);
+  let out = html.replace(SHELL, () => filled);
+  if (NOSCRIPT.test(out)) out = out.replace(NOSCRIPT, () => noscriptFor(key));
   if (out !== html) {
     writeFileSync(path, out);
     changed++;
