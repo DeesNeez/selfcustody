@@ -128,7 +128,7 @@ const currentYear = new Date().getFullYear();
           "",
           `<span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-exit">EXIT</span><span class="sc-outlined-word sc-hero-fiat" data-text="FIAT"><span class="sc-word-fill">FIAT</span></span></span>
            <span class="sc-hero-command-line"><span class="sc-neon-sign sc-neon-sign-enter">ENTER</span><span class="sc-outlined-word sc-hero-command-destination" data-text="BITCOIN"><span class="sc-word-fill">BITCOIN</span></span></span>`,
-          "<span class=\"sc-home-lead-statement\">Your keys, your bitcoin.</span><br class=\"sc-mobile-lead-break\"> Learn how to buy it, move it,<br class=\"sc-medium-lead-break\"> and<br class=\"sc-tablet-lead-break\"> protect it without turning security into a full time job.",
+          "<span class=\"sc-home-lead-statement\">Your keys, your coins.</span><br class=\"sc-mobile-lead-break\"> Learn how to buy, move, and protect<br class=\"sc-medium-lead-break\"> your bitcoin without turning security into a full time job.",
           `<a class="sc-btn sc-btn-primary" href="guides.html"><span>Explore Guides</span></a>
            <a class="sc-btn sc-btn-ghost" href="contact.html"><span>Get Help</span></a>`,
           {
