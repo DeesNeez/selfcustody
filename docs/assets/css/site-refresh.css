@@ -1114,7 +1114,6 @@ body[data-page="home"] .sc-hero .sc-lead {
   text-shadow: 0 2px 7px rgba(0, 0, 0, 0.88);
 }
 
-.sc-tablet-lead-break,
 .sc-medium-lead-break,
 .sc-mobile-lead-break {
   display: none;
@@ -1130,7 +1129,11 @@ body[data-page="home"] .sc-hero .sc-lead {
   }
 }
 
-@media (min-width: 992px) and (max-width: 1320px) {
+/* Starts at 768, not 992: tablet and medium widths both break the lead after
+   "protect". A separate .sc-tablet-lead-break used to hold the 768-991 band at
+   a different position (after "and"), but once both wanted the same break it
+   was redundant and was removed from the markup along with its rule. */
+@media (min-width: 768px) and (max-width: 1320px) {
   .sc-medium-lead-break {
     display: block;
   }
@@ -1988,11 +1991,66 @@ p.sc-price {
     letter-spacing: 0.12em;
   }
 
-  /* Desktop reverted to its original tighter line spacing, but this
-     wider gap between EXIT FIAT / ENTER BITCOIN still reads fine (and
-     was asked to stay) at tablet/mobile widths. */
+  /* Matches desktop's 0.18em exactly, so the two neon lines sit in the same
+     proportion at every width. This was previously widened to 0.4em (0.56em
+     on phones) because the glow below is specified in fixed px: at a 42px h1
+     a 66px glow is half again as large relative to the type as it is at
+     desktop's 65px, so the two signs bled into each other and the lines had
+     to be pushed apart to compensate. Scaling the glow instead (see below)
+     removes the reason for the wider gap. */
   .sc-hero-command-line + .sc-hero-command-line {
-    margin-top: 0.4em;
+    margin-top: 0.18em;
+  }
+
+  /* The same glow as desktop, re-expressed in em so it tracks the type
+     instead of staying a fixed size as the h1 shrinks. Values are desktop's
+     px converted against its own 50.7px neon font-size (h1 65px x the
+     .sc-neon-sign 0.78em), so the proportions are identical -- at desktop
+     width these compute back to the original 6/20/44 and 8/30/66. Desktop's
+     own rules are left in px and untouched. */
+  .sc-neon-sign-exit {
+    box-shadow:
+      inset 0 0 0.06em rgba(255, 57, 71, 0.1),
+      0 0 0.12em rgba(255, 57, 71, 0.88),
+      0 0 0.39em rgba(255, 57, 71, 0.58),
+      0 0 0.87em rgba(255, 57, 71, 0.3);
+    text-shadow:
+      0 0 0.04em rgba(255, 255, 255, 0.42),
+      0 0 0.1em rgba(255, 57, 71, 0.55);
+  }
+
+  .sc-neon-sign-enter {
+    box-shadow:
+      inset 0 0 0.06em rgba(67, 255, 138, 0.1),
+      0 0 0.16em rgba(67, 255, 138, 0.96),
+      0 0 0.59em rgba(67, 255, 138, 0.72),
+      0 0 1.3em rgba(67, 255, 138, 0.4);
+    text-shadow:
+      0 0 0.04em rgba(255, 255, 255, 0.4),
+      0 0 0.1em rgba(67, 255, 138, 0.52);
+  }
+
+  /* Spacing below 992px is set by grouping, not by desktop's h1 ratios.
+
+     Matching those ratios (0.369/0.492 against a smaller h1) gave 17px and
+     22px here, but the lead inherits body's line-height:1.7 -- 28-34px
+     between its own lines. That put the paragraph's internal spacing at
+     roughly double the gaps separating it from the title above and the
+     buttons below, so the three groups read as one run. The ratio is only
+     transferable while the lead keeps desktop's two-line shape; once it wraps
+     further the internal rhythm starts competing, and proximity has to win.
+
+     So: tighten the lead into a block (1.45, giving 24-29px), then clear that
+     on both sides. The 575px block overrides all three again for phones,
+     where the lead wraps furthest. */
+  body[data-page="home"] .sc-hero .sc-lead {
+    margin-top: 30px;
+    line-height: 1.45;
+  }
+
+  body[data-page="home"] .sc-hero-actions {
+    gap: 8px;
+    margin-top: 38px;
   }
 
   /* BITCOIN is bolder (font-weight 900) and longer than FIAT, so the same
@@ -2018,31 +2076,69 @@ p.sc-price {
     aspect-ratio: 16 / 9;
   }
 
-  /* At this width the copy (eyebrow/title/lead/buttons) sits on solid
-     black at the top of the hero, and the video moves out from behind
-     the text entirely: it starts level with the "ENTER BITCOIN" line
-     and shows in full below it. The box is sized to the video's own
-     aspect ratio (rather than stretched to fill whatever room is left)
-     so nothing gets cropped -- min-height then just needs to clear
-     top + that fixed height + a little breathing room before the next
-     section. */
-  /* Height has to be fluid because the figure's is: width:100% against a
-     3/2 ratio makes it 66.667vw tall, so a fixed min-height only contains
-     it at one viewport width. 240px figure top plus 66.667vw of video plus
-     the 90px the next section overlaps by means the section lands exactly
-     at the video's (by then fully masked out) bottom edge at every width,
-     instead of cutting into it. */
+  /* Below 992px the hero is one composition at every width: the copy sits on
+     solid black at the top, and the vortex is anchored to the hero's
+     bottom-left corner, scaled past the viewport so its right side runs off
+     screen and is clipped by .sc-hero's overflow:hidden. Only the scale
+     changes between breakpoints.
+
+     The art underlays the copy exactly as it does on desktop -- it is not
+     pushed below it. Two numbers, and they must move together:
+       --sc-hero-media-w   the art's width. Bigger = more zoomed, less of the
+                           right side visible.
+       min-height          its first term is always two-thirds of that width
+                           (the 3/2 ratio), so it tracks the art's height. The
+                           trailing +Npx is how far the art's top edge sits
+                           below the hero's top, since the art is anchored to
+                           the bottom -- keep it small enough that the art
+                           still runs up behind the text, and the difference
+                           between it and the copy's height is what shows in
+                           the bottom-left corner.
+     Left stays at 0 -- the spiral core is hard against the footage's left
+     edge, so any negative offset cuts the focal point off. */
   body[data-page="home"] .sc-hero.has-background-media {
-    min-height: calc(66.667vw + 330px);
-    padding-bottom: 90px;
+    /* These two govern 768-991px only -- the 767px block overrides them below.
+
+       Unlike the phone block, min-height here is NOT tied to the art's height.
+       Cropping harder on the right needs a wider figure, and at 3/2 that also
+       makes it taller -- which is what pushed the hero to 1030px and threw the
+       proportions off against type that is pinned at its clamp floors. But the
+       figure is anchored bottom:0, so its bottom edge sits on the hero's bottom
+       whatever its height is. Letting it run off the TOP instead, clipped by
+       .sc-hero's overflow:hidden, buys the right-hand crop without the hero
+       growing at all. The bottom fade is unaffected, since that is measured
+       from the figure's own bottom.
+
+       So: 160vw crops ~38% off the right at 768px, while the hero stays around
+       750px and fits an 800px viewport. */
+    --sc-hero-media-w: min(160vw, 1400px);
+    min-height: clamp(830px, 108vw, 950px);
+    padding-bottom: 0;
   }
 
   body[data-page="home"] .sc-hero-background-media {
     left: 0;
-    top: 240px;
-    width: 100%;
+    top: auto;
+    bottom: 0;
+    width: var(--sc-hero-media-w);
+    height: auto;
     aspect-ratio: 3 / 2;
     transform: none;
+    /* Desktop's mask has the same shape but starts dissolving at 68%, which
+       works there because the art is large enough to lose its bottom third.
+       Anchored to the bottom at this size that would erase the vortex, so the
+       identical curve is compressed into the last 16% -- late enough that the
+       art stays visible well down the frame, long enough (80px+ at every width
+       here) that it reads as a dissolve rather than an edge.
+
+       It must reach fully transparent by 100%: the art's bottom sits exactly
+       on the hero's bottom, which is where .sc-hero's overflow:hidden cuts.
+       Any opacity left at that point becomes the hard line. The figure's own
+       ::after vignettes fade the left and top edges into #08090b (inherited,
+       not overridden here), and the hero's ::after band carries the bottom the
+       rest of the way into the next section. */
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 84%, rgba(0, 0, 0, 0.78) 89%, rgba(0, 0, 0, 0.42) 94%, rgba(0, 0, 0, 0.12) 97.5%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 84%, rgba(0, 0, 0, 0.78) 89%, rgba(0, 0, 0, 0.42) 94%, rgba(0, 0, 0, 0.12) 97.5%, transparent 100%);
   }
 
   body[data-page="home"] .sc-hero.has-background-media::after {
@@ -2050,8 +2146,15 @@ p.sc-price {
     background: linear-gradient(180deg, rgba(8, 9, 11, 0) 0%, rgba(8, 9, 11, 0.16) 35%, rgba(8, 9, 11, 0.55) 65%, #08090b 100%);
   }
 
+  /* No negative overlap below 992px. This section is opaque #08090b at
+     z-index 1, so any overlap paints solid black across the bottom of the
+     art -- and because the art is anchored to the hero's bottom edge here
+     (unlike desktop, where it ends well above it), the section's top edge
+     lands mid-gradient and reads as a hard line. Desktop can afford -148px
+     precisely because its art is already masked out by that point. Starting
+     the section at the hero's bottom lets the mask finish first. */
   body[data-page="home"] .sc-hero + .sc-section {
-    margin-top: -90px;
+    margin-top: 0;
     padding-top: 34px;
   }
 
@@ -2061,27 +2164,65 @@ p.sc-price {
 
   body[data-page="home"] .sc-hero-background-media :is(img, video) {
     object-fit: contain;
-    object-position: center;
+    object-position: left bottom;
     filter: none;
     transform: none;
+    transform-origin: left bottom;
   }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
-  .sc-tablet-lead-break {
-    display: block;
+  /* The h1 across this whole band is a flat 45.6px: its own clamp floor of
+     2.85rem, since 4.5vw only reaches 34.6-44.6px here and never clears it.
+     So the title never grows from 768 to 991 while the art scales with the
+     viewport the entire way. This lifts it to ~54-61px and lets it scale.
+
+     .has-background-media is in the selector purely for specificity: the rule
+     it has to beat lives in a (min-width: 768px) and (max-width: 1100px)
+     block further down the file, and that block must keep governing 992-1100
+     so desktop is left alone. Matching its selector would lose on source
+     order; one extra class wins without widening the range. */
+  body.site-refresh[data-page="home"] .sc-hero.has-background-media h1 {
+    font-size: clamp(3.35rem, 7vw, 3.8rem);
+  }
+
+  /* The base lead clamp is clamp(1.03rem, 2vw, 1.25rem), and 2vw does not
+     clear the 1.03rem floor until about an 824px viewport -- so the lead is
+     frozen at 16.48px everywhere from 320px to well past tablet, never once
+     scaling. Next to a 45.6px h1 on a 768px-wide screen that reads thin.
+     This scoped bump lets it grow across the band without touching phones
+     (below 768) or desktop (992+). */
+  body[data-page="home"] .sc-hero .sc-lead {
+    font-size: clamp(1.13rem, 2.35vw, 1.25rem);
   }
 }
 
-@media (min-width: 768px) and (max-width: 1100px) {
+/* Starts at 992, not 768. Both rules here used to reach down into tablet and
+   beat the 991px block on specificity -- the buttons' 24px in particular was
+   quietly overriding the 38px that block sets, which is what keeps the lead
+   from colliding with the action row. Tablet now owns 768-991 outright. */
+@media (min-width: 992px) and (max-width: 1100px) {
   body.site-refresh[data-page="home"] .sc-hero h1 {
     width: max-content;
     max-width: 100%;
-    font-size: clamp(2.85rem, 4.5vw, 3.1rem);
   }
 
   body.site-refresh[data-page="home"] .sc-hero-actions {
     margin-top: 24px;
+  }
+}
+
+/* The title used to shrink as the viewport GREW: 60.8px at 991px, then 46px
+   at 1024px, because above 991 it fell back to a clamp whose 4.5vw term does
+   not catch up until ~1350px. Bigger screen, smaller headline.
+
+   This spans 992-1440 so both ends meet cleanly: 3.8rem holds 60.8px straight
+   across from the 991px handoff, and 4.5vw overtakes it near 1350px to reach
+   4.05rem (64.8px) at 1440 -- exactly what the base clamp gives at 1441, so
+   there is no step there either. Above 1440 nothing changed. */
+@media (min-width: 992px) and (max-width: 1440px) {
+  body.site-refresh[data-page="home"] .sc-hero h1 {
+    font-size: clamp(3.8rem, 4.5vw, 4.05rem);
   }
 }
 
@@ -2097,18 +2238,20 @@ p.sc-price {
     margin-bottom: 32px;
   }
 
-  /* Narrower than tablet, so starting the video at the "ENTER BITCOIN"
-     line would run it behind the lead paragraph and buttons too -- drop
-     it near the button row instead, with just a slight overlap at the
-     top of the video rather than running it behind any text above. */
-  /* Fluid for the same reason as the 991px breakpoint above: 383px figure
-     top, plus 66.667vw of video, plus the 80px the next section overlaps
-     by. The old fixed 712px only contained the video up to about a 500px
-     viewport; past that the hero's overflow:hidden was chopping the bottom
-     of the frame off outright. */
+  /* No band-specific spacing here any more. This range once had the tightest
+     gaps on the site (12px/16px, derived from its 32px h1 -- the smallest
+     anywhere, since the phone clamp has not kicked in yet and the base clamp
+     is at its 2rem floor), which was the most inverted case of all against a
+     28px line gap. The 991px block's grouping-based values cover it. */
+
+  /* Narrower than tablet, so the art is scaled up further: more of the right
+     side is cropped away to keep the vortex reading at a usable size in the
+     bottom-left corner. The composition and the rules that build it come from
+     the 991px block above -- only these two numbers change here. */
   body[data-page="home"] .sc-hero.has-background-media {
-    min-height: calc(66.667vw + 463px);
-    padding-bottom: 80px;
+    --sc-hero-media-w: 195vw;
+    min-height: calc(130vw + 175px);
+    padding-bottom: 0;
   }
 
   body[data-page="home"] .sc-hero.has-background-media::after {
@@ -2117,7 +2260,7 @@ p.sc-price {
   }
 
   body[data-page="home"] .sc-hero + .sc-section {
-    margin-top: -80px;
+    margin-top: 0;
     padding-top: 30px;
   }
 
@@ -2135,32 +2278,12 @@ p.sc-price {
     transform: translateY(-14px);
   }
 
-  /* Box sized to the video's own aspect ratio (not stretched to fill
-     whatever room is left) so the whole frame shows, nothing cropped --
-     see the 991px breakpoint above. The vortex's spiral core sits right
-     at the source footage's left edge though, with zero margin, so it
-     reads as cut off. Scaling up and anchoring growth to the right edge
-     crops that extra sliver off the left only, keeping the banknotes on
-     the right fully visible. */
-  body[data-page="home"] .sc-hero-background-media :is(img, video) {
-    object-fit: contain;
-    object-position: center;
-    filter: none;
-    /* scaleX only, not scale() -- a uniform scale also grows the video
-       taller, throwing it out of alignment with the figure's own
-       bottom-fade vignette (sized to the original box) and producing a
-       hard-edged cutoff instead of the intended smooth fade. */
-    transform: scaleX(1.1);
-    transform-origin: right center;
-  }
-
-  body[data-page="home"] .sc-hero-background-media {
-    left: 0;
-    top: 383px;
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    transform: none;
-  }
+  /* The old rules here sized the box to show the whole frame and then used
+     scaleX(1.1) from the right edge to trim the left sliver, because the
+     vortex's spiral core sits hard against the source footage's left edge.
+     That is now handled the opposite way: the art is anchored from the left
+     and cropped on the right, so the core is what survives. Positioning comes
+     from the 991px block; nothing width-specific is needed. */
 
   .sc-brand {
     font-size: 1.25rem;
@@ -2545,11 +2668,28 @@ body.site-refresh .sc-cta .sc-btn:hover {
 
 @media (max-width: 575px) {
   /* The copy used to be pulled up into the header, leaving the neon title
-     about 10px clear of the navbar. Dropping the pull lets it breathe; the
-     media offset and the next section's overlap below are both shifted to
-     match, since this breakpoint positions them from hard pixel offsets. */
+     about 10px clear of the navbar. Dropping the pull lets it breathe. The
+     media no longer needs a matching shift: it is anchored at the hero's top
+     edge like desktop, rather than offset to sit below the title. */
   body.site-refresh[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
     transform: none;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+
+  /* The h1 is width:max-content, so text-align on the parent cannot move it --
+     it needs its own auto margins. And each command line is a flex row sized
+     to the h1's max-content width (set by the longer "ENTER BITCOIN"), so the
+     shorter "EXIT FIAT" needs justify-content to sit centred under it rather
+     than flush left. */
+  body.site-refresh[data-page="home"] .sc-hero h1 {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  body.site-refresh[data-page="home"] .sc-hero-command-line {
+    justify-content: center;
   }
 
   /* Trimmed from the 108px the ≤767px rule sets, tightening the navbar-to-
@@ -2567,20 +2707,32 @@ body.site-refresh .sc-cta .sc-btn:hover {
     font-size: clamp(2.3rem, 11.2vw, 2.95rem);
   }
 
-  /* EXIT FIAT / ENTER BITCOIN are boxed neon signs -- at 0.4em their glows
-     nearly touch, so the pair read as one crowded block. */
-  .sc-hero-command-line + .sc-hero-command-line {
-    margin-top: 0.56em;
-  }
+  /* No phone-specific gap any more: the em-based glow in the 991px block
+     keeps the signs clear of each other on its own, so this inherits the
+     same 0.18em desktop uses. */
 
   body.site-refresh[data-page="home"] .sc-hero .sc-lead {
     max-width: 340px;
-    /* Media height plus the title-to-media gap, plus clearance: the lead used
-       to start 4px above the video's bottom edge, which read as cramped. The
-       +58 puts it 20px clear of it. */
-    margin-top: calc(clamp(300px, 82vw, 340px) + 58px);
+    /* The lead sits directly under the title again, over the art rather than
+       below it -- the old rule pushed it past a full media height because the
+       video used to be a band between the two.
+
+       Desktop's title-to-lead ratio is 24px against a 65px h1 = 0.369. The
+       h1 here is itself a clamp (36.8px -> 47.2px), so a fixed gap only holds
+       that ratio at one width -- it drifts to 0.45 by 320px. Mirroring the
+       h1's own clamp scaled by 0.369 keeps it constant: 0.369 x 11.2vw is
+       4.13vw, and the same factor on each end of its range gives the bounds.
+       The old 20px also predates the neon lines being tightened to 0.18em,
+       which left the title block reading tight and everything under it loose. */
+    margin-top: clamp(26px, 7.9vw, 33px);
     margin-right: auto;
     margin-left: auto;
+    /* Body's 1.7 is set for long-form prose. Here it puts 28px between lines
+       of a six-line block -- more than the gaps separating that block from
+       the title above and buttons below, which inverts the grouping and makes
+       the three read as one run. 1.45 tightens the paragraph into a single
+       unit (~24px) and the gaps around it then clear that comfortably. */
+    line-height: 1.45;
     text-align: center;
   }
 
@@ -2604,6 +2756,16 @@ body.site-refresh .sc-cta .sc-btn:hover {
     width: 100%;
   }
 
+  /* Same ratio treatment as the lead above, at desktop's lead-to-buttons
+     0.492 (32px against a 65px h1). 0.492 x 11.2vw is 5.51vw, bounded by the
+     same factor applied to the h1 clamp's ends.
+
+     padding stays symmetric at 6px, matching the base rule. This element is
+     not a bare flex row -- it is the glass capsule (1px border, 14px radius,
+     translucent background, backdrop-filter) that both buttons sit inside, so
+     its padding is the inset between the buttons and a *visible* border, not
+     part of the gap above it. Zeroing three sides of it pushed the buttons
+     flush against that border. The margin alone is the gap. */
   body.site-refresh[data-page="home"] .sc-hero-actions {
     width: max-content;
     max-width: 100%;
@@ -2611,53 +2773,40 @@ body.site-refresh .sc-cta .sc-btn:hover {
     flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    margin: 20px auto 16px;
-    padding: 4px;
+    gap: 8px;
+    margin: clamp(33px, 9.9vw, 42px) auto 16px;
+    padding: 6px;
   }
 
+  /* Was 40px tall at 0.78rem -- under the 44px minimum touch target, and small
+     enough that the pair read as a caption rather than the hero's actions.
+     48px clears the guideline with room; the type and padding move with it.
+     Measured against the tightest case (320px viewport): the two buttons come
+     to ~252px inside a ~282px capsule, so it still fits without wrapping. */
   body.site-refresh[data-page="home"] .sc-hero-actions .sc-btn {
     width: auto;
     min-width: 0;
-    min-height: 40px;
-    padding: 8px 12px;
-    font-size: 0.78rem;
-    letter-spacing: 0.015em;
+    min-height: 48px;
+    padding: 10px 18px;
+    font-size: 0.86rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
   }
 
-  /* Pull the cash-vortex environment up through the lead copy, then leave the
-     compact action row below it. A taller box plus cover-fit gives the art
-     real vertical presence instead of confining it to a shallow 3:2 strip;
-     the figure's existing top vignette preserves paragraph contrast. */
+  /* Phones crop hardest -- roughly the left 60% of the art -- so the vortex
+     still reads at size in the bottom-left corner. Composition is inherited
+     from the 991px block; these are the same two numbers at a phone scale.
+     The +150px keeps the art running up behind the title rather than starting
+     below it, so the copy sits over the art the way it does on desktop. */
   body.site-refresh[data-page="home"] .sc-hero.has-background-media {
-    min-height: calc(clamp(300px, 82vw, 340px) + 355px);
-    padding-bottom: 60px;
-  }
-
-  body.site-refresh[data-page="home"] .sc-hero-background-media {
-    /* Absolute from the hero's top edge, so it does not follow the copy. A
-       fixed offset would unbalance as soon as the title scales, so it tracks
-       the same clamp: 96px hero padding + the title's height (a measured
-       2.64x its font-size across both lines) + a 38px gap. */
-    top: calc(134px + 2.64 * clamp(2.3rem, 11.2vw, 2.95rem));
-    left: -6%;
-    width: 112%;
-    height: clamp(300px, 82vw, 340px);
-    aspect-ratio: auto;
-  }
-
-  body.site-refresh[data-page="home"] .sc-hero-background-media :is(img, video) {
-    object-fit: cover;
-    object-position: center;
-    transform: none;
-    transform-origin: center;
+    --sc-hero-media-w: 217vw;
+    min-height: calc(144.67vw + 195px);
+    padding-bottom: 0;
   }
 
   body.site-refresh[data-page="home"] .sc-hero + .sc-section {
-    /* Overlaps the hero by a fixed amount, so it has to give back the space
-       the copy gained or it would ride up over the buttons. */
-    margin-top: -46px;
-    padding-top: 8px;
+    margin-top: 0;
+    padding-top: 24px;
   }
 }
 
