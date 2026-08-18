@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260815-200" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260815-200" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260815-200" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="coinkite">
   <div id="site-header">
@@ -43,7 +43,24 @@
             <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
           </a>
           <nav id="navbar" class="navbar" aria-label="Primary navigation">
-            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li><a class=" " href="guides.html"><span>Guides</span></a></li><li><a class=" " href="devices.html"><span>Devices</span></a></li><li><a class=" " href="software.html"><span>Software</span></a></li><li><a class=" " href="exchanges.html"><span>Exchanges</span></a></li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
+            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="guides.html">All guides</a></li>
+            <li><a class="" href="glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="devices.html">Devices</a></li>
+            <li><a class="" href="software.html">Software</a></li>
+            <li><a class="" href="exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
         </div>
@@ -150,11 +167,11 @@
                   <p>Both models are Bitcoin-only signers built around dual secure elements, verifiable firmware, extensive PIN controls, PSBT workflows, microSD, NFC, and USB-C. They are designed to keep private keys on the device while letting you choose how transaction data moves.</p>
                   <h3>Choose Q when</h3><ul class="sc-check-list"><li>You want a 3.2-inch display, full QWERTY keyboard, built-in QR scanner, dual microSD slots, and AAA battery operation.</li><li>You use long BIP39 passphrases or frequent QR-based workflows.</li><li>You want the clearest COLDCARD interface for advanced multisig and policy work.</li></ul>
                   <h3>Choose Mk5 when</h3><ul class="sc-check-list"><li>You want the same core security philosophy in a pocketable form.</li><li>microSD and NFC signing fit your workflow and a QR camera is not required.</li><li>You prefer a compact keypad device with fewer physical extras.</li></ul>
-                  <div class="sc-tags"><span class="sc-tag">Dual secure elements</span><span class="sc-tag">Bitcoin only</span><span class="sc-tag">MicroSD</span><span class="sc-tag">NFC</span><span class="sc-tag">Reproducible firmware</span></div>
-                  <a class="sc-text-link" href="https://coldcard.com/" target="_blank" rel="noopener">Official COLDCARD comparison <i class="bi bi-arrow-up-right"></i></a>
+                  <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-secure_element">Dual secure elements</a><a class="sc-tag sc-tag-link" href="glossary.html#term-bitcoin_only">Bitcoin only</a><a class="sc-tag sc-tag-link" href="glossary.html#term-microsd_backup">MicroSD</a><a class="sc-tag sc-tag-link" href="glossary.html#term-nfc">NFC</a><a class="sc-tag sc-tag-link" href="glossary.html#term-reproducible_firmware">Reproducible firmware</a></div>
                 </div>
               </div>
-            </article>
+            <div class="sc-detail-footer"><a class="sc-text-link" href="https://coldcard.com/" target="_blank" rel="noopener">Official COLDCARD comparison <i class="bi bi-arrow-up-right"></i></a>
+    <div class="sc-product-guides"><a class="sc-text-link" href="guides/coldcard-q-setup.html" title="COLDCARD Q: first-time setup — Beginner · 45 min" aria-label="COLDCARD Q: first-time setup — Beginner · 45 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
 
             <article id="tapsigner" class="sc-detail">
               <div class="row g-5 align-items-center">
@@ -164,10 +181,9 @@
                   <p>TAPSIGNER keeps one BIP32 private key on a credit-card-sized NFC card. A compatible wallet constructs and displays the transaction; you tap the card and enter its PIN to authorize a signature.</p>
                   <h3>What it improves</h3><ul class="sc-check-list"><li>The phone does not normally hold the unencrypted master private key.</li><li>No battery, cable, or seed-word entry is required for routine signing.</li><li>Works as a single-signature key or one key in a multisig setup with compatible wallets.</li></ul>
                   <h3>The honest trade-off</h3><ul class="sc-caution-list"><li>There is no display on the card. You must trust your companion wallet to show the correct amount, destination, fee, inputs, and change.</li><li>Recovery requires the encrypted backup file, the separate printed key, and the wallet configuration. Plan and test this before funding.</li></ul>
-                  <a class="sc-text-link" href="https://tapsigner.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
                 </div>
               </div>
-            </article>
+            <div class="sc-detail-footer"><a class="sc-text-link" href="https://tapsigner.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
 
             <article id="satscard" class="sc-detail">
               <div class="row g-5 align-items-center">
@@ -177,10 +193,9 @@
                   <p>SATSCARD has ten independent slots. You verify and fund the current sealed slot, then the card can be handed to another person without an on-chain transfer. The recipient can keep it sealed, pass it again, or unseal the slot and sweep the bitcoin into a normal wallet.</p>
                   <h3>Good use cases</h3><ul class="sc-check-list"><li>Giving actual bitcoin before the recipient has chosen a wallet.</li><li>Teaching the difference between possession, a sealed key, and an on-chain transaction.</li><li>Small, deliberate physical transfers after the recipient verifies the card and funding.</li></ul>
                   <h3>Do not mistake it for</h3><ul class="sc-caution-list"><li>A debit card, Lightning tap-to-pay card, exchange account, or recommended vault for large savings.</li><li>A TAPSIGNER: SATSCARD is meant to change owners; TAPSIGNER is a reusable signing key that stays with one owner.</li><li>A reusable address after unsealing. Sweep the full balance and never fund an exposed slot again.</li></ul>
-                  <a class="sc-text-link" href="https://satscard.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
                 </div>
               </div>
-            </article>
+            <div class="sc-detail-footer"><a class="sc-text-link" href="https://satscard.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
 
             <article id="related" class="sc-detail">
               <span class="sc-eyebrow">Related tools</span><h2>OPENDIME, SEEDPLATE, COLDPOWER, and BLOCKCLOCK</h2>
@@ -190,7 +205,7 @@
                 <div class="col-md-6"><h3>COLDPOWER</h3><p>A 9-volt battery adapter that provides power without USB data—useful when operating a signer away from a computer port.</p></div>
                 <div class="col-md-6"><h3>BLOCKCLOCK</h3><p>A Bitcoin data display for block height, price, and related network information. It is a display product, not a custody device.</p></div>
               </div>
-              <a class="sc-text-link" href="https://coinkite.com/" target="_blank" rel="noopener">Official Coinkite product guide <i class="bi bi-arrow-up-right"></i></a>
+              <div class="sc-detail-footer"><a class="sc-text-link" href="https://coinkite.com/" target="_blank" rel="noopener">Official Coinkite product guide <i class="bi bi-arrow-up-right"></i></a></div>
             </article>
 
             <div class="sc-callout mt-4"><h3>Supply-chain rule</h3><p>Coinkite recommends buying from its store or an authorized reseller and inspecting security products for tampering. A discount is not worth uncertainty about who handled a signing device.</p></div>
@@ -215,10 +230,12 @@
             <ul class="sc-footer-links sc-footer-links-grid">
               <li><a href="index.html">Home</a></li>
               <li><a href="guides.html">Guides</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
               <li><a href="devices.html">Devices</a></li>
               <li><a href="software.html">Software</a></li>
               <li><a href="exchanges.html">Exchanges</a></li>
               <li><a href="dashboard.html">Dashboard</a></li>
+              <li><a href="merch.html">Merch</a></li>
               <li><a href="contact.html">Get Help</a></li>
             </ul>
           </div>
@@ -236,7 +253,7 @@
         </div>
       </div>
     </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260815-200"></script>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="merch.html">Merch</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="assets/js/site-refresh.js?v=20260817-914"></script>
 </body>
 </html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Jade protects your PIN differently from every other device on this site, and that choice shapes your backup plan. Understand it first, then set the thing up.">
+  <title>Blockstream Jade: first-time setup | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/jade-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Blockstream Jade: first-time setup | SelfCustody.ca">
+  <meta property="og:description" content="Jade protects your PIN differently from every other device on this site, and that choice shapes your backup plan. Understand it first, then set the thing up.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/jade-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Blockstream Jade: first-time setup","description":"Jade protects your PIN differently from every other device on this site, and that choice shapes your backup plan. Understand it first, then set the thing up.","url":"https://selfcustody.ca/guides/jade-setup.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/jade-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#devices">Devices</a>
+        </nav>
+        <span class="sc-eyebrow">Hardware</span>
+        <h1>Blockstream Jade: first-time setup</h1>
+        <p class="sc-lead">Jade protects your PIN differently from every other device on this site, and that choice shapes your backup plan. Understand it first, then set the thing up.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 35 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-open_source">Open source</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-air_gap">QR air-gap</a><span class="sc-tag">PIN unlock</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../devices.html#jade">About Blockstream Jade <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Jade is open source down to the hardware, inexpensive, and capable of fully air-gapped signing over QR codes. It is one of the easiest recommendations on this site. It also does one thing so differently from every other device here that setting it up without understanding it first is how people end up surprised later.</p>
+
+      <p>That thing is the PIN. On most hardware wallets a dedicated secure element chip stores your key and counts failed attempts. Jade takes a different route, and the consequence is a design decision you make during setup rather than a detail you can ignore.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-usb-drive" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A Blockstream Jade Plus held up with its camera facing a laptop screen displaying a QR code, mid-scan.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The camera is the reason to buy this device. Signing without ever plugging it in is the default, not a workaround.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li>A Jade, unopened, bought from Blockstream or an authorised reseller.</li><li>The companion app or your chosen wallet software &mdash; Sparrow, Nunchuk, and Specter all support it.</li><li>A pen and a backup card or metal plate.</li><li>An uninterrupted half hour somewhere private.</li><li>No bitcoin. Move none until the checks at the end pass.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>Check the packaging and run the genuine check</h2>
+
+      <p>Inspect the packaging for cuts, re-glued seams, or a second seal laid over the first, and the case for scratches around the seam. Then run the genuine check offered by the companion app, which asks the device to prove cryptographically that it is real Blockstream hardware.</p>
+
+      <ul class="sc-caution-list"><li>A device that arrives already set up, already holding a wallet, or supplied with a printed recovery phrase is compromised. Stop and contact the vendor.</li><li>Install firmware only through the official app or Blockstream's own instructions.</li></ul>
+
+      <h2><span class="sc-article-num">2</span>How the PIN actually works</h2>
+
+      <p>Jade has no dedicated secure element chip. Instead it uses what Blockstream calls a virtual secure element: your seed is stored encrypted on the device, and the key needed to decrypt it is not held entirely on the device either. Part of it lives on a server &mdash; Blockstream's, by default.</p>
+
+      <p>When you enter your PIN, the device talks to that server to complete the unlock. The server is what enforces the limit on wrong attempts, doing the job a secure element chip does elsewhere.</p>
+
+      <p>Two things follow, and neither is hidden or sinister &mdash; but both are yours to plan around:</p>
+
+      <ul class="sc-check-list"><li><strong>Unlocking normally needs connectivity.</strong> Not to sign, and not to hold your keys &mdash; to unlock. A device that cannot reach the server cannot be unlocked in the usual way.</li><li><strong>The server cannot spend your bitcoin.</strong> It holds a fragment used in decryption, not your key, and not your recovery words. It cannot reconstruct your wallet and neither can anyone who compromises it.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>This is a trade, not a flaw</h3><p>It removes the closed, unauditable chip that other devices depend on, which is exactly what lets Jade be open source all the way down. In exchange, ordinary unlocking involves a service. Whether that is a good trade depends on what you are optimising for &mdash; auditability or independence &mdash; and the next section covers what to do if you want both.</p></div>
+
+      <h2><span class="sc-article-num">3</span>Choose how you want to run it</h2>
+
+      <p>Decide this now, because it determines what your backup has to cover.</p>
+
+      <div class="sc-guide-choice-grid sc-jade-modes" aria-label="Three ways to operate a Jade">
+        <article class="sc-guide-choice is-jade-default"><span class="sc-choice-status">Convenient</span><h3>Default</h3><dl><div><dt>How it works</dt><dd>Seed stored on the device; PIN unlock completed through Blockstream's server.</dd></div><div><dt>Good fit</dt><dd>Most people. The server assists with unlocking but cannot spend your coins.</dd></div></dl></article>
+        <article class="sc-guide-choice is-jade-server"><span class="sc-choice-status">Independent</span><h3>Your own server</h3><dl><div><dt>How it works</dt><dd>The same design, but you run the open-source unlock service yourself.</dd></div><div><dt>Good fit</dt><dd>People who want the architecture without the external dependency.</dd></div></dl></article>
+        <article class="sc-guide-choice is-jade-stateless"><span class="sc-choice-status">Stateless</span><h3>No stored seed</h3><dl><div><dt>How it works</dt><dd>Enter the recovery words to sign; the device forgets them afterwards.</dd></div><div><dt>Good fit</dt><dd>Air-gapped users who want a stolen device to contain nothing useful.</dd></div></dl></article>
+      </div>
+
+      <p>The third mode changes the shape of your risk entirely. A Jade holding no seed is just electronics &mdash; losing it costs you the hardware and nothing else. The cost is that every signing session starts with entering your words, which is slower and puts them in front of you far more often. That is a real trade-off in both directions, and it only works if your backup is somewhere you can reach routinely.</p>
+
+      <h2><span class="sc-article-num">4</span>Create the wallet and write the words down</h2>
+
+      <p>Choose to create a new wallet rather than restoring one. The device generates the words and shows them on its own screen.</p>
+
+      <ul class="sc-check-list"><li>Write the words in order, by hand, on paper or metal.</li><li>Complete the confirmation step the device runs afterwards.</li><li>Store the backup away from the device.</li><li>If you plan to run without a stored seed, your backup is not an emergency document &mdash; it is something you will handle regularly. Store it accordingly.</li></ul>
+
+      <ul class="sc-caution-list"><li>Never photograph the words or type them into a computer or phone.</li><li>Nobody legitimate will ever ask for them &mdash; not Blockstream, not support, not a wallet-validation page.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Set up QR signing, which is the reason to own this</h2>
+
+      <p>Jade Plus has a camera and a screen large enough to display QR codes back. That means the whole signing loop can happen without the device ever being connected to anything: your wallet software shows an unsigned transaction as a QR code, Jade reads it, you approve on the device, and Jade displays the signature as a QR code for the computer to read back.</p>
+
+      <p>No cable, no Bluetooth, no shared bus. Whatever is wrong with your computer stays on your computer.</p>
+
+      <ul class="sc-check-list"><li>Pair Jade with <a href='sparrow-first-wallet.html'>Sparrow</a>, Nunchuk, or Specter using the QR or camera option rather than USB.</li><li>Export the wallet's public keys by QR so the software can watch the wallet without ever touching a key.</li><li>Run one full transaction this way before relying on it &mdash; scan out, approve, scan back, broadcast.</li><li>Keep using the QR path even when a cable would be quicker. An air gap you bypass when convenient is not an air gap.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>Turn off what you are not using</h2>
+
+      <p>Jade offers Bluetooth and USB alongside the camera. If you have set up QR signing, you do not need the radio, and a capability you never use should not be switched on.</p>
+
+      <p>This is not a claim that Bluetooth on this device is broken. It is the ordinary principle that a signer's job is to be boring, and every enabled interface is one more thing that has to be correct.</p>
+
+      <h2><span class="sc-article-num">7</span>Verify an address, then check the backup</h2>
+
+      <ul class="sc-check-list"><li>Generate a receive address and display it on the Jade screen. Compare the whole string against what the computer shows.</li><li>Send a small test amount, confirm it arrives, and send it back out.</li><li>Restore your words onto wiped hardware, or into a temporary session, and confirm the same wallet appears.</li><li>Do all of this before the wallet holds anything you would miss.</li></ul>
+
+      <h2>What this means for your backup plan</h2>
+
+      <p>Because Jade's unlock design is unusual, it is worth being explicit about what your recovery words do and do not depend on.</p>
+
+      <ul class="sc-check-list"><li><strong>Your words are a complete backup.</strong> They restore your wallet on any compatible device or software, with no involvement from Blockstream, any server, or your original Jade.</li><li><strong>The server is not part of your backup.</strong> It participates in unlocking a particular device, not in owning the wallet. If it vanished permanently your bitcoin would be entirely recoverable from your words.</li><li><strong>The PIN is not a backup either.</strong> It protects the device against someone holding it. Losing the PIN costs you the device's convenience, not the wallet.</li><li><strong>Multisig changes the picture.</strong> If this Jade is one key in a <a href='multisig-2of3.html'>multisig</a>, you also need the wallet configuration backed up. Words alone will not rebuild it.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>Before you fund it properly</h3><p>Run the drill in <a href='recovery-test-drill.html'>test your recovery</a>. It matters on every device and slightly more here, because Jade offers several ways to operate and you want to have proven the one you actually chose.</p></div>
+
+      <p class="sc-source-note">
+        Modes, menu wording, and hardware revisions change between releases. Confirm the current setup flow and the details of the PIN design against
+        <a class="sc-text-link" href="https://blockstream.com/jade/" target="_blank" rel="noopener">Blockstream's own documentation <i class="bi bi-arrow-up-right"></i></a>
+        before following any step here that does not match what your device shows.
+      </p></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-first-wallet.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-window"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Sparrow: pair a hardware wallet and verify a receive address</h3>
+              <p>Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="multisig-2of3.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Build a 2-of-3 multisig</h3>
+              <p>Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

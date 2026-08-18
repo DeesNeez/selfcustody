@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260815-200" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260815-200" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260815-200" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="exchanges">
   <div id="site-header">
@@ -43,7 +43,24 @@
             <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
           </a>
           <nav id="navbar" class="navbar" aria-label="Primary navigation">
-            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li><a class=" " href="guides.html"><span>Guides</span></a></li><li><a class=" " href="devices.html"><span>Devices</span></a></li><li><a class=" " href="software.html"><span>Software</span></a></li><li><a class="active " href="exchanges.html"><span>Exchanges</span></a></li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
+            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="guides.html">All guides</a></li>
+            <li><a class="" href="glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="devices.html">Devices</a></li>
+            <li><a class="" href="software.html">Software</a></li>
+            <li><a class="active" href="exchanges.html" aria-current="page">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
         </div>
@@ -58,7 +75,7 @@
       <h1>Buying is one step.<br><em>Withdrawing is the custody decision.</em></h1>
       <p class="sc-lead">Compare brokers and exchanges by what happens after the purchase: where bitcoin sits, how it reaches your wallet, what the full cost includes, and which records you need to keep.</p>
       <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#exchange-compare">Compare platforms</a>
-           <a class="sc-btn sc-btn-ghost" href="guides.html">Withdrawal checklist</a></div>
+           <a class="sc-btn sc-btn-ghost" href="guides/exchange-withdrawal.html">Withdrawal guide</a></div>
         </div>
       </section>
 
@@ -66,7 +83,7 @@
           <div class="container">
             <div class="sc-callout mb-5"><h2>Prices and fees are intentionally not ranked here</h2><p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p></div>
             <div class="sc-section-head"><span class="sc-eyebrow">Two models</span><h2>Direct-to-wallet versus custodial platform</h2></div>
-            <div class="row g-4 sc-path-options">
+            <div class="row g-4 sc-path-options sc-exchange-models">
               <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-arrow-right-circle"></i></div><h3>Direct-to-wallet broker</h3><p>You provide a wallet address and purchased bitcoin settles to that address. This reduces time held by the service but requires you to have a tested wallet first.</p><p><strong>Examples:</strong> Bull Bitcoin and Bitcoin Well describe direct self-custody purchase flows.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
               <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-building-lock"></i></div><h3>Custodial exchange or app</h3><p>The platform credits bitcoin to your account and holds the keys until you withdraw. It can be convenient for trading, but account access and platform solvency remain dependencies.</p><p><strong>Examples:</strong> Shakepay, Ndax, Kraken, and Bitbuy support external withdrawals.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
             </div>
@@ -184,18 +201,27 @@
                 </tbody>
               </table>
             </div>
+            <div class="sc-callout mt-5">
+              <h3>Once you choose a platform</h3>
+              <p>Secure the account before funding it, then move purchased bitcoin to a wallet you control. Start with <a href="guides/exchange-account-security.html">locking down the exchange account</a>, followed by the <a href="guides/exchange-withdrawal.html">step-by-step withdrawal guide</a>.</p>
+            </div>
           </div>
         </section>
 
-        <section class="sc-section">
+        <section id="platforms" class="sc-section">
           <div class="container">
-            <div class="row g-4">
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bull Bitcoin</h2><p>A Canadian Bitcoin-only broker that sends purchased bitcoin directly to an address you control. It supports Interac e-Transfer, larger bank transfers, recurring buys, on-chain Bitcoin, Lightning, and Liquid workflows.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>No exchange bitcoin balance to withdraw later in the normal purchase flow.</li><li>Bitcoin-focused support and direct settlement.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The all-in quoted rate and network fee for your order size.</li><li>Your address and wallet backup before placing the order.</li></ul><a class="sc-text-link" href="https://www.bullbitcoin.com/buy" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bitcoin Well</h2><p>A Canadian self-custody Bitcoin company offering an online portal, recurring buys, an OTC desk, and a network of cash ATMs. Its published model delivers purchased bitcoin to a wallet you control rather than providing custody.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>Automatic direct-to-wallet settlement.</li><li>Online, recurring, OTC, and cash purchase options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Online-portal and ATM pricing are different products.</li><li>Verification requirements and limits depend on the transaction method and amount.</li></ul><a class="sc-text-link" href="https://bitcoinwell.com/about" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Shakepay</h2><p>A Canadian app focused on a simple buy, earn, and withdraw experience. Shakepay currently advertises free Bitcoin mainnet withdrawals and Lightning transfers, but bitcoin is custodial until you send it to your wallet.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Simple onboarding, recurring buys, and Canadian app experience.</li><li>Beginner-friendly withdrawal flow.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The effective spread in the quote even when a separate trading fee is not shown.</li><li>Current withdrawal minimums and policy before relying on free withdrawals.</li></ul><a class="sc-text-link" href="https://shakepay.com/bitcoin" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Ndax</h2><p>A Canadian order-execution platform with CAD funding, an order book, multiple assets, and external withdrawals. Ndax currently publishes a flat 0.20% trading fee, while crypto withdrawals use asset-specific flat fees.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Visible order-book workflow and posted trading fee.</li><li>CAD Interac and bank-transfer options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The bid-ask spread and asset withdrawal fee, not just the trading percentage.</li><li>Whether a smaller withdrawal is economical after the flat fee.</li></ul><a class="sc-text-link" href="https://ndax.io/en/fees" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Kraken</h2><p>A large global exchange with Canadian CAD support, Interac e-Transfer, cards, wire transfers, Canada Post funding, simple purchases, recurring buys, and advanced Kraken Pro trading tools.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Deep product range, liquidity, advanced order types, and broad asset support.</li><li>Multiple Canadian funding methods.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Simple-buy pricing can differ materially from Kraken Pro.</li><li>Funding and withdrawal charges vary by method and asset.</li></ul><a class="sc-text-link" href="https://www.kraken.com/ca/lp/kraken-in-canada" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bitbuy</h2><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul><a class="sc-text-link" href="https://bitbuy.ca/en-ca/fees" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+            <div class="sc-section-head">
+              <span class="sc-eyebrow">The platforms</span>
+              <h2>Six Canadian routes</h2>
+              <p>Direct-to-wallet brokers first, then custodial platforms. Grouped, not ranked.</p>
+            </div>
+            <div class="row g-4 sc-exchange-card-grid">
+              <div class="col-lg-6"><article id="bullbitcoin" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bull-bitcoin.png" alt="" width="48" height="48" loading="lazy"><h2>Bull Bitcoin</h2></div><p>A Canadian Bitcoin-only broker that sends purchased bitcoin directly to an address you control. It supports Interac e-Transfer, larger bank transfers, recurring buys, on-chain Bitcoin, Lightning, and Liquid workflows.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>No exchange bitcoin balance to withdraw later in the normal purchase flow.</li><li>Bitcoin-focused support and direct settlement.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The all-in quoted rate and network fee for your order size.</li><li>Your address and wallet backup before placing the order.</li></ul><a class="sc-text-link" href="https://www.bullbitcoin.com/buy" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article id="bitcoinwell" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitcoin-well.png" alt="" width="48" height="48" loading="lazy"><h2>Bitcoin Well</h2></div><p>A Canadian self-custody Bitcoin company offering an online portal, recurring buys, an OTC desk, and a network of cash ATMs. Its published model delivers purchased bitcoin to a wallet you control rather than providing custody.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>Automatic direct-to-wallet settlement.</li><li>Online, recurring, OTC, and cash purchase options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Online-portal and ATM pricing are different products.</li><li>Verification requirements and limits depend on the transaction method and amount.</li></ul><a class="sc-text-link" href="https://bitcoinwell.com/about" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article id="shakepay" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/shakepay.png" alt="" width="48" height="48" loading="lazy"><h2>Shakepay</h2></div><p>A Canadian app focused on a simple buy, earn, and withdraw experience. Shakepay currently advertises free Bitcoin mainnet withdrawals and Lightning transfers, but bitcoin is custodial until you send it to your wallet.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Simple onboarding, recurring buys, and Canadian app experience.</li><li>Beginner-friendly withdrawal flow.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The effective spread in the quote even when a separate trading fee is not shown.</li><li>Current withdrawal minimums and policy before relying on free withdrawals.</li></ul><a class="sc-text-link" href="https://shakepay.com/bitcoin" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article id="ndax" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/ndax.png" alt="" width="48" height="48" loading="lazy"><h2>Ndax</h2></div><p>A Canadian order-execution platform with CAD funding, an order book, multiple assets, and external withdrawals. Ndax currently publishes a flat 0.20% trading fee, while crypto withdrawals use asset-specific flat fees.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Visible order-book workflow and posted trading fee.</li><li>CAD Interac and bank-transfer options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The bid-ask spread and asset withdrawal fee, not just the trading percentage.</li><li>Whether a smaller withdrawal is economical after the flat fee.</li></ul><a class="sc-text-link" href="https://ndax.io/en/fees" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article id="kraken" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/kraken.png" alt="" width="48" height="48" loading="lazy"><h2>Kraken</h2></div><p>A large global exchange with Canadian CAD support, Interac e-Transfer, cards, wire transfers, Canada Post funding, simple purchases, recurring buys, and advanced Kraken Pro trading tools.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Deep product range, liquidity, advanced order types, and broad asset support.</li><li>Multiple Canadian funding methods.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Simple-buy pricing can differ materially from Kraken Pro.</li><li>Funding and withdrawal charges vary by method and asset.</li></ul><a class="sc-text-link" href="https://www.kraken.com/ca/lp/kraken-in-canada" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
+              <div class="col-lg-6"><article id="bitbuy" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitbuy.png" alt="" width="48" height="48" loading="lazy"><h2>Bitbuy</h2></div><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul><a class="sc-text-link" href="https://bitbuy.ca/en-ca/fees" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
             </div>
 
             <div class="sc-callout mt-5"><h3>Canadian recordkeeping</h3><p>Keep trade confirmations, CAD funding records, withdrawal transaction IDs, wallet labels, and the CAD value at acquisition and disposal. This site does not provide tax advice; use CRA guidance or a qualified Canadian tax professional for your situation.</p></div>
@@ -220,10 +246,12 @@
             <ul class="sc-footer-links sc-footer-links-grid">
               <li><a href="index.html">Home</a></li>
               <li><a href="guides.html">Guides</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
               <li><a href="devices.html">Devices</a></li>
               <li><a href="software.html">Software</a></li>
               <li><a href="exchanges.html">Exchanges</a></li>
               <li><a href="dashboard.html">Dashboard</a></li>
+              <li><a href="merch.html">Merch</a></li>
               <li><a href="contact.html">Get Help</a></li>
             </ul>
           </div>
@@ -241,7 +269,7 @@
         </div>
       </div>
     </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260815-200"></script>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="merch.html">Merch</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="assets/js/site-refresh.js?v=20260817-914"></script>
 </body>
 </html>

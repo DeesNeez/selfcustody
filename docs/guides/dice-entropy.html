@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.">
+  <title>Roll the dice: generating your own entropy | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/dice-entropy.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Roll the dice: generating your own entropy | SelfCustody.ca">
+  <meta property="og:description" content="Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/dice-entropy.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Roll the dice: generating your own entropy","description":"Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.","url":"https://selfcustody.ca/guides/dice-entropy.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/dice-entropy.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#advanced">Techniques</a>
+        </nav>
+        <span class="sc-eyebrow">Advanced techniques</span>
+        <h1>Roll the dice: generating your own entropy</h1>
+        <p class="sc-lead">Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-intermediate">Intermediate</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 20 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-entropy">Entropy</a><span class="sc-tag">Dice</span><span class="sc-tag">Seed generation</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../devices.html#coldcard">About COLDCARD <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#seedsigner">About SeedSigner <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#krux">About Krux <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#jade">About Blockstream Jade <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#bitbox">About BitBox02 <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Every bitcoin wallet is built on one enormous random number. Your twelve or twenty-four recovery words are just that number, written in a form a human can copy down. Everything else &mdash; every address, every signature, every coin you will ever hold &mdash; grows out of it.</p>
+
+      <p>Normally your device picks that number for you, in a fraction of a second, using a random number generator sealed inside a chip. It almost certainly does this well. But you cannot watch it happen, you cannot check it afterwards, and you have no way of knowing whether the chip is doing what it claims. You are taking it on faith.</p>
+
+      <p>Rolling dice removes the faith. You generate the randomness yourself, on a table, in front of your own eyes, and hand it to the device already made. Nothing about the chip's honesty matters any more, because you did the one part that had to be secret.</p>
+
+      <p>It costs you about twenty minutes and a little care. Here is how it works, and &mdash; more importantly &mdash; the handful of ways people accidentally ruin it.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-camera" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">Overhead shot: a single white casino die mid-roll on a dark surface, with a notebook and pen beside it showing a column of handwritten numbers.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>One die, rolled repeatedly, written down as you go. That is genuinely the whole apparatus.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li>A wallet that offers a dice option during setup. COLDCARD, SeedSigner, Krux, Blockstream Jade, and BitBox02 all have one.</li><li>A die. One is enough. Sharp-edged casino dice are slightly better than cheap rounded ones and cost very little.</li><li>Paper and a pen, and somewhere to roll where the die will not escape.</li><li>A brand-new wallet with nothing in it. This is for creating a wallet, never for altering one you already use.</li></ul>
+  </div>
+
+      <h2>How many times do I roll?</h2>
+
+      <p>Each roll of a six-sided die adds a fixed amount of randomness, so the number of rolls is not something you can negotiate with. The two counts that matter:</p>
+
+      <ul class="sc-check-list"><li><strong>50 rolls</strong> makes a 12-word wallet.</li><li><strong>99 rolls</strong> makes a 24-word wallet.</li><li>Some wallets ask for more &mdash; around <strong>154</strong> for 24 words &mdash; because they do the arithmetic a less efficient way. Follow whatever number your device asks for.</li></ul>
+
+      <p>Ninety-nine rolls is a genuine sitting. It takes most people fifteen or twenty minutes to roll and record carefully, and that is the correct pace. Stopping at eighty because your hand is tired does not make the wallet slightly weaker &mdash; it removes a chunk of the protection you sat down to build, and nothing on the screen will warn you that it happened.</p>
+
+      <h2>The rule everyone is tempted to break</h2>
+
+      <p>At some point the die will do something that feels wrong. Four sixes in a row. The same number five times. A run that looks so obviously <em>not random</em> that the temptation to roll it again is almost physical.</p>
+
+      <p>Do not roll it again. Write it down.</p>
+
+      <div class="sc-callout mt-4"><h3>Six sixes is exactly as likely as any other six rolls</h3><p>Randomness does not look random up close &mdash; it clumps, streaks, and repeats, and that is what makes it randomness. The instant you start rejecting results because they look wrong to you, the output stops reflecting the dice and starts reflecting your judgement. Your judgement is predictable. The dice are not. This is the single most effective way to weaken your own wallet, and it feels like being careful.</p></div>
+
+      <p>The same applies to helping the randomness along. Rolling 1, 2, 3, 4, 5, 6 in sequence over and over would sail past the safety checks on most devices &mdash; they count how often each face appeared, not what order it came in &mdash; and would produce a wallet that could be guessed in moments. Those checks exist to catch a die that has come to rest in a crack, not a person being creative.</p>
+
+      <p>Record every roll, in order, as it happens. Read the die from directly above rather than at an angle. Use one die and roll it repeatedly rather than throwing a handful and reading them together, because reading five dice at once is how numbers get transposed.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 4 / 3">
+      <i class="bi bi-usb-drive" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">Close-up of a hardware wallet screen partway through dice entry, showing the roll counter (e.g. "47 / 99") and the digits entered so far.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>Most devices show a running count. Keep going until it says you are finished.</figcaption>
+  </figure>
+
+      <h2>Are my dice good enough?</h2>
+
+      <p>This is the question people worry about most, and it is the one that matters least.</p>
+
+      <p>Real dice are never perfectly even. People have actually measured this properly &mdash; studies rolling dice hundreds of thousands of times have found individual faces turning up around 1.3% to 1.4% more often than they should. Cheap moulded dice are worse than casino dice with sharp square edges.</p>
+
+      <p>The effect on your wallet is almost nothing. Below is what happens to the randomness as the die gets progressively worse, starting from a perfect one and ending at a die so skewed you would notice it across the room.</p>
+
+      
+    <figure class="sc-figure sc-chart-figure">
+      <div class="sc-chart-legend">
+        <span><i class="sc-chart-key sc-chart-key-24" aria-hidden="true"></i>24 words &middot; 99 rolls</span>
+        <span><i class="sc-chart-key sc-chart-key-12" aria-hidden="true"></i>12 words &middot; 50 rolls</span>
+        <span><i class="sc-chart-key sc-chart-key-line" aria-hidden="true"></i>Security thresholds</span>
+      </div>
+
+      <svg class="sc-chart-svg" viewBox="0 0 720 400" role="img" aria-labelledby="entropy-chart-title entropy-chart-desc" preserveAspectRatio="xMidYMid meet">
+        <title id="entropy-chart-title">Randomness retained as a die becomes less fair</title>
+        <desc id="entropy-chart-desc">A 24-word seed from 99 rolls stays between 256 and 198 bits across every scenario. A 12-word seed from 50 rolls starts at 128 bits and falls to 100 bits with a badly skewed die, dropping below both the 128-bit and 112-bit thresholds.</desc>
+        <line class="sc-chart-grid" x1="56" y1="248" x2="704" y2="248"/>
+     <text class="sc-chart-axis-text" x="46" y="252.0" text-anchor="end">64</text><line class="sc-chart-grid" x1="56" y1="104" x2="704" y2="104"/>
+     <text class="sc-chart-axis-text" x="46" y="108.0" text-anchor="end">192</text><line class="sc-chart-grid" x1="56" y1="32" x2="704" y2="32"/>
+     <text class="sc-chart-axis-text" x="46" y="36.0" text-anchor="end">256</text>
+        <line class="sc-chart-threshold" x1="56" y1="176" x2="704" y2="176"/>
+     <text class="sc-chart-threshold-text" x="46" y="180.0" text-anchor="end">128</text><line class="sc-chart-threshold" x1="56" y1="194" x2="704" y2="194"/>
+     <text class="sc-chart-threshold-text" x="46" y="198.0" text-anchor="end">112</text>
+        <line class="sc-chart-axis" x1="56" y1="320" x2="704" y2="320"/>
+        <text class="sc-chart-axis-text" x="46" y="324" text-anchor="end">0</text>
+        <path class="sc-chart-bar-24" d="M95.8 320L95.8 36.1Q95.8 32.1 99.8 32.1L115.8 32.1Q119.8 32.1 119.8 36.1L119.8 320Z"/><path class="sc-chart-bar-12" d="M121.8 320L121.8 180.0Q121.8 176 125.8 176L141.8 176Q145.8 176 145.8 180.0L145.8 320Z"/><text class="sc-chart-value" x="107.8" y="24.1">256</text><text class="sc-chart-value" x="133.8" y="168.0">128</text><path class="sc-chart-bar-24" d="M225.4 320L225.4 39.3Q225.4 35.3 229.4 35.3L245.4 35.3Q249.4 35.3 249.4 39.3L249.4 320Z"/><path class="sc-chart-bar-12" d="M251.4 320L251.4 180.2Q251.4 176.2 255.4 176.2L271.4 176.2Q275.4 176.2 275.4 180.2L275.4 320Z"/><path class="sc-chart-bar-24" d="M355 320L355 48.5Q355 44.5 359 44.5L375 44.5Q379 44.5 379 48.5L379 320Z"/><path class="sc-chart-bar-12" d="M381 320L381 184.8Q381 180.8 385 180.8L401 180.8Q405 180.8 405 184.8L405 320Z"/><path class="sc-chart-bar-24" d="M484.6 320L484.6 65.4Q484.6 61.4 488.6 61.4L504.6 61.4Q508.6 61.4 508.6 65.4L508.6 320Z"/><path class="sc-chart-bar-12" d="M510.6 320L510.6 193.4Q510.6 189.4 514.6 189.4L530.6 189.4Q534.6 189.4 534.6 193.4L534.6 320Z"/><path class="sc-chart-bar-24" d="M614.2 320L614.2 101.3Q614.2 97.3 618.2 97.3L634.2 97.3Q638.2 97.3 638.2 101.3L638.2 320Z"/><path class="sc-chart-bar-12" d="M640.2 320L640.2 211.5Q640.2 207.5 644.2 207.5L660.2 207.5Q664.2 207.5 664.2 211.5L664.2 320Z"/><text class="sc-chart-value" x="626.2" y="89.3">198</text><text class="sc-chart-value is-inside" x="652.2" y="224.5">100</text>
+        <text class="sc-chart-axis-text" x="120.8" y="342" text-anchor="middle">Perfectly<tspan x="120.8" dy="14">fair die</tspan></text><text class="sc-chart-axis-text" x="250.4" y="342" text-anchor="middle">Cheap die,<tspan x="250.4" dy="14">2% bias</tspan></text><text class="sc-chart-axis-text" x="380" y="342" text-anchor="middle">One face<tspan x="380" dy="14">8% high</tspan></text><text class="sc-chart-axis-text" x="509.6" y="342" text-anchor="middle">One face<tspan x="509.6" dy="14">20% high</tspan></text><text class="sc-chart-axis-text" x="639.2" y="342" text-anchor="middle">One face<tspan x="639.2" dy="14">50% high</tspan></text>
+        <text class="sc-chart-axis-title" x="14" y="176" transform="rotate(-90 14 176)" text-anchor="middle">Bits of randomness</text>
+      </svg>
+
+      <figcaption>Even a die skewed far beyond anything you would own leaves a 24-word wallet with more randomness than a perfect 12-word one. The 12-word bar, by contrast, starts level with the 128-bit mark and loses ground straight away.</figcaption>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>Bits of randomness by die fairness</caption>
+          <thead><tr><th scope="col">Die</th><th scope="col">24 words (99 rolls)</th><th scope="col">12 words (50 rolls)</th></tr></thead>
+          <tbody><tr><th scope="row">A perfectly fair die</th><td>255.9</td><td>128.0</td></tr><tr><th scope="row">A cheap die, 2% bias</th><td>253.1</td><td>127.8</td></tr><tr><th scope="row">One face 8% high</th><td>244.9</td><td>123.7</td></tr><tr><th scope="row">One face 20% high</th><td>229.9</td><td>116.1</td></tr><tr><th scope="row">One face 50% high</th><td>198.0</td><td>100.0</td></tr></tbody>
+        </table>
+      </div>
+    </figure>
+
+      <p>Read the orange bars first. A 24-word wallet begins with a colossal surplus and keeps it: even the deliberately absurd final case leaves it far above the line that counts. You could roll with a genuinely bad die and still end up with a wallet nobody is guessing.</p>
+
+      <p>Now read the green bars. A 12-word wallet starts <em>level</em> with the 128-bit mark and has nowhere to go but down. By the last case it has fallen through both thresholds.</p>
+
+      <p>That comparison is the practical argument for rolling 99 times instead of 50. If you are going to the trouble of doing this by hand, the extra forty-nine rolls buy you a margin so large that the fairness of your dice stops being a question worth asking.</p>
+
+      <blockquote class="sc-pull-quote"><p>Do not try to correct for bias by discarding rolls you dislike. That does far more damage than any real die ever would.</p></blockquote>
+
+      <h2>Your rolls are not a backup</h2>
+
+      <p>Here is the part that catches people out, and it is worth reading twice.</p>
+
+      <p>There is no agreed standard for turning dice rolls into wallet words. Different wallets do the conversion differently &mdash; there are at least five methods in circulation &mdash; which means <strong>the same 99 rolls will produce a completely different wallet on a different device</strong>.</p>
+
+      <p>It is not even stable over time on one device. SeedSigner changed its method in 2022, so rolls recorded before that no longer rebuild the same wallet on current firmware.</p>
+
+      <p>So: your recovery words are the backup. Write them down carefully, exactly as the device shows them, in order. The column of dice rolls in your notebook is working paper, not a safety net &mdash; destroy it once the words are recorded and confirmed, and never file it away imagining it could rebuild the wallet later. It cannot.</p>
+
+      <h2>Why the last word is not really yours</h2>
+
+      <p>You may notice that the final word of your phrase seems fixed, or that the device has to work it out for you rather than letting you pick. That is normal and it is not the dice being ignored.</p>
+
+      <p>The last word is mostly a checksum &mdash; a small built-in error check, calculated from all the words before it. It is quietly one of the most useful things in the whole design: if you copy a word down wrong, the phrase gets rejected when you try to restore it, instead of silently opening a different, empty wallet and leaving you to work out what happened.</p>
+
+      <h2>Checking that your device did what it said</h2>
+
+      <p>It is possible to verify that a device converts rolls the way it claims. You roll a short test set, run the same rolls through an independent tool, and see whether you get the same words out. If they match, the device is honest about its method.</p>
+
+      <p>This is a genuinely advanced exercise, and it carries one rule with no exceptions.</p>
+
+      <ul class="sc-caution-list"><li>Only ever do this with throwaway test rolls, on a wallet holding nothing, which you wipe afterwards.</li><li>Never type the rolls or the words of a real wallet into anything except the device itself &mdash; not a website, not an offline copy of one, not a notes app, not a spreadsheet.</li><li>Anything that asks you to enter an existing recovery phrase to "verify" or "validate" it is stealing from you, however official it looks.</li></ul>
+
+      <h2>Finishing up</h2>
+
+      <p>The dice were the interesting part. They are not the part that keeps your bitcoin safe &mdash; the ordinary, boring steps are, and they are the same ones as for any other wallet.</p>
+
+      <ul class="sc-check-list"><li>Write the recovery words on paper or metal, in order, offline. Never photograph them.</li><li>Restore the wallet onto a wiped device, or run your device's own backup check, before sending it anything.</li><li>Send a small test amount first and confirm it arrives.</li><li>Note which device and firmware version you used, since the dice method belongs to that version.</li></ul>
+
+      <p class="mt-4"><a class="sc-text-link" href="what-not-to-normalize.html">Read the habits that undo all of this <i class="bi bi-arrow-right"></i></a></p>
+
+      <p class="sc-source-note">
+        Roll counts, the differences between wallets, and the dice-fairness figures charted above are drawn from
+        <a class="sc-text-link" href="https://kdmukai-bot.github.io/seedsigner-ai-analysis/dice/standard.html" target="_blank" rel="noopener">an AI-assisted analysis of dice entropy across wallet implementations <i class="bi bi-arrow-up-right"></i></a>
+        published alongside SeedSigner's own dice research. Devices change between firmware releases &mdash; check the roll count and method in your own device's current documentation before creating a wallet you intend to fund.
+      </p></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="coldcard-q-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-usb-drive"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>COLDCARD Q: first-time setup</h3>
+              <p>Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><article class="sc-card sc-guide-card is-planned">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-cpu"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>SeedSigner: build and first use</h3>
+              <p>Assembling the hardware, flashing the image, and the stateless signing model that keeps nothing on the device.</p>
+              <span class="sc-guide-card-soon">Being written</span>
+            </div></article></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

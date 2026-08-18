@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A passphrase is not a password on your wallet. It is a switch that selects a different wallet entirely — which is why a single wrong character shows you an empty balance and no error message.">
+  <title>BIP39 passphrases, and when not to use one | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/passphrase-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="BIP39 passphrases, and when not to use one | SelfCustody.ca">
+  <meta property="og:description" content="A passphrase is not a password on your wallet. It is a switch that selects a different wallet entirely — which is why a single wrong character shows you an empty balance and no error message.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/passphrase-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"BIP39 passphrases, and when not to use one","description":"A passphrase is not a password on your wallet. It is a switch that selects a different wallet entirely — which is why a single wrong character shows you an empty balance and no error message.","url":"https://selfcustody.ca/guides/passphrase-setup.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/passphrase-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#advanced">Techniques</a>
+        </nav>
+        <span class="sc-eyebrow">Advanced techniques</span>
+        <h1>BIP39 passphrases, and when not to use one</h1>
+        <p class="sc-lead">A passphrase is not a password on your wallet. It is a switch that selects a different wallet entirely — which is why a single wrong character shows you an empty balance and no error message.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 30 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-passphrase">Passphrase</a><span class="sc-tag">Recovery</span><a class="sc-tag sc-tag-link" href="../glossary.html#term-threat_model">Threat model</a></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Almost everything written about passphrases describes them as an extra password protecting your wallet. That description is wrong in a way that costs people their bitcoin, so it is worth replacing before anything else.</p>
+
+      <p>A passphrase does not protect a wallet. It <em>selects</em> one. Your recovery words plus no passphrase lead to one wallet. Your recovery words plus the word <em>garden</em> lead to a completely different wallet. Plus <em>Garden</em>, a third. Plus <em>garden&nbsp;</em> with a trailing space, a fourth. All of them are real, valid, and permanently reachable by anyone who supplies that exact input.</p>
+
+      <p>There is no correct passphrase and no incorrect one. There is only which of the near-infinite wallets you land in.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-shield-lock" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A single key on a plain surface beside a row of identical closed doors receding into shadow — the same key, many doors.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>One seed, unlimited wallets. The passphrase is which door you walk through.</figcaption>
+  </figure>
+
+      <h2><span class="sc-article-num">1</span>The failure that has no error message</h2>
+
+      <p>Type your banking password wrong and you get told. Type your passphrase wrong and your wallet opens successfully, shows a balance of zero, and reports no problem at all &mdash; because you have correctly opened a different, empty wallet.</p>
+
+      <p>This is the single most important thing to understand. Every wrong passphrase looks exactly like a wallet that has been emptied by a thief. People have concluded they were robbed when they had mistyped one character, and people have concluded their backup failed when the words were perfect and the passphrase was capitalised differently.</p>
+
+      <ul class="sc-caution-list"><li>There is no reset, no hint, no recovery flow, and no support desk. The passphrase is not stored anywhere — not on your device, not by the manufacturer, not in your backup unless you put it there.</li><li>Case matters. Spaces matter, including trailing ones. Non-ASCII characters can be handled differently by different wallets, so a passphrase with accents or emoji may not restore identically everywhere.</li></ul>
+
+      <h2><span class="sc-article-num">2</span>What it genuinely protects against</h2>
+
+      <p>Used well, a passphrase solves one specific problem: it makes a discovered seed backup insufficient on its own.</p>
+
+      <p>If someone finds your metal plate in a drawer, or the safe deposit box is opened, or a relative goes through your papers, the words alone give them a wallet &mdash; just not yours. That is a genuine and meaningful improvement to the physical security of your backup.</p>
+
+      <div class="sc-passphrase-map" aria-label="Situations where a passphrase helps or does not help">
+        <div><span class="is-yes">Yes</span><p><strong>Someone finds the written seed.</strong> This is exactly what a passphrase is designed for.</p></div>
+        <div><span class="is-limited">Limited</span><p><strong>The hardware wallet is stolen.</strong> The PIN was already doing most of that job.</p></div>
+        <div><span class="is-no">No</span><p><strong>Malware is on the computer.</strong> Device-screen verification protects against that.</p></div>
+        <div><span class="is-limited">Barely</span><p><strong>You are physically coerced.</strong> It may delay the attacker, not stop them.</p></div>
+        <div><span class="is-risk">Risk</span><p><strong>You forget or mistype it.</strong> The passphrase becomes the cause of loss.</p></div>
+        <div><span class="is-no">No</span><p><strong>Your heirs must recover.</strong> It makes their job materially harder.</p></div>
+      </div>
+
+      <h2><span class="sc-article-num">3</span>The decoy wallet idea deserves scrutiny</h2>
+
+      <p>A popular argument runs: keep a small balance in the passphrase-free wallet, so if you are ever forced to hand something over you can surrender that one and keep the real wallet hidden.</p>
+
+      <p>It sounds clever, and it rests on an assumption worth stating out loud: <strong>that the person coercing you believes you and stops.</strong></p>
+
+      <p>Anyone sophisticated enough to force you to open a wallet knows passphrases exist. The decoy does not end the encounter; at best it buys time, and at worst it prolongs a situation you wanted over quickly. An empty or obviously-token decoy is transparently a decoy. A convincing one has to hold enough money that losing it hurts.</p>
+
+      <p>None of that means the technique is worthless. It means it is a delay rather than a shield, and it should not be the reason you adopt a passphrase.</p>
+
+      <h2><span class="sc-article-num">4</span>Choosing one you can actually reproduce</h2>
+
+      <p>The requirement is not that it be clever. It is that you can reproduce it <em>exactly</em>, from memory or from a record, in ten years, under stress, possibly on a device with an awkward keyboard.</p>
+
+      <ul class="sc-check-list"><li><strong>Stick to plain ASCII.</strong> Letters, digits, simple punctuation. Accented characters and emoji are handled inconsistently between wallets and can fail to restore elsewhere.</li><li><strong>Avoid ambiguity you will have to guess about later.</strong> Was it capitalised? Was there a space or a hyphen? If you have to wonder, choose differently.</li><li><strong>Length beats complexity.</strong> Several unrelated words are stronger than a short string of symbols and far easier to record correctly.</li><li><strong>Do not use something derivable from you.</strong> A pet's name and a birth year is guessable by exactly the person most likely to find your backup.</li><li><strong>Never trust it to memory alone.</strong> People are extremely confident about strings they later cannot reproduce.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Storing it</h2>
+
+      <p>The passphrase needs the same durability as the seed and the opposite storage location. Together they open the wallet; separately neither does. That is the entire arrangement, and it only works if the separation is real.</p>
+
+      <ul class="sc-check-list"><li>Record it physically, durably, and away from the seed backup — a different building, ideally.</li><li><strong>Write down the fact that a passphrase exists at all.</strong> This is the step people skip, and it is why heirs restore the words, see an empty wallet, and conclude the bitcoin is gone.</li><li>Note the exact form: whether it has spaces, capitals, or punctuation, without writing the passphrase itself in that same note.</li><li>If your setup uses one passphrase per wallet, record which is which.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>Your heirs will not guess it</h3><p>A seed backup with no note about a passphrase is, from the outside, indistinguishable from a wallet that was emptied years ago. Whoever handles your estate will find the words, restore them, see nothing, and stop looking. Write it down.</p></div>
+
+      <h2><span class="sc-article-num">6</span>Test it before it holds anything</h2>
+
+      <p>Everything above is theory until you have restored the passphrase wallet at least once, deliberately.</p>
+
+      <ul class="sc-check-list"><li>Restore the words <em>plus</em> the passphrase onto a wiped or spare device and confirm the expected wallet appears.</li><li>Check the master fingerprint or first receive address against what you noted beforehand.</li><li>Restore the words <em>without</em> the passphrase too, so you know exactly what that empty wallet looks like and will not mistake it for a disaster later.</li><li>Repeat after any change to the passphrase — which produces an entirely new wallet, requiring a fresh backup and a fresh test.</li></ul>
+
+      <p>The full procedure is in <a href='recovery-test-drill.html'>test your recovery</a>, and the passphrase case is the one where skipping it is most expensive.</p>
+
+      <h2>Should you use one at all?</h2>
+
+      <p>For most people holding a moderate amount, the honest answer is no &mdash; not yet.</p>
+
+      <p>A passphrase converts a physical-security problem into a memory-and-records problem, and people are considerably worse at the second than they expect. The population of bitcoiners who have lost funds to a forgotten or mistyped passphrase is meaningfully larger than the population who were saved by one.</p>
+
+      <ul class="sc-check-list"><li><strong>Reasonable:</strong> your seed backup is somewhere you cannot fully control, such as shared premises or a location others can access.</li><li><strong>Reasonable:</strong> you already run a tested setup, understand the recovery precisely, and have somewhere durable to record the passphrase separately.</li><li><strong>Not a good reason:</strong> a guide told you it was more secure.</li><li><strong>Not a good reason:</strong> defending against coercion, for the reasons above.</li><li><strong>Not a good reason:</strong> adding it during a first setup, before you have restored anything even once.</li></ul>
+
+      <h2>The alternative worth considering first</h2>
+
+      <p>If the problem you are solving is <em>a single discovered backup should not be enough to take my bitcoin</em>, then <a href='multisig-2of3.html'>multisig</a> solves it more robustly and without a memorised secret. Someone finding one key backup has one key, and one key is not enough &mdash; no recall required, and no silent empty wallet if you get a character wrong.</p>
+
+      <p>Multisig is more work to set up and brings its own obligations, particularly around backing up the wallet configuration. But it fails safely where a passphrase fails silently, and for the specific threat both address, that is the more important property.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>A passphrase is a second secret you must never lose, protecting against a threat you should be able to describe. If you cannot describe the threat, you are adding a way to lose your bitcoin in exchange for nothing.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="multisig-2of3.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Build a 2-of-3 multisig</h3>
+              <p>Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="what-not-to-normalize.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shield-exclamation"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>What not to normalize</h3>
+              <p>Six habits that look harmless, are extremely common, and are the reason most self-custody losses happen. None of them involve being hacked.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

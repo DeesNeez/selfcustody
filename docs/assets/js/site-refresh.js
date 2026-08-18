@@ -121,6 +121,50 @@
 
   const nav = document.getElementById("navbar");
   const toggle = document.querySelector(".mobile-nav-toggle");
+  const navMenus = [...(nav?.querySelectorAll(".sc-nav-menu") || [])];
+
+  const setNavMenu = (menu, open) => {
+    const menuToggle = menu?.querySelector(".sc-nav-menu-toggle");
+    if (!menu || !menuToggle) return;
+    menu.classList.toggle("is-open", open);
+    menuToggle.setAttribute("aria-expanded", String(open));
+  };
+
+  const closeAllNavMenus = except => {
+    navMenus.forEach(menu => {
+      if (menu !== except) setNavMenu(menu, false);
+    });
+  };
+
+  navMenus.forEach(menu => {
+    const menuToggle = menu.querySelector(".sc-nav-menu-toggle");
+
+    menuToggle?.addEventListener("click", event => {
+      event.preventDefault();
+      const open = !menu.classList.contains("is-open");
+      closeAllNavMenus(menu);
+      setNavMenu(menu, open);
+    });
+
+    menu.addEventListener("focusout", () => {
+      requestAnimationFrame(() => {
+        if (!menu.contains(document.activeElement)) setNavMenu(menu, false);
+      });
+    });
+
+    menu.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        setNavMenu(menu, false);
+        menuToggle?.focus();
+      }
+    });
+  });
+
+  document.addEventListener("click", event => {
+    navMenus.forEach(menu => {
+      if (!menu.contains(event.target)) setNavMenu(menu, false);
+    });
+  });
 
   /**
    * Three classes, not two -- .navbar-mobile (structure), .sc-nav-animating
@@ -170,6 +214,7 @@
 
   const closeNav = () => {
     clearTimeout(navCloseTimer);
+    closeAllNavMenus();
     nav.classList.remove("sc-nav-visible");
     toggle.classList.remove("bi-x");
     toggle.classList.add("bi-list");
@@ -2771,5 +2816,428 @@
     }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
 
     revealTargets.forEach(el => observer.observe(el));
+  }
+
+  /**
+   * Guide finder (guides.html).
+   *
+   * Three optional answers -- goal, product, experience -- filter the guide
+   * cards in place. The markup ships with every card visible and the finder
+   * itself hidden, so without JavaScript the library is still a complete,
+   * browsable page rather than a row of dead controls. This reveals the
+   * controls and takes over from there.
+   *
+   * State also lives in the query string, so devices.html can link straight to
+   * guides.html?product=coldcard and land on a filtered library.
+   */
+  const finderSection = document.querySelector("[data-guide-finder]");
+
+  if (finderSection) {
+    const cells = [...document.querySelectorAll(".sc-guide-cell")];
+    const chips = [...finderSection.querySelectorAll("[data-finder-group]")];
+    const bar = finderSection.querySelector("[data-finder-bar]");
+    const countEl = finderSection.querySelector("[data-finder-count]");
+    const clearBtn = finderSection.querySelector("[data-finder-clear]");
+    const pick = finderSection.querySelector("[data-finder-pick]");
+    const noneEl = finderSection.querySelector("[data-guide-none]");
+
+    /* Saying you are advanced should never hide the basics, so each answer maps
+       to the set of levels it keeps rather than to a single level. */
+    const LEVELS = {
+      new: ["beginner"],
+      some: ["beginner", "intermediate"],
+      advanced: ["beginner", "intermediate", "advanced"]
+    };
+
+    const answers = { goal: null, product: null, level: null };
+    const anyAnswer = () => Object.values(answers).some(Boolean);
+
+    const matches = cell => {
+      if (answers.goal && !cell.dataset.guideGoals.split(" ").includes(answers.goal)) return false;
+      if (answers.level && !LEVELS[answers.level].includes(cell.dataset.guideLevel)) return false;
+      /* Strict inclusion, no exemption for an empty product list. A product
+         answer is "show me what's written about this," and a universal guide
+         with no mention of it is not an answer to that -- it used to survive
+         the filter regardless, which is how picking a single vendor like
+         Unchained surfaced a dozen unrelated guides instead of the one that
+         actually names it. */
+      if (answers.product && !cell.dataset.guideProducts.split(" ").includes(answers.product)) return false;
+      return true;
+    };
+
+    const syncChips = () => {
+      chips.forEach(chip => {
+        const on = answers[chip.dataset.finderGroup] === chip.dataset.finderValue;
+        chip.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    };
+
+    /* Clones the real card out of the grid below rather than rebuilding a
+       text-link summary of it -- the card already has its own title, summary,
+       tags, and "Read guide" link. No heading of its own either: the count bar
+       directly above already says "N guides ready to read", so a second
+       "N guides available" line here was the same fact twice.
+
+       Every match is rendered, not a top-few preview -- the library below is
+       no longer filtered, so this box is the only place the answer appears.
+       Document order is already the curated order (foundations before devices
+       before advanced), so no re-sort is needed. */
+    const renderPick = matched => {
+      const readable = matched.filter(c => c.dataset.guideStatus === "published");
+      if (!anyAnswer() || !readable.length) {
+        pick.hidden = true;
+        pick.replaceChildren();
+        return;
+      }
+
+      const row = document.createElement("div");
+      row.className = "row g-4";
+      readable.forEach(cell => {
+        const card = cell.querySelector(".sc-guide-card");
+        if (!card) return;
+        const col = document.createElement("div");
+        col.className = "col-md-6 col-xl-4";
+        const clone = card.cloneNode(true);
+        /* Cards further down the page may not have been scroll-revealed yet,
+           and the clone inherits .sc-reveal's opacity: 0 with them. The finder
+           sits above them, so the clone has to be marked revealed itself. */
+        clone.classList.add("sc-reveal", "is-visible");
+        col.appendChild(clone);
+        row.appendChild(col);
+      });
+
+      pick.replaceChildren(row);
+      pick.hidden = false;
+    };
+
+    const apply = () => {
+      /* The library below the finder is left exactly as it renders on load --
+         no cards hidden, no sections collapsed, no jump links removed. The
+         finder answers inside its own box; the page underneath stays a
+         complete, browsable library either way. That also means the results
+         in the box have to be the full set rather than a preview, since
+         there is no longer a filtered grid below to fall back on. */
+      const matched = cells.filter(matches);
+      const ready = matched.filter(c => c.dataset.guideStatus === "published").length;
+      const soon = matched.length - ready;
+
+      bar.hidden = !anyAnswer();
+      if (noneEl) noneEl.hidden = !(anyAnswer() && !matched.length);
+
+      if (anyAnswer()) {
+        countEl.textContent = "";
+        if (!matched.length) {
+          countEl.textContent = "Nothing matches those answers yet.";
+        } else {
+          const strong = document.createElement("strong");
+          strong.textContent = String(ready);
+          countEl.append(
+            strong,
+            document.createTextNode(
+              ` guide${ready === 1 ? "" : "s"} ready to read` +
+              (soon ? `, ${soon} more being written` : "")
+            )
+          );
+        }
+      }
+
+      renderPick(matched);
+    };
+
+    const syncUrl = () => {
+      const params = new URLSearchParams();
+      Object.entries(answers).forEach(([k, v]) => { if (v) params.set(k, v); });
+      const query = params.toString();
+      history.replaceState(null, "", query ? `?${query}${location.hash}` : location.pathname + location.hash);
+    };
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        const group = chip.dataset.finderGroup;
+        const value = chip.dataset.finderValue;
+        /* Clicking the selected chip again clears that answer, which is the
+           only way back to "all" for a single question without resetting the
+           other two. */
+        answers[group] = answers[group] === value ? null : value;
+        syncChips();
+        apply();
+        syncUrl();
+      });
+    });
+
+    clearBtn.addEventListener("click", () => {
+      Object.keys(answers).forEach(k => { answers[k] = null; });
+      syncChips();
+      apply();
+      syncUrl();
+      finderSection.scrollIntoView({ block: "start" });
+    });
+
+    /* Read any incoming ?goal=&product=&level= before the first paint of the
+       revealed finder, so a deep link never flashes the unfiltered library. */
+    const incoming = new URLSearchParams(location.search);
+    const valid = {
+      goal: new Set(chips.filter(c => c.dataset.finderGroup === "goal").map(c => c.dataset.finderValue)),
+      product: new Set(chips.filter(c => c.dataset.finderGroup === "product").map(c => c.dataset.finderValue)),
+      level: new Set(Object.keys(LEVELS))
+    };
+    Object.keys(answers).forEach(key => {
+      const value = incoming.get(key);
+      if (value && valid[key].has(value)) answers[key] = value;
+    });
+
+    finderSection.hidden = false;
+    syncChips();
+    apply();
+
+    /* A deep link with answers but no anchor should land on the results rather
+       than at the top of the page. An explicit #section in the URL wins. */
+    if (anyAnswer() && !location.hash) {
+      requestAnimationFrame(() => finderSection.scrollIntoView({ block: "start" }));
+    }
+  }
+
+  /**
+   * Searchable Bitcoin glossary. The public API is the source of record, so a
+   * catalogue update does not require rebuilding this site. All remote values
+   * are inserted with textContent rather than interpreted as markup.
+   */
+  const glossary = document.querySelector("[data-glossary]");
+
+  if (glossary) {
+    const API_URL = "https://btclexicon.com/api/v2/terms";
+    const search = glossary.querySelector("[data-glossary-search]");
+    const clear = glossary.querySelector("[data-glossary-clear]");
+    const count = glossary.querySelector("[data-glossary-count]");
+    const letters = glossary.querySelector("[data-glossary-letters]");
+    const status = glossary.querySelector("[data-glossary-status]");
+    const results = glossary.querySelector("[data-glossary-results]");
+    const empty = glossary.querySelector("[data-glossary-empty]");
+    const collator = new Intl.Collator("en", { sensitivity: "base", numeric: true });
+    const state = { terms: [], query: "", letter: "all" };
+    const localTerms = [
+      {
+        id: "descriptor",
+        title: "Wallet descriptor",
+        definition: "A structured description of a Bitcoin wallet's public keys, derivation paths, script type, and spending policy. Also called an output descriptor, it lets compatible software reconstruct addresses and coordinate or watch the wallet without containing the private keys required to spend.",
+        example: "A multisig backup includes the wallet descriptor so compatible software can rebuild the same 2-of-3 policy and derive the same addresses.",
+        categories: ["Wallets", "Recovery", "Multisig", "Technical"]
+      },
+      {
+        id: "microsd_backup",
+        title: "MicroSD backup",
+        definition: "A backup file or wallet record stored on a removable MicroSD card. Hardware wallets may use MicroSD cards to move PSBTs, export wallet data, install firmware, or save an encrypted device backup without connecting the signer directly to an online computer. What the card contains—and whether it is encrypted—depends on the device and workflow.",
+        example: "A COLDCARD can save an encrypted backup containing its seed and settings to a MicroSD card; the backup file and its separate password are both required for recovery.",
+        categories: ["Hardware Wallets", "Backups", "Recovery", "Storage"]
+      },
+      {
+        id: "nfc",
+        title: "NFC",
+        definition: "Near Field Communication: a very short-range wireless technology that exchanges data when compatible devices are brought within a few centimetres of each other. Bitcoin devices and keycards may use NFC to transfer wallet data or approve actions, but NFC is still a communication channel and should not automatically be treated as an air gap.",
+        example: "A user taps an NFC keycard against a phone to authorize a wallet operation without plugging in a cable.",
+        categories: ["Hardware Wallets", "Connectivity", "Technical"]
+      },
+      {
+        id: "passphrase",
+        title: "Passphrase",
+        definition: "An optional secret combined with a wallet backup to derive a different wallet. Under BIP39, every passphrase—including an empty or incorrect one—produces a valid wallet, so there is no error message that can identify the right one. The same recovery words and exact passphrase are both required to restore the intended wallet.",
+        example: "Restoring the correct recovery words with a misspelled passphrase opens a different, usually empty wallet rather than reporting a mistake.",
+        categories: ["Wallets", "Security", "Recovery", "BIP39"]
+      },
+      {
+        id: "phishing",
+        title: "Phishing",
+        definition: "A social-engineering attack that impersonates a trusted person, company, website, or app to trick someone into revealing secrets or approving a harmful action. In Bitcoin, phishing commonly targets exchange credentials, recovery words, passphrases, wallet downloads, addresses, and transaction approvals.",
+        example: "A fake support message sends a user to a look-alike website that asks for recovery words to ‘verify’ a wallet.",
+        categories: ["Security", "Threats", "Exchanges"]
+      },
+      {
+        id: "secure_element",
+        title: "Secure element",
+        definition: "A tamper-resistant chip designed to store sensitive data and perform security-critical operations in an isolated environment. In a hardware wallet it may protect secrets, enforce PIN rules, or assist with signing, but its presence alone does not prove the entire device or firmware is secure.",
+        example: "A hardware wallet stores key material in a secure element while its main processor handles the display and user interface.",
+        categories: ["Hardware Wallets", "Security", "Technical"]
+      },
+      {
+        id: "shamir_backup",
+        title: "Shamir backup",
+        definition: "A threshold backup method, commonly implemented for wallets as SLIP39, that divides a master secret into multiple unique recovery shares. A chosen minimum number of shares can reconstruct the wallet; fewer than that threshold do not reveal the master secret. SLIP39 shares are not ordinary BIP39 recovery words and require compatible recovery software or hardware.",
+        example: "With a 2-of-3 Shamir backup, any two of the three shares can recover the wallet, while one share alone is insufficient.",
+        categories: ["Backups", "Recovery", "Security", "SLIP39"]
+      },
+      {
+        id: "reproducible_firmware",
+        title: "Reproducible firmware",
+        definition: "Firmware whose published source code and documented build process can be independently rebuilt to produce the same binary distributed by the vendor. Matching builds provide evidence that the released firmware corresponds to the reviewed source, but they do not prove that the source itself is bug-free or safe.",
+        example: "Independent builders compile a hardware wallet's tagged source release and compare the resulting firmware hash with the vendor's download.",
+        categories: ["Hardware Wallets", "Open Source", "Security", "Firmware"]
+      },
+      {
+        id: "sim_swap",
+        title: "SIM swap",
+        definition: "An account-takeover attack in which a criminal causes a mobile carrier to move a victim's phone number to a SIM or device the criminal controls. Calls and text messages—including SMS login codes—can then be intercepted, which is why SMS should not be the strongest protection on an exchange account.",
+        example: "An attacker takes over a phone number, resets an exchange password, and receives the exchange's SMS verification code.",
+        categories: ["Security", "Threats", "Exchanges", "2FA"]
+      },
+      {
+        id: "threat_model",
+        title: "Threat model",
+        definition: "A structured assessment of what you are protecting, who or what could harm it, how likely those events are, and which safeguards address them. A useful Bitcoin threat model includes digital theft, physical loss, coercion, fire or flood, user error, privacy leakage, and the people who may need to recover the wallet.",
+        example: "Someone living alone may prioritize recoverability and inheritance differently from a public figure who faces targeted physical threats.",
+        categories: ["Security", "Planning", "Risk"]
+      },
+      {
+        id: "watch_only_wallet",
+        title: "Watch-only wallet",
+        definition: "A wallet that tracks addresses, balances, and transactions without holding the private keys needed to spend. It can receive funds and usually construct unsigned transactions, but signing must happen in a separate wallet or hardware device. Importing an XPUB or descriptor can create a watch-only wallet while also exposing wallet history to the software or server used.",
+        example: "Sparrow on an online computer watches the wallet and prepares a PSBT; an offline hardware wallet reviews and signs it.",
+        categories: ["Wallets", "Security", "Privacy", "Technical"]
+      }
+    ];
+
+    const normalize = value => String(value || "")
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
+    const firstLetter = title => {
+      const first = String(title || "").trim().charAt(0).toUpperCase();
+      return /[A-Z]/.test(first) ? first : "0-9";
+    };
+
+    const make = (tag, className, text) => {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    };
+
+    const renderCard = term => {
+      const article = make("article", "sc-glossary-card");
+      article.id = `term-${term.id}`;
+
+      const headingRow = make("div", "sc-glossary-card-head");
+      const heading = make("h2", "", term.title);
+      headingRow.append(heading);
+
+      const definition = make("p", "sc-glossary-definition", term.definition);
+      article.append(headingRow, definition);
+
+      if (term.example) {
+        const example = make("p", "sc-glossary-example");
+        example.append(make("span", "", "Example: "), document.createTextNode(term.example));
+        article.append(example);
+      }
+
+      if (term.categories.length) {
+        const categoryList = make("ul", "sc-glossary-categories");
+        categoryList.setAttribute("aria-label", "Categories");
+        term.categories.forEach(category => {
+          const item = make("li", "", category);
+          categoryList.append(item);
+        });
+        article.append(categoryList);
+      }
+
+      return article;
+    };
+
+    const render = () => {
+      const words = normalize(state.query).split(/\s+/).filter(Boolean);
+      const shown = state.terms.filter(term => {
+        if (state.letter !== "all" && term.letter !== state.letter) return false;
+        return words.every(word => term.searchText.includes(word));
+      });
+
+      const fragment = document.createDocumentFragment();
+      shown.forEach(term => fragment.append(renderCard(term)));
+      results.replaceChildren(fragment);
+      results.hidden = !shown.length;
+      empty.hidden = Boolean(shown.length);
+      clear.hidden = !state.query;
+      count.textContent = `${shown.length.toLocaleString()} of ${state.terms.length.toLocaleString()} terms`;
+    };
+
+    const renderLetters = () => {
+      const available = new Set(state.terms.map(term => term.letter));
+      const options = ["all", "0-9", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+      const fragment = document.createDocumentFragment();
+
+      options.forEach(letter => {
+        const button = make("button", "sc-glossary-letter", letter === "all" ? "All" : letter);
+        button.type = "button";
+        button.dataset.letter = letter;
+        button.disabled = letter !== "all" && !available.has(letter);
+        button.setAttribute("aria-pressed", String(letter === state.letter));
+        button.addEventListener("click", () => {
+          state.letter = letter;
+          letters.querySelectorAll("button").forEach(item => {
+            item.setAttribute("aria-pressed", String(item.dataset.letter === letter));
+          });
+          render();
+        });
+        fragment.append(button);
+      });
+
+      letters.replaceChildren(fragment);
+    };
+
+    search.addEventListener("input", () => {
+      state.query = search.value.trim();
+      render();
+    });
+
+    clear.addEventListener("click", () => {
+      search.value = "";
+      state.query = "";
+      search.focus();
+      render();
+    });
+
+    fetch(API_URL, { headers: { Accept: "application/json" } })
+      .then(response => {
+        if (!response.ok) throw new Error(`Glossary request failed: ${response.status}`);
+        return response.json();
+      })
+      .then(payload => {
+        const apiTerms = Object.entries(payload)
+          .filter(([, group]) => group && typeof group === "object" && !Array.isArray(group))
+          .flatMap(([, group]) => Object.values(group));
+
+        state.terms = [...new Map([...apiTerms, ...localTerms].map(term => [term.id, term])).values()]
+          /* The API includes one `lexicon_categories` metadata record alongside
+             its term objects. It has a title but no definition and should not
+             be rendered as a glossary card. */
+          .filter(term => term && term.id && term.title && term.definition)
+          .map(term => ({
+            ...term,
+            categories: Array.isArray(term.categories) ? term.categories : [],
+            letter: firstLetter(term.title),
+            searchText: normalize([
+              term.title,
+              term.definition,
+              term.example,
+              term.part_of_speech,
+              ...(Array.isArray(term.categories) ? term.categories : [])
+            ].join(" "))
+          }))
+          .sort((a, b) => collator.compare(a.title, b.title));
+
+        status.hidden = true;
+        renderLetters();
+        render();
+
+        if (location.hash.startsWith("#term-")) {
+          requestAnimationFrame(() => document.querySelector(location.hash)?.scrollIntoView());
+        }
+      })
+      .catch(() => {
+        status.classList.add("is-error");
+        status.replaceChildren(
+          make("h2", "", "The glossary could not be loaded."),
+          make("p", "", "The source may be temporarily unavailable. Refresh this page to try again.")
+        );
+        count.textContent = "Glossary unavailable";
+      });
   }
 })();
