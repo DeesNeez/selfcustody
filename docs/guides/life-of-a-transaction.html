@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="What actually happens between pressing send and seeing a confirmation — the signature, the nonce that must never repeat, the waiting room nobody owns, and the moment your own node decides the payment is real.">
+  <title>The life of a transaction | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/life-of-a-transaction.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="The life of a transaction | SelfCustody.ca">
+  <meta property="og:description" content="What actually happens between pressing send and seeing a confirmation — the signature, the nonce that must never repeat, the waiting room nobody owns, and the moment your own node decides the payment is real.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/life-of-a-transaction.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"The life of a transaction","description":"What actually happens between pressing send and seeing a confirmation — the signature, the nonce that must never repeat, the waiting room nobody owns, and the moment your own node decides the payment is real.","url":"https://selfcustody.ca/guides/life-of-a-transaction.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/life-of-a-transaction.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#concepts">Concepts</a>
+        </nav>
+        <span class="sc-eyebrow">How it works</span>
+        <h1>The life of a transaction</h1>
+        <p class="sc-lead">What actually happens between pressing send and seeing a confirmation — the signature, the nonce that must never repeat, the waiting room nobody owns, and the moment your own node decides the payment is real.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-intermediate">Intermediate</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 20 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">Transactions</span><span class="sc-tag">How it works</span><span class="sc-tag">Signing</span></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">From the outside, sending bitcoin looks like sending an email. You enter an address, enter an amount, press a button, and some minutes later it has arrived. Underneath, almost none of that is what happens &mdash; nothing is sent to the recipient, nothing is submitted anywhere in particular, and the thing that finally makes the payment real is a decision made independently by thousands of computers that have never heard of you.</p>
+
+      <p>This page follows one payment from a private key to a confirmed block. Not as instructions &mdash; there is nothing here to do &mdash; but because knowing the shape of it explains most of the advice on the rest of this site.</p>
+
+      
+    <figure class="sc-figure sc-diagram-figure">
+      <svg class="sc-dg-svg" viewBox="0 0 720 400" role="img" aria-labelledby="tx-dg-title tx-dg-desc" preserveAspectRatio="xMidYMid meet">
+        <title id="tx-dg-title">The five stages of a bitcoin transaction</title>
+        <desc id="tx-dg-desc">A transaction is signed on your device, broadcast to peers, waits in the mempool, is included in a block, and is then buried under further blocks. The first three stages are provisional: the fee can be raised, the transaction replaced, or it can expire unnoticed. From inclusion in a block onward it is settled, and undoing it means out-mining the network, at a cost that rises with every block. Throughout all five stages the private key never leaves the signing device — only the signature travels.</desc>
+
+        <text class="sc-dg-panel-title" x="24" y="30">What happens after you press send</text>
+        <text class="sc-dg-panel-sub" x="24" y="52">Five states, and one line that matters more than the others</text>
+
+        
+    <g>
+      <rect class="sc-dg-box" x="18" y="96" width="124" height="62" rx="8"/>
+      <text class="sc-dg-box-title" x="80" y="122" text-anchor="middle">Signed</text>
+      <text class="sc-dg-box-sub" x="80" y="141" text-anchor="middle">on your device</text>
+    </g>
+        
+    <g>
+      <rect class="sc-dg-box" x="158" y="96" width="124" height="62" rx="8"/>
+      <text class="sc-dg-box-title" x="220" y="122" text-anchor="middle">Broadcast</text>
+      <text class="sc-dg-box-sub" x="220" y="141" text-anchor="middle">to your peers</text>
+    </g>
+        
+    <g>
+      <rect class="sc-dg-box" x="298" y="96" width="124" height="62" rx="8"/>
+      <text class="sc-dg-box-title" x="360" y="122" text-anchor="middle">Mempool</text>
+      <text class="sc-dg-box-sub" x="360" y="141" text-anchor="middle">waiting, unsettled</text>
+    </g>
+        
+    <g>
+      <rect class="sc-dg-box" x="438" y="96" width="124" height="62" rx="8"/>
+      <text class="sc-dg-box-title" x="500" y="122" text-anchor="middle">In a block</text>
+      <text class="sc-dg-box-sub" x="500" y="141" text-anchor="middle">1 confirmation</text>
+    </g>
+        
+    <g>
+      <rect class="sc-dg-box" x="578" y="96" width="124" height="62" rx="8"/>
+      <text class="sc-dg-box-title" x="640" y="122" text-anchor="middle">Buried</text>
+      <text class="sc-dg-box-sub" x="640" y="141" text-anchor="middle">6+ confirmations</text>
+    </g>
+
+        <path class="sc-dg-line" d="M142 127H158"/><path class="sc-dg-line" d="M282 127H298"/><path class="sc-dg-line" d="M422 127H438"/><path class="sc-dg-line" d="M562 127H578"/>
+
+        <rect class="sc-dg-zone" x="18" y="180" width="404" height="40" rx="8"/>
+        <text class="sc-dg-verdict sc-dg-verdict-risk" x="220" y="205" text-anchor="middle">Still changeable</text>
+
+        <rect class="sc-dg-panel sc-dg-panel-safe" x="438" y="180" width="264" height="40" rx="8"/>
+        <text class="sc-dg-verdict sc-dg-verdict-safe" x="570" y="205" text-anchor="middle">Settled, and hardening</text>
+
+        <text class="sc-dg-note" x="18" y="246">The fee can be raised, the transaction can be replaced, and if</text>
+        <text class="sc-dg-note" x="18" y="262">nobody mines it, it can quietly expire and be forgotten.</text>
+
+        <text class="sc-dg-note" x="438" y="246">Undoing it now means out-mining</text>
+        <text class="sc-dg-note" x="438" y="262">the network, and the price of that</text>
+        <text class="sc-dg-note" x="438" y="278">climbs with every block on top.</text>
+
+        <rect class="sc-dg-panel sc-dg-panel-flag" x="1" y="302" width="718" height="82" rx="12"/>
+        <text class="sc-dg-flag-title" x="24" y="328">What never moves at any stage</text>
+        <text class="sc-dg-note" x="24" y="350">Your private key. It stays on the signing device from beginning to end &mdash; what travels</text>
+        <text class="sc-dg-note" x="24" y="366">across the network is a signature, which proves the key exists without revealing it.</text>
+      </svg>
+      <figcaption>The interesting boundary is between the third and fourth box. Everything to its left is a proposal; everything to its right is history, held in place by the cost of rewriting it.</figcaption>
+    </figure>
+
+      <h2><span class="sc-article-num">1</span>It starts with a key that never moves</h2>
+
+      <p>Your wallet holds a private key: an enormous random number. From it, a public key is derived by one-way maths, and from that, an address. The chain runs in one direction only &mdash; an address tells the world nothing useful about the key behind it, which is why publishing addresses is safe and why guessing backwards is not a viable attack.</p>
+
+      <p>The important property for what follows: <strong>the private key is never transmitted anywhere, at any stage.</strong> Not to the recipient, not to the network, not to a miner. It stays where it was generated. If you take one structural fact from this page, that is the one &mdash; and it is why a hardware wallet can safely be plugged into a compromised computer.</p>
+
+      <p><a href='keys-addresses-utxos.html'>Keys, addresses, and UTXOs</a> covers this layer properly. Here it is just the starting point.</p>
+
+      <h2><span class="sc-article-num">2</span>Building the transaction</h2>
+
+      <p>The first surprise is that you do not spend a balance. There is no account holding a number. What you own is a set of discrete previous outputs &mdash; UTXOs &mdash; each one a specific chunk of bitcoin from a specific earlier transaction, each one spendable only in full.</p>
+
+      <p>So a transaction is a short document that says: <em>these particular previous outputs are being consumed, and here is where their value goes instead.</em> Inputs point backwards at outputs of earlier transactions. Outputs create new chunks, one to the recipient and usually one back to yourself as change.</p>
+
+      <div class="sc-callout mt-4"><h3>The fee is not a field</h3><p>Nowhere in a transaction is the fee written down. It is simply whatever is left over: total inputs minus total outputs. Miners take the remainder. This is elegant and unforgiving in equal measure — omit the change output and the entire remainder becomes the fee, which is exactly how people have accidentally paid tens of bitcoin to have one transaction mined.</p></div>
+
+      <p>Everything so far is just arithmetic on public data. Anyone could compose this document about your coins. What they could not do is the next step.</p>
+
+      <h2><span class="sc-article-num">3</span>Signing, and the number that must never repeat</h2>
+
+      <p>Signing produces a proof that the holder of the private key authorised <em>this exact transaction</em> &mdash; not a password, not an unlock, but a piece of mathematics that anyone can verify against your public key and nobody can produce without your private one.</p>
+
+      <p>What gets signed matters. By default a signature commits to the whole transaction: every input, every output, every amount. Change a single character of the destination address afterwards and the signature stops verifying. This is precisely why checking the address <em>on the signing device's own screen</em> is worth doing &mdash; the device shows you what it is about to commit to, and once committed, the details cannot be edited by malware on the computer.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-shield-lock" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A hardware wallet held in one hand mid-confirmation, thumb resting on the button, its small screen sharp and readable while the laptop behind it falls completely out of focus.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The only screen in the room that malware cannot rewrite.</figcaption>
+  </figure>
+
+      <h3>The nonce</h3>
+
+      <p>Each signature also consumes a fresh secret number, used once and discarded, called a nonce. It never leaves the device and never appears in the transaction &mdash; but it is arguably the most dangerous number in the whole process.</p>
+
+      <p>If a wallet ever signs two different transactions using the <strong>same</strong> nonce with the same key, anyone who sees both signatures can recover the private key outright. Not brute-force it &mdash; solve for it, with school algebra, in a fraction of a second. This is not theoretical: it is how the PlayStation 3's signing key was extracted in 2010, and a 2013 flaw in Android's random number generator drained real bitcoin wallets by exactly this route.</p>
+
+      <ul class="sc-caution-list"><li>The danger is not a weak nonce, it is a <strong>repeated</strong> one. Two signatures are enough.</li><li>Modern wallets avoid the problem by deriving the nonce deterministically from the private key and the transaction itself, so it cannot repeat unless the transaction does.</li><li>A malicious signing device could go the other way — subtly biasing nonces so that its signatures leak your key a few bits at a time, in public, with nothing looking wrong. Some devices support anti-exfil protocols where your computer contributes randomness to each nonce and can verify it was used, which closes that door. It is worth knowing the attack exists when you choose hardware.</li></ul>
+
+      <p>The same principle applies to the newer Schnorr signatures used by Taproot addresses. Different mathematics, identical rule: the nonce is used once, or not at all.</p>
+
+      <h2><span class="sc-article-num">4</span>Broadcast, which is not a submission</h2>
+
+      <p>The signed transaction now needs to reach miners, and here is the second surprise: <strong>there is nowhere to send it.</strong> No server, no submission endpoint, no queue with an operator.</p>
+
+      <p>Your wallet hands the transaction to the handful of peers it is connected to. Each of those checks it, and if it is valid, passes it to their peers, who do the same. Within a couple of seconds it has reached most of the network by nothing more organised than gossip. Nobody accepted it and nobody could have refused it on the network's behalf &mdash; each node simply decided independently whether to keep passing it along.</p>
+
+      <p>Note what did <em>not</em> happen: the recipient was not contacted. They find out they have been paid the same way everyone else does, by watching the chain. A bitcoin payment is not delivered to anyone; it is announced to everyone.</p>
+
+      <h2><span class="sc-article-num">5</span>The mempool: a waiting room nobody owns</h2>
+
+      <p>Until a miner includes it, your transaction sits in the mempool &mdash; the pool of valid, unconfirmed transactions each node keeps in memory.</p>
+
+      <p>And there is no such thing as <em>the</em> mempool. Every node keeps its own, they differ from each other, and none is authoritative. When a block explorer shows you "the mempool", it is showing you one particular node's view of the queue.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A large split-flap departure board in a station, most rows reading as waiting rather than departing, photographed from below so the board fills the frame.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>A useful mental model, with one difference: here, the boards in different stations do not quite agree with each other.</figcaption>
+  </figure>
+
+      <p>Miners are not obliged to take transactions in order, and they do not. They assemble the most profitable block they can, which in practice means selecting by fee rate &mdash; satoshis per unit of transaction size, not total fee. A physically small transaction paying a modest fee can easily outrank a large one paying more in absolute terms.</p>
+
+      <ul class="sc-check-list"><li><strong>A transaction in the mempool has not happened.</strong> It is a proposal that most of the network currently considers valid and plausible.</li><li><strong>It can be replaced.</strong> Fee too low? Sign a replacement paying more and the network will generally prefer it — useful when you underpaid, and the reason zero-confirmation payments cannot be treated as settled.</li><li><strong>It can simply expire.</strong> Nodes evict transactions when their mempool fills, and drop them entirely after about two weeks by default. Nothing is refunded because nothing was ever taken — the coins never left your control.</li><li><strong>Congestion is a market, not an outage.</strong> When blocks are full, the fee needed to be selected rises. Nothing is broken; you are bidding for space.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>Mining, and the <em>other</em> nonce</h2>
+
+      <p>A miner gathers transactions into a candidate block, summarises them all into a single fingerprint called a merkle root, and builds an 80-byte header containing that root, the previous block's hash, a timestamp, and the current difficulty target.</p>
+
+      <p>Then the work: hash the header, and check whether the result falls below the target. It almost certainly does not. So change one field and hash again. That field is the header's <strong>nonce</strong> &mdash; a number with no meaning whatsoever, existing purely to be changed so the header hashes differently.</p>
+
+      <div class="sc-callout mt-4"><h3>Two nonces, two entirely different jobs</h3><p>The signing nonce from step three is a secret that must never repeat, and leaks your private key if it does. The mining nonce here is a public counter, visible in every block header, that is meant to be tried billions of times. They share a name and nothing else — worth keeping straight, because conflating them makes both stories confusing.</p></div>
+
+      <p>The header nonce is only 32 bits, so modern hardware exhausts all four billion possibilities in well under a second. Miners therefore also vary a spare field inside the block's first transaction, which changes the merkle root and hands them a fresh nonce range to grind through &mdash; and repeat, quadrillions of times per second across the network, until someone's header comes out below the target.</p>
+
+      <p>Whoever finds one broadcasts the block immediately. Everyone else verifies it in milliseconds, abandons the candidate they were working on, and starts again on top of the new tip. The difficulty target adjusts every 2,016 blocks so that this contest keeps resolving roughly every ten minutes no matter how much hardware joins or leaves.</p>
+
+      <h2><span class="sc-article-num">7</span>Your node has the final say</h2>
+
+      <p>The block arrives at your own node, and this is the part people skip. Your node does not accept it because a miner spent money producing it. It <strong>re-verifies everything, from scratch, for itself:</strong></p>
+
+      <ul class="sc-check-list"><li>That the block's own proof of work genuinely meets the current target.</li><li>That every input in every transaction refers to an output that exists and has not already been spent, checked against the node's own UTXO set.</li><li>That every signature is valid for the key it claims to come from.</li><li>That the block claims no more subsidy than the schedule permits, and breaks no other consensus rule.</li><li>That the whole thing fits the size and weight limits.</li></ul>
+
+      <p>Fail any of these and the block is discarded, regardless of how much work is behind it. This is the practical meaning of the point made in <a href='double-spend-problem.html'>the problem bitcoin solved</a>: mining decides the <em>order</em> of valid transactions, and has no authority over what counts as valid. That authority is distributed across every node independently enforcing the same rules &mdash; and if you run one, you are one of them.</p>
+
+      <p>Only after those checks pass does your wallet show one confirmation. Everything before that moment was, from your node's point of view, a rumour it had not yet finished checking.</p>
+
+      <h2><span class="sc-article-num">8</span>Confirmations are depth, not status</h2>
+
+      <p>One confirmation means one block. Six means five more were built on top. Nothing changes state along the way; what changes is how much work an attacker would have to redo to remove your transaction, and that grows with every block.</p>
+
+      <p>Occasionally two miners find a block at nearly the same moment and the network briefly follows two tips. Within a block or so, one side gains work, the other is abandoned, and its transactions return to the mempool to be mined again. This is ordinary and self-correcting &mdash; and it is the concrete reason a single confirmation is good rather than final.</p>
+
+      <h2>The short version</h2>
+
+      <p>A key that never moves signs a document that consumes specific earlier outputs. That document is gossiped to strangers, none of whom can accept or reject it on anyone else's behalf. It waits in a queue that has no owner, gets selected by a miner competing to guess a meaningless number, and is finally made real by your own computer independently checking every claim in the block that contains it.</p>
+
+      <p>There is no step in that sequence where an institution grants permission. That is the entire design, and it is why the responsibility for your keys, your verification, and your backups cannot be handed to anyone else &mdash; there is nobody in the system to hand it to.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Everything that travels — the transaction, the signature, the block — is public and verifiable by anyone. The one thing that never travels is the private key. Every security practice on this site is ultimately about keeping that asymmetry intact.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="keys-addresses-utxos.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-wallet2"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Keys, addresses, and UTXOs</h3>
+              <p>A beginner's breakdown of what your wallet actually holds. There are no coins anywhere — and once that clicks, most of bitcoin's odder behaviour starts making sense.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="double-spend-problem.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-stack"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The problem bitcoin solved</h3>
+              <p>Digital money was considered impossible for thirty years, and the obstacle was not cryptography. It was getting strangers who cannot trust each other to agree on what happened first.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-coin-control.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-pie-chart"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Sparrow: coin control and labelling</h3>
+              <p>Your balance is not a number, it is a pile of separate chunks — and which ones you spend together tells anyone watching that they belong to the same person.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

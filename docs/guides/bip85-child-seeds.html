@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="One seed can generate an unlimited supply of ordinary, independent wallets on demand — so you protect one backup instead of six. The catch is a bookkeeping obligation nobody warns you about, and a master seed that is now worth six times as much to a thief.">
+  <title>BIP85: one backup, many wallets | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/bip85-child-seeds.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="BIP85: one backup, many wallets | SelfCustody.ca">
+  <meta property="og:description" content="One seed can generate an unlimited supply of ordinary, independent wallets on demand — so you protect one backup instead of six. The catch is a bookkeeping obligation nobody warns you about, and a master seed that is now worth six times as much to a thief.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/bip85-child-seeds.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"BIP85: one backup, many wallets","description":"One seed can generate an unlimited supply of ordinary, independent wallets on demand — so you protect one backup instead of six. The catch is a bookkeeping obligation nobody warns you about, and a master seed that is now worth six times as much to a thief.","url":"https://selfcustody.ca/guides/bip85-child-seeds.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/bip85-child-seeds.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#advanced">Techniques</a>
+        </nav>
+        <span class="sc-eyebrow">Advanced techniques</span>
+        <h1>BIP85: one backup, many wallets</h1>
+        <p class="sc-lead">One seed can generate an unlimited supply of ordinary, independent wallets on demand — so you protect one backup instead of six. The catch is a bookkeeping obligation nobody warns you about, and a master seed that is now worth six times as much to a thief.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 28 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">Seed derivation</span><span class="sc-tag">Backups</span><a class="sc-tag sc-tag-link" href="../glossary.html#term-threat_model">Threat model</a></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Every wallet you create adds a seed phrase to protect, and protecting a seed phrase properly is not a small job. Two metal plates in two buildings, a tested restore, a note for whoever handles your estate &mdash; that is the real cost, and it is the same cost whether the wallet holds a fortune or a coffee fund. Do it four times and most people quietly stop doing it properly.</p>
+
+      <p>BIP85 answers that directly. One master seed becomes a factory that produces as many completely ordinary seed phrases as you ask for, each one a real wallet you can restore anywhere, each one derived again from the master whenever you need it. You back up one thing. Everything else is reproducible.</p>
+
+      <p>That is a genuinely good trade for some people and a bad one for others, and the difference is not about how technical you are. It is about whether you will keep a record.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-diagram-3" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A single metal seed plate on a workbench, and fanned out in front of it a row of blank paper cards — each one a wallet that does not exist yet. Shot from a low angle so the plate reads as the source and the cards as the output.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>One thing to protect. Everything in front of it can be reprinted from it.</figcaption>
+  </figure>
+
+      <h2><span class="sc-article-num">1</span>What it actually does</h2>
+
+      <p>BIP85 &mdash; <em>Deterministic Entropy From BIP32 Keychains</em> &mdash; takes your master seed and a number you choose, and produces a fresh block of entropy from the two of them. That entropy is then formatted as whatever you asked for: most usefully, a standard BIP39 seed phrase of twelve or twenty-four words.</p>
+
+      <p>The number you choose is called the index. Index 0 produces one seed phrase. Index 1 produces a completely different one. Index 847 produces a third. The same master with the same index and the same word count always produces the same phrase, on any device that implements the standard.</p>
+
+      
+    <figure class="sc-figure sc-diagram-figure">
+      <svg class="sc-dg-svg" viewBox="0 0 720 470" role="img" aria-labelledby="b85-dg-title b85-dg-desc" preserveAspectRatio="xMidYMid meet">
+        <title id="b85-dg-title">How BIP85 derives child seeds from one master seed</title>
+        <desc id="b85-dg-desc">A single master seed sits at the top. Below it, three child seeds are derived at index 0, 1 and 2 — an everyday wallet, a savings wallet, and a seed handed to a family member — and the fan continues indefinitely. Derivation runs downward only: a child seed reveals nothing about the master seed or about its siblings. Along the bottom, the record that no child seed contains: which index produced it, at what word count, and what it was for.</desc>
+
+        <text class="sc-dg-panel-title" x="24" y="30">One seed, backed up once</text>
+        <text class="sc-dg-panel-sub" x="24" y="52">Every wallet below is derived from it on demand</text>
+
+        
+    <g>
+      <rect class="sc-dg-box sc-dg-box-accent" x="260" y="76" width="200" height="52" rx="8"/>
+      <text class="sc-dg-box-title" x="274" y="100">Master seed</text>
+      <text class="sc-dg-box-sub" x="274" y="118">24 words &middot; the only backup</text>
+    </g>
+        <path class="sc-dg-line" d="M360 128V158"/>
+        <path class="sc-dg-line" d="M130 158H590"/>
+
+        <path class="sc-dg-line" d="M130 158V186"/><path class="sc-dg-line" d="M360 158V186"/><path class="sc-dg-line" d="M590 158V186"/>
+
+        
+    <g>
+      <rect class="sc-dg-box " x="35" y="186" width="190" height="58" rx="8"/>
+      <text class="sc-dg-box-title" x="49" y="210">Everyday wallet</text>
+      <text class="sc-dg-box-sub" x="49" y="228">index 0&#8242; &middot; 12 words</text>
+    </g>
+        
+    <g>
+      <rect class="sc-dg-box " x="265" y="186" width="190" height="58" rx="8"/>
+      <text class="sc-dg-box-title" x="279" y="210">Savings wallet</text>
+      <text class="sc-dg-box-sub" x="279" y="228">index 1&#8242; &middot; 24 words</text>
+    </g>
+        
+    <g>
+      <rect class="sc-dg-box " x="495" y="186" width="190" height="58" rx="8"/>
+      <text class="sc-dg-box-title" x="509" y="210">Handed to a niece</text>
+      <text class="sc-dg-box-sub" x="509" y="228">index 2&#8242; &middot; 12 words</text>
+    </g>
+
+        <text class="sc-dg-note" x="360" y="268" text-anchor="middle">&hellip; and index 3&#8242;, 4&#8242;, 5&#8242;, indefinitely, all from the same backup</text>
+
+        <rect class="sc-dg-panel sc-dg-panel-safe" x="1" y="288" width="718" height="72" rx="12"/>
+        <text class="sc-dg-verdict sc-dg-verdict-safe" x="24" y="316">Derivation runs one way</text>
+        <text class="sc-dg-note" x="24" y="338">A child seed is an ordinary seed. Holding it reveals nothing about the master</text>
+        <text class="sc-dg-note" x="24" y="354">seed above it, and nothing about any of its siblings.</text>
+
+        <rect class="sc-dg-panel sc-dg-panel-flag" x="1" y="376" width="718" height="86" rx="12"/>
+        <text class="sc-dg-flag-title" x="24" y="404">What no child seed contains</text>
+        <text class="sc-dg-note" x="24" y="426">Which index produced it, at which word count, and what it was for. That record</text>
+        <text class="sc-dg-note" x="24" y="442">lives only where you write it &mdash; and without it the master alone will not find</text>
+        <text class="sc-dg-note" x="24" y="458">its way back to a particular wallet.</text>
+      </svg>
+      <figcaption>The appeal is the top of the picture: one seed to protect, one backup to keep alive. The obligation is the strip along the bottom, and it is the part that gets skipped.</figcaption>
+    </figure>
+
+      <p>Three properties do the real work here, and each one is worth stating on its own.</p>
+
+      <ul class="sc-check-list"><li><strong>The children are ordinary seeds.</strong> A BIP85-derived phrase is not a special format. It restores into Sparrow, Electrum, a hardware wallet, or anything else that speaks BIP39, and nothing downstream ever needs to know where it came from.</li><li><strong>Derivation only runs one way.</strong> Someone holding a child seed cannot work backwards to the master, and cannot reach any of its siblings. Each child is genuinely isolated from the others.</li><li><strong>Nothing is stored.</strong> The children are not saved on the device or written into the master's backup. They are recomputed from the master and the index every time, which is exactly why you only have to protect one backup.</li></ul>
+
+      <h2><span class="sc-article-num">2</span>The parameters are part of the address</h2>
+
+      <p>The index alone does not identify a wallet. The full derivation path also carries the application and, for seed phrases, the language and the word count:</p>
+
+      <p><code>m/83696968'/39'/0'/12'/0'</code> &mdash; BIP85, BIP39 words, English, <strong>12</strong> words, index <strong>0</strong>.</p>
+
+      <p>Change the word count and you get a different wallet. Twelve words at index 0 and twenty-four words at index 0 are unrelated phrases leading to unrelated wallets, from the same master, at the same index. This surprises people, and it is the most common way a BIP85 wallet gets mislaid.</p>
+
+      <ul class="sc-caution-list"><li>Asking for the wrong word count does not produce an error. It produces a valid, empty wallet — the same silent failure a mistyped <a href='passphrase-setup.html'>passphrase</a> produces, for the same underlying reason.</li><li>Different tools present these fields differently. Some ask for word count explicitly, some default to 12, some to 24. Note what you actually selected rather than what you assume the default was.</li></ul>
+
+      <h2><span class="sc-article-num">3</span>The obligation nobody mentions</h2>
+
+      <p>Here is the part that decides whether BIP85 helps you or hurts you.</p>
+
+      <p>Your master seed is safe on its metal plate. Two years later you want to reach the wallet that holds most of your savings. You have the master. You have a BIP85-capable device. What you need now is the answer to <em>which index, at which word count</em> &mdash; and that answer exists nowhere except in your memory or in a note you wrote.</p>
+
+      <blockquote class="sc-pull-quote"><p>BIP85 does not remove the record-keeping. It replaces several seed backups with one seed backup plus an index, and the index is the half people forget is load-bearing.</p></blockquote>
+
+      <p>The failure is recoverable in principle: you can walk indexes 0, 1, 2 upward at both word counts and check each resulting wallet for a balance. It is tedious, it is easy to give up on, and it is a genuinely bad thing to be doing for the first time during an emergency &mdash; or for your family to be attempting without you.</p>
+
+      <p>So write it down, and write it down in a form that survives you:</p>
+
+      <ul class="sc-check-list"><li><strong>Record that BIP85 is in use at all.</strong> A lone master seed with no note looks like an ordinary single wallet. Whoever restores it will find the master's own wallet, see whatever is in it, and never look for the other five.</li><li>Record each index, its word count, and what that wallet is for — in plain language, not a private code. <em>Index 1, 24 words, long-term savings</em> beats <em>1/24/LTS</em> when the reader is not you.</li><li>Keep that record with the master backup or alongside it. Unlike a passphrase, the index list is not a secret worth separating: on its own it opens nothing, and separating it just gives you a second thing to lose.</li><li>Update it the moment you derive a new child, not later. The wallet you forgot to record is always the one you created quickly.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>The index list is documentation, not a key</h3><p>A passphrase must be stored apart from the seed because together they open the wallet. An index list is different — it is useless without the master, and the master is nearly useless without it. Treat it as the label on the box rather than a second lock.</p></div>
+
+      <h2><span class="sc-article-num">4</span>Where it earns its place</h2>
+
+      <p>The clearest wins are the ones where you were going to create several wallets anyway and were quietly dreading the backup work.</p>
+
+      <ul class="sc-check-list"><li><strong>Separating money by purpose.</strong> A spending wallet on a phone, a savings wallet on a signing device, and a wallet you use for anything public-facing — three real separations, one backup behind them.</li><li><strong>A hot wallet you can afford to lose.</strong> Derive the phone wallet's seed from the master, load it with what you would carry in cash, and treat the phone as disposable rather than as something needing its own backup ritual.</li><li><strong>Wallets with a short life.</strong> A wallet for one project, one trip, or one counterparty, which you would otherwise never get around to backing up at all.</li><li><strong>Replacing a device without replacing your backups.</strong> The child seed goes onto the new hardware; the metal plate in the safe is untouched and still correct.</li><li><strong>Practice and testing.</strong> Deriving a throwaway wallet to rehearse a restore costs nothing and puts nothing real at risk.</li></ul>
+
+      <p>Notice what these have in common: in each one the alternative was not <em>a better-protected wallet</em>, it was <em>a wallet whose backup you were going to neglect</em>. BIP85 is at its best when it replaces a bad habit rather than a good one.</p>
+
+      <h2><span class="sc-article-num">5</span>Uncle Jim</h2>
+
+      <p>Most families have one person who ends up as the bitcoin help desk. In bitcoin circles that person has a name &mdash; Uncle Jim &mdash; and BIP85 is frequently recommended to them, because it appears to solve the hardest part of the job.</p>
+
+      <p>The pitch is easy to see. Your sister wants to hold some bitcoin and is never going to maintain a seed backup. So you derive index 5 from your master, hand her those twelve words on a card, help her restore them into a wallet, and she is holding her own bitcoin on her own phone. If she loses the card, her phone, and the note she wrote on the back of an envelope, you can regenerate her seed from your master and have her wallet back in ten minutes.</p>
+
+      <p>That backstop is real, and for someone who would otherwise have left the money on an exchange, it is a meaningful improvement. But the arrangement has a property that must be said out loud, in plain words, to everyone in it.</p>
+
+      <blockquote class="sc-pull-quote"><p>You can spend her bitcoin. Not through a support process or a legal claim — directly, at any time, from your own master seed, without her knowing.</p></blockquote>
+
+      <p>That does not make it a bad arrangement. It makes it a <em>custodial</em> one, and the trouble starts when it is described as self-custody to someone who then relies on it as though it were.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-people" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">Two hands across a kitchen table: one passing a small card of recovery words, the other reaching to take it. Warm domestic light, faces out of frame — the transaction is between the hands, not the people.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The moment this works or fails is the conversation, not the derivation.</figcaption>
+  </figure>
+
+      <h3>Doing it honestly</h3>
+
+      <ul class="sc-check-list"><li><strong>Say the quiet part first.</strong> “I generated this from my own seed, which means I can access it. You should treat this as training wheels, not as a vault.” If that sentence changes their mind, it needed saying.</li><li><strong>Match the amount to the trust.</strong> This arrangement suits pocket-money balances and first steps. It does not suit someone's retirement.</li><li><strong>Plan the graduation.</strong> The goal is that they eventually generate their own seed, on their own device, and move the funds to it. Agree what triggers that — an amount, a date, or a level of confidence.</li><li><strong>Say what happens if you die.</strong> Their bitcoin is now downstream of your master seed and your index list. If your estate plan does not mention their wallet, your executor may restore the master, see funds derived from it, and treat them as yours.</li><li><strong>Keep their index recorded like any other.</strong> <em>Index 5, 12 words, Sarah's phone wallet</em> — in the same list, in the same place.</li></ul>
+
+      <p>And note the asymmetry the diagram above already showed: they cannot reach your wallets, and they cannot reach each other's. The exposure runs in exactly one direction, and it is the direction pointing at you.</p>
+
+      <h3>When to reach for something else</h3>
+
+      <p>If the amount matters, or the relationship would not survive a dispute about who owns what, the honest answer is not a better BIP85 arrangement. It is either their own independently generated seed &mdash; with you helping them back it up properly &mdash; or a <a href='multisig-2of3.html'>2-of-3 multisig</a> where you hold one key and genuinely cannot spend alone. Multisig is more work, and it is the arrangement that actually means what the Uncle Jim setup only appears to mean.</p>
+
+      <h2><span class="sc-article-num">6</span>Where it must not be used</h2>
+
+      <p>Two mistakes here are serious enough to be worth naming explicitly, because both look reasonable from the inside.</p>
+
+      <h3>Never derive multiple keys of one multisig from one master</h3>
+
+      <p>It is tempting: three keys from indexes 0, 1 and 2, one backup covering the lot. It also completely dismantles what multisig is for. The whole premise is that no single secret can move the funds &mdash; and if all three keys descend from your master seed, that master <em>is</em> a single secret that moves the funds. You have built a single-signature wallet wearing a costume, with more moving parts and a false sense of safety.</p>
+
+      <ul class="sc-caution-list"><li>Keys in a multisig must come from independently generated seeds, on separate devices, so that no one compromise reaches more than one of them.</li><li>The same logic rules out deriving a “backup key” for someone else's multisig from your own master, and rules out using one master to stand up both sides of a shared wallet.</li></ul>
+
+      <h3>It is not a substitute for a passphrase, and vice versa</h3>
+
+      <p>They solve opposite problems. A <a href='passphrase-setup.html'>passphrase</a> makes a discovered seed backup insufficient on its own &mdash; the words alone do not reach your money. BIP85 does the reverse: it makes one discovered seed backup sufficient for <em>everything</em>, because every wallet you own descends from it.</p>
+
+      <p>Used together they compose fine &mdash; a passphrase on the master protects the whole tree &mdash; but be clear that BIP85 by itself is a convenience feature, not a security feature. Measured against several independently generated seeds stored in several places, it concentrates risk rather than reducing it.</p>
+
+      <h2><span class="sc-article-num">7</span>The entropy ceiling</h2>
+
+      <p>One technical detail with a practical consequence: <strong>a child can never carry more real randomness than the master it came from.</strong></p>
+
+      <p>Derive twenty-four-word children from a twelve-word master and the phrases will be twenty-four words long, but their unpredictability is still bounded by the master's 128 bits &mdash; anyone attacking the system would go after the master rather than the child. The extra words are formatting, not strength.</p>
+
+      <p>The consequence is simple: if you intend to use BIP85 seriously, generate the master as twenty-four words, and generate it well. <a href='dice-entropy.html'>Rolling your own entropy</a> is more defensible here than anywhere else on this site, because a weakness in this one seed is a weakness in every wallet you will ever derive from it.</p>
+
+      <h2><span class="sc-article-num">8</span>Support is not universal</h2>
+
+      <p>Deriving a child requires a tool that implements BIP85. The resulting seed then works anywhere, but the derivation step does not.</p>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>On-device BIP85 support, checked against each maker's own documentation</caption>
+          <thead><tr><th scope="col">Device</th><th scope="col">BIP85</th><th scope="col">Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>COLDCARD</strong></td><td>Yes</td><td>Under Advanced/Tools. The most thoroughly documented implementation, and it can output words, XPRV, hex, or passwords.</td></tr>
+            <tr><td><strong>Blockstream Jade</strong></td><td>Yes</td><td>Options &rarr; Wallet &rarr; BIP85. Choose 12 or 24 words and an index.</td></tr>
+            <tr><td><strong>Foundation Passport</strong></td><td>Yes</td><td>Through the Key Manager extension, with SeedQR export of the child.</td></tr>
+            <tr><td><strong>SeedSigner</strong></td><td>Yes</td><td>Listed as child seed generation; fits a device that stores nothing anyway.</td></tr>
+            <tr><td><strong>Krux</strong></td><td>Yes</td><td>Derives a child BIP39 mnemonic on the device.</td></tr>
+            <tr><td><strong>Trezor</strong></td><td>No</td><td>Requested since 2021 and still not implemented. Shamir backup solves a different problem.</td></tr>
+            <tr><td><strong>Ledger</strong></td><td>No</td><td>Not in Ledger Live. Its Seed Tool app lists BIP85 as planned rather than available.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Notice what that list does <em>not</em> divide along. It is not air-gapped against connected, and not standalone against companion-app &mdash; Jade and Passport both ship companion apps and both support it. The two without it are the large multi-asset incumbents, which is a different distinction entirely.</p>
+
+      <ul class="sc-caution-list"><li>Firmware changes. Confirm against the manufacturer's current documentation before you plan a setup around this, rather than trusting a list — including this one.</li><li><strong>Do not use a website to derive seeds.</strong> Browser-based BIP85 tools exist and will happily accept your master seed. Typing a live master seed into a browser is the single worst thing you can do with it, whatever the page promises about running offline.</li><li>Prefer deriving on the signing device itself, where the master never leaves the hardware and the child words are only ever shown on its screen.</li></ul>
+
+      <h2><span class="sc-article-num">9</span>Test it before it holds anything</h2>
+
+      <p>The claim BIP85 makes is that your child wallets are reproducible from the master. That claim is worth exactly nothing until you have reproduced one on purpose.</p>
+
+      <ul class="sc-check-list"><li>Derive a child at a chosen index and word count, and note its first receive address or master fingerprint.</li><li>Wipe the device, or use a spare one, and restore the <em>master</em> seed from your actual backup — the plate in the safe, not the words still on screen.</li><li>Derive the same index and word count again and confirm you land on the same wallet. This tests the backup and the derivation together, which is the pairing that matters.</li><li>Repeat with a second index, so you have seen the indexes produce genuinely different wallets rather than assuming it.</li><li>Have whoever would need to do this without you read your index note and tell you what they think it means.</li></ul>
+
+      <p>The full procedure is in <a href='recovery-test-drill.html'>test your recovery</a>. The BIP85 version adds one step to it &mdash; deriving the child &mdash; and that step is the one your family will not know to perform unless you have written it down.</p>
+
+      <h2>Should you use it?</h2>
+
+      <p>It comes down to one honest question about yourself, and it is not a question about technical skill.</p>
+
+      <ul class="sc-check-list"><li><strong>Good reason:</strong> you genuinely need several wallets, and the realistic alternative is several seed backups you will not maintain properly.</li><li><strong>Good reason:</strong> you already keep organised records, have tested a restore, and want to stop the backup pile growing every time you separate some funds.</li><li><strong>Good reason:</strong> you are standing up short-lived or low-value wallets that would otherwise go entirely unbacked.</li><li><strong>Bad reason:</strong> it sounds more secure. It is not — it concentrates every wallet you own behind one seed.</li><li><strong>Bad reason:</strong> to simplify a multisig. That is the one place it must never go.</li><li><strong>Bad reason:</strong> you have one wallet and no plans for a second. There is nothing here to gain and a new way to get confused.</li></ul>
+
+      <p>If you hold a single wallet, BIP85 solves a problem you do not have. If you hold five and can name each one's backup location from memory, you are already doing the hard version well and may not want to change it. It is the middle case &mdash; several wallets, backups you know are not all up to standard &mdash; where this genuinely helps.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>BIP85 converts a backup problem into a bookkeeping problem. That is a real improvement, because backups are physical and bookkeeping is not — but only if you actually keep the books. An index you cannot remember is a wallet you cannot reach, and the master seed sitting safely in your safe will not tell you which number it was.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="seed-backup-metal.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-box-seam"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Durable seed backups</h3>
+              <p>Paper survives everything except the events your backup exists for. What metal actually buys you, the four-letter shortcut that halves the work, and the mistakes that quietly ruin a plate.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="passphrase-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shield-lock"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>BIP39 passphrases, and when not to use one</h3>
+              <p>A passphrase is not a password on your wallet. It is a switch that selects a different wallet entirely — which is why a single wrong character shows you an empty balance and no error message.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

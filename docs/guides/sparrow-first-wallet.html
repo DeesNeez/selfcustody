@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.">
+  <title>Sparrow: pair a hardware wallet and verify a receive address | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/sparrow-first-wallet.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Sparrow: pair a hardware wallet and verify a receive address | SelfCustody.ca">
+  <meta property="og:description" content="Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/sparrow-first-wallet.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Sparrow: pair a hardware wallet and verify a receive address","description":"Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.","url":"https://selfcustody.ca/guides/sparrow-first-wallet.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/sparrow-first-wallet.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#software">Software</a>
+        </nav>
+        <span class="sc-eyebrow">Wallets</span>
+        <h1>Sparrow: pair a hardware wallet and verify a receive address</h1>
+        <p class="sc-lead">Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 30 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">Desktop</span><a class="sc-tag sc-tag-link" href="../glossary.html#term-watch_only_wallet">Watch-only</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-psbt">PSBT</a></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../software.html#sparrow">About Sparrow <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">A hardware wallet on its own cannot tell you what you own. It holds keys and signs things; it has no idea what is on the blockchain. Sparrow is the other half &mdash; the part that watches the network, builds transactions, and hands them to your device to be signed.</p>
+
+      <p>The arrangement is deliberate. Sparrow never sees a private key. It imports your <em>public</em> keys, which is enough to see your balance and construct a spend, but not enough to authorise one. Your device keeps the only thing that matters, and the computer is treated as untrusted throughout.</p>
+
+      <p>This takes about half an hour, and covers the piece most people get wrong: verifying a receive address on the device rather than on the screen.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-window" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A laptop running Sparrow beside a hardware wallet on a desk, the same bitcoin address visible on both screens.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>Two screens, one address. Only one of them is hard for malware to lie on.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li>A hardware signing device already set up, with its recovery words written down and stored.</li><li>Sparrow downloaded from sparrowwallet.com &mdash; typed by hand, not reached from a search result.</li><li>A microSD card or a USB cable, depending on how your device talks to a computer.</li><li>A decision about which server Sparrow will use. Read the section on that before you fund anything.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>Verify the download before you run it</h2>
+
+      <p>Wallet software is impersonated relentlessly, and a convincing fake will behave exactly like the real thing right up until it shows you an address that is not yours. The release page publishes a manifest and a signature so you can confirm the file came from the project.</p>
+
+      <ul class="sc-check-list"><li>Download only from sparrowwallet.com, typed by hand rather than clicked from a search result.</li><li>Fetch the manifest and its signature from the same release page.</li><li>Verify the signature against the project's published key, then check the file hash against the manifest.</li></ul>
+
+      <p>This is a five-minute habit that is much easier to form now, before you have anything to lose, than later.</p>
+
+      <p><a class="sc-text-link" href="https://sparrowwallet.com/download/" target="_blank" rel="noopener">Sparrow download and verification <i class="bi bi-arrow-up-right"></i></a></p>
+
+      <h2><span class="sc-article-num">2</span>Create the wallet from your device's public keys</h2>
+
+      <p>Sparrow needs to know which addresses are yours, and nothing more. Importing the extended public key gives it exactly that: the ability to watch and to build, without the ability to spend.</p>
+
+      <ul class="sc-check-list"><li>File, then New Wallet, and give it a name you will still recognise in a year.</li><li>Set the policy to Single Signature unless you are deliberately building a multisig.</li><li>Choose the script type your device exports &mdash; Native SegWit is the usual default and produces bc1 addresses.</li><li>Connect the hardware wallet over USB, or import the exported public-key file if you are working air-gapped.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>Check the fingerprint</h3><p>The master key fingerprint Sparrow shows after import should match the one your device reports. If they differ you have imported the wrong keys, and every address Sparrow shows you from that point on will belong to a wallet you cannot spend from.</p></div>
+
+      <h2><span class="sc-article-num">3</span>Verify a receive address on the device screen</h2>
+
+      <p>This is the step the whole arrangement exists for, and the one most often skipped.</p>
+
+      <p>Malware that swaps bitcoin addresses in the clipboard is common and cheap. It does not need to break any cryptography &mdash; it just waits for something address-shaped and substitutes its own. Sparrow will show you the attacker's address. Your browser will show you the attacker's address. The hardware device, which the malware cannot reach, will show you yours.</p>
+
+      <ul class="sc-check-list"><li>Open the Receive tab and generate a fresh address.</li><li>Use the option to display that address on the hardware device.</li><li>Compare the whole string, not just the first and last few characters &mdash; lookalike addresses are generated to match at both ends.</li><li>Use a new address for each incoming payment rather than reusing one.</li></ul>
+
+      <ul class="sc-caution-list"><li>An address shown only on your computer has not been verified. Checking it on the device is the entire reason you own one.</li></ul>
+
+      <h2><span class="sc-article-num">4</span>Decide what your wallet talks to</h2>
+
+      <p>Sparrow has to get blockchain data from somewhere, and that somewhere learns things about you. A public Electrum server is the easy default and works fine &mdash; but it can see which addresses belong to a single wallet, which is a meaningful amount of information about your finances.</p>
+
+      <ul class="sc-check-list"><li>For learning and small amounts, the public server default is workable.</li><li>For balances you would mind being catalogued, connect Sparrow to your own Bitcoin Core node.</li><li>Enable Tor in Sparrow's server settings if you are staying on a public server.</li></ul>
+
+      <p>This is a privacy decision rather than a security one &mdash; a hostile server cannot steal from you &mdash; but it is much easier to make before you start using the wallet than to unpick afterwards.</p>
+
+      <h2><span class="sc-article-num">5</span>Sign a small test transaction</h2>
+
+      <p>The full loop is: Sparrow builds an unsigned transaction, the device signs it, Sparrow broadcasts it. Run it once with an amount you would not mind losing, before you rely on any of this.</p>
+
+      <ul class="sc-check-list"><li>Send a small amount to a destination you control.</li><li>Review the recipient address and the fee on the device screen, not just in Sparrow.</li><li>Confirm on the device, broadcast, and wait for a confirmation to appear.</li><li>If you are working air-gapped, move the unsigned transaction out by microSD or QR, sign it, and bring the signed file back.</li></ul>
+
+      <p>Once that has worked end to end, you have a wallet you can actually reason about: the computer proposes, the device disposes, and you have watched both halves happen.</p>
+
+      <p class="mt-4"><a class="sc-text-link" href="complete-path.html">Then test your recovery <i class="bi bi-arrow-right"></i></a></p></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="coldcard-q-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-usb-drive"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>COLDCARD Q: first-time setup</h3>
+              <p>Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="exchange-withdrawal.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-bank"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Withdrawing bitcoin from a Canadian exchange</h3>
+              <p>One process that works on every Canadian platform, what changes on the two that send bitcoin straight to your wallet, and the records the CRA expects you to keep.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-coin-control.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-pie-chart"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Sparrow: coin control and labelling</h3>
+              <p>Your balance is not a number, it is a pile of separate chunks — and which ones you spend together tells anyone watching that they belong to the same person.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

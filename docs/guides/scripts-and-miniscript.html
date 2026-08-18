@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.">
+  <title>Scripts and miniscript | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/scripts-and-miniscript.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Scripts and miniscript | SelfCustody.ca">
+  <meta property="og:description" content="Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/scripts-and-miniscript.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Scripts and miniscript","description":"Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.","url":"https://selfcustody.ca/guides/scripts-and-miniscript.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/scripts-and-miniscript.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#concepts">Concepts</a>
+        </nav>
+        <span class="sc-eyebrow">How it works</span>
+        <h1>Scripts and miniscript</h1>
+        <p class="sc-lead">Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 20 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">Script</span><span class="sc-tag">Miniscript</span><span class="sc-tag">Timelock</span></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Almost everything written about bitcoin describes ownership as holding a key. That is the common case, not the rule. What the network actually enforces is a <em>condition</em> &mdash; and "a valid signature from this key" is merely the simplest condition anyone writes.</p>
+
+      <p>The conditions can be considerably richer: two of these three keys, or this one key after a year has passed, or this key today and that key from next March. The chain enforces all of it mathematically, with no institution involved and no way to appeal.</p>
+
+      <h2><span class="sc-article-num">1</span>Outputs carry conditions, not owners</h2>
+
+      <p>Every output on the chain has a small program attached, written in a language called Script. To spend that output, you supply data satisfying the program. Nodes run it, and the coins move only if it succeeds.</p>
+
+      <p>For an ordinary payment the program says: <em>provide a signature matching this public key.</em> That is why we talk about keys as ownership &mdash; in the overwhelming majority of cases, they are the whole condition.</p>
+
+      <p>But Script has other pieces available. It can require several signatures. It can check that a certain block height has passed, or that a specified duration has elapsed since the coin was created. It can offer alternative routes and accept whichever is satisfied. Combine those and you can express arrangements no bank product corresponds to.</p>
+
+      <div class="sc-callout mt-4"><h3>Why this looks like nothing from outside</h3><p>Since P2SH, and far more so with Taproot, an address commits to a hash of the conditions rather than the conditions themselves. A single-key wallet and an elaborate corporate vault produce addresses that look identical. With Taproot, if the straightforward path is the one used, the alternatives are never revealed at all — see <a href='address-types.html'>why addresses look different</a>.</p></div>
+
+      <h2><span class="sc-article-num">2</span>Timelocks: conditions that arrive later</h2>
+
+      <p>The piece that makes genuinely interesting arrangements possible is bitcoin's ability to enforce <em>time</em>.</p>
+
+      <ul class="sc-check-list"><li><strong>Absolute timelocks</strong> make an output unspendable until a stated block height or date. "Not before 2030" is enforceable by every node.</li><li><strong>Relative timelocks</strong> count from when the coin was created. "Not until six months after this coin appeared" &mdash; useful because the clock starts when you move funds in, rather than at a fixed calendar point you must keep updating.</li></ul>
+
+      <p>Crucially, timelocks can sit on <em>one branch</em> of a condition while other branches remain available immediately. That is what turns them from a curiosity into the basis of real inheritance and recovery designs: the normal path works today, and a fallback path quietly becomes available if the normal one goes unused for long enough.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-building-lock" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A bank of safe deposit boxes with three different keyholes on one door, and a small brass dial beside them showing a date rather than a combination.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>Not one lock but a policy: who may open it, and when that changes.</figcaption>
+  </figure>
+
+      <h2><span class="sc-article-num">3</span>Why nobody wrote raw Script</h2>
+
+      <p>Script is a low-level stack language, and writing it by hand is genuinely dangerous. The failure modes are not the friendly kind where something does not work &mdash; they are the kind where it works today and locks your money away permanently under conditions you did not intend.</p>
+
+      <ul class="sc-caution-list"><li>A subtly wrong script can be <strong>unspendable</strong>. The coins arrive, the address is valid, and nothing you ever do will move them again.</li><li>It can be <strong>spendable by the wrong person</strong>, if a branch you did not think through is satisfiable more easily than you assumed.</li><li>You often <strong>cannot tell by reading it</strong> which of those you have written. Analysing an arbitrary script for these properties is not something a person can do reliably by eye.</li><li>Wallets cannot estimate fees for it, because they cannot know what a spend will cost without understanding the script's structure.</li></ul>
+
+      <p>The practical result was that complex conditions stayed the preserve of specialists writing bespoke code, and everyone else used plain multisig even when it fitted their problem poorly.</p>
+
+      <h2><span class="sc-article-num">4</span>Miniscript</h2>
+
+      <p>Miniscript is a restricted, structured way of writing the useful subset of Script &mdash; and the restriction is the entire point. By limiting how pieces may be assembled, it makes the resulting policy something software can <em>analyse</em> rather than merely execute.</p>
+
+      <ul class="sc-check-list"><li><strong>It can be checked for correctness.</strong> Software can prove a miniscript is spendable by the parties intended, and cannot be spent by anyone else. The catastrophic failure of a hand-written script becomes a compile-time error.</li><li><strong>It composes.</strong> Conditions can be built from smaller ones — this key AND that timelock, OR two of these three — without the combination producing surprises.</li><li><strong>Wallets can work with it.</strong> They can compute the cost of each spending path, so fee estimation works and coin selection behaves.</li><li><strong>It is readable.</strong> A policy can be written in a form a careful person can actually check against what they meant, and it travels inside a <a href='how-wallets-find-coins.html'>descriptor</a> alongside the keys and derivation paths.</li><li><strong>It is not a new protocol.</strong> Miniscript compiles to ordinary Script that existing nodes already validate. Nothing had to change for it to work.</li></ul>
+
+      <p>A policy might read, in plain English: <em>three of five company keys can spend at any time; or two of five, but only after ninety days; or a single recovery key after one year.</em> Ordinary multisig cannot express that at all &mdash; it has exactly one quorum, fixed forever. Miniscript expresses it, proves it does what it says, and produces an address that looks utterly unremarkable.</p>
+
+      <h2><span class="sc-article-num">5</span>What this makes possible</h2>
+
+      <ul class="sc-check-list"><li><strong>Inheritance that does not need a lawyer to execute.</strong> You spend normally; if your key goes unused for a year, an heir's key becomes able to spend. No custodian, no dead man's switch to maintain, no trust in anyone's cooperation.</li><li><strong>Degrading quorums.</strong> A high bar for normal operation that relaxes over time, so losing keys becomes survivable without making theft easy today.</li><li><strong>Business controls.</strong> Two officers to move funds during the week, more required for larger amounts, a slow recovery path if the company reorganises.</li><li><strong>Collaborative custody with a real exit.</strong> A partner co-signs while the arrangement is active, and drops out automatically if they stop being available.</li></ul>
+
+      <p>That last pattern is worth a concrete example, because a live product implements it and it demonstrates the whole idea better than any abstract description.</p>
+
+      <h3>A worked example: AnchorWatch</h3>
+
+      <p><a href="https://anchorwatch.com/" target="_blank" rel="noopener">AnchorWatch</a> is a Lloyd's of London coverholder offering insured bitcoin custody, and its Trident Vault is built on miniscript rather than plain multisig. The reason is precisely the expressiveness described above.</p>
+
+      <p>While the insurance policy is active, AnchorWatch is a required co-signer &mdash; which is what makes the coverage underwritable, since they can enforce controls on how funds move. They cannot spend unilaterally at any point. And the vault carries timelocked recovery paths, so if keys are lost, destroyed, or become unavailable through death or staff changes, different combinations of keys become usable as time passes.</p>
+
+      <p>The elegant part is what happens when the policy lapses. The timelocks expire and the vault <strong>degrades into plain self-custody</strong> &mdash; the customer's keys alone become sufficient, with no cooperation from AnchorWatch required and no action needed from them to release it. Renewing the policy restarts the clocks. The company's continued existence is not a dependency, which is a property no amount of contract drafting can provide.</p>
+
+      <div class="sc-callout mt-4"><h3>Why that example is worth studying</h3><p>It shows the shape of a well-designed condition: the arrangement you want while things are normal, and an automatic fall-back to something safe if the counterparty disappears. Whether or not you would ever buy the product, that pattern — the vault fails open to you, never closed — is the one to copy in any setup involving a third party.</p></div>
+
+      <h2><span class="sc-article-num">6</span>Before you build one</h2>
+
+      <p>Everything above is real and available today. It is also a place where enthusiasm outruns caution, so a few things need saying plainly.</p>
+
+      <ul class="sc-caution-list"><li><strong>A complex policy is more to back up, not less.</strong> Rebuilding it needs the full descriptor — every public key, every path, every condition. Keys alone will not do it, exactly as with <a href='multisig-2of3.html'>multisig</a>, and the consequences of losing that record are the same.</li><li><strong>Wallet support is uneven.</strong> Miniscript handling has improved considerably, but not every wallet and not every signing device copes with every policy. Verify your whole chain of tools before funding anything.</li><li><strong>Timelocks are unforgiving.</strong> A path that unlocks in a year unlocks in a year. There is no early release and nobody to ask.</li><li><strong>Test every branch.</strong> Not just the everyday path — the recovery path, the timelocked path, the one your family would need. On a testnet or with trivial amounts, before it matters.</li><li><strong>Complexity you cannot explain is complexity you should not deploy.</strong> If you cannot describe the policy in one paragraph to the person who would have to use the fallback, it is not finished.</li></ul>
+
+      <h2>The short version</h2>
+
+      <p>Bitcoin outputs carry conditions, and conditions can involve multiple keys, deadlines, and alternative routes that open over time. Writing those in raw Script risks locking funds away forever. Miniscript constrains the language so software can prove what a policy does before you rely on it, which moves these arrangements from specialist territory into something a careful person can use.</p>
+
+      <p>The obligation that comes with it is the same one multisig carries, only larger: the keys are not enough. The description of the policy is part of your backup, and without it the money is unreachable no matter how many keys you hold.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>The chain will enforce whatever you tell it to, exactly, forever, with nobody to appeal to. That is the feature and the danger in one sentence — and the reason miniscript's ability to prove what a policy does before you fund it matters more than anything it makes newly expressible.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="multisig-2of3.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Build a 2-of-3 multisig</h3>
+              <p>Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="address-types.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-credit-card-2-front"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Why addresses look different</h3>
+              <p>Some start with 1, some with 3, some with bc1q and some with bc1p. They are not cosmetic variants — they commit to different spending rules, cost different amounts to use, and are not equally supported.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="life-of-a-transaction.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-left-right"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The life of a transaction</h3>
+              <p>What actually happens between pressing send and seeing a confirmation — the signature, the nonce that must never repeat, the waiting room nobody owns, and the moment your own node decides the payment is real.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

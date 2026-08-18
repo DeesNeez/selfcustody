@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.">
+  <title>Nunchuk: first wallet and shared access | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/nunchuk-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Nunchuk: first wallet and shared access | SelfCustody.ca">
+  <meta property="og:description" content="A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/nunchuk-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Nunchuk: first wallet and shared access","description":"A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.","url":"https://selfcustody.ca/guides/nunchuk-setup.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/nunchuk-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#software">Software</a>
+        </nav>
+        <span class="sc-eyebrow">Wallets</span>
+        <h1>Nunchuk: first wallet and shared access</h1>
+        <p class="sc-lead">A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 30 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-mobile_wallet">Mobile</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-multisig">Multisig</a><span class="sc-tag">Shared access</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../software.html#nunchuk">About Nunchuk <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Most mobile wallets are a wallet. Nunchuk is closer to a coordinator that happens to live on your phone: it can run an ordinary single-signature wallet, but its reason to exist is multisig &mdash; including wallets shared between two or more people, each holding their own key.</p>
+
+      <p>That makes it one of the few practical routes to a household wallet where a partner genuinely co-signs rather than being told the password. It also means the setup involves choices that other wallet apps do not ask you to make, and one backup obligation that is easy to miss.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-phone" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A phone showing a multisig wallet with two of three keys marked as signed, held above a desk where a hardware wallet and an NFC card are sitting.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The phone coordinates. The keys stay on the hardware.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li>The Nunchuk app, installed from the official app store listing linked at nunchuk.io rather than found by search.</li><li>At least one hardware signing device if you are building anything beyond a small spending wallet.</li><li>Backup material for every key you are about to create, plus somewhere to record the wallet configuration.</li><li>For a shared wallet, the other person present, with their own device.</li><li>No bitcoin. Move none until the checks at the end pass.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>Decide what you are actually building</h2>
+
+      <p>Nunchuk will happily build any of these, and they are not interchangeable. Pick before you start.</p>
+
+      <div class="sc-nunchuk-shapes" aria-label="Four wallet shapes available in Nunchuk">
+        <article><span class="sc-shape-key"><i class="bi bi-phone" aria-hidden="true"></i>Phone key</span><h3>Software wallet</h3><p>Small spending amounts. The key lives on the internet-connected phone itself.</p></article>
+        <article><span class="sc-shape-key"><i class="bi bi-usb-drive" aria-hidden="true"></i>One device</span><h3>Single-sig with hardware</h3><p>Savings without multisig. The phone is only the interface; the signer holds the key.</p></article>
+        <article><span class="sc-shape-key"><i class="bi bi-diagram-3" aria-hidden="true"></i>Your devices</span><h3>Personal multisig</h3><p>Larger savings. No single key or device can lose the bitcoin.</p></article>
+        <article><span class="sc-shape-key"><i class="bi bi-people" aria-hidden="true"></i>Split ownership</span><h3>Shared multisig</h3><p>Households, partners, businesses, and deliberate inheritance arrangements.</p></article>
+      </div>
+
+      <p>If this is your first wallet of any kind, build the first or second row, use it, and prove you can recover it before attempting either multisig option. <a href='multisig-2of3.html'>Multisig</a> multiplies every backup mistake by the number of keys.</p>
+
+      <h2><span class="sc-article-num">2</span>Add your hardware keys</h2>
+
+      <p>Nunchuk supports an unusually broad range of signers &mdash; COLDCARD, TAPSIGNER, Jade, SeedSigner, Trezor, Ledger, BitBox, Passport, and Keystone among them &mdash; and several ways to talk to them.</p>
+
+      <ul class="sc-check-list"><li><strong>NFC</strong> for card-format signers such as TAPSIGNER: tap the card to the phone to sign.</li><li><strong>QR</strong> for air-gapped devices: the phone displays a code, the device reads it, and the signature comes back the same way. Nothing is ever connected.</li><li><strong>USB</strong> where the device and phone support it.</li><li>Set up each device independently, generating its own seed on that device. Never create several keys from one seed &mdash; that is one key wearing several hats, and it defeats the entire point of multisig.</li></ul>
+
+      <p>Prefer the QR path where your device offers it. An air gap that exists by default is worth more than one you have to remember to use.</p>
+
+      <h2><span class="sc-article-num">3</span>Back up the configuration, not just the keys</h2>
+
+      <p>This is the obligation people miss, and it is the one that turns a working multisig into an unrecoverable one.</p>
+
+      <p>Your seed phrases alone cannot rebuild a multisig wallet. Software also needs the policy, the script type, the derivation paths, and the public keys of <em>every</em> key in the wallet &mdash; the bundle called the wallet configuration or descriptor. Nunchuk can export it. Do that during setup, while you are already thinking about backups, rather than intending to later.</p>
+
+      <ul class="sc-check-list"><li>Export the wallet configuration from Nunchuk and store a copy alongside every seed backup.</li><li>Write a plain-language note with it: how many keys exist, how many are needed, and which is which.</li><li>For a shared wallet, make sure every participant holds the configuration, not just the person who set it up.</li><li>Record the master fingerprints so a future restore can be checked against something.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>It is not a secret that can spend your coins</h3><p>The configuration contains public keys only. Someone who finds it learns your balance and history, which is a privacy problem, but they cannot move anything. Losing it is far worse than leaking it — so store it widely rather than cleverly.</p></div>
+
+      <h2><span class="sc-article-num">4</span>How a shared wallet actually works</h2>
+
+      <p>In a shared wallet each person holds their own key and can see the wallet, but a spend needs the threshold to be met. A 2-of-2 between partners means neither can move funds alone. A 2-of-3 with a third key held elsewhere means either person can spend with that third key's help, and either can be replaced.</p>
+
+      <ul class="sc-check-list"><li><strong>Agree the threshold deliberately.</strong> 2-of-2 is genuine joint control and also means one lost key locks you both out. 2-of-3 is more forgiving and slightly less strict.</li><li><strong>Every participant needs their own backup</strong> of their own key, stored where the other person cannot reach it, or you have re-created a single point of failure.</li><li><strong>Every participant needs the wallet configuration.</strong> If only one person has it, that person is a dependency.</li><li><strong>Decide in advance what happens if someone becomes unavailable</strong> — through illness, a falling-out, or death. That is the scenario a shared wallet exists for, and it should not be improvised.</li></ul>
+
+      <p>Rehearse a spend with each valid combination of keys before the wallet holds anything meaningful. An untested pair is a pair you are assuming works.</p>
+
+      <h2><span class="sc-article-num">5</span>Assisted services: know which side of the line you are on</h2>
+
+      <p>Nunchuk offers optional paid services alongside the self-serve app &mdash; assisted recovery, inheritance arrangements, and wallets where the platform holds a key or provides support. These are legitimate products and solve real problems, particularly for people who want multisig without becoming its sole operator.</p>
+
+      <p>They also change what you depend on, so establish which features you are using and answer one question before committing anything serious:</p>
+
+      <blockquote class="sc-pull-quote"><p>If this company disappeared overnight, could I still spend my bitcoin — and do I already hold everything I would need to do it?</p></blockquote>
+
+      <ul class="sc-check-list"><li>Confirm you can export the full wallet configuration yourself, and that you have it stored.</li><li>Confirm your own keys meet the spending threshold without any platform key.</li><li>Confirm you can recover using other software &mdash; Sparrow and Specter both open standard multisig wallets &mdash; rather than only the Nunchuk app.</li><li>Understand what lapses if a subscription lapses. A stopped payment should never be able to strand your funds.</li><li>Rehearse a recovery in other software once, so the answer is something you have seen rather than something you were told.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>Verify and test before funding</h2>
+
+      <ul class="sc-check-list"><li>Generate a receive address and verify it on a hardware device screen, not only in the app.</li><li>Send a small test amount and confirm it arrives.</li><li>Spend from it using each valid combination of keys.</li><li>Rebuild the wallet in different software from your configuration file and the required seeds. That proves your backup package is complete.</li><li>Only then move an amount you would miss.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>The rebuild is the real test</h3><p>Everything else confirms the wallet works today, on this phone, with this app installed. Rebuilding it elsewhere confirms it will work in five years on hardware you have not bought yet — which is the situation your backups actually exist for. <a href='recovery-test-drill.html'>Test your recovery</a> covers the drill in full.</p></div>
+
+      <p class="sc-source-note">
+        Feature tiers, service names, and which capabilities are free change over time. Confirm what is self-serve and what depends on a subscription or a platform key against
+        <a class="sc-text-link" href="https://nunchuk.io/" target="_blank" rel="noopener">Nunchuk's own documentation <i class="bi bi-arrow-up-right"></i></a>
+        before relying on any of it.
+      </p></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="multisig-2of3.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Build a 2-of-3 multisig</h3>
+              <p>Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-first-wallet.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-window"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Sparrow: pair a hardware wallet and verify a receive address</h3>
+              <p>Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

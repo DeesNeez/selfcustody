@@ -4,20 +4,30 @@
 
    Do not hand-edit docs/*.html -- edit here and rebuild. */
 
+import { renderGuideFinder, renderGuideSections, renderGuideIndexNav, publishedGuides, productGuideLinks, renderGlossaryTag } from './guides.mjs';
+
 const currentYear = new Date().getFullYear();
 
   const routes = [
     ["home", "Home", "index.html"],
     ["guides", "Guides", "guides.html"],
+    ["glossary", "Glossary", "glossary.html"],
     ["devices", "Devices", "devices.html"],
     ["software", "Software", "software.html"],
     ["exchanges", "Exchanges", "exchanges.html"],
     ["dashboard", "Dashboard", "dashboard.html"],
+    ["merch", "Merch", "merch.html"],
     ["contact", "Get Help", "contact.html"]
   ];
 
   const externalLink = (url, label = "Official site") =>
     `<a class="sc-text-link" href="${url}" target="_blank" rel="noopener">${label} <i class="bi bi-arrow-up-right"></i></a>`;
+
+  /* Footer row on a product's detail card: the official-site link anchored
+     bottom left, that product's guide button (if it has one) anchored
+     bottom right -- see productGuideLinks() in guides.mjs. */
+  const detailFooter = (link, guideKey = "") =>
+    `<div class="sc-detail-footer">${link}${productGuideLinks(guideKey)}</div>`;
 
   const hero = (eyebrow, title, lead, actions = "", media = null) => {
     const backgroundMedia = Boolean(media?.background);
@@ -77,6 +87,20 @@ const currentYear = new Date().getFullYear();
       </a>
     </div>`;
 
+  const softwareCard = (logo, title, text, href, linkText) => `
+    <div class="col-md-6 col-xl-3">
+      <a class="sc-card sc-path-card-link sc-software-card" href="${href}">
+        <div class="sc-card-body">
+          <div class="sc-software-card-heading">
+            <span class="sc-software-logo"><img src="${logo}" alt="" width="48" height="48" loading="lazy"></span>
+            <h3>${title}</h3>
+          </div>
+          <p>${text}</p>
+          <span class="sc-text-link">${linkText} <i class="bi bi-arrow-right"></i></span>
+        </div>
+      </a>
+    </div>`;
+
   const pricingCard = ({ badge, title, price, priceNote, sessions, text, features, href, linkText = "Book a free call" }) => `
     <div class="col-lg-4">
       <a class="sc-card sc-pricing-card sc-path-card-link${badge ? " sc-pricing-featured" : ""}" href="${href}">
@@ -92,9 +116,20 @@ const currentYear = new Date().getFullYear();
       </a>
     </div>`;
 
+  const productTagTone = tag => {
+    const value = tag.toLowerCase();
+    if (/bitcoin|multi-asset/.test(value)) return "scope";
+    if (/open source|diy/.test(value)) return "open";
+    if (/usb|nfc|qr|air-gap|bluetooth/.test(value)) return "connect";
+    if (/secure element/.test(value)) return "security";
+    if (/multisig|advanced/.test(value)) return "advanced";
+    return "feature";
+  };
+
   const productCard = ({ image, imageAlt, imageWidth, imageHeight, icon = "bi-usb-drive", title, text, tags, href }) => `
     <div class="col-md-6 col-xl-4">
-      <a class="sc-card sc-product-card sc-path-card-link" href="${href}">
+      <article class="sc-card sc-product-card sc-path-card-link">
+        <a class="sc-card-cover-link" href="${href}" aria-label="Read details: ${title}"></a>
         <div class="sc-product-image">
           ${image
             ? `<img src="${image}" alt="${imageAlt || title}" width="${imageWidth}" height="${imageHeight}" loading="lazy">`
@@ -103,10 +138,10 @@ const currentYear = new Date().getFullYear();
         <div class="sc-card-body">
           <h3>${title}</h3>
           <p>${text}</p>
-          <div class="sc-tags">${tags.map(tag => `<span class="sc-tag">${tag}</span>`).join("")}</div>
+          <div class="sc-tags">${tags.map(tag => renderGlossaryTag(tag, "", `sc-tag-${productTagTone(tag)}`)).join("")}</div>
           <span class="sc-text-link">Read details <i class="bi bi-arrow-right"></i></span>
         </div>
-      </a>
+      </article>
     </div>`;
 
   const lastLinkCheck = "August 6, 2026";
@@ -121,7 +156,7 @@ const currentYear = new Date().getFullYear();
 
   const pages = {
     home: {
-      title: "SelfCustody.ca",
+      title: "SelfCustody.ca | Control your money",
       description: "Clear, practical guidance for learning how to buy bitcoin, choose a wallet, protect recovery material, and withdraw to self custody.",
       content: `
         ${hero(
@@ -206,11 +241,18 @@ const currentYear = new Date().getFullYear();
           </div>
         </section>
 
-        <section class="sc-cta">
+        <section class="sc-close">
+          <figure class="sc-close-glow" aria-hidden="true">
+            <img src="assets/img/cash-vortex/controlled-orbit-v2.webp" alt="" width="1717" height="916" loading="lazy" decoding="async">
+          </figure>
           <div class="container">
-            <div class="row align-items-center">
-              <div class="col-md-8"><h2>Ready to build your setup?</h2><p>Use the guides first, then compare tools once you know what problem each tool needs to solve.</p></div>
-              <div class="col-md-4 text-md-end"><a class="sc-btn" href="guides.html"><span>Open the guides</span></a></div>
+            <h2 class="sc-close-title">
+              <span class="sc-outlined-word sc-close-word" data-text="CONTROL YOUR MONEY"><span class="sc-word-fill">CONTROL YOUR MONEY</span></span>
+            </h2>
+            <p class="sc-close-lead">Start with one clear next step. Use the guides to build your setup, or get help when you want a second set of eyes.</p>
+            <div class="sc-hero-actions sc-close-actions">
+              <a class="sc-btn sc-btn-primary" href="guides.html"><span>Open the guides</span></a>
+              <a class="sc-btn sc-btn-ghost" href="contact.html"><span>Get help</span></a>
             </div>
           </div>
         </section>`
@@ -218,14 +260,14 @@ const currentYear = new Date().getFullYear();
 
     guides: {
       title: "Guides | Self Custody Canada",
-      description: "A practical, step-by-step learning path for buying bitcoin, setting up a wallet, withdrawing safely, testing recovery, and maintaining self-custody.",
+      description: "Step-by-step Bitcoin self-custody guides: device setup, wallet software, withdrawing from Canadian exchanges, multisig, passphrases, and recovery testing.",
       content: `
         ${hero(
-          "Practical learning path",
+          "Guide library",
           "Learn the system,<br><em>not just the buttons.</em>",
-          "A complete beginner-to-confident-owner path. Work through it in order, use small amounts, and stop whenever a step is not clear.",
-          `<a class="sc-btn sc-btn-primary" href="#path">Step one</a>
-           <a class="sc-btn sc-btn-ghost" href="contact.html">Get help</a>`,
+          "Setup walkthroughs for every device and wallet, withdrawal guides for Canadian platforms, and the advanced material worth earning. Answer three questions and the library narrows to what applies to you.",
+          `<a class="sc-btn sc-btn-primary" href="#finder">Find my guide</a>
+           <a class="sc-btn sc-btn-ghost" href="guides/complete-path.html">Start here</a>`,
           {
             src: "assets/img/education-library.jpeg",
             alt: "Bookshelves and a reading lamp in a quiet library",
@@ -234,99 +276,19 @@ const currentYear = new Date().getFullYear();
           }
         )}
 
-        <section id="path" class="sc-section">
+        ${renderGuideIndexNav()}
+        ${renderGuideFinder()}
+        ${renderGuideSections()}
+
+        <section class="sc-section sc-section-dark">
           <div class="container">
-            <div class="sc-section-head">
-              <span class="sc-eyebrow">The complete path</span>
-              <h2>Five steps from exchange account to tested self-custody</h2>
-              <p>Each step has one outcome. Do not move on until you can explain that outcome in your own words.</p>
+            <div class="sc-section-head centered">
+              <span class="sc-eyebrow">Not finding it</span>
+              <h2>Ask for the guide you need</h2>
+              <p>The library is still being written, and requests decide what gets written next. If your device, platform, or situation is not covered yet, say so.</p>
             </div>
-
-            <article class="sc-detail">
-              <div class="row g-4">
-                <div class="col-lg-4"><span class="sc-step-number">1</span><h2 class="mt-3">Understand what you own</h2></div>
-                <div class="col-lg-8">
-                  <p>A bitcoin wallet does not hold coins like a physical wallet. It manages keys and constructs transactions. The network records bitcoin outputs; your keys authorize spending them.</p>
-                  <h3>Know these terms</h3>
-                  <ul class="sc-check-list">
-                    <li><strong>Private key:</strong> the secret that authorizes a spend.</li>
-                    <li><strong>Recovery words:</strong> human-readable backup material from which wallet keys can be recreated.</li>
-                    <li><strong>Address:</strong> a destination you can share to receive bitcoin.</li>
-                    <li><strong>UTXO:</strong> an individual chunk of bitcoin your wallet can spend.</li>
-                  </ul>
-                </div>
-              </div>
-            </article>
-
-            <article class="sc-detail">
-              <div class="row g-4">
-                <div class="col-lg-4"><span class="sc-step-number">2</span><h2 class="mt-3">Choose the setup</h2></div>
-                <div class="col-lg-8">
-                  <p>Use a mobile software wallet for learning and modest spending amounts. Use a hardware signer when you want keys isolated (air-gapped) from an internet-connected computer or phone. Consider multisig only when you can confidently back up every key and the wallet configuration.</p>
-                  <div class="sc-tags"><span class="sc-tag">Mobile: convenient</span><span class="sc-tag">Hardware: air gapped keys</span><span class="sc-tag">Multisig: removes one key as a single point of failure</span></div>
-                  <p><a class="sc-text-link" href="devices.html">Compare hardware <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="software.html">Compare wallet software <i class="bi bi-arrow-right"></i></a></p>
-                </div>
-              </div>
-            </article>
-
-            <article class="sc-detail">
-              <div class="row g-4">
-                <div class="col-lg-4"><span class="sc-step-number">3</span><h2 class="mt-3">Set up and back up</h2></div>
-                <div class="col-lg-8">
-                  <ul class="sc-check-list">
-                    <li>Inspect packaging and authenticate the device using the maker's official app or process.</li>
-                    <li>Generate a new wallet on the device; never use words supplied in the box.</li>
-                    <li>Write the recovery words offline, in order, without photographing them.</li>
-                    <li>Confirm the backup when prompted and record any passphrase policy separately.</li>
-                    <li>Store device and backup separately so one theft, fire, or flood does not take both.</li>
-                  </ul>
-                  <div class="sc-callout mt-4"><h3>A passphrase is not a casual extra password</h3><p>A forgotten or mistyped BIP39 passphrase creates a different wallet. Use one only when you understand the recovery procedure and have a durable way to preserve it.</p></div>
-                </div>
-              </div>
-            </article>
-
-            <article class="sc-detail">
-              <div class="row g-4">
-                <div class="col-lg-4"><span class="sc-step-number">4</span><h2 class="mt-3">Withdraw carefully</h2></div>
-                <div class="col-lg-8">
-                  <ul class="sc-check-list">
-                    <li>Create a fresh receive address in your wallet.</li>
-                    <li>Verify the full address on the hardware device, not only on the computer screen.</li>
-                    <li>Send a small test withdrawal and wait for confirmation.</li>
-                    <li>Confirm the received transaction in your wallet before sending a larger amount.</li>
-                    <li>Understand the platform fee, withdrawal fee, and Bitcoin network fee before approving.</li>
-                  </ul>
-                  <p class="mt-3"><a class="sc-text-link" href="exchanges.html">Compare Canadian purchase routes <i class="bi bi-arrow-right"></i></a></p>
-                </div>
-              </div>
-            </article>
-
-            <article class="sc-detail">
-              <div class="row g-4">
-                <div class="col-lg-4"><span class="sc-step-number">5</span><h2 class="mt-3">Prove you can recover</h2></div>
-                <div class="col-lg-8">
-                  <p>A backup you have never tested is an assumption. After the first small transaction, follow your device maker's documented recovery-check procedure or restore into a wiped spare device. Confirm the expected wallet fingerprint, addresses, or balance before relying on the setup.</p>
-                  <h3>Maintain it</h3>
-                  <ul class="sc-check-list">
-                    <li>Review backups for legibility and environmental damage.</li>
-                    <li>Keep an inheritance instruction that explains the process without exposing the secret.</li>
-                    <li>Download wallet software only from official sources and verify releases when supported.</li>
-                    <li>Re-evaluate single-signature versus multisig as the value and consequences change.</li>
-                  </ul>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="sc-section sc-section-muted">
-          <div class="container">
-            <div class="sc-section-head centered"><span class="sc-eyebrow">Common failure modes</span><h2>What not to normalize</h2></div>
-            <div class="row g-4">
-              ${card("bi-camera", "Digital seed copies", "Photos, cloud notes, email drafts, printers, and ordinary password managers create copies you may not be able to track.", "#path", "Keep recovery material offline")}
-              ${card("bi-box-seam", "Pre-filled recovery words", "A legitimate wallet should generate new words during setup. Words included in a package are a theft attempt.", "#path", "Generate on-device")}
-              ${card("bi-arrow-left-right", "Skipping the test send", "A small test catches the wrong network, address errors, unfamiliar withdrawal screens, and fee surprises.", "#path", "Test first")}
-              ${card("bi-diagram-3", "Complexity without recovery", "A sophisticated setup that nobody can restore is less secure than a simpler setup that has been tested.", "#path", "Earn complexity")}
+            <div class="sc-hero-actions justify-content-center">
+              <a class="sc-btn sc-btn-primary" href="contact.html">Request a guide</a>
             </div>
           </div>
         </section>`
@@ -351,16 +313,30 @@ const currentYear = new Date().getFullYear();
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-callout mb-4">
-              <h2>Before choosing a brand</h2>
-              <p>Buy directly from the manufacturer or a listed authorized reseller. Check tamper evidence and device authenticity, install only official firmware, and never use recovery words supplied by a seller.</p>
-            </div>
-            <div class="sc-callout mb-5">
-              <h2>Don't blindly trust the device to generate your seed</h2>
-              <p>A device's random number generator is a single component you can't independently verify. Where supported, rolling your own entropy—50+ rolls of a six-sided die—and combining it with the device's own randomness is a simple way to reduce that trust. Not every device offers this; check the details below before assuming yours does.</p>
-            </div>
+            <aside class="sc-device-preflight mb-5" aria-labelledby="device-preflight-title">
+              <div class="sc-device-preflight-head">
+                <span class="sc-eyebrow">Before you choose</span>
+                <h2 id="device-preflight-title">Protect the purchase and the seed</h2>
+              </div>
+              <div class="sc-device-preflight-grid">
+                <section>
+                  <span class="sc-device-preflight-label"><i class="bi bi-box-seam" aria-hidden="true"></i> Supply chain</span>
+                  <h3>Before choosing a brand</h3>
+                  <p>Buy directly from the manufacturer or a listed authorized reseller. Check tamper evidence and device authenticity, install only official firmware, and never use recovery words supplied by a seller.</p>
+                </section>
+                <section>
+                  <span class="sc-device-preflight-label"><i class="bi bi-calculator" aria-hidden="true"></i> Seed generation</span>
+                  <h3>Don't blindly trust device randomness</h3>
+                  <p>A device's random number generator is a component you cannot independently verify. Where supported, combine it with your own entropy from 50+ rolls of a six-sided die. Not every device offers this, so check the details before assuming yours does.</p>
+                </section>
+              </div>
+              <div class="sc-device-preflight-guide">
+                <div><strong>Generate verifiable entropy yourself</strong><span>Learn the exact dice-roll workflow, conversion process, and checks before using it with a compatible signer.</span></div>
+                <a class="sc-text-link" href="guides/dice-entropy.html">Read the dice-roll guide <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </aside>
             <div class="sc-section-head"><span class="sc-eyebrow">Shortlist</span><h2>Nine useful reference points</h2><p>This is not a winner-takes-all ranking. Each device represents a different balance of transparency, convenience, connectivity, and operator skill.</p></div>
-            <div class="row g-4 sc-path-options">
+            <div class="row g-4 sc-path-options sc-device-card-grid">
               ${productCard({
                 image: "assets/img/devices/trezor-safe-7-shortlist.png",
                 imageAlt: "Trezor Safe 7 hardware wallet",
@@ -368,7 +344,7 @@ const currentYear = new Date().getFullYear();
                 imageHeight: 560,
                 title: "Trezor Safe 7 Bitcoin-only",
                 text: "Premium touchscreen signer with a dedicated Bitcoin-only firmware edition, open-source security, and encrypted Bluetooth.",
-                tags: ["Bitcoin only", "Touchscreen", "Open source"],
+                tags: ["Bitcoin only", "Secure element", "Open source"],
                 href: "#trezor"
               })}
               ${productCard({
@@ -408,7 +384,7 @@ const currentYear = new Date().getFullYear();
                 imageHeight: 762,
                 title: "COLDCARD Q / Mk5",
                 text: "Bitcoin-only signers built for air-gapped, beginner-to-advanced workflows, with dual secure elements and strong transaction-policy features.",
-                tags: ["Bitcoin only", "Air-gap options", "Advanced"],
+                tags: ["Bitcoin only", "Air-gap options", "2× secure elements"],
                 href: "#coldcard"
               })}
               ${productCard({
@@ -448,7 +424,7 @@ const currentYear = new Date().getFullYear();
                 imageHeight: 480,
                 title: "Ledger",
                 text: "Widely used multi-asset signer line (Nano S Plus, Nano X, Flex, Stax) with a certified secure element, USB and Bluetooth connectivity, and a companion app.",
-                tags: ["Multi-asset", "USB / Bluetooth", "Certified secure element"],
+                tags: ["Multi-asset", "USB / Bluetooth", "Secure element"],
                 href: "#ledger"
               })}
             </div>
@@ -495,7 +471,7 @@ const currentYear = new Date().getFullYear();
                   </tr>
                   <tr>
                     <th scope="row">Dedicated key-isolation chip</th>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EAL6+ plus TROPIC01</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EAL6+ TROPIC01</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Secure MCU; 2-of-3 multisig</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EAL6+ secure chip</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Virtual secure element</small></td>
@@ -648,72 +624,72 @@ const currentYear = new Date().getFullYear();
           </div>
         </section>
 
-        <section class="sc-section">
+        <section class="sc-section sc-device-details">
           <div class="container">
             <div class="sc-section-head"><span class="sc-eyebrow">Detailed notes</span><h2>What each device is really optimizing for</h2></div>
 
             <article id="trezor" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/trezor-safe-7-detail.png" alt="Trezor Safe 7" width="660" height="1118" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Trezor Safe 7 Bitcoin-only</h2><p>Trezor's current premium model is also available as a dedicated Bitcoin-only firmware edition: same hardware as the standard Safe 7—large colour touchscreen, open-source software, two secure elements plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging—with altcoin functionality removed entirely.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Bitcoin-only holders who still want a premium touchscreen experience.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul>${externalLink("https://trezor.io/trezor-safe-7-bitcoin-only")}</div>
+                <div class="col-lg-7"><h2>Trezor Safe 7 Bitcoin-only</h2><p>Trezor's current premium model is also available as a dedicated Bitcoin-only firmware edition: same hardware as the standard Safe 7—large colour touchscreen, open-source software, a secure element plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging—with altcoin functionality removed entirely.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Bitcoin-only holders who still want a premium touchscreen experience.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://trezor.io/trezor-safe-7-bitcoin-only"), "trezor")}</article>
 
             <article id="bitkey-device" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/bitkey.png" alt="Bitkey hardware key" width="320" height="363" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Bitkey</h2><p>Bitkey is Block's Bitcoin-only wallet: a hardware key, a mobile app, and a Block-held recovery key form a 2-of-3 multisignature wallet by design—no single key can move funds alone. The hardware key has an OLED display, a fingerprint sensor, connects via NFC, and charges over USB-C. Firmware, app, server code, and hardware schematics are published on GitHub under the Commons Clause license, though the firmware cannot be independently rebuilt end-to-end because it depends on a proprietary third-party fingerprint-matching library Block cannot redistribute.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want multisig-level protection without configuring it themselves.</li><li>Users who prefer a polished, guided consumer product over a DIY or advanced setup.</li><li>Anyone comfortable with Block holding one of three keys to help with recovery.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The published code carries a Commons Clause restriction and isn't independently buildable end-to-end—source-available, not fully open source.</li><li>Recovery leans on the app, encrypted cloud backup, and social recovery rather than a single standard seed phrase.</li><li>A company-held key is a different trust model than a fully self-contained signer.</li></ul>${externalLink("https://bitkey.world/")}</div>
+                <div class="col-lg-7"><h2>Bitkey</h2><p>Bitkey is Block's Bitcoin-only wallet: a hardware key, a mobile app, and a Block-held recovery key form a 2-of-3 multisignature wallet by design—no single key can move funds alone. The hardware key has an OLED display, a fingerprint sensor, connects via NFC, and charges over USB-C. Firmware, app, server code, and hardware schematics are published on GitHub under the Commons Clause license, though the firmware cannot be independently rebuilt end-to-end because it depends on a proprietary third-party fingerprint-matching library Block cannot redistribute.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want multisig-level protection without configuring it themselves.</li><li>Users who prefer a polished, guided consumer product over a DIY or advanced setup.</li><li>Anyone comfortable with Block holding one of three keys to help with recovery.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The published code carries a Commons Clause restriction and isn't independently buildable end-to-end—source-available, not fully open source.</li><li>Recovery leans on the app, encrypted cloud backup, and social recovery rather than a single standard seed phrase.</li><li>A company-held key is a different trust model than a fully self-contained signer.</li></ul></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://bitkey.world/"), "bitkey")}</article>
 
             <article id="bitbox" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/bitbox02.webp" alt="BitBox02 hardware wallet" width="1020" height="574" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>BitBox02 Bitcoin-only</h2><p>The BitBox02 Bitcoin-only edition combines open-source firmware with a secure dual-chip design, a compact OLED display, touch sliders, USB-C, and a fast microSD backup workflow. The Bitcoin-only firmware edition is locked at the factory and cannot be switched to multi-asset firmware.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a compact, approachable Bitcoin-only device.</li><li>Users who like guided desktop software and microSD recovery.</li><li>Sparrow, Electrum, Specter, and personal-node users.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Normal use is connected over USB-C rather than camera-based air gap.</li><li>The original BitBox02 does not work with iPhone/iPad; verify the current Nova model if iOS matters.</li></ul>${externalLink("https://bitbox.swiss/bitbox02/bitcoin-only/")}</div>
+                <div class="col-lg-7"><h2>BitBox02 Bitcoin-only</h2><p>The BitBox02 Bitcoin-only edition combines open-source firmware with a secure dual-chip design, a compact OLED display, touch sliders, USB-C, and a fast microSD backup workflow. The Bitcoin-only firmware edition is locked at the factory and cannot be switched to multi-asset firmware.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a compact, approachable Bitcoin-only device.</li><li>Users who like guided desktop software and microSD recovery.</li><li>Sparrow, Electrum, Specter, and personal-node users.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Normal use is connected over USB-C rather than camera-based air gap.</li><li>The original BitBox02 does not work with iPhone/iPad; verify the current Nova model if iOS matters.</li></ul></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://bitbox.swiss/bitbox02/bitcoin-only/"), "bitbox")}</article>
 
             <article id="jade" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/blockstream-jade-plus.png" alt="Blockstream Jade Plus" width="925" height="547" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Blockstream Jade Plus</h2><p>Jade Plus is a Bitcoin and Liquid signer with a larger display, camera, physical controls, QR signing, USB-C, Bluetooth, and SD card support. Its hardware and firmware are open source, and its security architecture uses Blockstream's virtual secure element approach.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based air-gapped signing with a modern screen.</li><li>Users who prefer auditable hardware and firmware.</li><li>Sparrow, Nunchuk, Specter, and Blockstream App workflows.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Learn how PIN unlock, genuine check, and stateless recovery work before deciding on a backup plan.</li></ul>${externalLink("https://blockstream.com/jade/jade-plus/")}</div>
+                <div class="col-lg-7"><h2>Blockstream Jade Plus</h2><p>Jade Plus is a Bitcoin and Liquid signer with a larger display, camera, physical controls, QR signing, USB-C, Bluetooth, and SD card support. Its hardware and firmware are open source, and its security architecture uses Blockstream's virtual secure element approach.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based air-gapped signing with a modern screen.</li><li>Users who prefer auditable hardware and firmware.</li><li>Sparrow, Nunchuk, Specter, and Blockstream App workflows.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Learn how PIN unlock, genuine check, and stateless recovery work before deciding on a backup plan.</li></ul></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://blockstream.com/jade/jade-plus/"), "jade")}</article>
 
             <article id="coldcard" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/coldcard-q-mk5.png" alt="COLDCARD Q and Mk5 hardware wallets" width="836" height="762" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>COLDCARD Q / Mk5</h2><p>COLDCARD Q and Mk5 are Bitcoin-only signers with dual secure elements from different vendors, publicly reviewable and reproducible firmware, and some of the deepest transaction-policy controls available on a consumer signer, while still working for someone building their first air-gapped setup.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want one device that scales from a first air-gapped wallet to advanced multisig and policy rules.</li><li>Users who value dual, independently-sourced secure elements and open, reproducible firmware.</li><li>Anyone who wants microSD, NFC, and (on the Q) QR/camera air-gap options in a single signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Read the docs to get the most out of its more advanced features.</li><li>Choosing between Q and Mk5 comes down to keyboard-and-camera versus a smaller, simpler form factor.</li></ul><p><a class="sc-btn sc-btn-primary mt-2" href="coinkite.html">Explore Coinkite products</a></p>${externalLink("https://coldcard.com/")}</div>
+                <div class="col-lg-7"><h2>COLDCARD Q / Mk5</h2><p>COLDCARD Q and Mk5 are Bitcoin-only signers with dual secure elements from different vendors, publicly reviewable and reproducible firmware, and some of the deepest transaction-policy controls available on a consumer signer, while still working for someone building their first air-gapped setup.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want one device that scales from a first air-gapped wallet to advanced multisig and policy rules.</li><li>Users who value dual, independently-sourced secure elements and open, reproducible firmware.</li><li>Anyone who wants microSD, NFC, and (on the Q) QR/camera air-gap options in a single signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Read the docs to get the most out of its more advanced features.</li><li>Choosing between Q and Mk5 comes down to keyboard-and-camera versus a smaller, simpler form factor.</li></ul><div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="coinkite.html"><span>Explore Coinkite products</span></a></div></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://coldcard.com/"), "coldcard")}</article>
 
             <article id="passport" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/prime_light.webp" alt="Foundation Passport Prime hardware device" width="1000" height="1000" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Foundation Passport</h2><p>Passport Prime is Foundation's current device, and it is a significant change of direction from the earlier Bitcoin-only Passport. It keeps the open-source approach, the camera for QR-based air-gapped signing, and SeedQR import and export, but it is now a multi-purpose security device: alongside the Bitcoin wallet, its KeyOS firmware also handles 2FA codes, FIDO security keys, and encrypted file storage. It pairs a security processor with a secure element, adds QuantumLink Bluetooth and NFC backup Keycards, and drops the microSD slot the older model used.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based QR air-gapped signing with a large, modern touchscreen.</li><li>Anyone who wants one device for Bitcoin plus 2FA codes, security keys, and encrypted files.</li><li>Envoy companion-app workflows, including Magic Backups and Keycard recovery.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>No longer Bitcoin-only—the extra apps and radios add capability but also attack surface a single-purpose signer avoids.</li><li>Backup moves to NFC Keycards and SeedQR rather than the microSD workflow the earlier Passport used.</li><li>If you specifically want the older Bitcoin-only Passport, check availability first—Foundation's shop currently lists Passport Prime.</li></ul>${externalLink("https://foundation.xyz/passport")}</div>
+                <div class="col-lg-7"><h2>Foundation Passport</h2><p>Passport Prime is Foundation's current device, and it is a significant change of direction from the earlier Bitcoin-only Passport. It keeps the open-source approach, the camera for QR-based air-gapped signing, and SeedQR import and export, but it is now a multi-purpose security device: alongside the Bitcoin wallet, its KeyOS firmware also handles 2FA codes, FIDO security keys, and encrypted file storage. It pairs a security processor with a secure element, adds QuantumLink Bluetooth and NFC backup Keycards, and drops the microSD slot the older model used.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want camera-based QR air-gapped signing with a large, modern touchscreen.</li><li>Anyone who wants one device for Bitcoin plus 2FA codes, security keys, and encrypted files.</li><li>Envoy companion-app workflows, including Magic Backups and Keycard recovery.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>No longer Bitcoin-only—the extra apps and radios add capability but also attack surface a single-purpose signer avoids.</li><li>Backup moves to NFC Keycards and SeedQR rather than the microSD workflow the earlier Passport used.</li><li>If you specifically want the older Bitcoin-only Passport, check availability first—Foundation's shop currently lists Passport Prime.</li></ul></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://foundation.xyz/passport"), "passport")}</article>
 
             <article id="seedsigner" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/seedsigner.webp" alt="SeedSigner open-source hardware wallet" width="1586" height="992" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>SeedSigner</h2><p>SeedSigner is open-source, Bitcoin-only firmware that you build yourself from off-the-shelf parts—typically a Raspberry Pi Zero, a camera module, and a small screen—into a fully air-gapped, QR-code-based signer. It has no secure element and, by design, does not persist your seed on the device: you re-enter it each session from words, dice rolls, or a SeedQR.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer built from cheap, replaceable hardware.</li><li>QR-based single-sig and multisig workflows, including stateless "amnesic" use.</li><li>Users comfortable assembling hardware and flashing firmware themselves.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>No secure element—encryption and process-level protections are a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li><li>Re-entering your seed each session is deliberate, but means you need a reliable physical backup.</li></ul>${externalLink("https://seedsigner.com/")}</div>
+                <div class="col-lg-7"><h2>SeedSigner</h2><p>SeedSigner is open-source, Bitcoin-only firmware that you build yourself from off-the-shelf parts—typically a Raspberry Pi Zero, a camera module, and a small screen—into a fully air-gapped, QR-code-based signer. It has no secure element and, by design, does not persist your seed on the device: you re-enter it each session from words, dice rolls, or a SeedQR.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer built from cheap, replaceable hardware.</li><li>QR-based single-sig and multisig workflows, including stateless "amnesic" use.</li><li>Users comfortable assembling hardware and flashing firmware themselves.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>No secure element—encryption and process-level protections are a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li><li>Re-entering your seed each session is deliberate, but means you need a reliable physical backup.</li></ul></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://seedsigner.com/"), "seedsigner")}</article>
 
             <article id="krux" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/krux-yahboom.png" alt="Krux running on a Yahboom K210 touchscreen device" width="312" height="440" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Krux</h2><p>Krux is open-source, Bitcoin-only firmware that turns off-the-shelf Kendryte K210 devices—such as the Yahboom K210 module or M5StickV—into air-gapped signers using QR codes or an SD card. It has no secure element; protection relies on encryption. Krux was built amnesic-first—by default it holds nothing between sessions and you load your key each time—with optional encrypted storage on the device or an SD card if you want persistence.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer.</li><li>QR-based single-sig and multisig workflows.</li><li>Users comfortable flashing firmware and sourcing their own hardware.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The project states it has not yet been formally audited by a third party.</li><li>No secure element—encryption-based protection is a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li></ul>${externalLink("https://selfcustody.github.io/krux/")}</div>
+                <div class="col-lg-7"><h2>Krux</h2><p>Krux is open-source, Bitcoin-only firmware that turns off-the-shelf Kendryte K210 devices—such as the Yahboom K210 module or M5StickV—into air-gapped signers using QR codes or an SD card. It has no secure element; protection relies on encryption. Krux was built amnesic-first—by default it holds nothing between sessions and you load your key each time—with optional encrypted storage on the device or an SD card if you want persistence.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer.</li><li>QR-based single-sig and multisig workflows.</li><li>Users comfortable flashing firmware and sourcing their own hardware.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The project states it has not yet been formally audited by a third party.</li><li>No secure element—encryption-based protection is a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li></ul></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://selfcustody.github.io/krux/"), "krux")}</article>
 
             <article id="ledger" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/ledger-stax-face.webp" alt="Ledger Stax hardware wallet" width="504" height="480" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Ledger</h2><p>Ledger's current lineup (Nano S Plus, Nano X, Flex, Stax, and the touchscreen Nano Gen5) pairs a certified secure element—EAL5+ on the older Nano models, EAL6+ on the newer touchscreen devices—with the Ledger Live companion app. The individual apps you install are open source, but the underlying secure element operating system, BOLOS, is closed source, so the core security boundary can't be independently reviewed the way a fully open design can. Devices are multi-asset by default rather than shipping a dedicated Bitcoin-only firmware edition.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a widely used, certified-hardware signer with a polished companion app.</li><li>Users who hold multiple assets, not just Bitcoin, on one device.</li><li>Anyone prioritizing a large ecosystem of supported apps and integrations.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The secure element OS is closed source—you're trusting Ledger's certification, not auditing the code yourself.</li><li>No dedicated Bitcoin-only firmware edition, and no air-gapped (QR or SD card) signing path.</li><li>Ledger Recover, an opt-in cloud/social seed-backup service, has drawn criticism; it's optional and can be ignored if you self-custody your own backup.</li></ul>${externalLink("https://www.ledger.com/")}</div>
+                <div class="col-lg-7"><h2>Ledger</h2><p>Ledger's current lineup (Nano S Plus, Nano X, Flex, Stax, and the touchscreen Nano Gen5) pairs a certified secure element—EAL5+ on the older Nano models, EAL6+ on the newer touchscreen devices—with the Ledger Live companion app. The individual apps you install are open source, but the underlying secure element operating system, BOLOS, is closed source, so the core security boundary can't be independently reviewed the way a fully open design can. Devices are multi-asset by default rather than shipping a dedicated Bitcoin-only firmware edition.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a widely used, certified-hardware signer with a polished companion app.</li><li>Users who hold multiple assets, not just Bitcoin, on one device.</li><li>Anyone prioritizing a large ecosystem of supported apps and integrations.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The secure element OS is closed source—you're trusting Ledger's certification, not auditing the code yourself.</li><li>No dedicated Bitcoin-only firmware edition, and no air-gapped (QR or SD card) signing path.</li><li>Ledger Recover, an opt-in cloud/social seed-backup service, has drawn criticism; it's optional and can be ignored if you self-custody your own backup.</li></ul></div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://www.ledger.com/"), "ledger")}</article>
 
             ${sourceNote([
               ["COLDCARD", "https://coldcard.com/"],
@@ -788,11 +764,10 @@ const currentYear = new Date().getFullYear();
                   <p>Both models are Bitcoin-only signers built around dual secure elements, verifiable firmware, extensive PIN controls, PSBT workflows, microSD, NFC, and USB-C. They are designed to keep private keys on the device while letting you choose how transaction data moves.</p>
                   <h3>Choose Q when</h3><ul class="sc-check-list"><li>You want a 3.2-inch display, full QWERTY keyboard, built-in QR scanner, dual microSD slots, and AAA battery operation.</li><li>You use long BIP39 passphrases or frequent QR-based workflows.</li><li>You want the clearest COLDCARD interface for advanced multisig and policy work.</li></ul>
                   <h3>Choose Mk5 when</h3><ul class="sc-check-list"><li>You want the same core security philosophy in a pocketable form.</li><li>microSD and NFC signing fit your workflow and a QR camera is not required.</li><li>You prefer a compact keypad device with fewer physical extras.</li></ul>
-                  <div class="sc-tags"><span class="sc-tag">Dual secure elements</span><span class="sc-tag">Bitcoin only</span><span class="sc-tag">MicroSD</span><span class="sc-tag">NFC</span><span class="sc-tag">Reproducible firmware</span></div>
-                  ${externalLink("https://coldcard.com/", "Official COLDCARD comparison")}
+                  <div class="sc-tags">${["Dual secure elements", "Bitcoin only", "MicroSD", "NFC", "Reproducible firmware"].map(tag => renderGlossaryTag(tag)).join("")}</div>
                 </div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://coldcard.com/", "Official COLDCARD comparison"), "coldcard")}</article>
 
             <article id="tapsigner" class="sc-detail">
               <div class="row g-5 align-items-center">
@@ -802,10 +777,9 @@ const currentYear = new Date().getFullYear();
                   <p>TAPSIGNER keeps one BIP32 private key on a credit-card-sized NFC card. A compatible wallet constructs and displays the transaction; you tap the card and enter its PIN to authorize a signature.</p>
                   <h3>What it improves</h3><ul class="sc-check-list"><li>The phone does not normally hold the unencrypted master private key.</li><li>No battery, cable, or seed-word entry is required for routine signing.</li><li>Works as a single-signature key or one key in a multisig setup with compatible wallets.</li></ul>
                   <h3>The honest trade-off</h3><ul class="sc-caution-list"><li>There is no display on the card. You must trust your companion wallet to show the correct amount, destination, fee, inputs, and change.</li><li>Recovery requires the encrypted backup file, the separate printed key, and the wallet configuration. Plan and test this before funding.</li></ul>
-                  ${externalLink("https://tapsigner.com/")}
                 </div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://tapsigner.com/"), "tapsigner")}</article>
 
             <article id="satscard" class="sc-detail">
               <div class="row g-5 align-items-center">
@@ -815,10 +789,9 @@ const currentYear = new Date().getFullYear();
                   <p>SATSCARD has ten independent slots. You verify and fund the current sealed slot, then the card can be handed to another person without an on-chain transfer. The recipient can keep it sealed, pass it again, or unseal the slot and sweep the bitcoin into a normal wallet.</p>
                   <h3>Good use cases</h3><ul class="sc-check-list"><li>Giving actual bitcoin before the recipient has chosen a wallet.</li><li>Teaching the difference between possession, a sealed key, and an on-chain transaction.</li><li>Small, deliberate physical transfers after the recipient verifies the card and funding.</li></ul>
                   <h3>Do not mistake it for</h3><ul class="sc-caution-list"><li>A debit card, Lightning tap-to-pay card, exchange account, or recommended vault for large savings.</li><li>A TAPSIGNER: SATSCARD is meant to change owners; TAPSIGNER is a reusable signing key that stays with one owner.</li><li>A reusable address after unsealing. Sweep the full balance and never fund an exposed slot again.</li></ul>
-                  ${externalLink("https://satscard.com/")}
                 </div>
               </div>
-            </article>
+            ${detailFooter(externalLink("https://satscard.com/"), "satscard")}</article>
 
             <article id="related" class="sc-detail">
               <span class="sc-eyebrow">Related tools</span><h2>OPENDIME, SEEDPLATE, COLDPOWER, and BLOCKCLOCK</h2>
@@ -828,7 +801,7 @@ const currentYear = new Date().getFullYear();
                 <div class="col-md-6"><h3>COLDPOWER</h3><p>A 9-volt battery adapter that provides power without USB data—useful when operating a signer away from a computer port.</p></div>
                 <div class="col-md-6"><h3>BLOCKCLOCK</h3><p>A Bitcoin data display for block height, price, and related network information. It is a display product, not a custody device.</p></div>
               </div>
-              ${externalLink("https://coinkite.com/", "Official Coinkite product guide")}
+              ${detailFooter(externalLink("https://coinkite.com/", "Official Coinkite product guide"))}
             </article>
 
             <div class="sc-callout mt-4"><h3>Supply-chain rule</h3><p>Coinkite recommends buying from its store or an authorized reseller and inspecting security products for tampering. A discount is not worth uncertainty about who handled a signing device.</p></div>
@@ -863,14 +836,14 @@ const currentYear = new Date().getFullYear();
         <section class="sc-section">
           <div class="container">
             <div class="sc-section-head"><span class="sc-eyebrow">Seven featured wallets</span><h2>Match software to the job</h2><p>Shortlisted for strong hardware-wallet support—each one pairs with most signing devices, not just one brand. Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
-            <div class="row g-4 sc-path-options">
-              ${pathCard("bi-diagram-2", "Sparrow Wallet", "Desktop Bitcoin wallet with excellent PSBT, hardware, multisig, coin control, labeling, Tor, and personal-node support.", "#sparrow", "Read Sparrow notes")}
-              ${pathCard("bi-people", "Nunchuk", "Mobile and desktop wallet focused on multisig, shared wallets, hardware keys, recovery planning, and optional inheritance services.", "#nunchuk", "Read Nunchuk notes")}
-              ${pathCard("bi-phone", "Cove Wallet", "Bitcoin-only mobile wallet with UTXO management, labels, hardware-wallet integration, and PSBT signing over QR or NFC.", "#cove", "Read Cove notes")}
-              ${pathCard("bi-lightning", "Electrum", "Long-running desktop Bitcoin wallet with SPV verification, cold-storage workflows, multisig, plugins, and hardware support.", "#electrum", "Read Electrum notes")}
-              ${pathCard("bi-wallet2", "BlueWallet", "Mobile Bitcoin and Lightning wallet with watch-only monitoring, multisig vaults, coin control, and hardware-wallet PSBT support.", "#bluewallet", "Read BlueWallet notes")}
-              ${pathCard("bi-shuffle", "Wasabi Wallet", "Privacy-focused desktop wallet built around CoinJoin, mandatory Tor routing, advanced coin control, and broad hardware-wallet support via HWI.", "#wasabi", "Read Wasabi notes")}
-              ${pathCard("bi-diagram-3", "Specter", "Desktop multisig coordinator built for air-gapped signing, pairing with the widest range of hardware wallets of any option here.", "#specter", "Read Specter notes")}
+            <div class="row g-4 sc-path-options sc-software-card-grid">
+              ${softwareCard("assets/img/software/sparrow.png", "Sparrow Wallet", "Desktop Bitcoin wallet with excellent PSBT, hardware, multisig, coin control, labeling, Tor, and personal-node support.", "#sparrow", "Read notes")}
+              ${softwareCard("assets/img/software/nunchuk.png", "Nunchuk", "Mobile and desktop wallet focused on multisig, shared wallets, hardware keys, recovery planning, and optional inheritance services.", "#nunchuk", "Read notes")}
+              ${softwareCard("assets/img/software/cove.png", "Cove Wallet", "Bitcoin-only mobile wallet with UTXO management, labels, hardware-wallet integration, and PSBT signing over QR or NFC.", "#cove", "Read notes")}
+              ${softwareCard("assets/img/software/electrum.png", "Electrum", "Long-running desktop Bitcoin wallet with SPV verification, cold-storage workflows, multisig, plugins, and hardware support.", "#electrum", "Read notes")}
+              ${softwareCard("assets/img/software/bluewallet.png", "BlueWallet", "Mobile Bitcoin and Lightning wallet with watch-only monitoring, multisig vaults, coin control, and hardware-wallet PSBT support.", "#bluewallet", "Read notes")}
+              ${softwareCard("assets/img/software/wasabi.svg", "Wasabi Wallet", "Privacy-focused desktop wallet built around CoinJoin, mandatory Tor routing, advanced coin control, and broad hardware-wallet support via HWI.", "#wasabi", "Read notes")}
+              ${softwareCard("assets/img/software/specter.png", "Specter", "Desktop multisig coordinator built for air-gapped signing, pairing with the widest range of hardware wallets of any option here.", "#specter", "Read notes")}
             </div>
           </div>
         </section>
@@ -1042,16 +1015,37 @@ const currentYear = new Date().getFullYear();
           </div>
         </section>
 
-        <section class="sc-section">
+        <section id="software-detail" class="sc-section sc-software-details">
           <div class="container">
-            <article id="sparrow" class="sc-detail"><h2>Sparrow Wallet</h2><p>Sparrow is a desktop Bitcoin wallet for users who want visibility into transactions and UTXOs. It supports single-signature and multisig policies, common script types, output descriptors, PSBTs, hardware wallets, QR signing, coin control, labeling, Tor, Bitcoin Core, and private Electrum servers.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Hardware-wallet setup and transaction review.</li><li>Coin selection, fee control, labeling, and privacy education.</li><li>Air-gapped and multisig PSBT workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A public server can learn wallet activity. Move toward your own node or private server when privacy matters.</li><li>The interface exposes more detail than a beginner mobile wallet.</li></ul></div></div>${externalLink("https://sparrowwallet.com/")}</article>
-            <article id="nunchuk" class="sc-detail"><h2>Nunchuk</h2><p>Nunchuk focuses on single-signature and multisig wallets, shared access, air-gapped signing, broad hardware support, and optional assisted services such as recovery and inheritance planning. It supports products including COLDCARD, TAPSIGNER, Jade, SeedSigner, Trezor, Ledger, BitBox, Passport, and Keystone.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Families, partners, and businesses that need multi-user multisig.</li><li>People building a deliberate inheritance or assisted-recovery plan.</li><li>NFC TAPSIGNER and multiple hardware-key setups.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Understand which features are self-serve and which depend on a paid service or platform key.</li><li>Back up the complete wallet configuration as well as every private key.</li></ul></div></div>${externalLink("https://nunchuk.io/")}</article>
-            <article id="cove" class="sc-detail"><h2>Cove Wallet</h2><p>Cove is a Bitcoin-only mobile wallet designed for both straightforward on-chain use and more advanced workflows. It supports UTXO management, BIP329 labels, hardware-wallet PSBTs, and signing or wallet imports over QR and NFC.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Bitcoin-only mobile self custody.</li><li>Managing and labeling individual UTXOs.</li><li>Using supported hardware wallets through PSBT, QR, or NFC workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone remains a general-purpose, internet-connected device; use dedicated hardware for long-term savings keys when appropriate.</li><li>Test hardware-wallet and backup workflows with a small amount before relying on them.</li></ul></div></div>${externalLink("https://covebitcoin.com/")}</article>
-            <article id="electrum" class="sc-detail"><h2>Electrum</h2><p>Electrum is a mature Bitcoin wallet whose private keys stay encrypted on the local device. It uses decentralized Electrum servers, verifies transaction history with SPV, supports watch-only cold storage, multisig, and hardware-wallet plugins, and can export keys without platform lock-in.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Users who value a mature, lightweight Bitcoin-only desktop wallet.</li><li>Watch-only and offline-signing arrangements.</li><li>Custom server and hardware integrations.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Electrum is frequently impersonated by phishing sites. Use only electrum.org and verify downloads.</li><li>Server selection affects privacy and the trust placed in transaction information.</li></ul></div></div>${externalLink("https://electrum.org/")}</article>
-            <article id="bluewallet" class="sc-detail"><h2>BlueWallet</h2><p>BlueWallet is a mobile Bitcoin wallet with watch-only wallets, multisig vaults, coin control, fee tools, batch transactions, hardware-wallet PSBT support, and connections to personal Electrum infrastructure. It is useful both as a spending wallet and as a watch-only interface for cold storage.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Learning on mobile with small amounts.</li><li>Monitoring hardware wallets without importing private keys.</li><li>Creating or moving PSBTs for supported air-gapped devices.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone is a general-purpose internet-connected device; keep long-term savings keys on dedicated hardware.</li><li>Lightning use requires a compatible node or service configuration—understand who controls the keys and channels.</li></ul></div></div>${externalLink("https://bluewallet.io/")}</article>
-            <article id="wasabi" class="sc-detail"><h2>Wasabi Wallet</h2><p>Wasabi is a privacy-focused desktop wallet built around the WabiSabi CoinJoin protocol, with Silent Payments support and mandatory Tor routing for every connection. It pairs advanced coin control and a full labeling system with hardware-wallet support through HWI, covering Trezor, COLDCARD, Ledger, Blockstream Jade, and BitBox02.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want CoinJoin and Tor-by-default as part of normal use, not an add-on.</li><li>Detailed coin control and labeling to avoid mixing tainted history.</li><li>Pairing a hardware signer with a privacy-first coordinator.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>No multisig or air-gapped QR signing—it's a hot-wallet coordinator, not an air-gap tool.</li><li>CoinJoin has real fees and timing trade-offs; read the docs before mixing meaningful amounts.</li></ul></div></div>${externalLink("https://wasabiwallet.io/")}</article>
-            <article id="specter" class="sc-detail"><h2>Specter</h2><p>Specter Desktop is a multisig coordinator built specifically for air-gapped signing, connecting to your own Bitcoin Core node and pairing with one of the widest hardware-wallet lineups of any wallet on this page—SeedSigner, Specter DIY, Blockstream Jade, COLDCARD, BitBox02, Passport, Keystone, Trezor, Ledger, KeepKey, and more, several of them fully air-gapped via QR or SD card.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Multisig setups spanning several different hardware-wallet brands.</li><li>Air-gapped signing as the default workflow, not an exception.</li><li>Running against your own Bitcoin Core node over Tor.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Desktop only—no mobile app, and no Lightning support.</li><li>Built for coordinating hardware signers, not as a general-purpose spending wallet.</li></ul></div></div>${externalLink("https://specter.solutions/")}</article>
-            <div class="sc-callout mt-4"><h3>Never import hardware-wallet recovery words into ordinary software just to “connect” it</h3><p>Connect using the hardware integration, xpub, descriptor, wallet file, or PSBT process documented by the device maker. Typing the recovery phrase into an online computer defeats key isolation.</p></div>
+            <div class="sc-section-head">
+              <span class="sc-eyebrow">In detail</span>
+              <h2>Seven wallets, up close</h2>
+              <p>Where each one is strong, and what to weigh before relying on it.</p>
+            </div>
+            <article id="sparrow" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/sparrow.png" alt="" width="48" height="48" loading="lazy"><h2>Sparrow Wallet</h2></div><p>Sparrow is a desktop Bitcoin wallet for users who want visibility into transactions and UTXOs. It supports single-signature and multisig policies, common script types, output descriptors, PSBTs, hardware wallets, QR signing, coin control, labeling, Tor, Bitcoin Core, and private Electrum servers.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Hardware-wallet setup and transaction review.</li><li>Coin selection, fee control, labeling, and privacy education.</li><li>Air-gapped and multisig PSBT workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A public server can learn wallet activity. Move toward your own node or private server when privacy matters.</li><li>The interface exposes more detail than a beginner mobile wallet.</li></ul></div></div>${detailFooter(externalLink("https://sparrowwallet.com/"), "sparrow")}</article>
+            <article id="nunchuk" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/nunchuk.png" alt="" width="48" height="48" loading="lazy"><h2>Nunchuk</h2></div><p>Nunchuk focuses on single-signature and multisig wallets, shared access, air-gapped signing, broad hardware support, and optional assisted services such as recovery and inheritance planning. It supports products including COLDCARD, TAPSIGNER, Jade, SeedSigner, Trezor, Ledger, BitBox, Passport, and Keystone.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Families, partners, and businesses that need multi-user multisig.</li><li>People building a deliberate inheritance or assisted-recovery plan.</li><li>NFC TAPSIGNER and multiple hardware-key setups.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Understand which features are self-serve and which depend on a paid service or platform key.</li><li>Back up the complete wallet configuration as well as every private key.</li></ul></div></div>${detailFooter(externalLink("https://nunchuk.io/"), "nunchuk")}</article>
+            <article id="cove" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/cove.png" alt="" width="48" height="48" loading="lazy"><h2>Cove Wallet</h2></div><p>Cove is a Bitcoin-only mobile wallet designed for both straightforward on-chain use and more advanced workflows. It supports UTXO management, BIP329 labels, hardware-wallet PSBTs, and signing or wallet imports over QR and NFC.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Bitcoin-only mobile self custody.</li><li>Managing and labeling individual UTXOs.</li><li>Using supported hardware wallets through PSBT, QR, or NFC workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone remains a general-purpose, internet-connected device; use dedicated hardware for long-term savings keys when appropriate.</li><li>Test hardware-wallet and backup workflows with a small amount before relying on them.</li></ul></div></div>${detailFooter(externalLink("https://covebitcoin.com/"), "cove")}</article>
+            <article id="electrum" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/electrum.png" alt="" width="48" height="48" loading="lazy"><h2>Electrum</h2></div><p>Electrum is a mature Bitcoin wallet whose private keys stay encrypted on the local device. It uses decentralized Electrum servers, verifies transaction history with SPV, supports watch-only cold storage, multisig, and hardware-wallet plugins, and can export keys without platform lock-in.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Users who value a mature, lightweight Bitcoin-only desktop wallet.</li><li>Watch-only and offline-signing arrangements.</li><li>Custom server and hardware integrations.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Electrum is frequently impersonated by phishing sites. Use only electrum.org and verify downloads.</li><li>Server selection affects privacy and the trust placed in transaction information.</li></ul></div></div>${detailFooter(externalLink("https://electrum.org/"), "electrum")}</article>
+            <article id="bluewallet" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/bluewallet.png" alt="" width="48" height="48" loading="lazy"><h2>BlueWallet</h2></div><p>BlueWallet is a mobile Bitcoin wallet with watch-only wallets, multisig vaults, coin control, fee tools, batch transactions, hardware-wallet PSBT support, and connections to personal Electrum infrastructure. It is useful both as a spending wallet and as a watch-only interface for cold storage.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Learning on mobile with small amounts.</li><li>Monitoring hardware wallets without importing private keys.</li><li>Creating or moving PSBTs for supported air-gapped devices.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone is a general-purpose internet-connected device; keep long-term savings keys on dedicated hardware.</li><li>Lightning use requires a compatible node or service configuration—understand who controls the keys and channels.</li></ul></div></div>${detailFooter(externalLink("https://bluewallet.io/"), "bluewallet")}</article>
+            <article id="wasabi" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/wasabi.svg" alt="" width="48" height="48" loading="lazy"><h2>Wasabi Wallet</h2></div><p>Wasabi is a privacy-focused desktop wallet built around the WabiSabi CoinJoin protocol, with Silent Payments support and mandatory Tor routing for every connection. It pairs advanced coin control and a full labeling system with hardware-wallet support through HWI, covering Trezor, COLDCARD, Ledger, Blockstream Jade, and BitBox02.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want CoinJoin and Tor-by-default as part of normal use, not an add-on.</li><li>Detailed coin control and labeling to avoid mixing tainted history.</li><li>Pairing a hardware signer with a privacy-first coordinator.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>No multisig or air-gapped QR signing—it's a hot-wallet coordinator, not an air-gap tool.</li><li>CoinJoin has real fees and timing trade-offs; read the docs before mixing meaningful amounts.</li></ul></div></div>${detailFooter(externalLink("https://wasabiwallet.io/"), "wasabi")}</article>
+            <article id="specter" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/specter.png" alt="" width="48" height="48" loading="lazy"><h2>Specter</h2></div><p>Specter Desktop is a multisig coordinator built specifically for air-gapped signing, connecting to your own Bitcoin Core node and pairing with one of the widest hardware-wallet lineups of any wallet on this page—SeedSigner, Specter DIY, Blockstream Jade, COLDCARD, BitBox02, Passport, Keystone, Trezor, Ledger, KeepKey, and more, several of them fully air-gapped via QR or SD card.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Multisig setups spanning several different hardware-wallet brands.</li><li>Air-gapped signing as the default workflow, not an exception.</li><li>Running against your own Bitcoin Core node over Tor.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Desktop only—no mobile app, and no Lightning support.</li><li>Built for coordinating hardware signers, not as a general-purpose spending wallet.</li></ul></div></div>${detailFooter(externalLink("https://specter.solutions/"), "specter")}</article>
+            <aside class="sc-software-key-warning mt-4" aria-labelledby="software-key-warning-title">
+              <div class="sc-software-key-warning-head">
+                <span class="sc-software-key-warning-mark" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></span>
+                <div><span class="sc-software-key-warning-kicker">Key isolation rule</span><h2 id="software-key-warning-title">Never import hardware-wallet recovery words into ordinary software</h2></div>
+              </div>
+              <div class="sc-software-key-warning-grid">
+                <section>
+                  <span class="sc-software-key-warning-label is-danger"><i class="bi bi-shield-exclamation" aria-hidden="true"></i> Why it matters</span>
+                  <p>Typing the recovery phrase into an online computer turns an isolated hardware key into a software-exposed key. It defeats the protection the signer was meant to provide.</p>
+                </section>
+                <section>
+                  <span class="sc-software-key-warning-label is-safe"><i class="bi bi-diagram-2" aria-hidden="true"></i> Connect safely</span>
+                  <p>Use the connection process documented by the device maker and wallet project.</p>
+                  <div class="sc-software-key-methods"><span>Hardware integration</span><a href="glossary.html#term-xpub">XPUB</a><a href="glossary.html#term-descriptor">Descriptor</a><span>Wallet file</span><a href="glossary.html#term-psbt">PSBT</a></div>
+                </section>
+              </div>
+            </aside>
             ${sourceNote([
               ["Sparrow", "https://sparrowwallet.com/features/"],
               ["BlueWallet", "https://bluewallet.io/features/"],
@@ -1074,14 +1068,14 @@ const currentYear = new Date().getFullYear();
           "Buying is one step.<br><em>Withdrawing is the custody decision.</em>",
           "Compare brokers and exchanges by what happens after the purchase: where bitcoin sits, how it reaches your wallet, what the full cost includes, and which records you need to keep.",
           `<a class="sc-btn sc-btn-primary" href="#exchange-compare">Compare platforms</a>
-           <a class="sc-btn sc-btn-ghost" href="guides.html">Withdrawal checklist</a>`
+           <a class="sc-btn sc-btn-ghost" href="guides/exchange-withdrawal.html">Withdrawal guide</a>`
         )}
 
         <section class="sc-section">
           <div class="container">
             <div class="sc-callout mb-5"><h2>Prices and fees are intentionally not ranked here</h2><p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p></div>
             <div class="sc-section-head"><span class="sc-eyebrow">Two models</span><h2>Direct-to-wallet versus custodial platform</h2></div>
-            <div class="row g-4 sc-path-options">
+            <div class="row g-4 sc-path-options sc-exchange-models">
               <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-arrow-right-circle"></i></div><h3>Direct-to-wallet broker</h3><p>You provide a wallet address and purchased bitcoin settles to that address. This reduces time held by the service but requires you to have a tested wallet first.</p><p><strong>Examples:</strong> Bull Bitcoin and Bitcoin Well describe direct self-custody purchase flows.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
               <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-building-lock"></i></div><h3>Custodial exchange or app</h3><p>The platform credits bitcoin to your account and holds the keys until you withdraw. It can be convenient for trading, but account access and platform solvency remain dependencies.</p><p><strong>Examples:</strong> Shakepay, Ndax, Kraken, and Bitbuy support external withdrawals.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
             </div>
@@ -1199,18 +1193,27 @@ const currentYear = new Date().getFullYear();
                 </tbody>
               </table>
             </div>
+            <div class="sc-callout mt-5">
+              <h3>Once you choose a platform</h3>
+              <p>Secure the account before funding it, then move purchased bitcoin to a wallet you control. Start with <a href="guides/exchange-account-security.html">locking down the exchange account</a>, followed by the <a href="guides/exchange-withdrawal.html">step-by-step withdrawal guide</a>.</p>
+            </div>
           </div>
         </section>
 
-        <section class="sc-section">
+        <section id="platforms" class="sc-section">
           <div class="container">
-            <div class="row g-4">
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bull Bitcoin</h2><p>A Canadian Bitcoin-only broker that sends purchased bitcoin directly to an address you control. It supports Interac e-Transfer, larger bank transfers, recurring buys, on-chain Bitcoin, Lightning, and Liquid workflows.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>No exchange bitcoin balance to withdraw later in the normal purchase flow.</li><li>Bitcoin-focused support and direct settlement.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The all-in quoted rate and network fee for your order size.</li><li>Your address and wallet backup before placing the order.</li></ul>${externalLink("https://www.bullbitcoin.com/buy")}</article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bitcoin Well</h2><p>A Canadian self-custody Bitcoin company offering an online portal, recurring buys, an OTC desk, and a network of cash ATMs. Its published model delivers purchased bitcoin to a wallet you control rather than providing custody.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>Automatic direct-to-wallet settlement.</li><li>Online, recurring, OTC, and cash purchase options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Online-portal and ATM pricing are different products.</li><li>Verification requirements and limits depend on the transaction method and amount.</li></ul>${externalLink("https://bitcoinwell.com/about")}</article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Shakepay</h2><p>A Canadian app focused on a simple buy, earn, and withdraw experience. Shakepay currently advertises free Bitcoin mainnet withdrawals and Lightning transfers, but bitcoin is custodial until you send it to your wallet.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Simple onboarding, recurring buys, and Canadian app experience.</li><li>Beginner-friendly withdrawal flow.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The effective spread in the quote even when a separate trading fee is not shown.</li><li>Current withdrawal minimums and policy before relying on free withdrawals.</li></ul>${externalLink("https://shakepay.com/bitcoin")}</article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Ndax</h2><p>A Canadian order-execution platform with CAD funding, an order book, multiple assets, and external withdrawals. Ndax currently publishes a flat 0.20% trading fee, while crypto withdrawals use asset-specific flat fees.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Visible order-book workflow and posted trading fee.</li><li>CAD Interac and bank-transfer options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The bid-ask spread and asset withdrawal fee, not just the trading percentage.</li><li>Whether a smaller withdrawal is economical after the flat fee.</li></ul>${externalLink("https://ndax.io/en/fees")}</article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Kraken</h2><p>A large global exchange with Canadian CAD support, Interac e-Transfer, cards, wire transfers, Canada Post funding, simple purchases, recurring buys, and advanced Kraken Pro trading tools.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Deep product range, liquidity, advanced order types, and broad asset support.</li><li>Multiple Canadian funding methods.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Simple-buy pricing can differ materially from Kraken Pro.</li><li>Funding and withdrawal charges vary by method and asset.</li></ul>${externalLink("https://www.kraken.com/ca/lp/kraken-in-canada")}</article></div>
-              <div class="col-lg-6"><article class="sc-detail h-100"><h2>Bitbuy</h2><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul>${externalLink("https://bitbuy.ca/en-ca/fees")}</article></div>
+            <div class="sc-section-head">
+              <span class="sc-eyebrow">The platforms</span>
+              <h2>Six Canadian routes</h2>
+              <p>Direct-to-wallet brokers first, then custodial platforms. Grouped, not ranked.</p>
+            </div>
+            <div class="row g-4 sc-exchange-card-grid">
+              <div class="col-lg-6"><article id="bullbitcoin" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bull-bitcoin.png" alt="" width="48" height="48" loading="lazy"><h2>Bull Bitcoin</h2></div><p>A Canadian Bitcoin-only broker that sends purchased bitcoin directly to an address you control. It supports Interac e-Transfer, larger bank transfers, recurring buys, on-chain Bitcoin, Lightning, and Liquid workflows.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>No exchange bitcoin balance to withdraw later in the normal purchase flow.</li><li>Bitcoin-focused support and direct settlement.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The all-in quoted rate and network fee for your order size.</li><li>Your address and wallet backup before placing the order.</li></ul>${externalLink("https://www.bullbitcoin.com/buy")}</article></div>
+              <div class="col-lg-6"><article id="bitcoinwell" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitcoin-well.png" alt="" width="48" height="48" loading="lazy"><h2>Bitcoin Well</h2></div><p>A Canadian self-custody Bitcoin company offering an online portal, recurring buys, an OTC desk, and a network of cash ATMs. Its published model delivers purchased bitcoin to a wallet you control rather than providing custody.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>Automatic direct-to-wallet settlement.</li><li>Online, recurring, OTC, and cash purchase options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Online-portal and ATM pricing are different products.</li><li>Verification requirements and limits depend on the transaction method and amount.</li></ul>${externalLink("https://bitcoinwell.com/about")}</article></div>
+              <div class="col-lg-6"><article id="shakepay" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/shakepay.png" alt="" width="48" height="48" loading="lazy"><h2>Shakepay</h2></div><p>A Canadian app focused on a simple buy, earn, and withdraw experience. Shakepay currently advertises free Bitcoin mainnet withdrawals and Lightning transfers, but bitcoin is custodial until you send it to your wallet.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Simple onboarding, recurring buys, and Canadian app experience.</li><li>Beginner-friendly withdrawal flow.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The effective spread in the quote even when a separate trading fee is not shown.</li><li>Current withdrawal minimums and policy before relying on free withdrawals.</li></ul>${externalLink("https://shakepay.com/bitcoin")}</article></div>
+              <div class="col-lg-6"><article id="ndax" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/ndax.png" alt="" width="48" height="48" loading="lazy"><h2>Ndax</h2></div><p>A Canadian order-execution platform with CAD funding, an order book, multiple assets, and external withdrawals. Ndax currently publishes a flat 0.20% trading fee, while crypto withdrawals use asset-specific flat fees.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Visible order-book workflow and posted trading fee.</li><li>CAD Interac and bank-transfer options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The bid-ask spread and asset withdrawal fee, not just the trading percentage.</li><li>Whether a smaller withdrawal is economical after the flat fee.</li></ul>${externalLink("https://ndax.io/en/fees")}</article></div>
+              <div class="col-lg-6"><article id="kraken" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/kraken.png" alt="" width="48" height="48" loading="lazy"><h2>Kraken</h2></div><p>A large global exchange with Canadian CAD support, Interac e-Transfer, cards, wire transfers, Canada Post funding, simple purchases, recurring buys, and advanced Kraken Pro trading tools.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Deep product range, liquidity, advanced order types, and broad asset support.</li><li>Multiple Canadian funding methods.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Simple-buy pricing can differ materially from Kraken Pro.</li><li>Funding and withdrawal charges vary by method and asset.</li></ul>${externalLink("https://www.kraken.com/ca/lp/kraken-in-canada")}</article></div>
+              <div class="col-lg-6"><article id="bitbuy" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitbuy.png" alt="" width="48" height="48" loading="lazy"><h2>Bitbuy</h2></div><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul>${externalLink("https://bitbuy.ca/en-ca/fees")}</article></div>
             </div>
 
             <div class="sc-callout mt-5"><h3>Canadian recordkeeping</h3><p>Keep trade confirmations, CAD funding records, withdrawal transaction IDs, wallet labels, and the CAD value at acquisition and disposal. This site does not provide tax advice; use CRA guidance or a qualified Canadian tax professional for your situation.</p></div>
@@ -1578,7 +1581,7 @@ const currentYear = new Date().getFullYear();
               <span class="sc-tag">Seed generation</span>
               <span class="sc-tag">Guided device setup</span>
               <span class="sc-tag">Recovery word backups</span>
-              <span class="sc-tag">Passphrases</span>
+              ${renderGlossaryTag("Passphrases")}
               <span class="sc-tag">Test transactions</span>
               <span class="sc-tag">Software wallet comparison</span>
               <span class="sc-tag">Multisig planning</span>
@@ -1656,6 +1659,55 @@ const currentYear = new Date().getFullYear();
     }
   };
 
+  pages.glossary = {
+    title: "Glossary | SelfCustody.ca",
+    description: "Search more than 500 Bitcoin, mining, wallet, privacy, market, and self-custody terms.",
+    content: `
+      ${hero(
+        "Bitcoin reference",
+        "The Bitcoin glossary.",
+        "Search the language of Bitcoin, from addresses and air gaps to xpubs and zero-knowledge proofs."
+      )}
+
+      <section class="sc-section sc-glossary" data-glossary>
+        <div class="container">
+          <div class="sc-glossary-tools">
+            <div class="sc-glossary-search-wrap">
+              <span class="sc-glossary-search-icon" aria-hidden="true"></span>
+              <label class="visually-hidden" for="glossary-search">Search the Bitcoin glossary</label>
+              <input id="glossary-search" class="sc-glossary-search" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Search a term, definition, or category…" data-glossary-search>
+              <button class="sc-glossary-clear" type="button" data-glossary-clear hidden>Clear</button>
+            </div>
+            <div class="sc-glossary-meta">
+              <p class="sc-glossary-count" data-glossary-count aria-live="polite">Loading the lexicon…</p>
+              <div class="sc-glossary-letters" data-glossary-letters aria-label="Filter glossary by first letter"></div>
+            </div>
+          </div>
+
+          <div class="sc-glossary-status" data-glossary-status role="status">
+            <span class="sc-glossary-loader" aria-hidden="true"></span>
+            <p>Loading more than 500 Bitcoin terms…</p>
+          </div>
+          <div class="sc-glossary-grid" data-glossary-results hidden></div>
+
+          <div class="sc-glossary-empty" data-glossary-empty hidden>
+            <span class="sc-eyebrow">No exact match</span>
+            <h2>Try a shorter or broader search.</h2>
+            <p>You can search by term, definition, example, or category.</p>
+          </div>
+
+          <noscript>
+            <div class="sc-callout"><h2>JavaScript is needed for the glossary</h2><p>The term catalogue is loaded from the public BTC Lexicon API so it can remain current.</p></div>
+          </noscript>
+
+          <footer class="sc-glossary-source">
+            <span class="sc-eyebrow">Reference</span>
+            <p>The core term catalogue is provided by the public <a href="https://btclexicon.com/api/v2/terms" target="_blank" rel="noopener noreferrer">BTC Lexicon API</a>, as featured by <a href="https://timechainstats.com/" target="_blank" rel="noopener noreferrer">TimechainStats.com</a>. Additional entries are researched and written by SelfCustody.ca from primary specifications, official documentation, and public security guidance.</p>
+          </footer>
+        </div>
+      </section>`
+  };
+
   /* Temporary holding page. Keep the full contact-page definition above in
      place so it can be restored when booking and support are ready to open. */
   pages.contact = {
@@ -1672,18 +1724,72 @@ const currentYear = new Date().getFullYear();
       </section>`
   };
 
-  const renderHeader = (pageKey) => {
+  /* Nav slot reserved ahead of the store existing. Swap this for the real
+     product grid when there is one -- the nav position and routes entry
+     shouldn't need to change either way. noindex in the <head> until then. */
+  pages.merch = {
+    title: "Merch | SelfCustody.ca",
+    description: "Merch for SelfCustody.ca.",
+    content: `
+      <section class="sc-coming-soon" aria-labelledby="coming-soon-title">
+        <div class="sc-coming-soon-inner">
+          <h1 id="coming-soon-title">Coming soon</h1>
+          <figure class="sc-coming-soon-mark">
+            <img src="assets/img/self-custody-symbol.svg" alt="Self Custody four-circle logo" width="920" height="320">
+          </figure>
+        </div>
+      </section>`
+  };
+
+  /* `base` is the prefix that gets from the page back to docs/ -- "" for the
+     pages at the root, "../" for everything under docs/guides/. Pages there
+     are otherwise identical, so the whole difference is threaded through here
+     rather than duplicated into a second header. */
+  const renderHeader = (pageKey, base = "") => {
     const links = routes.map(([key, label, href]) => {
+      if (["glossary", "software", "exchanges"].includes(key)) return "";
+      if (key === "guides") {
+        const menuActive = pageKey === "guides" || pageKey === "glossary" ? "active" : "";
+        const guidesActive = pageKey === "guides" ? "active" : "";
+        const glossaryActive = pageKey === "glossary" ? "active" : "";
+        return `<li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle ${menuActive}" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="${guidesActive}" href="${base}guides.html"${guidesActive ? ' aria-current="page"' : ""}>All guides</a></li>
+            <li><a class="${glossaryActive}" href="${base}glossary.html"${glossaryActive ? ' aria-current="page"' : ""}>Glossary</a></li>
+          </ul>
+        </li>`;
+      }
+      if (key === "devices") {
+        const compareKeys = ["devices", "software", "exchanges"];
+        const menuActive = compareKeys.includes(pageKey) ? "active" : "";
+        const compareLink = (routeKey, routeLabel, routeHref) => {
+          const active = pageKey === routeKey ? "active" : "";
+          return `<li><a class="${active}" href="${base}${routeHref}"${active ? ' aria-current="page"' : ""}>${routeLabel}</a></li>`;
+        };
+        return `<li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle ${menuActive}" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            ${compareLink("devices", "Devices", "devices.html")}
+            ${compareLink("software", "Software", "software.html")}
+            ${compareLink("exchanges", "Exchanges", "exchanges.html")}
+          </ul>
+        </li>`;
+      }
       const active = key === pageKey ? "active" : "";
       const contactClass = key === "contact" ? "sc-contact-link" : "";
-      return `<li><a class="${active} ${contactClass}" href="${href}"><span>${label}</span></a></li>`;
+      return `<li><a class="${active} ${contactClass}" href="${base}${href}"><span>${label}</span></a></li>`;
     }).join("");
 
     return `
       <a class="sc-skip-link" href="#main-content">Skip to main content</a>
       <header id="header" class="fixed-top">
         <div class="container d-flex align-items-center">
-          <a class="sc-brand me-auto" href="index.html" aria-label="Self Custody home">
+          <a class="sc-brand me-auto" href="${base}index.html" aria-label="Self Custody home">
             <span class="sc-brand-mark" aria-hidden="true"></span>
             <span class="sc-brand-name">SELF CUSTODY</span>
             <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
@@ -1696,24 +1802,18 @@ const currentYear = new Date().getFullYear();
       </header>`;
   };
 
-  const renderFooter = () => `
+  const renderFooter = (base = "") => `
     <footer class="sc-footer">
       <div class="container">
         <div class="row g-4">
           <div class="col-lg-5">
-            <h3 class="sc-footer-brand"><img src="assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <h3 class="sc-footer-brand"><img src="${base}assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
             <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
           </div>
           <div class="col-12 col-lg-4 sc-footer-explore">
             <h4>Explore</h4>
             <ul class="sc-footer-links sc-footer-links-grid">
-              <li><a href="index.html">Home</a></li>
-              <li><a href="guides.html">Guides</a></li>
-              <li><a href="devices.html">Devices</a></li>
-              <li><a href="software.html">Software</a></li>
-              <li><a href="exchanges.html">Exchanges</a></li>
-              <li><a href="dashboard.html">Dashboard</a></li>
-              <li><a href="contact.html">Get Help</a></li>
+              ${routes.map(([, label, href]) => `<li><a href="${base}${href}">${label}</a></li>`).join("\n              ")}
             </ul>
           </div>
           <div class="col-lg-3">

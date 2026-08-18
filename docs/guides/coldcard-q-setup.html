@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.">
+  <title>COLDCARD Q: first-time setup | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/coldcard-q-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="COLDCARD Q: first-time setup | SelfCustody.ca">
+  <meta property="og:description" content="Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/coldcard-q-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"COLDCARD Q: first-time setup","description":"Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.","url":"https://selfcustody.ca/guides/coldcard-q-setup.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/coldcard-q-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#devices">Devices</a>
+        </nav>
+        <span class="sc-eyebrow">Hardware</span>
+        <h1>COLDCARD Q: first-time setup</h1>
+        <p class="sc-lead">Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 45 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-air_gap">Air-gapped</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-microsd_backup">microSD</a><span class="sc-tag">Seed backup</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../devices.html#coldcard">About COLDCARD <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">The COLDCARD Q is a deliberately awkward device. It has a full keyboard and a slot for a memory card, and no way at all to talk to your computer over the internet. That awkwardness is the product &mdash; every inconvenience in this guide is a connection somebody decided not to give an attacker.</p>
+
+      <p>Setting one up properly takes about forty-five minutes. Most of that is not fiddly; it is writing things down carefully and resisting the urge to hurry. Read the whole page once before you start, then work through it.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-box-seam" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">The COLDCARD Q still in its sealed tamper-evident bag, serial number visible, resting on a plain dark surface next to a microSD card and a pen.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>Check the bag before you open it. It is the first security step, not packaging.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li>The COLDCARD Q, unopened, bought from Coinkite or an authorised reseller.</li><li>Two microSD cards &mdash; one for the encrypted backup, one spare.</li><li>A pen and the supplied backup card, or a metal backup plate.</li><li>A private room, an uninterrupted hour, and no camera pointed at the desk.</li><li>No bitcoin. Nothing here requires funds, and you should not move any until the check at the end passes.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>Check the packaging before you power it on</h2>
+
+      <p>Coinkite ships the Q in a sealed bag with a serial number printed on it. During first boot the device shows you a number of its own, and the two are meant to match. That is the whole trick: a bag that has been opened and resealed around a substituted device will not produce a matching number.</p>
+
+      <p>Read the number on the bag and keep it to hand. Inspect the bag for cuts, re-glued seams, or a second seal laid over the first, and look at the case seam and screen edge for scratches that suggest it has been opened.</p>
+
+      <ul class="sc-caution-list"><li>If anything about the packaging looks wrong, stop. Contact the vendor before continuing, and do not use the device.</li><li>A device that arrives already showing a wallet, a PIN, or a set of recovery words is compromised. There are no exceptions to this and no innocent explanations worth gambling on.</li></ul>
+
+      <p><a class="sc-text-link" href="https://coldcard.com/docs/quick-start-q/" target="_blank" rel="noopener">COLDCARD Q quick start <i class="bi bi-arrow-up-right"></i></a></p>
+
+      <h2><span class="sc-article-num">2</span>Set the PIN, and understand why it comes in two halves</h2>
+
+      <p>The COLDCARD PIN is entered in two parts, and the gap between them is doing real work. You type the first half, the device responds with two words, and only then do you type the second half.</p>
+
+      <p>Those two words are derived from your prefix combined with a secret held inside that specific device. They will be the same two words every time you log in &mdash; which means if you are ever handed a device that shows you <em>different</em> words, you have caught a substitution before giving away the rest of your PIN. It is a small piece of design that quietly defeats a whole class of attack.</p>
+
+      <ul class="sc-check-list"><li>Choose a PIN you can recall under stress, not one you will need a note to remember.</li><li>Write the two anti-phishing words down and keep them with your backup material.</li><li>Record the PIN somewhere durable, and somewhere separate from your recovery words.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>The PIN protects the device, not the seed</h3><p>Anyone holding your recovery words can rebuild this wallet without ever seeing the PIN. The PIN buys you time if the device is physically stolen. The words are the thing that actually has to stay secret.</p></div>
+
+      <h2><span class="sc-article-num">3</span>Generate a new seed on the device</h2>
+
+      <p>Choose the option to create a new wallet rather than importing one. The Q generates the seed itself, using its own entropy, and it never leaves the secure element in plaintext. Nothing you type into a computer is involved at any point.</p>
+
+      <ul class="sc-check-list"><li>Select new wallet, not import, and let the device produce the words.</li><li>Write the words down in order, on paper or metal, exactly as displayed.</li><li>Complete the word-confirmation quiz the device runs afterwards &mdash; it catches transcription errors while you can still fix them.</li><li>Decide your passphrase policy now, and write down whether you used one.</li></ul>
+
+      <p>If you would rather supply the randomness yourself rather than trust the device's generator, the Q accepts dice rolls at this step &mdash; see <a href="dice-entropy.html">rolling your own entropy</a>. It is optional, and it is not the thing standing between you and losing your coins.</p>
+
+      <ul class="sc-caution-list"><li>Never type these words into a phone, a computer, a password manager, or a photograph.</li><li>Never use words that came printed with the device or were supplied by anyone else.</li><li>Do not add a passphrase on a first setup unless you already understand how to recover from one.</li></ul>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 4 / 3">
+      <i class="bi bi-usb-drive" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">The Q's screen showing a numbered word list during seed generation, angled so the words are not legible, with a hand writing on the backup card in the foreground.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>In order, by hand, once. The quiz afterwards is there to catch you.</figcaption>
+  </figure>
+
+      <h2><span class="sc-article-num">4</span>Take the encrypted backup</h2>
+
+      <p>Separately from the words you just wrote down, the Q writes an encrypted backup file to microSD. This file is protected by a twelve-word backup password that the device displays exactly once.</p>
+
+      <p>That password is not your seed and does not replace it. Write it down before you dismiss the screen &mdash; without it the backup file is inert.</p>
+
+      <ul class="sc-check-list"><li>Write the twelve-word backup password down before moving on.</li><li>Save the backup to microSD, then repeat it onto a second card kept somewhere else.</li><li>Store the cards apart from the written recovery words where you practically can.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>The backup file is a convenience, not the safety net</h3><p>It restores your settings and any multisig configuration alongside the key, which saves real effort. Your handwritten recovery words remain the thing you genuinely cannot lose.</p></div>
+
+      <h2><span class="sc-article-num">5</span>Verify before you fund it</h2>
+
+      <p>Everything up to this point is an assumption. This stage turns it into a fact, and it is the stage people skip.</p>
+
+      <ul class="sc-check-list"><li>Run the device's own verify-backup option against the file you just wrote.</li><li>Export the public keys to microSD and load them into your wallet software as a watch-only wallet.</li><li>Compare the master key fingerprint shown on the Q with the one shown in the software &mdash; they must match.</li><li>Send a small test amount, confirm it arrives, then send it back out before committing real savings.</li></ul>
+
+      <p>If the fingerprints do not match, stop and work out why before going further. It means the software is watching a different wallet from the one the device will sign for, and every address it shows you would be wrong.</p>
+
+      <p class="mt-4"><a class="sc-text-link" href="sparrow-first-wallet.html">Next: pair it with Sparrow <i class="bi bi-arrow-right"></i></a></p></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-first-wallet.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-window"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Sparrow: pair a hardware wallet and verify a receive address</h3>
+              <p>Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="dice-entropy.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shuffle"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Roll the dice: generating your own entropy</h3>
+              <p>Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

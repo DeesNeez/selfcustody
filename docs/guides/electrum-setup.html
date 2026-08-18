@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Turn two ordinary computers into cold storage — one that watches the blockchain and one that holds the keys and never goes online. Plus why this is the most impersonated wallet in bitcoin.">
+  <title>Electrum: watch-only and offline signing | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/electrum-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Electrum: watch-only and offline signing | SelfCustody.ca">
+  <meta property="og:description" content="Turn two ordinary computers into cold storage — one that watches the blockchain and one that holds the keys and never goes online. Plus why this is the most impersonated wallet in bitcoin.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/electrum-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Electrum: watch-only and offline signing","description":"Turn two ordinary computers into cold storage — one that watches the blockchain and one that holds the keys and never goes online. Plus why this is the most impersonated wallet in bitcoin.","url":"https://selfcustody.ca/guides/electrum-setup.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/electrum-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#software">Software</a>
+        </nav>
+        <span class="sc-eyebrow">Wallets</span>
+        <h1>Electrum: watch-only and offline signing</h1>
+        <p class="sc-lead">Turn two ordinary computers into cold storage — one that watches the blockchain and one that holds the keys and never goes online. Plus why this is the most impersonated wallet in bitcoin.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-intermediate">Intermediate</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 45 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">Desktop</span><a class="sc-tag sc-tag-link" href="../glossary.html#term-cold_storage">Cold storage</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-air_gap">Air-gapped</a></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../software.html#electrum">About Electrum <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Electrum can split one wallet across two machines. The online one watches the blockchain, shows your balance, and builds transactions but holds no keys and can spend nothing. The offline one holds the keys, never touches a network, and does nothing but sign.</p>
+
+      <p>That arrangement is cold storage built out of computers you already own, and it predates most hardware wallets. It is more work than buying a signing device, and it is genuinely useful when you want a spare recovery path, a second setup that depends on entirely different hardware, or simply to understand what a hardware wallet is doing on your behalf.</p>
+
+      <p>Before any of that, though, one warning that matters more than the setup.</p>
+
+      <div class="sc-callout mt-4"><h3>Electrum is the most impersonated wallet in bitcoin</h3><p>Fake download sites rank in search results, and malicious Electrum servers have historically pushed convincing fake update messages to users inside the app itself. Never take an update prompt that appears in the wallet. Never download from a search result. Type electrum.org yourself, and verify the signature on what you download — step one below is not optional advice.</p></div>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-window" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">Two laptops on a desk, the older one with its wifi card visibly removed or a sticker over the port, a USB stick between them.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The offline machine's job is to be useless for anything except signing.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li>Two computers. The offline one can be old and slow — it needs no network and does nothing else.</li><li>A way to move files between them: a USB stick, or a QR workflow if you prefer.</li><li>Electrum downloaded from electrum.org, typed by hand, with the signature verified.</li><li>A pen and backup material for the seed the offline machine will generate.</li><li>No bitcoin. Move none until the test at the end passes.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>Verify the download before you run anything</h2>
+
+      <p>Electrum publishes a GPG signature alongside each release. Checking it confirms the file came from the project rather than from whoever bought the search advert above the real site.</p>
+
+      <ul class="sc-check-list"><li>Type electrum.org into the address bar yourself. Do not arrive from a search result, an email, or a forum link.</li><li>Download the release and its matching signature file.</li><li>Verify the signature against the developer key published on the site.</li><li>Do this on both machines, and re-verify on every update.</li></ul>
+
+      <ul class="sc-caution-list"><li>An update prompt that appears inside the wallet is not how Electrum ships updates. Malicious servers have used exactly that to distribute malware. Close it and go to the website yourself.</li><li>A wallet that asks you to enter your seed to 'validate', 'migrate', or 'unlock' anything is stealing from you.</li></ul>
+
+      <h2><span class="sc-article-num">2</span>How the split actually works</h2>
+
+      <p>The trick is that watching a wallet and spending from it need different information. Watching needs only the master public key, from which every address can be derived. Spending needs the private keys, which never have to leave the offline machine.</p>
+
+      <div class="sc-machine-split" aria-label="Online and offline Electrum machine roles">
+        <article class="sc-machine-panel is-online"><div class="sc-machine-head"><span class="sc-machine-signal" aria-hidden="true"></span><h3>Online machine</h3></div><p class="sc-machine-holds"><span>Holds</span>Master public key only</p><ul><li class="is-can">Shows balance and history</li><li class="is-can">Builds and broadcasts transactions</li><li class="is-cannot">Cannot spend anything</li></ul></article>
+        <div class="sc-machine-transfer" aria-hidden="true"><span>Unsigned</span><i>&rarr;</i><span>Signed</span><i>&larr;</i></div>
+        <article class="sc-machine-panel is-offline"><div class="sc-machine-head"><span class="sc-machine-lock" aria-hidden="true"></span><h3>Offline machine</h3></div><p class="sc-machine-holds"><span>Holds</span>The seed and private keys</p><ul><li class="is-can">Signs transactions handed to it</li><li class="is-cannot">Cannot reach the internet</li><li class="is-cannot">Does not know your balance</li></ul></article>
+      </div>
+
+      <p>Compromising the online machine gets an attacker your transaction history and your privacy. It does not get them your bitcoin, because nothing there can produce a signature.</p>
+
+      <h2><span class="sc-article-num">3</span>Prepare the offline machine</h2>
+
+      <p>The offline machine should be genuinely offline, not merely disconnected for the afternoon. Its value comes entirely from never having been exposed.</p>
+
+      <ul class="sc-check-list"><li>Physically remove or disable the wifi card if you can, and never plug in an ethernet cable.</li><li>Ideally use a machine that has been wiped and freshly installed, not one with years of history on it.</li><li>Install Electrum from a file you verified on the online machine and carried across on a USB stick.</li><li>Do not use this machine for anything else. No browsing, no email, no other software.</li></ul>
+
+      <h2><span class="sc-article-num">4</span>Create the wallet offline, and export the public key</h2>
+
+      <p>Create a new standard wallet on the offline machine. It generates the seed there, where nothing can watch it.</p>
+
+      <ul class="sc-check-list"><li>Write the seed down by hand, in order, and note that it is an Electrum seed — the format differs from BIP39 and matters when restoring elsewhere.</li><li>Set a wallet password. It encrypts the keys on disk, so a stolen machine is not immediately a stolen wallet.</li><li>Export the master public key and copy it to a USB stick.</li><li>Carry only that public key to the online machine. Nothing else crosses, ever.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>Electrum seeds are not BIP39</h3><p>Electrum uses its own seed format by default. It restores perfectly into Electrum, and does not restore into most other wallets the way a BIP39 phrase would. Write down that it is an Electrum seed alongside the words, or choose a BIP39 option if portability matters more to you than defaults.</p></div>
+
+      <h2><span class="sc-article-num">5</span>Create the watch-only wallet online</h2>
+
+      <p>On the online machine, create a new wallet and choose to import a master public key rather than create a seed. Paste in the key you exported.</p>
+
+      <p>Electrum will scan and show your balance and history. It has no ability to spend, and it will tell you so &mdash; the wallet is marked watch-only.</p>
+
+      <ul class="sc-check-list"><li>Confirm the wallet reports itself as watch-only before you use it.</li><li>Generate a receive address here, then confirm the same address appears on the offline machine. Matching addresses prove both halves belong to the same wallet.</li><li>Never paste your seed into this machine, for any reason, at any point.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>The signing loop</h2>
+
+      <p>Every spend follows the same circuit. It feels laborious the first time and becomes routine quickly.</p>
+
+      <ul class="sc-check-list"><li><strong>Online:</strong> build the transaction as normal, then save it to a file instead of sending. Electrum writes an unsigned transaction, or PSBT.</li><li><strong>Carry:</strong> move the file to the offline machine on a USB stick.</li><li><strong>Offline:</strong> open the file in Electrum, review the recipient and amount carefully — this is your last chance — sign it, and save the signed version.</li><li><strong>Carry back:</strong> move the signed file to the online machine.</li><li><strong>Online:</strong> load the signed transaction and broadcast it.</li></ul>
+
+      <ul class="sc-caution-list"><li>The USB stick is the weak point of this air gap. It is a data path, and malware can travel along it in either direction. Use a stick dedicated to this purpose and nothing else, and prefer a QR-based workflow if you would rather have no shared media at all.</li><li>Review the transaction on the offline machine, not just the online one. The online machine is the one that might be lying to you.</li></ul>
+
+      <h2><span class="sc-article-num">7</span>Choose what your wallet talks to</h2>
+
+      <p>Electrum verifies transactions with SPV, but it still asks servers for your history &mdash; and the server it asks can see which addresses belong to one wallet.</p>
+
+      <ul class="sc-check-list"><li>For small amounts, the default public servers are workable.</li><li>For meaningful balances, connect to your own Electrum server or Bitcoin Core node.</li><li>Route through Tor if you are staying on public servers.</li><li>Remember that server choice affects the transaction information you are shown, not just your privacy.</li></ul>
+
+      <h2><span class="sc-article-num">8</span>Test it before it holds anything</h2>
+
+      <ul class="sc-check-list"><li>Send a small amount to an address from the watch-only wallet and confirm it appears.</li><li>Run the full signing loop to send it back out. That exercises every step of the arrangement at once.</li><li>Restore the seed into a fresh Electrum installation and confirm the same addresses appear.</li><li>Only then move an amount you would miss.</li></ul>
+
+      <h2>What this protects against, and what it does not</h2>
+
+      <ul class="sc-check-list"><li><strong>It protects your keys from an internet-connected machine.</strong> That is a large category of real attacks, and it is the same thing a hardware wallet does.</li><li><strong>It does not verify addresses on a trusted display.</strong> A hardware wallet has a screen the computer cannot rewrite; here, the offline machine's screen is doing that job, and it is only as trustworthy as the machine.</li><li><strong>It does not survive a compromised offline machine.</strong> Everything rests on that machine never having been exposed, which is a discipline rather than a hardware guarantee.</li><li><strong>It does not remove the USB risk</strong>, which is why the transfer medium deserves the care it gets above.</li></ul>
+
+      <p>For most people a hardware wallet is simpler and stronger. This arrangement earns its place as a second, independent setup &mdash; one that shares no manufacturer, no firmware, and no supply chain with your primary device.</p>
+
+      <div class="sc-callout mt-4"><h3>Before you fund it properly</h3><p>Run the drill in <a href='recovery-test-drill.html'>test your recovery</a>, and pay particular attention to the seed format. An Electrum seed restored into software expecting BIP39 will produce a different, empty wallet — which looks exactly like a failed backup.</p></div>
+
+      <p class="sc-source-note">
+        Menu wording and file formats change between Electrum releases. Confirm the current flow against
+        <a class="sc-text-link" href="https://electrum.readthedocs.io/" target="_blank" rel="noopener">Electrum's own documentation <i class="bi bi-arrow-up-right"></i></a>
+        &mdash; reached from electrum.org typed by hand, never from a search result.
+      </p></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-first-wallet.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-window"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Sparrow: pair a hardware wallet and verify a receive address</h3>
+              <p>Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="what-not-to-normalize.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shield-exclamation"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>What not to normalize</h3>
+              <p>Six habits that look harmless, are extremely common, and are the reason most self-custody losses happen. None of them involve being hacked.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>
