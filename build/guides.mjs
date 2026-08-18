@@ -3818,7 +3818,23 @@ const guides = [
 
       <p>Deriving a child requires a tool that implements BIP85. The resulting seed then works anywhere, but the derivation step does not.</p>
 
-      <p>Support is strongest among air-gapped, Bitcoin-focused signers &mdash; COLDCARD's implementation is the most thoroughly documented, and SeedSigner and Krux both include it, which fits their stateless design. Devices built around a companion app tend not to offer it; Trezor addresses adjacent problems with Shamir backup instead, and Ledger does not expose BIP85 at all.</p>
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>On-device BIP85 support, checked against each maker's own documentation</caption>
+          <thead><tr><th scope="col">Device</th><th scope="col">BIP85</th><th scope="col">Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>COLDCARD</strong></td><td>Yes</td><td>Under Advanced/Tools. The most thoroughly documented implementation, and it can output words, XPRV, hex, or passwords.</td></tr>
+            <tr><td><strong>Blockstream Jade</strong></td><td>Yes</td><td>Options &rarr; Wallet &rarr; BIP85. Choose 12 or 24 words and an index.</td></tr>
+            <tr><td><strong>Foundation Passport</strong></td><td>Yes</td><td>Through the Key Manager extension, with SeedQR export of the child.</td></tr>
+            <tr><td><strong>SeedSigner</strong></td><td>Yes</td><td>Listed as child seed generation; fits a device that stores nothing anyway.</td></tr>
+            <tr><td><strong>Krux</strong></td><td>Yes</td><td>Derives a child BIP39 mnemonic on the device.</td></tr>
+            <tr><td><strong>Trezor</strong></td><td>No</td><td>Requested since 2021 and still not implemented. Shamir backup solves a different problem.</td></tr>
+            <tr><td><strong>Ledger</strong></td><td>No</td><td>Not in Ledger Live. Its Seed Tool app lists BIP85 as planned rather than available.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Notice what that list does <em>not</em> divide along. It is not air-gapped against connected, and not standalone against companion-app &mdash; Jade and Passport both ship companion apps and both support it. The two without it are the large multi-asset incumbents, which is a different distinction entirely.</p>
 
       ${cautions([
         "Firmware changes. Confirm against the manufacturer's current documentation before you plan a setup around this, rather than trusting a list — including this one.",
