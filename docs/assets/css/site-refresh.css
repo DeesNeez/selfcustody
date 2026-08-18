@@ -19,6 +19,11 @@
   --sc-matrix-group-bg: #3a2a10;
   --sc-matrix-highlight-bg: #33230f;
   --sc-radius: 18px;
+  /* Small controls. The site's pills were a leftover -- the newer nav and
+     hero buttons had already been overridden to 8-9px on top of them -- so
+     these two tokens finish that migration and keep it in one place. */
+  --sc-radius-sm: 10px;
+  --sc-radius-xs: 6px;
   --sc-shadow: 0 18px 50px rgba(28, 28, 28, 0.09);
 }
 
@@ -285,7 +290,7 @@ body.site-refresh[data-page="contact"] #site-footer {
   padding: 9px 17px;
   color: #fff;
   border: 2px solid var(--sc-orange);
-  border-radius: 999px;
+  border-radius: var(--sc-radius-sm);
 }
 
 .site-refresh .navbar .sc-contact-link:hover,
@@ -395,25 +400,15 @@ body[data-page="home"] .sc-hero + .sc-section.sc-path-section {
   overflow: hidden;
   isolation: isolate;
   padding-bottom: 150px;
-  background: linear-gradient(
-    180deg,
-    #08090b 0%,
-    #08090b calc(100% - 110px),
-    var(--sc-wash) 100%
-  );
+  background: #08090b;
 }
 
 body[data-page="home"] .sc-mission-section {
-  background: linear-gradient(
-    180deg,
-    var(--sc-wash) 0%,
-    var(--sc-wash) calc(100% - 170px),
-    var(--sc-paper) 100%
-  );
+  background: #08090b;
 }
 
 body[data-page="home"] .sc-sequence-section {
-  background: var(--sc-paper);
+  background: #08090b;
 }
 
 .sc-path-section .container {
@@ -540,7 +535,8 @@ body[data-page="home"] .sc-sequence-section {
   }
 }
 
-.sc-path-options .sc-card {
+.sc-path-options .sc-card,
+.sc-card.sc-guide-card {
   /* transition is a shorthand: whichever rule wins cascade replaces the
      WHOLE transition-property list, it doesn't merge property-by-property
      across rules. This selector is more specific than .sc-reveal, so its
@@ -563,10 +559,23 @@ body[data-page="home"] .sc-sequence-section {
 }
 
 .sc-path-card-link {
+  position: relative;
   display: block;
   color: inherit !important;
   text-decoration: none !important;
   cursor: pointer;
+}
+
+.sc-card-cover-link {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.sc-path-card-link:has(.sc-card-cover-link:focus-visible) {
+  outline: 2px solid var(--sc-orange);
+  outline-offset: 3px;
 }
 
 .sc-path-card-link .sc-text-link {
@@ -598,6 +607,8 @@ body[data-page="home"] .sc-sequence-section {
    affordance is actually for, and ignores the mouse. */
 .sc-path-options .sc-card:hover,
 .sc-path-options .sc-card:focus-within,
+.sc-card.sc-guide-card:hover,
+.sc-card.sc-guide-card:focus-within,
 .sc-dash-tile:hover,
 .sc-dash-tile:has(:focus-visible),
 .sc-block:hover,
@@ -609,6 +620,8 @@ body[data-page="home"] .sc-sequence-section {
     0 0 42px rgba(255, 231, 166, 0.38),
     0 0 76px rgba(255, 215, 112, 0.18),
     inset 0 0 20px rgba(255, 244, 211, 0.045);
+  /* .sc-card:hover also offers a transform lift; without this the two stack */
+  transform: none;
   translate: 0 -10px;
   scale: 1.012;
 }
@@ -990,7 +1003,8 @@ body[data-page="home"] .sc-hero h1 {
    outline) keeps the glyphs opaque over the top, so only the halo
    escapes around the edges -- and text-shadow has no stacking-context
    side effects, so it renders reliably everywhere. */
-.sc-hero-command-destination::after {
+.sc-hero-command-destination::after,
+.sc-close-word::after {
   position: absolute;
   z-index: -1;
   inset: 0;
@@ -1014,7 +1028,8 @@ body[data-page="home"] .sc-hero h1 {
   will-change: opacity;
 }
 
-.sc-hero-command-destination .sc-word-fill {
+.sc-hero-command-destination .sc-word-fill,
+.sc-close-word .sc-word-fill {
   color: #f28a00;
   background-image: linear-gradient(
     110deg,
@@ -1154,7 +1169,7 @@ body[data-page="home"] .sc-hero .sc-lead {
   min-height: 48px;
   padding: 11px 22px;
   border: 2px solid var(--sc-orange);
-  border-radius: 999px;
+  border-radius: var(--sc-radius-sm);
   font-weight: 700;
   text-decoration: none;
   transition: 0.2s ease;
@@ -1234,7 +1249,14 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
 
 .sc-section-dark {
   color: #fff;
-  background: var(--sc-ink);
+  background:
+    radial-gradient(ellipse at 50% 52%, rgba(242, 138, 0, 0.065), transparent 58%),
+    var(--sc-paper);
+}
+
+.sc-section-dark .sc-hero-actions {
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .sc-section-head {
@@ -1322,6 +1344,26 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
   gap: 10px;
 }
 
+/* Product blurbs and tag rows vary in length, so the link is pushed to the
+   bottom rather than following the copy — otherwise "Read details" sits at a
+   different height in every card of the grid. */
+.sc-product-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-product-card .sc-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.sc-product-card .sc-text-link {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
 .sc-product-card .sc-product-image {
   display: grid;
   place-items: center;
@@ -1358,6 +1400,285 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
   border-radius: 12px;
 }
 
+/* Devices: richer card surfaces without an accent strip. The shortlist keeps
+   the shared sc-path-options hover motion and glow defined above. */
+.sc-device-card-grid,
+.sc-device-details {
+  --device-accent: #74b6ce;
+  --device-accent-surface: #24353c;
+  --device-accent-border: #4d7280;
+}
+
+.sc-device-preflight {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #242627, #1d1f20);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--sc-radius);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 14px 32px rgba(0, 0, 0, 0.15);
+}
+
+.sc-device-preflight-head {
+  padding: 28px 30px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.sc-device-preflight-head h2 {
+  max-width: none;
+  margin: 7px 0 0;
+  color: #fff;
+  font-size: clamp(1.65rem, 3vw, 2.15rem);
+}
+
+.sc-device-preflight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sc-device-preflight-grid section { padding: 27px 30px 29px; }
+
+.sc-device-preflight-grid section + section {
+  border-left: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.sc-device-preflight-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 13px;
+  color: #c9dce3;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sc-device-preflight-grid section:first-child .sc-device-preflight-label { color: #e4ad68; }
+.sc-device-preflight-grid section:last-child .sc-device-preflight-label { color: #75bd91; }
+
+.sc-device-preflight-grid h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.sc-device-preflight-grid p { margin: 0; }
+
+.sc-device-preflight-guide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 30px;
+  background: rgba(255, 138, 0, 0.055);
+  border-top: 1px solid rgba(255, 138, 0, 0.2);
+}
+
+.sc-device-preflight-guide strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #fff;
+}
+
+.sc-device-preflight-guide span {
+  display: block;
+  color: var(--sc-muted);
+  font-size: 0.9rem;
+}
+
+.sc-device-preflight-guide .sc-text-link {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+  .sc-device-preflight-grid { grid-template-columns: 1fr; }
+
+  .sc-device-preflight-grid section + section {
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    border-left: 0;
+  }
+
+  .sc-device-preflight-guide {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.sc-device-card-grid .sc-product-card {
+  overflow: hidden;
+  background: linear-gradient(145deg, #232526, #1d1f20);
+  border-color: rgba(116, 182, 206, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 12px 28px rgba(0, 0, 0, 0.14);
+}
+
+.sc-device-card-grid .sc-product-image {
+  background: linear-gradient(145deg, #202223, #292b2c);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sc-device-card-grid .sc-product-image::after {
+  content: none;
+}
+
+.sc-device-card-grid .sc-product-image img {
+  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.3));
+}
+
+.sc-device-card-grid .sc-card-body { padding: 26px; }
+
+.sc-device-card-grid .sc-card-body h3 {
+  color: #fff;
+  font-size: 1.34rem;
+}
+
+.sc-device-card-grid .sc-tag {
+  --sc-tag-text: #edfaff;
+  color: #edfaff;
+  background: var(--device-accent-surface);
+  border-color: var(--device-accent-border);
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.sc-device-card-grid .sc-tag-scope {
+  --sc-tag-text: #f6dfb9;
+  color: #f6dfb9;
+  background: #3a3024;
+  border-color: #725b3d;
+}
+
+.sc-device-card-grid .sc-tag-connect {
+  --sc-tag-text: #def6ff;
+  color: #def6ff;
+  background: #24363d;
+  border-color: #4d7280;
+}
+
+.sc-device-card-grid .sc-tag-open {
+  --sc-tag-text: #def5e8;
+  color: #def5e8;
+  background: #25382f;
+  border-color: #4d725f;
+}
+
+.sc-device-card-grid .sc-tag-feature {
+  --sc-tag-text: #eee5f8;
+  color: #eee5f8;
+  background: #342d3d;
+  border-color: #685a7a;
+}
+
+.sc-device-card-grid .sc-tag-advanced {
+  --sc-tag-text: #eee5f8;
+  color: #eee5f8;
+  background: #342d3d;
+  border-color: #685a7a;
+}
+
+.sc-device-card-grid .sc-tag-security {
+  --sc-tag-text: #ffe1dd;
+  color: #ffe1dd;
+  background: #3d2928;
+  border-color: #7d514d;
+}
+
+.sc-device-card-grid .sc-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: auto;
+  padding: 10px 13px;
+  color: #f4f4f4;
+  background: #2d2f30;
+  border: 1px solid #55595b;
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.sc-device-card-grid .sc-path-card-link:hover .sc-text-link,
+.sc-device-card-grid .sc-path-card-link:focus-visible .sc-text-link {
+  color: #fff;
+  background: #363839;
+  border-color: rgba(255, 181, 94, 0.72);
+}
+
+.sc-device-details .sc-detail {
+  background: linear-gradient(145deg, #232526, #1d1f20);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 12px 30px rgba(0, 0, 0, 0.14);
+}
+
+.sc-device-details .sc-detail-media {
+  background: linear-gradient(145deg, #1d1f20, #292b2c);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.sc-device-details .sc-detail h2 {
+  color: #fff;
+  font-size: clamp(1.8rem, 3vw, 2.35rem);
+}
+
+.sc-device-details .sc-detail .col-lg-7 > h3 {
+  color: #e5e5e5;
+  font-size: 0.84rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sc-device-details .sc-detail .col-lg-7 > h3:first-of-type {
+  color: #75bd91;
+}
+
+.sc-device-details .sc-detail .col-lg-7 > h3:last-of-type {
+  color: #e4ad68;
+}
+
+.sc-device-details .sc-detail-footer > a.sc-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 13px;
+  color: #f4f4f4;
+  background: #2d2f30;
+  border: 1px solid #55595b;
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.sc-device-details .sc-detail-footer > a.sc-text-link:hover {
+  color: #fff;
+  background: #363839;
+  border-color: rgba(255, 181, 94, 0.72);
+}
+
+/* Same pill, but the guide link carries the brand orange so it still reads
+   as a distinct action from the neutral "Official site" link beside it. */
+.sc-device-details .sc-detail-footer .sc-product-guides > a.sc-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 13px;
+  color: var(--sc-link-hover);
+  background: rgba(255, 154, 31, 0.13);
+  border: 1px solid rgba(255, 154, 31, 0.5);
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.sc-device-details .sc-detail-footer .sc-product-guides > a.sc-text-link:hover {
+  color: var(--sc-link-hover);
+  background: rgba(255, 154, 31, 0.22);
+  border-color: var(--sc-orange);
+}
+
 .sc-tags {
   display: flex;
   flex-wrap: wrap;
@@ -1366,12 +1687,36 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
 }
 
 .sc-tag {
+  --sc-tag-text: #5b5144;
   padding: 5px 10px;
-  color: #5b5144;
+  color: var(--sc-tag-text);
   background: #f5efe7;
-  border-radius: 999px;
+  border-radius: var(--sc-radius-xs);
   font-size: 0.73rem;
   font-weight: 700;
+}
+
+.sc-tag-link {
+  position: relative;
+  z-index: 2;
+  color: var(--sc-tag-text) !important;
+  text-decoration: none !important;
+  cursor: pointer;
+  box-shadow: inset 0 -2px 0 rgba(255, 138, 0, 0.28);
+  transition: color 150ms ease, background-color 150ms ease,
+    border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.sc-tag-link:hover,
+.sc-tag-link:focus-visible {
+  color: #fff !important;
+  background: rgba(255, 138, 0, 0.16);
+  box-shadow: inset 0 -2px 0 rgba(255, 181, 94, 0.72);
+}
+
+.sc-tag-link:focus-visible {
+  outline: 2px solid rgba(255, 181, 94, 0.9);
+  outline-offset: 2px;
 }
 
 .sc-tags-lg {
@@ -1468,6 +1813,455 @@ p.sc-price {
   padding: 28px;
   background: linear-gradient(145deg, #252525, #363636);
   border-radius: 15px;
+}
+
+/* Exchanges: two custody models keep the existing lift/glow interaction,
+   but their resting surfaces now explain the distinction before hover. */
+.sc-exchange-models > .col-lg-6:first-child { --exchange-model-accent: #35b48a; }
+.sc-exchange-models > .col-lg-6:last-child { --exchange-model-accent: var(--sc-orange); }
+
+.sc-exchange-models .sc-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--exchange-model-accent) 18%, transparent), transparent 48%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+  border-color: color-mix(in srgb, var(--exchange-model-accent) 43%, var(--sc-line));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.16);
+}
+
+/* The two cards carry different amounts of copy, so the link has to be pushed
+   to the bottom rather than following the text — otherwise the pair sits at
+   two different heights and reads as misaligned. */
+.sc-exchange-models .sc-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-exchange-models .sc-card-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.sc-exchange-models .sc-card-body > p:last-of-type { margin-bottom: 0; }
+
+.sc-exchange-models .sc-text-link {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.sc-exchange-models .sc-icon {
+  color: var(--exchange-model-accent);
+  background: color-mix(in srgb, var(--exchange-model-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--exchange-model-accent) 32%, transparent);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--exchange-model-accent) 7%, transparent);
+}
+
+.sc-exchange-models h3 {
+  color: #fff;
+  font-size: 1.32rem;
+}
+
+.sc-exchange-models p strong { color: var(--exchange-model-accent); }
+
+/* The platform cards share one structural rhythm. Direct-to-wallet services
+   use green; custodial platforms use orange. Every official-site action is a
+   direct flex child, so margin-top:auto pins it to the same lower-left edge. */
+.sc-exchange-card-grid { --exchange-card-accent: var(--sc-orange); }
+
+.sc-exchange-card-grid .sc-detail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 32px;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--exchange-card-accent) 12%, transparent), transparent 44%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  border-color: color-mix(in srgb, var(--exchange-card-accent) 32%, var(--sc-line));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.15);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.sc-exchange-card-grid .sc-detail:hover {
+  border-color: color-mix(in srgb, var(--exchange-card-accent) 72%, #fff);
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.28),
+    0 0 34px color-mix(in srgb, var(--exchange-card-accent) 10%, transparent);
+  transform: translateY(-5px);
+}
+
+.sc-exchange-card-grid .sc-detail h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.75rem, 3vw, 2.2rem);
+}
+
+/* Logo beside the product name, on both the exchange and software detail
+   cards. One rule for both so the two pages cannot drift apart -- the logos
+   vary in aspect ratio and transparency, so the fixed box plus object-fit is
+   what makes a wordmark and a square icon sit at the same visual weight. */
+.sc-exchange-brand,
+.sc-software-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 48px;
+  margin-bottom: 14px;
+}
+
+.sc-exchange-brand img,
+.sc-software-brand img {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  object-fit: contain;
+  padding: 7px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 138, 0, 0.3);
+  border-radius: 11px;
+  box-shadow: inset 0 0 16px rgba(255, 138, 0, 0.045);
+}
+
+.sc-software-brand h2 {
+  margin: 0;
+}
+
+.sc-exchange-card-grid .sc-detail > h3 {
+  color: var(--exchange-card-accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.09em;
+}
+
+/* margin-top: auto keeps the button flush with the bottom of the h-100 card
+   regardless of how much copy sits above it, but when a card's content
+   already fills the height that auto margin has no free space to spend --
+   the button ends up touching the last line of copy. The caution list's own
+   margin-bottom is unaffected by that free-space calculation, so it's what
+   guarantees a minimum gap; auto still adds more on cards with slack. */
+.sc-exchange-card-grid .sc-detail > .sc-caution-list {
+  margin-bottom: 18px;
+}
+
+.sc-exchange-card-grid .sc-detail > a.sc-text-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 7px;
+  margin-top: auto;
+  padding: 9px 12px;
+  color: #f2f2f2;
+  background: #2d2f30;
+  border: 1px solid #55595b;
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.sc-exchange-card-grid .sc-detail > a.sc-text-link:hover {
+  color: #fff;
+  background: #363839;
+  border-color: rgba(255, 181, 94, 0.72);
+}
+
+/* Software shortlist: neutral cards let the seven wallet marks provide the
+   colour. Hover motion remains inherited from the shared path-card rule. */
+/* .sc-card-body further down already sets flex:1 + margin-top:auto to push
+   "Read notes" to the bottom -- but .sc-path-card-link (the <a> itself, which
+   carries .sc-software-card) is display:block, so that flex:1 had no flex
+   container to size against and did nothing. This is the one missing piece:
+   making the card element itself a flex column so the existing bottom-anchor
+   rules actually take effect. */
+.sc-software-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-software-card-grid .sc-software-card {
+  background: linear-gradient(145deg, #242627, #1d1f20);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 12px 28px rgba(0, 0, 0, 0.14);
+}
+
+.sc-software-card .sc-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 26px;
+}
+
+.sc-software-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 48px;
+  margin-bottom: 16px;
+}
+
+.sc-software-card-heading h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.18rem;
+}
+
+.sc-software-logo {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  padding: 7px;
+  overflow: hidden;
+  background: #f2f2ef;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 11px;
+  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.2);
+}
+
+.sc-software-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sc-software-card .sc-text-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 7px;
+  margin-top: auto;
+  padding: 10px 13px;
+  color: #f4f4f4;
+  background: #2d2f30;
+  border: 1px solid #55595b;
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.sc-software-card-grid .sc-path-card-link:hover .sc-text-link,
+.sc-software-card-grid .sc-path-card-link:focus-visible .sc-text-link {
+  color: #fff;
+  background: #363839;
+  border-color: rgba(255, 181, 94, 0.72);
+}
+
+/* The long-form wallet notes only need a modest lift from the page surface. */
+.sc-software-details .sc-detail {
+  background: linear-gradient(145deg, #242627, #1f2122);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 11px 26px rgba(0, 0, 0, 0.13);
+}
+
+/* Not a direct child any more -- the name sits inside .sc-software-brand
+   alongside the logo. Scoped to .sc-detail so the section heading above the
+   cards keeps its own size. */
+.sc-software-details .sc-detail h2 {
+  color: #fff;
+  font-size: clamp(1.75rem, 3vw, 2.2rem);
+}
+
+.sc-software-details .sc-detail .row h3 {
+  font-size: 0.84rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sc-software-details .sc-detail .row > div:first-child h3 { color: #75bd91; }
+.sc-software-details .sc-detail .row > div:last-child h3 { color: #e4ad68; }
+
+.sc-software-details .sc-detail-footer > a.sc-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  color: #f2f2f2;
+  background: #2d2f30;
+  border: 1px solid #55595b;
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.sc-software-details .sc-detail-footer > a.sc-text-link:hover {
+  color: #fff;
+  background: #363839;
+  border-color: rgba(255, 181, 94, 0.72);
+}
+
+/* Same pill, but the guide link carries the brand orange so it still reads
+   as a distinct action from the neutral "Official site" link beside it. */
+.sc-software-details .sc-detail-footer .sc-product-guides > a.sc-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  color: var(--sc-link-hover);
+  background: rgba(255, 154, 31, 0.13);
+  border: 1px solid rgba(255, 154, 31, 0.5);
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.sc-software-details .sc-detail-footer .sc-product-guides > a.sc-text-link:hover {
+  color: var(--sc-link-hover);
+  background: rgba(255, 154, 31, 0.22);
+  border-color: var(--sc-orange);
+}
+
+.sc-software-key-warning {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2b2020, #1c1e1f 62%);
+  border: 1px solid rgba(223, 139, 130, 0.4);
+  border-radius: 13px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 34px rgba(0, 0, 0, 0.18),
+    0 0 34px rgba(160, 63, 55, 0.05);
+}
+
+.sc-software-key-warning::before {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  background: linear-gradient(var(--sc-orange) 0 33%, #df8b82 62%, #9b4f49 100%);
+  content: "";
+}
+
+.sc-software-key-warning-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 26px 30px 24px 34px;
+  background: linear-gradient(100deg, rgba(255, 138, 0, 0.13), rgba(255, 138, 0, 0.035));
+  border-bottom: 1px solid rgba(255, 138, 0, 0.28);
+}
+
+.sc-software-key-warning-mark {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  place-items: center;
+  color: #ffc06f;
+  background: rgba(255, 138, 0, 0.13);
+  border: 1px solid rgba(255, 160, 48, 0.5);
+  border-radius: 50%;
+  font-size: 1.35rem;
+  box-shadow: inset 0 0 18px rgba(255, 138, 0, 0.09);
+}
+
+.sc-software-key-warning-kicker {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffb45c;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.sc-software-key-warning-head h2 {
+  max-width: 900px;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.55rem, 3vw, 2rem);
+}
+
+.sc-software-key-warning-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.sc-software-key-warning-grid section { padding: 27px 30px 29px 34px; }
+
+.sc-software-key-warning-grid section:first-child {
+  background: rgba(121, 51, 46, 0.09);
+}
+
+.sc-software-key-warning-grid section:last-child {
+  background: rgba(54, 101, 75, 0.075);
+}
+
+.sc-software-key-warning-grid section + section {
+  border-left: 1px solid rgba(117, 189, 145, 0.18);
+}
+
+.sc-software-key-warning-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sc-software-key-warning-label.is-danger { color: #df8b82; }
+.sc-software-key-warning-label.is-safe { color: #75bd91; }
+.sc-software-key-warning-grid p { margin: 0; }
+
+.sc-software-key-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 17px;
+}
+
+.sc-software-key-methods span,
+.sc-software-key-methods a {
+  padding: 6px 9px;
+  color: #e5f5eb;
+  background: #26372f;
+  border: 1px solid #4d725f;
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.sc-software-key-methods a {
+  cursor: pointer;
+  box-shadow: inset 0 -2px 0 rgba(117, 189, 145, 0.22);
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.sc-software-key-methods a:hover,
+.sc-software-key-methods a:focus-visible {
+  color: #fff;
+  background: #315040;
+  border-color: #75bd91;
+}
+
+@media (max-width: 767.98px) {
+  .sc-software-key-warning-head {
+    align-items: flex-start;
+    padding-left: 27px;
+  }
+
+  .sc-software-key-warning-mark {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .sc-software-key-warning-grid { grid-template-columns: 1fr; }
+
+  .sc-software-key-warning-grid section + section {
+    border-top: 1px solid rgba(117, 189, 145, 0.18);
+    border-left: 0;
+  }
 }
 
 .sc-detail-media img {
@@ -1616,7 +2410,7 @@ p.sc-price {
   place-items: center;
   width: 26px;
   height: 26px;
-  border-radius: 50%;
+  border-radius: 7px;
   font-size: 0.92rem;
   font-weight: 800;
   line-height: 1;
@@ -1700,6 +2494,526 @@ p.sc-price {
   border-bottom: 0;
 }
 
+/* The three custody shapes are decisions, not spreadsheet data. Each card has
+   its own restrained accent while the orange middle card marks the sensible
+   default for savings. */
+.sc-setup-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 2.15em 0 2.35em;
+}
+
+.sc-setup-option {
+  --setup-accent: #d9c28f;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  padding: 22px 18px 20px;
+  background:
+    radial-gradient(circle at 92% 4%, rgba(217, 194, 143, 0.12), transparent 38%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+  border: 1px solid rgba(217, 194, 143, 0.28);
+  border-radius: var(--sc-radius);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.2);
+}
+
+.sc-setup-option::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: var(--setup-accent);
+  box-shadow: 0 0 24px var(--setup-accent);
+}
+
+.sc-setup-option-hardware {
+  --setup-accent: var(--sc-orange);
+  background:
+    radial-gradient(circle at 92% 4%, rgba(242, 138, 0, 0.18), transparent 40%),
+    linear-gradient(155deg, rgba(242, 138, 0, 0.09), rgba(255, 255, 255, 0.02));
+  border-color: rgba(242, 138, 0, 0.48);
+  box-shadow: 0 20px 52px rgba(242, 138, 0, 0.09), 0 16px 42px rgba(0, 0, 0, 0.24);
+}
+
+.sc-setup-option-multisig {
+  --setup-accent: #35b48a;
+  background:
+    radial-gradient(circle at 92% 4%, rgba(53, 180, 138, 0.15), transparent 40%),
+    linear-gradient(155deg, rgba(53, 180, 138, 0.07), rgba(255, 255, 255, 0.018));
+  border-color: rgba(53, 180, 138, 0.34);
+}
+
+.sc-setup-option-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sc-setup-option-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: var(--setup-accent);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid color-mix(in srgb, var(--setup-accent) 38%, transparent);
+  border-radius: 10px;
+  font-size: 1.1rem;
+}
+
+.sc-setup-option h3 {
+  min-height: 2.6em;
+  margin: 18px 0 16px;
+  color: #fff;
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+
+.sc-setup-option dl {
+  display: grid;
+  flex: 1;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.sc-setup-option dl > div {
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sc-setup-option dt {
+  margin-bottom: 3px;
+  color: var(--setup-accent);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.sc-setup-option dd {
+  margin: 0;
+  color: var(--sc-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 767.98px) {
+  .sc-setup-grid { grid-template-columns: 1fr; }
+  .sc-setup-option { padding: 22px 20px; }
+  .sc-setup-option h3 { min-height: 0; }
+  .sc-setup-option dl { display: block; }
+}
+
+/* ---- guide comparison systems ----------------------------------------- */
+
+.sc-handoff-list {
+  display: grid;
+  gap: 8px;
+  margin: 2em 0;
+}
+
+.sc-handoff-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 38px minmax(0, 1fr);
+  align-items: stretch;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius-sm);
+}
+
+.sc-handoff-row > div { padding: 15px 17px; }
+
+.sc-handoff-row > div:last-child {
+  background: linear-gradient(110deg, rgba(242, 138, 0, 0.08), transparent);
+}
+
+.sc-handoff-row span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--sc-muted);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sc-handoff-row > div:last-child span { color: var(--sc-orange); }
+
+.sc-handoff-row p {
+  margin: 0;
+  color: var(--sc-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.52;
+}
+
+.sc-handoff-row i {
+  display: grid;
+  place-items: center;
+  color: var(--sc-orange);
+  background: rgba(242, 138, 0, 0.08);
+  border-right: 1px solid rgba(242, 138, 0, 0.16);
+  border-left: 1px solid rgba(242, 138, 0, 0.16);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.sc-guide-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 2em 0;
+}
+
+.sc-guide-choice {
+  --choice-accent: var(--sc-orange);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 22px 18px 18px;
+  background:
+    radial-gradient(circle at 94% 0, color-mix(in srgb, var(--choice-accent) 18%, transparent), transparent 42%),
+    rgba(255, 255, 255, 0.025);
+  border: 1px solid color-mix(in srgb, var(--choice-accent) 34%, var(--sc-line));
+  border-radius: var(--sc-radius);
+}
+
+.sc-guide-choice::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: var(--choice-accent);
+}
+
+.sc-choice-status {
+  align-self: flex-start;
+  padding: 5px 8px;
+  color: var(--choice-accent);
+  background: color-mix(in srgb, var(--choice-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--choice-accent) 30%, transparent);
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.sc-guide-choice h3 {
+  min-height: 2.7em;
+  margin: 16px 0;
+  color: #fff;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.sc-guide-choice dl {
+  display: grid;
+  flex: 1;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.sc-guide-choice dl > div {
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sc-guide-choice dt {
+  margin-bottom: 3px;
+  color: var(--choice-accent);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.sc-guide-choice dd {
+  margin: 0;
+  color: var(--sc-muted);
+  font-size: 0.81rem;
+  line-height: 1.55;
+}
+
+.sc-guide-choice.is-safe,
+.sc-guide-choice.is-jade-stateless { --choice-accent: #35b48a; }
+.sc-guide-choice.is-thorough,
+.sc-guide-choice.is-jade-server { --choice-accent: var(--sc-orange); }
+.sc-guide-choice.is-danger { --choice-accent: #d65e40; }
+.sc-guide-choice.is-jade-default { --choice-accent: #62aeea; }
+
+.sc-nunchuk-shapes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 2em 0;
+}
+
+.sc-nunchuk-shapes article {
+  position: relative;
+  padding: 22px;
+  background: linear-gradient(145deg, rgba(242, 138, 0, 0.07), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(242, 138, 0, 0.24);
+  border-radius: var(--sc-radius);
+}
+
+.sc-nunchuk-shapes article:nth-child(3),
+.sc-nunchuk-shapes article:nth-child(4) {
+  background: linear-gradient(145deg, rgba(53, 180, 138, 0.07), rgba(255, 255, 255, 0.02));
+  border-color: rgba(53, 180, 138, 0.25);
+}
+
+.sc-shape-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--sc-orange);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.sc-nunchuk-shapes article:nth-child(n+3) .sc-shape-key { color: #58caa5; }
+.sc-shape-key i { font-size: 0.95rem; }
+
+.sc-nunchuk-shapes h3 {
+  margin: 13px 0 8px;
+  color: #fff;
+  font-size: 1.08rem;
+}
+
+.sc-nunchuk-shapes p {
+  margin: 0;
+  color: var(--sc-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.sc-machine-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
+  align-items: stretch;
+  margin: 2em 0;
+}
+
+.sc-machine-panel {
+  padding: 24px 22px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-machine-panel.is-online {
+  background: radial-gradient(circle at 0 0, rgba(98, 174, 234, 0.12), transparent 50%), rgba(255, 255, 255, 0.025);
+  border-color: rgba(98, 174, 234, 0.3);
+}
+
+.sc-machine-panel.is-offline {
+  background: radial-gradient(circle at 100% 0, rgba(242, 138, 0, 0.13), transparent 50%), rgba(255, 255, 255, 0.025);
+  border-color: rgba(242, 138, 0, 0.34);
+}
+
+.sc-machine-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sc-machine-head h3 { margin: 0; color: #fff; font-size: 1.15rem; }
+
+.sc-machine-signal,
+.sc-machine-lock {
+  position: relative;
+  width: 13px;
+  height: 13px;
+  background: #62aeea;
+  border: 3px solid rgba(98, 174, 234, 0.22);
+  border-radius: 50%;
+  box-shadow: 0 0 16px rgba(98, 174, 234, 0.7);
+}
+
+.sc-machine-lock { background: var(--sc-orange); border-color: rgba(242, 138, 0, 0.22); box-shadow: 0 0 16px rgba(242, 138, 0, 0.65); }
+
+.sc-machine-holds {
+  margin: 20px 0 16px;
+  color: var(--sc-ink-soft);
+  line-height: 1.5;
+}
+
+.sc-machine-holds span {
+  display: block;
+  color: var(--sc-muted);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sc-machine-panel ul { margin: 0; padding: 0; list-style: none; }
+.sc-machine-panel li { position: relative; padding: 8px 0 8px 20px; color: var(--sc-muted); border-top: 1px solid rgba(255, 255, 255, 0.07); font-size: 0.84rem; }
+.sc-machine-panel li::before { position: absolute; left: 0; font-weight: 900; }
+.sc-machine-panel li.is-can::before { content: "+"; color: #58caa5; }
+.sc-machine-panel li.is-cannot::before { content: "−"; color: #e77d64; }
+
+.sc-machine-transfer {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  color: var(--sc-orange);
+}
+
+.sc-machine-transfer span { color: var(--sc-muted); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.sc-machine-transfer i { font-style: normal; font-size: 1.35rem; line-height: 1; }
+
+.sc-platform-flows {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 2em 0;
+}
+
+.sc-platform-flow {
+  padding: 24px;
+  background: radial-gradient(circle at 100% 0, rgba(214, 94, 64, 0.13), transparent 44%), rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(214, 94, 64, 0.3);
+  border-radius: var(--sc-radius);
+}
+
+.sc-platform-flow.is-direct {
+  background: radial-gradient(circle at 100% 0, rgba(53, 180, 138, 0.14), transparent 44%), rgba(255, 255, 255, 0.025);
+  border-color: rgba(53, 180, 138, 0.32);
+}
+
+.sc-flow-title { display: flex; align-items: center; gap: 12px; }
+.sc-flow-title > span { display: grid; width: 42px; height: 42px; place-items: center; color: #e77d64; background: rgba(214, 94, 64, 0.1); border: 1px solid rgba(214, 94, 64, 0.25); border-radius: 10px; }
+.is-direct .sc-flow-title > span { color: #58caa5; background: rgba(53, 180, 138, 0.1); border-color: rgba(53, 180, 138, 0.25); }
+.sc-flow-title small { color: var(--sc-muted); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.sc-flow-title h3 { margin: 1px 0 0; color: #fff; font-size: 1.2rem; }
+.sc-flow-routes { margin: 17px 0; color: var(--sc-ink-soft); font-size: 0.78rem; font-weight: 700; }
+.sc-platform-flow > p:last-child { margin: 18px 0 0; color: var(--sc-muted); font-size: 0.88rem; line-height: 1.6; }
+
+.sc-flow-track { display: flex; align-items: center; gap: 5px; }
+.sc-flow-track span { flex: 1; padding: 8px 6px; color: var(--sc-ink-soft); background: rgba(255, 255, 255, 0.035); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; font-size: 0.64rem; font-weight: 700; text-align: center; }
+.sc-flow-track i { color: var(--sc-orange); font-style: normal; }
+
+.sc-survival-grid {
+  overflow: hidden;
+  margin: 2em 0;
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-survival-head,
+.sc-survival-row {
+  display: grid;
+  grid-template-columns: 1.45fr 0.78fr 0.9fr;
+  align-items: stretch;
+}
+
+.sc-survival-head { color: var(--sc-muted); background: rgba(255, 255, 255, 0.045); font-size: 0.66rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+.sc-survival-head span,
+.sc-survival-row > * { padding: 12px 14px; }
+.sc-survival-row { border-top: 1px solid var(--sc-line); }
+.sc-survival-row strong { color: var(--sc-ink-soft); font-size: 0.82rem; line-height: 1.45; }
+.sc-survival-row span { display: flex; align-items: center; color: var(--sc-muted); border-left: 1px solid var(--sc-line); font-size: 0.76rem; font-weight: 700; line-height: 1.4; }
+.sc-survival-row span.is-pass { color: #7fe0c0; background: rgba(53, 180, 138, 0.09); }
+.sc-survival-row span.is-fail { color: #ff9d8a; background: rgba(214, 94, 64, 0.09); }
+.sc-survival-row span.is-warn { color: #f3bf6b; background: rgba(242, 138, 0, 0.07); }
+.sc-survival-row span.is-na { color: var(--sc-muted); background: rgba(255, 255, 255, 0.025); }
+
+.sc-custody-control-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 2em 0;
+}
+
+.sc-custody-control-grid article {
+  padding: 22px 18px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-custody-control-grid article.is-custodian { border-color: rgba(214, 94, 64, 0.3); background: radial-gradient(circle at 100% 0, rgba(214, 94, 64, 0.12), transparent 44%), rgba(255,255,255,.02); }
+.sc-custody-control-grid article.is-collaborative { border-color: rgba(242, 138, 0, 0.34); background: radial-gradient(circle at 100% 0, rgba(242, 138, 0, 0.13), transparent 44%), rgba(255,255,255,.02); }
+.sc-custody-control-grid article.is-self { border-color: rgba(53, 180, 138, 0.32); background: radial-gradient(circle at 100% 0, rgba(53, 180, 138, 0.13), transparent 44%), rgba(255,255,255,.02); }
+.sc-control-count { display: inline-block; padding: 5px 8px; color: var(--sc-orange); background: rgba(242, 138, 0, 0.1); border: 1px solid rgba(242, 138, 0, 0.24); border-radius: 6px; font-size: 0.67rem; font-weight: 900; text-transform: uppercase; }
+.is-custodian .sc-control-count { color: #ff9d8a; background: rgba(214,94,64,.1); border-color: rgba(214,94,64,.24); }
+.is-self .sc-control-count { color: #7fe0c0; background: rgba(53,180,138,.1); border-color: rgba(53,180,138,.24); }
+.sc-custody-control-grid h3 { min-height: 2.7em; margin: 15px 0 8px; color: #fff; font-size: 1.02rem; line-height: 1.35; }
+.sc-custody-control-grid p { min-height: 3em; margin: 0 0 14px; color: var(--sc-muted); font-size: 0.82rem; }
+.sc-custody-control-grid ul { margin: 0; padding: 0; list-style: none; }
+.sc-custody-control-grid li { padding: 9px 0; color: var(--sc-muted); border-top: 1px solid rgba(255,255,255,.07); font-size: 0.77rem; }
+.sc-custody-control-grid li::before { display: inline-block; width: 16px; font-weight: 900; }
+.sc-custody-control-grid li.is-yes::before { content: "+"; color: #7fe0c0; }
+.sc-custody-control-grid li.is-no::before { content: "−"; color: #ff9d8a; }
+.sc-custody-control-grid li.is-safe::before { content: "+"; color: #7fe0c0; }
+.sc-custody-control-grid li.is-danger::before { content: "!"; color: #ff9d8a; }
+.sc-custody-control-grid li.is-neutral::before { content: "·"; color: var(--sc-orange); }
+
+.sc-passphrase-map {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 2em 0;
+}
+
+.sc-passphrase-map > div {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: start;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius-sm);
+}
+
+.sc-passphrase-map span { display: grid; min-height: 27px; padding: 4px 6px; place-items: center; border: 1px solid; border-radius: 6px; font-size: 0.62rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; }
+.sc-passphrase-map span.is-yes { color: #7fe0c0; background: rgba(53,180,138,.09); border-color: rgba(53,180,138,.28); }
+.sc-passphrase-map span.is-limited { color: #f3bf6b; background: rgba(242,138,0,.08); border-color: rgba(242,138,0,.26); }
+.sc-passphrase-map span.is-no { color: var(--sc-muted); background: rgba(255,255,255,.03); border-color: var(--sc-line); }
+.sc-passphrase-map span.is-risk { color: #ff9d8a; background: rgba(214,94,64,.09); border-color: rgba(214,94,64,.28); }
+.sc-passphrase-map p { margin: 0; color: var(--sc-muted); font-size: 0.83rem; line-height: 1.55; }
+.sc-passphrase-map strong { color: var(--sc-ink-soft); }
+
+@media (max-width: 767.98px) {
+  .sc-handoff-row { grid-template-columns: 1fr; }
+  .sc-handoff-row i { min-height: 28px; border: 0; border-top: 1px solid rgba(242,138,0,.16); border-bottom: 1px solid rgba(242,138,0,.16); transform: rotate(90deg); }
+  .sc-guide-choice-grid,
+  .sc-nunchuk-shapes,
+  .sc-platform-flows,
+  .sc-custody-control-grid,
+  .sc-passphrase-map { grid-template-columns: 1fr; }
+  .sc-guide-choice h3,
+  .sc-custody-control-grid h3,
+  .sc-custody-control-grid p { min-height: 0; }
+  .sc-guide-choice dl { display: block; }
+  .sc-machine-split { grid-template-columns: 1fr; gap: 8px; }
+  .sc-machine-transfer { grid-template-columns: auto auto auto auto; padding: 4px 0; }
+  .sc-machine-transfer i { transform: rotate(90deg); }
+  .sc-survival-head { display: none; }
+  .sc-survival-row { grid-template-columns: repeat(2, 1fr); }
+  .sc-survival-row strong { grid-column: 1 / -1; background: rgba(255,255,255,.035); }
+  .sc-survival-row span { border-top: 1px solid var(--sc-line); border-left: 0; }
+  .sc-survival-row span + span { border-left: 1px solid var(--sc-line); }
+  .sc-survival-row span::before { display: block; margin-right: 6px; color: var(--sc-muted); font-size: 0.58rem; text-transform: uppercase; }
+  .sc-survival-row span:nth-of-type(1)::before { content: "Single:"; }
+  .sc-survival-row span:nth-of-type(2)::before { content: "2-of-3:"; }
+}
+
 .sc-step {
   display: grid;
   grid-template-columns: 55px 1fr;
@@ -1752,39 +3066,128 @@ p.sc-price {
   opacity: 0.8;
 }
 
-.sc-cta {
-  padding: 70px 0;
-  color: #fff;
+/* Closing section (home). The restrained orbit artwork turns the hero's
+   movement into something ordered and deliberate, with enough negative
+   space for the message to lead. */
+.sc-close {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 138px 0 124px;
+  background: #08090b;
+  text-align: center;
+}
+
+/* Dissolve the extended artwork to the same black the footer starts with.
+   This fade belongs to the section rather than the image so clipping cannot
+   move its transparent endpoint below the visible boundary. */
+.sc-close::before {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 150px;
+  background: linear-gradient(180deg, rgba(8, 9, 11, 0), #08090b 100%);
+  content: "";
+  pointer-events: none;
+}
+
+/* Keep the copy calm and legible while allowing the orange paths to frame
+   the lower edge of the section. */
+.sc-close::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
   background:
-    linear-gradient(90deg, rgba(179, 86, 0, 0.96), rgba(148, 71, 0, 0.96)),
-    #b35600;
+    radial-gradient(ellipse at 50% 40%, rgba(8, 9, 11, 0.08) 0%, rgba(8, 9, 11, 0.44) 54%, rgba(8, 9, 11, 0.76) 100%),
+    linear-gradient(180deg, rgba(8, 9, 11, 0.08) 36%, rgba(8, 9, 11, 0.3) 100%);
+  content: "";
+  pointer-events: none;
 }
 
-.sc-cta h2 {
-  margin-bottom: 10px;
+.sc-close .container {
+  position: relative;
+  z-index: 2;
+}
+
+.sc-close-glow {
+  position: absolute;
+  z-index: 0;
+  inset: -8% 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.sc-close-glow img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  opacity: 0.78;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 14%,
+    #000 82%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 14%,
+    #000 82%,
+    transparent 100%
+  );
+}
+
+@media (min-width: 992px) {
+  .sc-close-glow {
+    transform: translateY(10%);
+  }
+}
+
+.sc-close-title {
+  margin: 0;
   color: #fff;
+  font-size: clamp(1.8rem, 5.9vw, 3.9rem);
+  font-weight: 800;
+  line-height: 1.06;
 }
 
-.sc-cta p {
-  max-width: 700px;
-  margin-bottom: 0;
-  color: rgba(255, 255, 255, 0.95);
+/* Still, where the hero hums. Same glow stack (see the shared rule with
+   .sc-hero-command-destination), minus the pulse -- the sign has settled. */
+.sc-close-word::after {
+  opacity: 0.9;
+  animation: none;
 }
 
-.sc-cta .sc-btn {
-  color: #fff !important;
-  border-color: #fff;
+.sc-close-lead {
+  max-width: 600px;
+  margin: 26px auto 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.04rem;
+  line-height: 1.62;
 }
 
-.sc-cta .sc-btn:hover {
-  color: var(--sc-ink) !important;
-  background: #fff;
+/* Reuses the hero's glass capsule deliberately -- it is the same pair of
+   buttons closing the page that opened it. (.sc-pricing-cta borrows it the
+   same way.)
+
+   Override the hero's mobile no-wrap rule so the closing actions remain
+   resilient if their labels change. */
+body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 34px auto 0;
 }
 
 .sc-footer {
   padding: 58px 0 26px;
   color: rgba(255, 255, 255, 0.68);
-  background: #141415;
+  background: linear-gradient(180deg, #08090b 0%, #0e0e0f 96px);
+  border-top: 0;
 }
 
 .sc-footer h3,
@@ -1819,12 +3222,12 @@ p.sc-price {
   padding: 22px;
   color: #fff;
   background:
-    linear-gradient(145deg, rgba(255, 138, 0, 0.18), rgba(255, 138, 0, 0.07));
-  border: 2px solid var(--sc-orange);
+    linear-gradient(145deg, rgba(255, 138, 0, 0.16), rgba(255, 138, 0, 0.055));
+  border: 1px solid rgba(242, 138, 0, 0.78);
   border-radius: 14px;
   box-shadow:
-    0 0 0 4px rgba(255, 138, 0, 0.1),
-    0 16px 36px rgba(0, 0, 0, 0.2);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 14px 32px rgba(0, 0, 0, 0.22);
 }
 
 .sc-footer-warning-icon {
@@ -1835,7 +3238,8 @@ p.sc-price {
   margin-bottom: 16px;
   color: var(--sc-ink);
   background: var(--sc-orange);
-  border-radius: 50%;
+  border-radius: 11px;
+  box-shadow: 0 8px 20px rgba(242, 138, 0, 0.16);
   font-size: 1.25rem;
 }
 
@@ -1861,7 +3265,7 @@ p.sc-price {
   padding: 2px 7px;
   color: #fff;
   background: #d8292f;
-  border-radius: 5px;
+  border-radius: 6px;
   font-weight: 900;
   letter-spacing: 0.06em;
   line-height: 1.35;
@@ -1963,7 +3367,7 @@ p.sc-price {
     padding-right: 7px;
     padding-left: 7px;
     color: var(--sc-ink);
-    border-radius: 12px;
+    border-radius: var(--sc-radius-sm);
   }
 
   .site-refresh .navbar .sc-contact-link:hover,
@@ -2266,12 +3670,7 @@ p.sc-price {
 
   body[data-page="home"] .sc-hero + .sc-section.sc-path-section {
     padding-bottom: 125px;
-    background: linear-gradient(
-      180deg,
-      #08090b 0%,
-      #08090b calc(100% - 90px),
-      var(--sc-wash) 100%
-    );
+    background: #08090b;
   }
 
   body[data-page="home"] .sc-hero.has-background-media .sc-hero-copy {
@@ -2317,11 +3716,6 @@ p.sc-price {
 
   .sc-detail-media {
     min-height: 240px;
-  }
-
-  .sc-cta .text-md-end {
-    margin-top: 24px;
-    text-align: left !important;
   }
 
   /* The homepage hero's photo panel is a hard-edged crop confined to the
@@ -2479,6 +3873,14 @@ p.sc-price {
   transform: none;
 }
 
+/* The reveal animation clears `transform` when it finishes, and that rule sits
+   later in the file than `.sc-card:hover` at identical specificity -- so once a
+   card had scrolled into view its hover lift was silently cancelled. Restoring
+   it here, after the reveal, puts the lift back on every revealed card.
+   Planned guide cards opt out again further down, which is intentional: there
+   is nothing to click. */
+.sc-card.is-visible:hover { transform: translateY(-5px); }
+
 @media (prefers-reduced-motion: reduce) {
   /* Same specificity as the .sc-nav-animating rules above (0,0,3,0), so
      this reliably wins the cascade instead of losing to them. */
@@ -2513,6 +3915,8 @@ p.sc-price {
 
   .sc-path-options .sc-card:hover,
   .sc-path-options .sc-card:focus-within,
+  .sc-card.sc-guide-card:hover,
+  .sc-card.sc-guide-card:focus-within,
   .sc-dash-tile:hover,
   .sc-dash-tile:has(:focus-visible),
   .sc-block:hover,
@@ -2524,11 +3928,158 @@ p.sc-price {
 }
 
 /* Homepage actions share one compact, control-panel treatment. */
+body.site-refresh .navbar .sc-nav-menu-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 12px;
+  color: rgba(255, 255, 255, 0.78);
+  background: none;
+  border: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+body.site-refresh .navbar .sc-nav-menu-toggle:hover,
+body.site-refresh .navbar .sc-nav-menu-toggle:focus-visible,
+body.site-refresh .navbar .sc-nav-menu-toggle.active,
+body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-toggle {
+  color: var(--sc-orange);
+}
+
+.sc-nav-menu-chevron {
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.16s ease;
+}
+
+.sc-nav-menu.is-open > .sc-nav-menu-toggle .sc-nav-menu-chevron {
+  transform: translateY(2px) rotate(225deg);
+}
+
+@media (min-width: 992px) {
+  .sc-nav-menu:hover > .sc-nav-menu-toggle .sc-nav-menu-chevron,
+  .sc-nav-menu:focus-within > .sc-nav-menu-toggle .sc-nav-menu-chevron {
+    transform: translateY(2px) rotate(225deg);
+  }
+}
+
+body.site-refresh .navbar .sc-nav-submenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  display: block;
+  min-width: 176px;
+  padding: 7px;
+  visibility: hidden;
+  opacity: 0;
+  background: rgba(14, 14, 15, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 11px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.38);
+  transform: translate(-50%, -6px);
+  pointer-events: none;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s;
+}
+
+/* Keep the hover target continuous between the banner link and the floating
+   panel. Without this invisible bridge, the menu closes while the pointer is
+   crossing the visual gap. */
+body.site-refresh .navbar .sc-nav-submenu::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 7px;
+}
+
+body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-submenu,
+body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-submenu,
+body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-submenu {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  body.site-refresh .navbar .sc-nav-menu-toggle {
+    padding-right: 9px;
+    padding-left: 9px;
+    font-size: 13px;
+  }
+}
+
+body.site-refresh .navbar .sc-nav-submenu a {
+  padding: 9px 11px;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+body.site-refresh .navbar .sc-nav-submenu a:hover,
+body.site-refresh .navbar .sc-nav-submenu a:focus-visible,
+body.site-refresh .navbar .sc-nav-submenu a.active {
+  color: #fff;
+  background: rgba(242, 138, 0, 0.14);
+}
+
+@media (max-width: 991px) {
+  body.site-refresh .navbar-mobile .sc-nav-menu-toggle {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 20px;
+    color: #f38908;
+    font-size: 15px;
+  }
+
+  body.site-refresh .navbar-mobile .sc-nav-submenu,
+  body.site-refresh .navbar-mobile .sc-nav-menu:hover > .sc-nav-submenu,
+  body.site-refresh .navbar-mobile .sc-nav-menu:focus-within > .sc-nav-submenu {
+    position: static;
+    display: none;
+    min-width: 0;
+    margin: 0 10px 6px;
+    padding: 4px;
+    visibility: visible;
+    opacity: 1;
+    background: rgba(242, 138, 0, 0.07);
+    border-color: rgba(242, 138, 0, 0.14);
+    box-shadow: none;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  body.site-refresh .navbar-mobile .sc-nav-submenu::before {
+    content: none;
+  }
+
+  body.site-refresh .navbar-mobile .sc-nav-menu.is-open > .sc-nav-submenu {
+    display: block;
+  }
+
+  body.site-refresh .navbar-mobile .sc-nav-submenu a {
+    padding: 9px 12px;
+    color: rgba(255, 255, 255, 0.78);
+  }
+}
+
 body.site-refresh .navbar .sc-contact-link {
   margin-left: 10px;
   padding: 8px 16px;
   border: 1px solid rgba(222, 121, 24, 0.58);
-  border-radius: 8px;
+  border-radius: var(--sc-radius-sm);
   background: rgba(10, 10, 10, 0.64);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -2574,7 +4125,7 @@ body.site-refresh .sc-hero-actions .sc-btn {
   min-height: 50px;
   padding: 11px 20px;
   border-width: 1px;
-  border-radius: 9px;
+  border-radius: var(--sc-radius-sm);
   font-size: 0.9rem;
   letter-spacing: 0.025em;
   box-shadow: none;
@@ -2630,33 +4181,11 @@ body.site-refresh .sc-hero-actions .sc-btn-ghost:hover {
   transform: translateY(-2px);
 }
 
-body.site-refresh .sc-cta .sc-btn {
-  min-width: 184px;
-  border: 1px solid rgba(255, 255, 255, 0.92);
-  border-radius: 9px;
-  color: #21150b !important;
-  background: #fff;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 12px 28px rgba(72, 28, 0, 0.22);
-  letter-spacing: 0.02em;
-}
-
-body.site-refresh .sc-cta .sc-btn:hover {
-  color: #fff !important;
-  border-color: #ffbd68;
-  background: #1a1410;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 138, 0, 0.18),
-    0 14px 32px rgba(72, 28, 0, 0.3);
-  transform: translateY(-2px);
-}
-
 @media (max-width: 991px) {
   body.site-refresh .navbar .sc-contact-link {
     margin: 8px;
     padding: 10px 12px;
-    border-radius: 8px;
+    border-radius: var(--sc-radius-sm);
     background: rgba(10, 10, 10, 0.64);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -2751,8 +4280,7 @@ body.site-refresh .sc-cta .sc-btn:hover {
     align-items: stretch;
   }
 
-  body.site-refresh .sc-hero-actions .sc-btn,
-  body.site-refresh .sc-cta .sc-btn {
+  body.site-refresh .sc-hero-actions .sc-btn {
     width: 100%;
   }
 
@@ -2813,14 +4341,13 @@ body.site-refresh .sc-cta .sc-btn:hover {
 @media (prefers-reduced-motion: reduce) {
   body.site-refresh .navbar .sc-contact-link,
   body.site-refresh .sc-hero-actions .sc-btn,
-  body.site-refresh .sc-hero-actions .sc-btn-primary i,
-  body.site-refresh .sc-cta .sc-btn {
+  body.site-refresh .sc-hero-actions .sc-btn-primary i {
     transition: none;
   }
 }
 
-/* Material interactions: energized hero and support controls, plus a final
-   CTA that closes like a powered gate. */
+/* Material interactions: energized hero and support controls. The closing
+   section reuses the hero's buttons, so it inherits these too. */
 body.site-refresh .navbar .sc-contact-link,
 body.site-refresh .sc-hero-actions .sc-btn-ghost {
   position: relative;
@@ -2830,8 +4357,7 @@ body.site-refresh .sc-hero-actions .sc-btn-ghost {
 
 body.site-refresh .navbar .sc-contact-link > span,
 body.site-refresh .sc-hero-actions .sc-btn > span,
-body.site-refresh .sc-hero-actions .sc-btn > i,
-body.site-refresh .sc-cta .sc-btn > span {
+body.site-refresh .sc-hero-actions .sc-btn > i {
   position: relative;
   z-index: 2;
 }
@@ -2972,53 +4498,11 @@ body.site-refresh .sc-hero-actions .sc-btn-ghost:hover {
     rgba(10, 10, 10, 0.7);
 }
 
-body.site-refresh .sc-cta .sc-btn {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-}
-
-body.site-refresh .sc-cta .sc-btn::before {
-  position: absolute;
-  z-index: 0;
-  inset: -1px;
-  background:
-    linear-gradient(135deg, #21150b 0%, #2c190d 54%, #6e2a00 100%);
-  content: "";
-  transform: translateX(-104%);
-  transition: transform 0.48s cubic-bezier(0.22, 0.74, 0.2, 1);
-}
-
-body.site-refresh .sc-cta .sc-btn::after {
-  position: absolute;
-  z-index: 1;
-  right: 8px;
-  bottom: 5px;
-  left: 8px;
-  height: 2px;
-  background: linear-gradient(90deg, #ff8a00, #ffd18f);
-  box-shadow: 0 0 9px rgba(255, 138, 0, 0.7);
-  content: "";
-  transform: scaleX(0.24);
-  transform-origin: left;
-  transition: transform 0.48s cubic-bezier(0.22, 0.74, 0.2, 1);
-}
-
-body.site-refresh .sc-cta .sc-btn:hover::before {
-  transform: translateX(0);
-}
-
-body.site-refresh .sc-cta .sc-btn:hover::after {
-  transform: scaleX(1);
-}
-
 @media (prefers-reduced-motion: reduce) {
   body.site-refresh .navbar .sc-contact-link::before,
   body.site-refresh .navbar .sc-contact-link::after,
   body.site-refresh .sc-hero-actions .sc-btn::before,
-  body.site-refresh .sc-hero-actions .sc-btn::after,
-  body.site-refresh .sc-cta .sc-btn::before,
-  body.site-refresh .sc-cta .sc-btn::after {
+  body.site-refresh .sc-hero-actions .sc-btn::after {
     animation: none;
     transition: none;
   }
@@ -3235,7 +4719,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   gap: 9px;
   padding: 7px 15px;
   border: 1px solid var(--sc-line);
-  border-radius: 999px;
+  border-radius: var(--sc-radius-sm);
   background: rgba(255, 255, 255, 0.03);
   color: var(--sc-muted);
   font-size: 0.82rem;
@@ -3579,7 +5063,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-chart-zoom-hint {
   padding: 5px 9px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
+  border-radius: var(--sc-radius-xs);
   color: rgba(255, 255, 255, 0.5);
   background: rgba(8, 9, 11, 0.62);
   font-size: 0.68rem;
@@ -3604,7 +5088,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   gap: 5px;
   padding: 6px 10px;
   border: 1px solid rgba(255, 138, 0, 0.38);
-  border-radius: 999px;
+  border-radius: var(--sc-radius-xs);
   color: #ffd39a;
   background: rgba(20, 13, 7, 0.88);
   font-size: 0.7rem;
@@ -3642,7 +5126,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   height: 5px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 999px;
+  border-radius: 2px;
   background: rgba(255, 255, 255, 0.07);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.38);
 }
@@ -3669,7 +5153,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-chart-zoom-pan:focus-visible {
   outline: 2px solid var(--sc-orange);
   outline-offset: 2px;
-  border-radius: 999px;
+  border-radius: 2px;
 }
 
 .sc-chart.is-measuring.is-gain .sc-chart-tip {
@@ -3971,7 +5455,7 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 .sc-dash-bar {
   height: 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   background: rgba(255, 255, 255, 0.07);
   overflow: hidden;
 }
@@ -5440,4 +6924,1803 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   .sc-dash-bar > span,
   .sc-block-kicker,
   .sc-block-age { transition: none; }
+}
+
+/* ==========================================================================
+   Guide library
+   guides.html (hub, finder, cards) and docs/guides/*.html (the guides).
+   ========================================================================== */
+
+/* Jump links between the hero and the finder. Horizontally scrollable rather
+   than wrapping on narrow screens, so the row stays one line and the section
+   order stays legible. */
+.sc-guide-nav {
+  padding: 22px 0;
+  background: var(--sc-paper);
+  border-bottom: 1px solid rgba(110, 105, 94, 0.4);
+}
+
+.sc-guide-nav ul {
+  display: flex;
+  gap: 10px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 12px;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.sc-guide-nav ul::-webkit-scrollbar { display: none; }
+
+.sc-guide-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  color: var(--sc-ink);
+  white-space: nowrap;
+  background: var(--sc-surface);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius-sm);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.site-refresh .sc-guide-nav a:hover {
+  color: #fff;
+  background: rgba(255, 138, 0, 0.16);
+  border-color: var(--sc-orange);
+  text-decoration: none;
+}
+
+.sc-guide-nav-count {
+  padding: 1px 8px;
+  color: var(--sc-paper);
+  background: var(--sc-ink-soft);
+  border-radius: var(--sc-radius-xs);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+/* ---- the finder --------------------------------------------------------
+   Carries `hidden` in the markup and is revealed by site-refresh.js, so the
+   chips never appear as dead controls when JavaScript is unavailable. */
+
+.sc-finder {
+  display: grid;
+  gap: 26px;
+  padding: 30px;
+  background: var(--sc-surface);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-finder-q {
+  min-width: 0;   /* fieldsets default to min-content, which breaks the scroll */
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.sc-finder-q + .sc-finder-q {
+  padding-top: 24px;
+  border-top: 1px solid rgba(110, 105, 94, 0.35);
+}
+
+.sc-finder-q legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  float: none;    /* Bootstrap Reboot floats legends and forces 100% width */
+  width: auto;
+  margin-bottom: 16px;
+  color: var(--sc-ink);
+  font-family: "Jost", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.sc-finder-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--sc-paper);
+  background: var(--sc-orange);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.sc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sc-chip-groups {
+  display: grid;
+  gap: 20px;
+}
+
+.sc-chip-group h4 {
+  margin: 0 0 10px;
+  color: var(--sc-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 8px 16px;
+  color: var(--sc-ink);
+  background: transparent;
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius-sm);
+  font-size: 0.93rem;
+  font-weight: 600;
+  transition: 0.18s ease;
+}
+
+.sc-chip:hover {
+  color: #fff;
+  border-color: var(--sc-orange);
+}
+
+.sc-chip i { color: var(--sc-link); }
+
+.sc-chip-logo {
+  display: grid;
+  flex: 0 0 28px;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 3px;
+  overflow: hidden;
+  background: #f7f5f1;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+}
+
+.sc-chip-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sc-chip:is(
+  [data-finder-value="coldcard"],
+  [data-finder-value="seedsigner"],
+  [data-finder-value="tapsigner"],
+  [data-finder-value="satscard"]
+) .sc-chip-logo {
+  flex-basis: 58px;
+  width: 58px;
+  padding-inline: 5px;
+}
+
+.sc-chip[data-finder-value="unchained"] .sc-chip-logo {
+  background: #151515;
+}
+
+.sc-chip[aria-pressed="true"] {
+  color: var(--sc-paper);
+  background: var(--sc-orange);
+  border-color: var(--sc-orange);
+  font-weight: 700;
+}
+
+.sc-chip[aria-pressed="true"] i { color: var(--sc-paper); }
+
+.sc-finder-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(110, 105, 94, 0.35);
+}
+
+.sc-finder-count {
+  margin: 0;
+  color: var(--sc-ink);
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.sc-finder-count strong { color: var(--sc-link); }
+
+.sc-finder-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  color: var(--sc-ink-soft);
+  background: transparent;
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: 0.18s ease;
+}
+
+.sc-finder-clear:hover {
+  color: #fff;
+  border-color: var(--sc-orange);
+}
+
+/* Lives inside .sc-finder now, as a grid item alongside the chip fieldsets
+   and the count bar -- so results sit with the controls that produced them
+   instead of spilling out below the box. .sc-finder's own `gap: 26px`
+   already spaces it from the bar above; the padding-top/border-top here
+   match the same divider convention .sc-finder-bar and .sc-finder-q use, not
+   an extra margin stacked on top of the grid gap.
+
+   Filled in with the actual matching guide card(s), cloned straight from the
+   grid below rather than rebuilt as a text list -- no separate "Start here"
+   framing needed, the card already carries its own title, summary, and
+   "Read guide" link. No boxed callout around it either: the card supplies
+   its own border and background, so a second frame here would just be
+   padding around padding. */
+.sc-finder-pick {
+  padding-top: 22px;
+  border-top: 1px solid rgba(110, 105, 94, 0.35);
+}
+
+/* .sc-guides-empty already has its own dashed-card treatment defined further
+   down for the "nothing matches" state -- that rule wins the cascade as-is
+   (same specificity, later in the file) and reads fine as a grid item here
+   too, so it's left untouched rather than fighting it with a second,
+   dead-on-arrival definition. */
+
+
+/* ---- guide cards -------------------------------------------------------- */
+
+.sc-guide-card { display: block; }
+
+.sc-guide-card .sc-card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sc-guide-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sc-guide-card-top .sc-icon { margin-bottom: 0; }
+
+.sc-guide-card-brand {
+  display: grid;
+  flex: 0 0 48px;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #f9f7f3, #e9e5de);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+}
+
+.sc-guide-card-brand img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sc-guide-card-brand:is(
+  .sc-guide-card-brand-coldcard,
+  .sc-guide-card-brand-seedsigner,
+  .sc-guide-card-brand-tapsigner,
+  .sc-guide-card-brand-satscard
+) {
+  flex-basis: 110px;
+  width: 110px;
+  padding-inline: 8px;
+}
+
+.sc-guide-card-brand-seedsigner img,
+.sc-chip[data-finder-value="seedsigner"] .sc-chip-logo img {
+  object-fit: contain;
+}
+
+.sc-guide-card-brand-coldcard {
+  padding-inline: 3px;
+}
+
+.sc-chip[data-finder-value="coldcard"] .sc-chip-logo {
+  padding-inline: 2px;
+}
+
+.sc-guide-card-brand-coldcard img,
+.sc-chip[data-finder-value="coldcard"] .sc-chip-logo img {
+  transform: scale(1.04);
+}
+
+.sc-guide-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+/* Sits on the bottom border rather than breaking the top one: no bottom edge
+   of its own, so the card's own border continues straight through it. */
+.sc-guide-card-featured {
+  position: absolute;
+  z-index: 2;
+  right: 22px;
+  bottom: -1px;
+  padding: 6px 10px 7px;
+  color: #ffb04a;
+  background: #33220f;
+  border: 1px solid rgba(242, 138, 0, 0.38);
+  border-bottom: 0;
+  border-radius: 7px 7px 0 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.sc-guide-card.is-featured .sc-card-body { padding-bottom: 46px; }
+
+.sc-guide-card.is-featured {
+  position: relative;
+  background:
+    radial-gradient(circle at 100% 0, rgba(242, 138, 0, 0.13), transparent 46%),
+    var(--sc-surface);
+  border-color: rgba(242, 138, 0, 0.7);
+  box-shadow: 0 18px 46px rgba(242, 138, 0, 0.075);
+}
+
+.sc-guide-card.is-featured:hover,
+.sc-guide-card.is-featured.is-visible:hover {
+  border-color: rgba(255, 166, 54, 0.9);
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.38),
+    0 0 16px rgba(255, 255, 255, 0.3),
+    0 0 42px rgba(255, 186, 84, 0.42),
+    0 0 76px rgba(255, 138, 0, 0.2),
+    inset 0 0 20px rgba(255, 226, 184, 0.05);
+  transform: none;
+  translate: 0 -10px;
+  scale: 1.012;
+}
+
+.sc-guide-card h3 { font-size: 1.18rem; }
+
+.sc-guide-card p { font-size: 0.97rem; }
+
+.sc-guide-card .sc-tags { margin-top: auto; padding-top: 12px; }
+
+/* The related-guides cards skip the tags row the hub cards have, so there is
+   no element carrying `margin-top: auto` to push "Read guide" to the bottom --
+   .sc-card-body is already a flex column (see .sc-guide-card above), it just
+   had nothing telling it where the gap should go. Scoped to this section only,
+   so it doesn't touch the hub cards' own .sc-tags-based spacing. */
+.sc-related-guides .sc-text-link,
+.sc-related-guides .sc-guide-card-soon {
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.sc-guide-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 12px 0 14px;
+  color: var(--sc-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.sc-guide-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* The shortlist cards on devices.html set their own box-shadow at the same
+   specificity as `.sc-card:hover` but later in the file, so their depth
+   survives the hover instead of being swapped for `--sc-shadow`, which is
+   almost invisible against a dark surface. Guide cards had no such rule, so
+   they flattened out on hover. This restores the same depth and adds the warm
+   glow to match, on the same 0.22s ease inherited from `.sc-card`.
+   Featured and planned cards override this below at higher specificity. */
+/* Planned guides are listed rather than hidden: the roadmap is the point, and
+   a visitor can see their device is coming instead of concluding it is absent.
+   No link, no hover lift -- nothing here is clickable yet. */
+.sc-guide-card.is-planned {
+  border-style: dashed;
+  opacity: 0.72;
+}
+
+.sc-guide-card.is-planned:hover,
+.sc-guide-card.is-planned.is-visible:hover {
+  border-color: var(--sc-line);
+  box-shadow: 0 10px 30px rgba(28, 28, 28, 0.045);
+  transform: none;
+  translate: none;
+  scale: none;
+}
+
+.sc-guide-card-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--sc-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.sc-level {
+  flex-shrink: 0;
+  padding: 4px 11px;
+  border: 1px solid transparent;
+  border-radius: var(--sc-radius-xs);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sc-level-beginner {
+  color: #7fe0c0;
+  background: rgba(53, 180, 138, 0.14);
+  border-color: rgba(53, 180, 138, 0.45);
+}
+
+.sc-level-intermediate {
+  color: #ffc073;
+  background: rgba(255, 138, 0, 0.14);
+  border-color: rgba(255, 138, 0, 0.5);
+}
+
+.sc-level-advanced {
+  color: #ff9d8a;
+  background: rgba(214, 94, 64, 0.16);
+  border-color: rgba(214, 94, 64, 0.55);
+}
+
+.sc-guides-empty {
+  margin: 8px 0 0;
+  padding: 26px;
+  color: var(--sc-muted);
+  text-align: center;
+  background: var(--sc-surface);
+  border: 1px dashed var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-section-head-aside { margin: 14px 0 0; }
+
+/* ---- guide pages -------------------------------------------------------- */
+
+/* Stands in for .sc-hero on a guide: same top clearance for the fixed header,
+   none of the height, because step one should be close to the fold. */
+.sc-guide-head {
+  padding: 142px 0 44px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255, 138, 0, 0.16), transparent 38%),
+    linear-gradient(135deg, #202020, #303030);
+}
+
+.sc-guide-head h1 {
+  margin: 0 0 16px;
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+}
+
+.sc-guide-head .sc-lead { max-width: 760px; }
+
+.sc-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.sc-breadcrumb a {
+  color: var(--sc-ink-soft);
+  text-decoration: none;
+}
+
+.site-refresh .sc-breadcrumb a:hover {
+  color: var(--sc-link);
+  text-decoration: none;
+}
+
+.sc-breadcrumb i {
+  color: var(--sc-muted);
+  font-size: 0.78rem;
+}
+
+.sc-guide-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: 22px 0 18px;
+  color: var(--sc-ink-soft);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.sc-guide-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sc-guide-product-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin: 20px 0 0;
+}
+
+/* "Before you start". Deliberately not a .sc-callout -- it is a checklist to
+   work through, not a warning to read, and it should not compete with the
+   cautions further down the page. */
+.sc-guide-prereq {
+  margin-bottom: 34px;
+  padding: 30px 34px;
+  background: var(--sc-surface);
+  border: 1px solid var(--sc-line);
+  border-left: 5px solid var(--sc-success);
+  border-radius: var(--sc-radius);
+}
+
+.sc-guide-prereq h2 {
+  margin: 0 0 12px;
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.sc-guide-prereq ul { margin-bottom: 0; }
+
+.sc-guide-intro {
+  max-width: 820px;
+  margin-bottom: 32px;
+  color: var(--sc-ink);
+  font-size: 1.12rem;
+  line-height: 1.7;
+}
+
+/* The section above (article body, or related guides) already ends in its own
+   86px .sc-section bottom padding, so this section's own top padding was
+   stacking on top of that rather than replacing it -- cut hard here since the
+   spacing above the box was doing double duty. Bottom trimmed too, since the
+   box's own internal padding already gives the content room to breathe. */
+.sc-guide-foot {
+  position: relative;
+  overflow: hidden;
+  padding: 4px 0 24px;
+  background: var(--sc-paper);
+}
+
+.sc-guide-foot > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* .sc-guide-foot's own padding is already down to 4px/24px, so the space
+   around the box was coming from its neighbours: .sc-guide-body and
+   .sc-related-guides both carry .sc-section's 86px, and all four sections
+   share the same background, so there is no band edge to break the run --
+   it reads as one 90px gap above and 110px below. Trimming the two
+   adjacent edges is the only thing that actually moves it. Scoped to the
+   guide-page classes, so .sc-section stays 86px everywhere else. */
+.sc-guide-body { padding-bottom: 52px; }
+
+.sc-related-guides { padding-top: 36px; }
+
+.sc-guide-next {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 46px;
+  overflow: hidden;
+  padding: clamp(28px, 3.5vw, 40px);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.016) 58%),
+    rgba(10, 10, 11, 0.92);
+  border: 1px solid rgba(242, 138, 0, 0.28);
+  border-radius: calc(var(--sc-radius) + 4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 70px rgba(242, 138, 0, 0.045);
+  isolation: isolate;
+}
+
+.sc-guide-next::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--sc-orange) 25%, #ffc66e 50%, var(--sc-orange) 75%, transparent);
+  box-shadow: 0 0 28px rgba(242, 138, 0, 0.42);
+}
+
+.sc-guide-next::after {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  top: -120px;
+  right: -80px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(242, 138, 0, 0.13), transparent 66%);
+  pointer-events: none;
+}
+
+.sc-guide-next-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 650px;
+}
+
+.sc-guide-next-copy h2 {
+  margin: 10px 0 12px;
+  color: #fff;
+  font-size: clamp(2rem, 4vw, 3.15rem);
+  line-height: 1.05;
+}
+
+.sc-guide-next-copy p {
+  max-width: 62ch;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.67);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.sc-guide-next-actions {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  margin: 0;
+}
+
+body.site-refresh .sc-guide-next-actions .sc-btn {
+  min-width: 142px;
+}
+
+.sc-guide-next-mark {
+  position: absolute;
+  z-index: 0;
+  right: 22px;
+  bottom: -54px;
+  display: flex;
+  gap: 8px;
+  opacity: 0.08;
+  transform: scale(3.2);
+  transform-origin: right bottom;
+  pointer-events: none;
+}
+
+.sc-guide-next-mark span {
+  width: 17px;
+  height: 17px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+.sc-guide-next-mark span:nth-child(1) { border-color: #e93338; }
+.sc-guide-next-mark span:nth-child(2) { border-color: #e8ddc5; }
+.sc-guide-next-mark span:nth-child(3) { border-color: #35b48a; }
+.sc-guide-next-mark span:nth-child(4) { border-color: var(--sc-orange); }
+
+.sc-related-guides {
+  position: relative;
+  background: var(--sc-paper);
+  border: 0;
+}
+
+.sc-related-guides > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* A seed plate is a two-way material choice, so it reads better as a pair
+   of fitted decision cards than as a horizontally scrolling data table. */
+.sc-metal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 2em 0 2.35em;
+}
+
+.sc-metal-option {
+  --metal-accent: var(--sc-orange);
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--metal-accent) 14%, transparent), transparent 48%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018));
+  border: 1px solid color-mix(in srgb, var(--metal-accent) 38%, var(--sc-line));
+  border-radius: var(--sc-radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.sc-metal-option.is-modular { --metal-accent: #d9c28f; }
+
+.sc-metal-option::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--metal-accent), transparent 72%);
+  content: "";
+}
+
+.sc-metal-option-head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 18px;
+}
+
+.sc-metal-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  color: var(--metal-accent);
+  background: color-mix(in srgb, var(--metal-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--metal-accent) 34%, transparent);
+  border-radius: 11px;
+}
+
+.sc-metal-option h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.06rem;
+  line-height: 1.3;
+}
+
+.sc-metal-option dl { margin: 0; }
+
+.sc-metal-option dl > div {
+  padding: 13px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sc-metal-option dt {
+  margin-bottom: 4px;
+  color: var(--metal-accent);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.sc-metal-option dd {
+  margin: 0;
+  color: var(--sc-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+/* Keys and UTXOs: pair each surprising wallet behaviour directly with the
+   underlying rule, without forcing the reader through a spreadsheet. */
+.sc-consequence-map {
+  overflow: hidden;
+  margin: 2em 0 2.35em;
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.sc-consequence-head,
+.sc-consequence-map article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+  align-items: center;
+}
+
+.sc-consequence-head {
+  padding: 13px 20px;
+  color: var(--sc-orange);
+  background: rgba(242, 138, 0, 0.07);
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sc-consequence-head span:last-child { grid-column: 3; }
+
+.sc-consequence-map article {
+  min-height: 92px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.018);
+  border-top: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.sc-consequence-map article:nth-of-type(even) { background: rgba(255, 255, 255, 0.032); }
+
+.sc-consequence-map h3,
+.sc-consequence-map p { margin: 0; }
+
+.sc-consequence-map h3 {
+  color: #fff;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
+.sc-consequence-map article > i {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-self: center;
+  place-items: center;
+  color: var(--sc-orange);
+  background: rgba(242, 138, 0, 0.08);
+  border: 1px solid rgba(242, 138, 0, 0.2);
+  border-radius: 50%;
+}
+
+.sc-consequence-map p {
+  color: var(--sc-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+/* First setup: four destinations, expressed as fitted decision cards. */
+.sc-first-setup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 2em 0 2.35em;
+}
+
+.sc-first-setup-grid article {
+  --setup-path-accent: #62aeea;
+  position: relative;
+  overflow: hidden;
+  min-height: 270px;
+  padding: 23px;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--setup-path-accent) 15%, transparent), transparent 48%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.016));
+  border: 1px solid color-mix(in srgb, var(--setup-path-accent) 36%, var(--sc-line));
+  border-radius: var(--sc-radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.sc-first-setup-grid article::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--setup-path-accent), transparent 72%);
+  content: "";
+}
+
+.sc-first-setup-grid .is-learn { --setup-path-accent: #35b48a; }
+.sc-first-setup-grid .is-save { --setup-path-accent: var(--sc-orange); }
+.sc-first-setup-grid .is-scale { --setup-path-accent: #d9c28f; }
+.sc-first-setup-grid .is-recover { --setup-path-accent: #a892e8; }
+
+.sc-first-setup-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sc-first-setup-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: var(--setup-path-accent);
+  background: color-mix(in srgb, var(--setup-path-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--setup-path-accent) 32%, transparent);
+  border-radius: 11px;
+}
+
+.sc-first-setup-stage {
+  padding: 5px 9px;
+  color: var(--setup-path-accent);
+  background: color-mix(in srgb, var(--setup-path-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--setup-path-accent) 26%, transparent);
+  border-radius: 999px;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sc-first-setup-grid .sc-first-setup-fit {
+  min-height: 48px;
+  margin: 0 0 11px;
+  color: var(--sc-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.sc-first-setup-grid h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-size: 1.08rem;
+  line-height: 1.35;
+}
+
+.sc-first-setup-grid article > p:last-child {
+  margin: 0;
+  color: var(--sc-ink-soft);
+  font-size: 0.87rem;
+  line-height: 1.58;
+}
+
+/* Exchange security: a visible progression from a fragile recovery channel
+   to phishing-resistant hardware authentication. */
+.sc-auth-ladder {
+  display: grid;
+  gap: 10px;
+  margin: 2em 0 2.35em;
+}
+
+.sc-auth-ladder article {
+  --auth-accent: var(--sc-orange);
+  display: grid;
+  grid-template-columns: 60px 155px minmax(0, 1fr) 150px;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+  padding: 17px 18px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--auth-accent) 9%, transparent), rgba(255, 255, 255, 0.018) 45%);
+  border: 1px solid color-mix(in srgb, var(--auth-accent) 32%, var(--sc-line));
+  border-radius: var(--sc-radius-sm);
+}
+
+.sc-auth-ladder .is-weak { --auth-accent: #d65e40; }
+.sc-auth-ladder .is-good { --auth-accent: var(--sc-orange); }
+.sc-auth-ladder .is-best { --auth-accent: #35b48a; }
+
+.sc-auth-rank {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 7px;
+  color: var(--auth-accent);
+}
+
+.sc-auth-rank span {
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+  opacity: 0.68;
+}
+
+.sc-auth-rank i {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  background: color-mix(in srgb, var(--auth-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--auth-accent) 28%, transparent);
+  border-radius: 9px;
+}
+
+.sc-auth-method span,
+.sc-auth-detail span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--auth-accent);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sc-auth-method h3,
+.sc-auth-detail p { margin: 0; }
+
+.sc-auth-method h3 {
+  color: #fff;
+  font-size: 0.96rem;
+  line-height: 1.35;
+}
+
+.sc-auth-detail p {
+  color: var(--sc-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.sc-auth-ladder article > strong {
+  padding: 8px 10px;
+  color: var(--auth-accent);
+  background: color-mix(in srgb, var(--auth-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--auth-accent) 24%, transparent);
+  border-radius: 9px;
+  font-size: 0.73rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@media (max-width: 767.98px) {
+  .sc-finder { padding: 22px 20px; }
+  .sc-guide-head { padding: 124px 0 36px; }
+  .sc-guide-prereq { padding: 24px 22px; }
+  .sc-guide-foot { padding: 4px 0 20px; }
+  .sc-guide-next { grid-template-columns: 1fr; gap: 22px; padding: 26px 22px; }
+  .sc-guide-next-actions { justify-content: flex-start; }
+  body.site-refresh .sc-guide-next-actions .sc-btn { min-width: 0; }
+  .sc-guide-next-mark { right: 12px; opacity: 0.055; transform: scale(2.4); }
+  .sc-metal-grid { grid-template-columns: 1fr; }
+  .sc-metal-option { padding: 22px 20px; }
+  .sc-consequence-head { display: none; }
+  .sc-consequence-map article { grid-template-columns: 1fr; gap: 10px; padding: 19px; }
+  .sc-consequence-map article > i { place-self: start; transform: rotate(90deg); }
+  .sc-first-setup-grid { grid-template-columns: 1fr; }
+  .sc-first-setup-grid article { min-height: 0; padding: 22px 20px; }
+  .sc-first-setup-grid .sc-first-setup-fit { min-height: 0; }
+  .sc-auth-ladder article { grid-template-columns: 52px minmax(0, 1fr); gap: 13px; padding: 17px; }
+  .sc-auth-detail,
+  .sc-auth-ladder article > strong { grid-column: 2; }
+  .sc-auth-ladder article > strong { justify-self: start; text-align: left; }
+}
+
+@media (min-width: 768px) {
+  .sc-chip-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sc-chip-group-collaborative { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-chip,
+  .sc-finder-clear,
+  .sc-guide-nav a { transition: none; }
+}
+
+/* ==========================================================================
+   Guide articles
+   The prose layout, for guides that explain rather than instruct. Step-by-step
+   guides keep the numbered .sc-detail boxes; these read as an article.
+   ========================================================================== */
+
+/* A measure, not a container. Long-form prose across a 1320px container is
+   unreadable, so the article caps itself at a comfortable line length and
+   lets figures break wider. */
+.sc-article {
+  max-width: 760px;
+  margin: 0 auto;
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.sc-article > p {
+  margin: 0 0 1.35em;
+  color: var(--sc-ink);
+}
+
+/* Section headings have to win against a long column of prose set in the same
+   near-white ink. Three things separate them: a rule that closes the previous
+   section, a step up to pure white, and an orange number hung to the left. */
+.sc-article > h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 2.6em 0 0.75em;
+  padding-top: 1.15em;
+  color: #fff;
+  border-top: 1px solid rgba(110, 105, 94, 0.4);
+  font-size: clamp(1.55rem, 2.6vw, 2rem);
+  line-height: 1.25;
+}
+
+.sc-article > h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Hung in the gutter on wide screens so the headings themselves stay aligned
+   with the body text, and the numbers read as a column of their own. */
+.sc-article-num {
+  flex-shrink: 0;
+  color: var(--sc-orange);
+  font-size: 0.86em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-article-num::after {
+  content: ".";
+  color: rgba(255, 138, 0, 0.45);
+}
+
+@media (min-width: 1200px) {
+  .sc-article > h2 { gap: 0; }
+  .sc-article-num {
+    width: 52px;
+    margin-left: -52px;
+  }
+}
+
+.sc-article > h3 {
+  margin: 1.8em 0 0.6em;
+  font-size: 1.25rem;
+}
+
+.sc-article > .sc-guide-intro {
+  margin-bottom: 1.5em;
+  font-size: 1.24rem;
+  line-height: 1.6;
+}
+
+.sc-article > .sc-callout,
+.sc-article > .sc-guide-prereq { margin: 2em 0; }
+
+.sc-article > ul { margin: 0 0 1.6em; }
+
+.sc-article > .sc-source-note { margin-top: 3em; }
+
+/* Figures are allowed to break out of the measure -- an image or a chart
+   pinned to the text column looks cramped, and the chart in particular needs
+   the width to keep its five groups legible. */
+.sc-figure {
+  margin: 2.4em 0;
+}
+
+.sc-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-figure figcaption {
+  margin-top: 12px;
+  color: var(--sc-muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+@media (min-width: 992px) {
+  .sc-article > .sc-figure {
+    width: calc(100% + 140px);
+    margin-left: -70px;
+  }
+}
+
+/* An image that has not been shot yet. The frame states what the picture
+   should be, so the gap doubles as the brief for filling it. */
+.sc-figure-slot-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px;
+  text-align: center;
+  background: var(--sc-surface);
+  border: 2px dashed var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-figure-slot-frame i {
+  color: var(--sc-line);
+  font-size: 2rem;
+}
+
+.sc-figure-slot-shot {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--sc-ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.sc-figure-slot-note {
+  margin: 0;
+  color: var(--sc-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sc-pull-quote {
+  margin: 2.2em 0;
+  padding: 4px 0 4px 26px;
+  border-left: 4px solid var(--sc-orange);
+}
+
+.sc-pull-quote p {
+  margin: 0;
+  color: var(--sc-ink);
+  font-family: "Jost", sans-serif;
+  font-size: 1.32rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+/* ---- the entropy chart --------------------------------------------------
+   Series colours are stepped into the dark-mode lightness band and checked for
+   colour-vision separation; see the note in build/guides.mjs. Identity is
+   carried by the legend and by direct labels on the end groups, never by hue
+   alone. Text never wears a series colour. */
+
+.sc-chart-figure {
+  padding: 26px 24px 20px;
+  background: var(--sc-surface);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-bottom: 18px;
+  color: var(--sc-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.sc-chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sc-chart-key {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.sc-chart-key-24 { background: #d96f00; }
+.sc-chart-key-12 { background: #2e9e78; }
+
+.sc-chart-key-line {
+  height: 0;
+  border-top: 2px dashed var(--sc-muted);
+  border-radius: 0;
+}
+
+.sc-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sc-chart-bar-24 { fill: #d96f00; }
+.sc-chart-bar-12 { fill: #2e9e78; }
+
+.sc-chart-grid,
+.sc-chart-axis {
+  stroke: rgba(110, 105, 94, 0.55);
+  stroke-width: 1;
+}
+
+.sc-chart-axis { stroke: var(--sc-line); }
+
+.sc-chart-threshold {
+  stroke: var(--sc-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 5;
+}
+
+.sc-chart-axis-text {
+  fill: var(--sc-muted);
+  font-family: "Open Sans", sans-serif;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-chart-threshold-text {
+  fill: var(--sc-ink-soft);
+  font-family: "Open Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-chart-axis-title {
+  fill: var(--sc-muted);
+  font-family: "Open Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sc-chart-value {
+  fill: var(--sc-ink);
+  font-family: "Open Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-chart-figure .sc-table-wrap { margin-top: 22px; }
+
+.sc-chart-figure table caption {
+  padding-bottom: 10px;
+  color: var(--sc-muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+@media (max-width: 767.98px) {
+  .sc-article { font-size: 1.02rem; }
+  .sc-article > .sc-guide-intro { font-size: 1.12rem; }
+  .sc-pull-quote { padding-left: 18px; }
+  .sc-pull-quote p { font-size: 1.14rem; }
+  .sc-chart-figure { padding: 18px 14px 14px; }
+}
+
+.sc-chart-value.is-inside { fill: var(--sc-paper); }
+
+/* Footer row on a product's card: the official-site link anchored bottom
+   left, the guide button (if any) anchored bottom right. Replaces having
+   the official-site link buried in the running copy and the full-width
+   orange guide banner that used to sit under it. */
+.sc-detail-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+/* Guide links inside a product's entry on devices/software/exchanges.
+   Rendered only where that product has a published guide -- see
+   productGuideLinks() in build/guides.mjs -- so this block never appears
+   empty and never promises a page that is still being written.
+
+   Same pill shape and weight as the official-site link next to it in
+   .sc-detail-footer (see the .sc-device-details/.sc-software-details
+   overrides above), just carrying the brand orange instead of neutral
+   grey so the two stay visually distinct. Title, level, and length live
+   in the link's title/aria-label instead of on the page. */
+.sc-product-guides {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ---- concept diagrams ---------------------------------------------------
+   Inline SVG, styled here rather than inline so the palette stays in one
+   place. Semantic colours are the same red and green the level badges use,
+   so a reader meets one vocabulary across the site. */
+.sc-diagram-figure {
+  padding: 22px;
+  background: var(--sc-surface);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+}
+
+.sc-dg-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sc-dg-panel {
+  fill: rgba(255, 255, 255, 0.02);
+  stroke: var(--sc-line);
+  stroke-width: 1;
+}
+
+.sc-dg-panel-risk { stroke: rgba(214, 94, 64, 0.55); }
+.sc-dg-panel-safe { stroke: rgba(53, 180, 138, 0.45); }
+
+.sc-dg-panel-flag {
+  fill: rgba(255, 138, 0, 0.07);
+  stroke: rgba(255, 138, 0, 0.4);
+}
+
+/* The dashed enclosure is the point of the top panel: both objects sit inside
+   one boundary, so one event reaches both. */
+.sc-dg-zone {
+  fill: none;
+  stroke: rgba(214, 94, 64, 0.5);
+  stroke-width: 1;
+  stroke-dasharray: 5 4;
+}
+
+.sc-dg-zone-label {
+  fill: #ff9d8a;
+  font-family: "Open Sans", sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.sc-dg-box {
+  fill: var(--sc-paper);
+  stroke: var(--sc-line);
+  stroke-width: 1;
+}
+
+.sc-dg-box-accent {
+  fill: rgba(53, 180, 138, 0.12);
+  stroke: rgba(53, 180, 138, 0.6);
+}
+
+.sc-dg-box-title {
+  fill: var(--sc-ink);
+  font-family: "Open Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sc-dg-box-sub {
+  fill: var(--sc-muted);
+  font-family: "Open Sans", sans-serif;
+  font-size: 11px;
+}
+
+.sc-dg-line {
+  fill: none;
+  stroke: var(--sc-line);
+  stroke-width: 1.5;
+}
+
+.sc-dg-panel-title {
+  fill: #fff;
+  font-family: "Jost", sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.sc-dg-panel-sub,
+.sc-dg-note {
+  fill: var(--sc-muted);
+  font-family: "Open Sans", sans-serif;
+  font-size: 12px;
+}
+
+.sc-dg-verdict {
+  font-family: "Open Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sc-dg-verdict-risk { fill: #ff9d8a; }
+.sc-dg-verdict-safe { fill: #7fe0c0; }
+
+.sc-dg-flag-title {
+  fill: var(--sc-link);
+  font-family: "Open Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 575.98px) {
+  .sc-diagram-figure { padding: 14px; }
+}
+
+/* ---- searchable glossary ---------------------------------------------- */
+
+.sc-glossary {
+  min-height: 70vh;
+  padding-top: 54px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(242, 138, 0, 0.08), transparent 34rem),
+    var(--sc-paper);
+}
+
+.sc-glossary-tools {
+  margin-bottom: 34px;
+  padding: 18px;
+  background: rgba(14, 14, 15, 0.94);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(16px);
+}
+
+.sc-glossary-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sc-glossary-search-icon {
+  position: absolute;
+  left: 18px;
+  z-index: 1;
+  width: 15px;
+  height: 15px;
+  border: 2px solid var(--sc-orange);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sc-glossary-search-icon::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 2px;
+  right: -6px;
+  bottom: -3px;
+  background: var(--sc-orange);
+  border-radius: 2px;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.sc-glossary-search {
+  width: 100%;
+  min-height: 58px;
+  padding: 13px 78px 13px 50px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--sc-radius-sm);
+  font: 600 1rem/1.4 "Open Sans", sans-serif;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.sc-glossary-search::placeholder { color: rgba(255, 255, 255, 0.42); }
+
+.sc-glossary-search:focus {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(242, 138, 0, 0.72);
+  box-shadow: 0 0 0 4px rgba(242, 138, 0, 0.1);
+}
+
+.sc-glossary-search::-webkit-search-cancel-button { display: none; }
+
+.sc-glossary-clear {
+  position: absolute;
+  right: 13px;
+  padding: 7px 9px;
+  color: var(--sc-orange);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.sc-glossary-clear:hover,
+.sc-glossary-clear:focus-visible { background: rgba(242, 138, 0, 0.12); }
+
+.sc-glossary-meta {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 14px;
+}
+
+.sc-glossary-count {
+  flex: 0 0 auto;
+  min-width: 118px;
+  margin: 0;
+  color: var(--sc-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-glossary-letters {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 3px;
+}
+
+.sc-glossary-letter {
+  display: grid;
+  min-width: 29px;
+  height: 29px;
+  padding: 0 6px;
+  place-items: center;
+  color: var(--sc-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.sc-glossary-letter:hover:not(:disabled),
+.sc-glossary-letter:focus-visible,
+.sc-glossary-letter[aria-pressed="true"] {
+  color: #fff;
+  background: rgba(242, 138, 0, 0.14);
+  border-color: rgba(242, 138, 0, 0.28);
+}
+
+.sc-glossary-letter:disabled { opacity: 0.22; }
+
+.sc-glossary-status,
+.sc-glossary-empty {
+  display: grid;
+  min-height: 260px;
+  place-content: center;
+  color: var(--sc-muted);
+  text-align: center;
+}
+
+.sc-glossary-status[hidden],
+.sc-glossary-empty[hidden] { display: none; }
+
+.sc-glossary-status p { margin: 14px 0 0; }
+.sc-glossary-status.is-error h2 { color: #fff; }
+
+.sc-glossary-loader {
+  width: 28px;
+  height: 28px;
+  margin: auto;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-top-color: var(--sc-orange);
+  border-radius: 50%;
+  animation: sc-glossary-spin 0.75s linear infinite;
+}
+
+@keyframes sc-glossary-spin { to { transform: rotate(360deg); } }
+
+.sc-glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.sc-glossary-grid[hidden] { display: none; }
+
+.sc-glossary-card {
+  scroll-margin-top: 220px;
+  padding: clamp(22px, 3vw, 32px);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.sc-glossary-card:hover,
+.sc-glossary-card:target {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(242, 138, 0, 0.38);
+}
+
+.sc-glossary-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.sc-glossary-card h2 {
+  margin: 0;
+  color: var(--sc-orange);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  line-height: 1.22;
+}
+
+.sc-glossary-definition {
+  margin: 14px 0 0;
+  color: var(--sc-ink-soft);
+  line-height: 1.7;
+}
+
+.sc-glossary-example {
+  margin: 18px 0 0;
+  padding-top: 16px;
+  color: var(--sc-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.sc-glossary-example span {
+  color: var(--sc-ink-soft);
+  font-weight: 800;
+}
+
+.sc-glossary-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sc-glossary-categories li {
+  padding: 4px 8px;
+  color: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.sc-glossary-source {
+  margin-top: 64px;
+  padding: 28px 0 0;
+  border-top: 1px solid var(--sc-line);
+}
+
+.sc-glossary-source p {
+  max-width: 72ch;
+  margin: 9px 0 0;
+  color: var(--sc-muted);
+  line-height: 1.7;
+}
+
+.sc-glossary-source a { color: var(--sc-link); }
+
+@media (max-width: 991.98px) {
+  .sc-glossary-meta { display: block; }
+  .sc-glossary-count { margin-bottom: 11px; }
+  .sc-glossary-letters { justify-content: flex-start; }
+}
+
+@media (max-width: 767.98px) {
+  .sc-glossary-tools {
+    margin-right: -4px;
+    margin-left: -4px;
+    padding: 12px;
+  }
+
+  .sc-glossary-grid { grid-template-columns: 1fr; }
+  .sc-glossary-search { min-height: 54px; }
+  .sc-glossary-card { scroll-margin-top: 90px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-glossary-loader { animation: none; }
+}
+
+/* Inline code, used in guides for the literal characters a reader will stamp
+   or type. Bootstrap Reboot leaves it unstyled against a dark surface. */
+.sc-article code {
+  padding: 2px 6px;
+  color: var(--sc-link);
+  background: rgba(255, 138, 0, 0.1);
+  border: 1px solid rgba(255, 138, 0, 0.24);
+  border-radius: var(--sc-radius-xs);
+  font-size: 0.92em;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }

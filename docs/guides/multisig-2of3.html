@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.">
+  <title>Build a 2-of-3 multisig | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/multisig-2of3.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Build a 2-of-3 multisig | SelfCustody.ca">
+  <meta property="og:description" content="Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/multisig-2of3.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Build a 2-of-3 multisig","description":"Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.","url":"https://selfcustody.ca/guides/multisig-2of3.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/multisig-2of3.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#advanced">Techniques</a>
+        </nav>
+        <span class="sc-eyebrow">Advanced techniques</span>
+        <h1>Build a 2-of-3 multisig</h1>
+        <p class="sc-lead">Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 60 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-multisig">Multisig</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-descriptor">Descriptor</a><span class="sc-tag">Recovery</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="https://www.unchained.com/" target="_blank" rel="noopener">About Unchained <i class="bi bi-arrow-up-right"></i></a><a class="sc-text-link" href="https://casa.io/" target="_blank" rel="noopener">About Casa <i class="bi bi-arrow-up-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">A 2-of-3 multisig wallet holds three keys and requires any two of them to spend. Lose one and you are fine. Have one stolen and the thief has nothing. It removes the single point of failure that every ordinary wallet has, and for larger amounts that is a genuine step up.</p>
+
+      <p>It also introduces a new way to lose everything, one that has nothing to do with keys and catches people who did the hard part correctly. That is most of what this guide is about.</p>
+
+      <p>Set aside an afternoon. This is not a thing to do quickly, and the last stage &mdash; rehearsing the recovery &mdash; is the stage that matters most and the one people skip.</p>
+
+      
+    <figure class="sc-figure sc-diagram-figure">
+      <svg class="sc-dg-svg" viewBox="0 0 720 520" role="img" aria-labelledby="ms-dg-title ms-dg-desc" preserveAspectRatio="xMidYMid meet">
+        <title id="ms-dg-title">Single-signature compared with 2-of-3 multisig</title>
+        <desc id="ms-dg-desc">Single-signature: one hardware wallet and one seed backup, both inside one location, so any single loss or theft takes the wallet. 2-of-3 multisig: three keys in three separate locations feeding one wallet, where any two of the three can spend, so losing one key changes nothing. Rebuilding the multisig also requires the wallet configuration, which is not stored in any of the keys.</desc>
+
+        <rect class="sc-dg-panel sc-dg-panel-risk" x="1" y="1" width="718" height="150" rx="12"/>
+        <text class="sc-dg-panel-title" x="24" y="34">Single-signature</text>
+        <text class="sc-dg-panel-sub" x="24" y="56">1 key &middot; 1 backup &middot; 1 location</text>
+
+        <rect class="sc-dg-zone" x="24" y="72" width="384" height="62" rx="8"/>
+        <text class="sc-dg-zone-label" x="36" y="90">LOCATION 1</text>
+        
+    <g>
+      <rect class="sc-dg-box " x="44" y="96" width="150" height="30" rx="8"/>
+      <text class="sc-dg-box-title" x="58" y="124">Hardware wallet</text>
+      
+    </g>
+        <path class="sc-dg-line" d="M194 111H238"/>
+        
+    <g>
+      <rect class="sc-dg-box " x="238" y="96" width="150" height="30" rx="8"/>
+      <text class="sc-dg-box-title" x="252" y="124">Seed backup</text>
+      
+    </g>
+
+        <text class="sc-dg-verdict sc-dg-verdict-risk" x="440" y="92">Single point of failure</text>
+        <text class="sc-dg-note" x="440" y="114">One fire, one burglary, or one</text>
+        <text class="sc-dg-note" x="440" y="130">mistake takes the whole wallet.</text>
+
+        <rect class="sc-dg-panel sc-dg-panel-safe" x="1" y="168" width="718" height="258" rx="12"/>
+        <text class="sc-dg-panel-title" x="24" y="201">2-of-3 multisig</text>
+        <text class="sc-dg-panel-sub" x="24" y="223">3 keys &middot; 3 locations &middot; any 2 can spend</text>
+
+        
+    <g>
+      <rect class="sc-dg-box " x="24" y="240" width="208" height="48" rx="8"/>
+      <text class="sc-dg-box-title" x="38" y="262">Hardware wallet A</text>
+      <text class="sc-dg-box-sub" x="38" y="279">Location 1</text>
+    </g>
+        
+    <g>
+      <rect class="sc-dg-box " x="24" y="302" width="208" height="48" rx="8"/>
+      <text class="sc-dg-box-title" x="38" y="324">Hardware wallet B</text>
+      <text class="sc-dg-box-sub" x="38" y="341">Location 2</text>
+    </g>
+        
+    <g>
+      <rect class="sc-dg-box " x="24" y="364" width="208" height="48" rx="8"/>
+      <text class="sc-dg-box-title" x="38" y="386">Third key</text>
+      <text class="sc-dg-box-sub" x="38" y="403">Location 3 or trusted person</text>
+    </g>
+
+        <path class="sc-dg-line" d="M232 264H316V326H404"/>
+        <path class="sc-dg-line" d="M232 326H404"/>
+        <path class="sc-dg-line" d="M232 388H316V326H404"/>
+
+        
+    <g>
+      <rect class="sc-dg-box sc-dg-box-accent" x="404" y="302" width="150" height="48" rx="8"/>
+      <text class="sc-dg-box-title" x="418" y="324">2-of-3 wallet</text>
+      <text class="sc-dg-box-sub" x="418" y="341">any 2 signatures</text>
+    </g>
+
+        <text class="sc-dg-verdict sc-dg-verdict-safe" x="574" y="286">No single point</text>
+        <text class="sc-dg-note" x="574" y="308">Different keys,</text>
+        <text class="sc-dg-note" x="574" y="324">devices, locations.</text>
+        <text class="sc-dg-note" x="574" y="352">One key lost or</text>
+        <text class="sc-dg-note" x="574" y="368">stolen changes</text>
+        <text class="sc-dg-note" x="574" y="384">nothing.</text>
+
+        <rect class="sc-dg-panel sc-dg-panel-flag" x="1" y="442" width="718" height="72" rx="12"/>
+        <text class="sc-dg-flag-title" x="24" y="468">The fourth thing, which is not a key</text>
+        <text class="sc-dg-note" x="24" y="488">Rebuilding a multisig also needs the wallet configuration &mdash; the policy, the</text>
+        <text class="sc-dg-note" x="24" y="504">derivation paths, and all three public keys. No seed phrase contains it.</text>
+      </svg>
+      <figcaption>Multisig removes the single seed as the single point of failure. It adds one new dependency in exchange, shown along the bottom, and that is the one this guide keeps returning to.</figcaption>
+    </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li>A single-signature wallet you have already restored from backup at least once. If you have not done that, do it first — multisig multiplies every backup mistake by three.</li><li>Three signing devices, ideally not all the same make.</li><li>Coordinator software: Sparrow, Nunchuk, or Specter.</li><li>Backup material for three separate locations, and somewhere to store the wallet configuration alongside each one.</li><li>An amount that justifies the complexity. Below a certain value the added ways to lose access outweigh the added protection.</li></ul>
+  </div>
+
+      <h2>The thing that kills multisig wallets</h2>
+
+      <p>Your three seed phrases are not enough to rebuild this wallet.</p>
+
+      <p>To reconstruct a multisig, software also needs to know the policy — that it is 2-of-3 — the script type, the derivation path each key uses, and the extended public key of <em>all three</em> keys, including the ones you are not holding. That bundle is called the wallet descriptor, or the wallet configuration file.</p>
+
+      <p>Without it, you can hold all three seeds in your hand and still be unable to find your own coins, because you cannot derive the addresses they live at. The funds are visible on the blockchain and unreachable.</p>
+
+      <div class="sc-survival-grid" role="table" aria-label="What single-signature and multisig setups survive">
+        <div class="sc-survival-head" role="row"><span role="columnheader">What happens</span><span role="columnheader">Single-signature</span><span role="columnheader">2-of-3 multisig</span></div>
+        <div class="sc-survival-row" role="row"><strong role="rowheader">One backup burns</strong><span class="is-fail" role="cell">Funds lost</span><span class="is-pass" role="cell">Survives</span></div>
+        <div class="sc-survival-row" role="row"><strong role="rowheader">One key is stolen</strong><span class="is-fail" role="cell">Funds stolen</span><span class="is-pass" role="cell">Survives</span></div>
+        <div class="sc-survival-row" role="row"><strong role="rowheader">One device dies</strong><span class="is-warn" role="cell">Restore backup</span><span class="is-pass" role="cell">No urgency</span></div>
+        <div class="sc-survival-row" role="row"><strong role="rowheader">Configuration is lost</strong><span class="is-na" role="cell">Not applicable</span><span class="is-fail" role="cell">May be unreachable</span></div>
+        <div class="sc-survival-row" role="row"><strong role="rowheader">You are coerced</strong><span class="is-fail" role="cell">Vulnerable</span><span class="is-fail" role="cell">Still vulnerable</span></div>
+        <div class="sc-survival-row" role="row"><strong role="rowheader">Heirs must recover</strong><span class="is-warn" role="cell">Hard</span><span class="is-warn" role="cell">Harder</span></div>
+      </div>
+
+      <p>Note the fourth row. It is the only failure in that comparison which multisig <em>introduces</em>, and it is entirely preventable.</p>
+
+      <div class="sc-callout mt-4"><h3>Store the configuration with every seed backup</h3><p>The descriptor contains public keys, not private ones — it cannot be used to steal from you. It does reveal your balance and history to anyone who reads it, so it is not something to publish. But losing it is catastrophic while leaking it is merely a privacy problem, so availability wins: put a copy with each of the three backups, not in one clever place.</p></div>
+
+      <h2>Choosing the three keys</h2>
+
+      <p>The point of three keys is that no single event takes two of them. That applies to manufacturers as much as to locations.</p>
+
+      <p>Using three devices from different makers means a firmware bug, a supply-chain compromise, or a company disappearing cannot affect more than one of your keys. The cost is that you are learning three interfaces instead of one, and your coordinator has to support all three.</p>
+
+      <ul class="sc-check-list"><li><strong>Two or three different makes</strong> is the common compromise — meaningful diversity without three separate learning curves.</li><li><strong>Check coordinator support first.</strong> Sparrow, Nunchuk, and Specter each support a wide range, but confirm your exact three before buying.</li><li><strong>Prefer devices that show the full address on their own screen</strong>, since verifying a multisig receive address on-device is how you confirm the wallet is what you think it is.</li><li><strong>Avoid a key you cannot replace.</strong> If one device is discontinued and irreplaceable, plan for how you would rotate it out.</li></ul>
+
+      <p>A key held by another person &mdash; a partner, a lawyer, a family member &mdash; is a legitimate third key and is how many people build inheritance into the wallet. It is also a relationship you are now depending on. Decide that deliberately, not by default.</p>
+
+      <h2>Where the keys live</h2>
+
+      <p>Three keys in one house is a single point of failure wearing a disguise. One burglary, one fire, one flood takes all three, and you have paid the complexity cost for nothing.</p>
+
+      <p>The rule is that no single event and no single location should reach two keys. In practice that usually means home, a second property or a trusted person, and a bank safe deposit box or equivalent.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-diagram-3" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">Three different hardware wallets laid out on a desk, visibly different makes, each with its own backup card beside it.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>Different makes as well as different places: one firmware bug should not be able to reach two of your keys.</figcaption>
+  </figure>
+
+      <ul class="sc-caution-list"><li>Spreading keys too far has its own cost. If assembling two signatures takes a week of travel, you will avoid using the wallet, and an unused wallet is one you never verify still works.</li><li>Do not store a key and its own backup in the same place. That pairing is what a burglar finds together.</li></ul>
+
+      <h2>Building it</h2>
+
+      <p>The mechanics vary by coordinator, but the sequence is the same everywhere.</p>
+
+      <ul class="sc-check-list"><li>Set up each of the three devices independently, generating its own seed on-device and taking its own backup. Do not create all three from one seed — that is one key wearing three hats.</li><li>Export the extended public key from each device, by microSD or QR rather than by typing.</li><li>In the coordinator, create a new multisig wallet, set the policy to 2-of-3, and import all three public keys.</li><li>Give the wallet a name you will recognise in a decade, not <em>wallet2</em>.</li><li>Register the wallet configuration back onto each device that supports it — this is what lets the device recognise its own change addresses and display them safely.</li><li>Export the wallet configuration file and store a copy with every seed backup.</li></ul>
+
+      <p>That registration step matters more than it looks. A device that does not know the wallet policy cannot verify that a change address belongs to you, which means it cannot warn you if a compromised computer tries to route your change somewhere else.</p>
+
+      <h2>What each backup location should contain</h2>
+
+      <p>Three identical packages, in three places. Each one holds one key and everything needed to use it.</p>
+
+      <ul class="sc-check-list"><li>One seed phrase — written by hand, on paper or metal.</li><li>A copy of the wallet configuration or descriptor.</li><li>A note of the policy in plain language: <em>2 of 3 required to spend</em>.</li><li>The wallet's master fingerprints, so a restore can be verified against something.</li><li>A note of which coordinator software was used and where to get it.</li><li>The passphrase policy, if any key uses one — recorded separately from that key's own words.</li></ul>
+
+      <p>Write the note as though the reader has never heard of any of this, because one day the reader may not be you.</p>
+
+      <h2>Rehearse the recovery</h2>
+
+      <p>This is the stage that turns a multisig from an arrangement into something you have actually verified. Skipping it is the single most common way people end up with an elaborate wallet they cannot open.</p>
+
+      <ul class="sc-check-list"><li>Fund the wallet with a small test amount and confirm it arrives.</li><li>Spend from it using keys one and two.</li><li>Spend from it again using keys one and three, then again with two and three. Every pair must work — an untested pair is a pair you are assuming.</li><li>Rebuild the wallet from scratch in a fresh install of the coordinator, using only the configuration file and two seeds. This proves the backup package is sufficient.</li><li>Ideally, do that rebuild in a <em>different</em> coordinator than the one you built it in, which proves you are not dependent on one piece of software.</li></ul>
+
+      <p>Only after all of that should the wallet hold an amount you would miss.</p>
+
+      <h2>What it does not fix</h2>
+
+      <p>Multisig is not a general-purpose upgrade, and it is worth being precise about the gaps.</p>
+
+      <ul class="sc-check-list"><li><strong>Coercion.</strong> Someone forcing you to hand over funds can wait while you fetch the second key. Distributing keys makes this slower, not impossible.</li><li><strong>Bad operational habits.</strong> Approving a transaction without checking the address on-device is just as fatal with three keys as with one.</li><li><strong>Inheritance.</strong> Multisig makes this harder, not easier, unless you write the plan down. More parts means more that has to be explained.</li><li><strong>Your own attention.</strong> Three devices, three backups, and three locations need periodic checking. A key you have not verified in five years is a key you may not still have.</li></ul>
+
+      <h2>The costs you should expect</h2>
+
+      <p>Multisig transactions carry more data on-chain than single-signature ones, because every spend has to include multiple signatures and the script. Expect to pay noticeably more in network fees for the same transaction, and more still when the mempool is busy.</p>
+
+      <p>Spending is also slower in practice. Two devices must be brought together, or a partially signed transaction passed between them, which is friction by design — useful for savings, poor for anything you spend from regularly. Most people who run multisig keep an ordinary single-signature wallet alongside it for day-to-day amounts.</p>
+
+      <h2>If holding all three keys yourself is too much</h2>
+
+      <p>Everything above assumes you hold every key. There is a middle option between that and leaving coins on an exchange, usually called collaborative custody: a multisig wallet where a company holds one of the keys and you hold the rest.</p>
+
+      <p>The important structural point is that this is <strong>not custody</strong>. In a 2-of-3 where you hold two keys and the company holds one, they cannot move your bitcoin &mdash; one signature is not enough. You can spend without them, using your own two. What they provide is a key that survives your house burning down, plus support from people who do this every day.</p>
+
+      <div class="sc-custody-control-grid" aria-label="Control in three custody arrangements">
+        <article class="is-custodian"><span class="sc-control-count">0 keys</span><h3>Exchange or custodian</h3><p>You hold nothing.</p><ul><li class="is-no">You cannot spend alone</li><li class="is-danger">Company can spend alone</li></ul></article>
+        <article class="is-collaborative"><span class="sc-control-count">2 of 3 keys</span><h3>Collaborative custody</h3><p>You hold the spending threshold.</p><ul><li class="is-yes">You can spend alone</li><li class="is-safe">Company cannot spend alone</li></ul></article>
+        <article class="is-self"><span class="sc-control-count">3 of 3 keys</span><h3>Self-managed multisig</h3><p>You hold every key.</p><ul><li class="is-yes">You can spend with any two</li><li class="is-neutral">No company involved</li></ul></article>
+      </div>
+
+      <h3>The services people use</h3>
+
+      <ul class="sc-check-list"><li><strong>Unchained</strong> &mdash; Bitcoin-only collaborative custody vaults, where the client typically holds two keys and Unchained holds the third. Also offers inheritance arrangements and lending against the vault.</li><li><strong>Casa</strong> &mdash; tiered multisig plans with a company-held recovery key and mobile-first key management, scaling up to larger quorums for higher tiers.</li><li><strong>Nunchuk</strong> &mdash; assisted wallets and inheritance planning layered on top of a wallet you can also run entirely by yourself.</li><li>Some Canadian users also arrange an equivalent privately, with a lawyer or accountant holding the third key rather than a company.</li></ul>
+
+      <h3>The question that separates good arrangements from bad ones</h3>
+
+      <p>Ask it before you sign up, and expect a clear answer in the documentation rather than from a salesperson:</p>
+
+      <blockquote class="sc-pull-quote"><p>If this company disappears overnight, can I still spend my bitcoin — and do I already have everything I need to do it?</p></blockquote>
+
+      <p>In a properly structured collaborative custody wallet the answer is yes, because your own two keys meet the threshold. But that only holds if you also hold the wallet configuration, which is the same descriptor problem as before. A service that keeps the configuration and never gives you a copy has quietly made itself necessary.</p>
+
+      <ul class="sc-check-list"><li>Confirm you can export the full wallet descriptor, and store it exactly as described earlier &mdash; with each of your own backups.</li><li>Confirm you can recover using open-source software rather than only the company's app.</li><li>Rehearse a spend using only your own two keys, before the wallet holds anything serious. This is the whole test.</li><li>Understand the ongoing cost. These are subscription services, and a lapsed subscription should not be able to strand your funds &mdash; check what happens if you stop paying.</li></ul>
+
+      <h3>What you are trading away</h3>
+
+      <ul class="sc-check-list"><li><strong>Privacy.</strong> The company knows your identity and your balance, and holds records that can be subpoenaed. Self-managed multisig has no such counterparty.</li><li><strong>An ongoing fee</strong>, indefinitely, for something you could do yourself at zero recurring cost.</li><li><strong>A dependency you did not have before</strong> &mdash; smaller than an exchange, but not zero, and it needs re-evaluating if the business changes hands.</li></ul>
+
+      <p>Collaborative custody suits people who want the failure tolerance of multisig without becoming the sole operator of it &mdash; often those with meaningful amounts, limited time, and a family who would struggle to recover a fully self-managed setup. That is a real category of person and it is not a lesser choice. It is simply a different trade: you are paying a company to reduce the chance that <em>you</em> are the point of failure.</p>
+
+
+      <div class="sc-callout mt-4"><h3>Earn it</h3><p>If you have not yet restored a single-signature wallet from its backup, <a href="recovery-test-drill.html">do that first</a>. Multisig is the right answer to a problem you should be able to describe before you adopt it — and a simple wallet you have tested beats an elaborate one you have not.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-first-wallet.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-window"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Sparrow: pair a hardware wallet and verify a receive address</h3>
+              <p>Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="coldcard-q-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-usb-drive"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>COLDCARD Q: first-time setup</h3>
+              <p>Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>

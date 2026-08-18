@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260815-200" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260815-200" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260815-200" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="software">
   <div id="site-header">
@@ -43,7 +43,24 @@
             <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
           </a>
           <nav id="navbar" class="navbar" aria-label="Primary navigation">
-            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li><a class=" " href="guides.html"><span>Guides</span></a></li><li><a class=" " href="devices.html"><span>Devices</span></a></li><li><a class="active " href="software.html"><span>Software</span></a></li><li><a class=" " href="exchanges.html"><span>Exchanges</span></a></li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
+            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="guides.html">All guides</a></li>
+            <li><a class="" href="glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="devices.html">Devices</a></li>
+            <li><a class="active" href="software.html" aria-current="page">Software</a></li>
+            <li><a class="" href="exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
         </div>
@@ -73,81 +90,95 @@
         <section class="sc-section">
           <div class="container">
             <div class="sc-section-head"><span class="sc-eyebrow">Seven featured wallets</span><h2>Match software to the job</h2><p>Shortlisted for strong hardware-wallet support—each one pairs with most signing devices, not just one brand. Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
-            <div class="row g-4 sc-path-options">
+            <div class="row g-4 sc-path-options sc-software-card-grid">
               
     <div class="col-md-6 col-xl-3">
-      <a class="sc-card sc-path-card-link" href="#sparrow">
+      <a class="sc-card sc-path-card-link sc-software-card" href="#sparrow">
         <div class="sc-card-body">
-          <div class="sc-icon"><i class="bi bi-diagram-2"></i></div>
-          <h3>Sparrow Wallet</h3>
+          <div class="sc-software-card-heading">
+            <span class="sc-software-logo"><img src="assets/img/software/sparrow.png" alt="" width="48" height="48" loading="lazy"></span>
+            <h3>Sparrow Wallet</h3>
+          </div>
           <p>Desktop Bitcoin wallet with excellent PSBT, hardware, multisig, coin control, labeling, Tor, and personal-node support.</p>
-          <span class="sc-text-link">Read Sparrow notes <i class="bi bi-arrow-right"></i></span>
+          <span class="sc-text-link">Read notes <i class="bi bi-arrow-right"></i></span>
         </div>
       </a>
     </div>
               
     <div class="col-md-6 col-xl-3">
-      <a class="sc-card sc-path-card-link" href="#nunchuk">
+      <a class="sc-card sc-path-card-link sc-software-card" href="#nunchuk">
         <div class="sc-card-body">
-          <div class="sc-icon"><i class="bi bi-people"></i></div>
-          <h3>Nunchuk</h3>
+          <div class="sc-software-card-heading">
+            <span class="sc-software-logo"><img src="assets/img/software/nunchuk.png" alt="" width="48" height="48" loading="lazy"></span>
+            <h3>Nunchuk</h3>
+          </div>
           <p>Mobile and desktop wallet focused on multisig, shared wallets, hardware keys, recovery planning, and optional inheritance services.</p>
-          <span class="sc-text-link">Read Nunchuk notes <i class="bi bi-arrow-right"></i></span>
+          <span class="sc-text-link">Read notes <i class="bi bi-arrow-right"></i></span>
         </div>
       </a>
     </div>
               
     <div class="col-md-6 col-xl-3">
-      <a class="sc-card sc-path-card-link" href="#cove">
+      <a class="sc-card sc-path-card-link sc-software-card" href="#cove">
         <div class="sc-card-body">
-          <div class="sc-icon"><i class="bi bi-phone"></i></div>
-          <h3>Cove Wallet</h3>
+          <div class="sc-software-card-heading">
+            <span class="sc-software-logo"><img src="assets/img/software/cove.png" alt="" width="48" height="48" loading="lazy"></span>
+            <h3>Cove Wallet</h3>
+          </div>
           <p>Bitcoin-only mobile wallet with UTXO management, labels, hardware-wallet integration, and PSBT signing over QR or NFC.</p>
-          <span class="sc-text-link">Read Cove notes <i class="bi bi-arrow-right"></i></span>
+          <span class="sc-text-link">Read notes <i class="bi bi-arrow-right"></i></span>
         </div>
       </a>
     </div>
               
     <div class="col-md-6 col-xl-3">
-      <a class="sc-card sc-path-card-link" href="#electrum">
+      <a class="sc-card sc-path-card-link sc-software-card" href="#electrum">
         <div class="sc-card-body">
-          <div class="sc-icon"><i class="bi bi-lightning"></i></div>
-          <h3>Electrum</h3>
+          <div class="sc-software-card-heading">
+            <span class="sc-software-logo"><img src="assets/img/software/electrum.png" alt="" width="48" height="48" loading="lazy"></span>
+            <h3>Electrum</h3>
+          </div>
           <p>Long-running desktop Bitcoin wallet with SPV verification, cold-storage workflows, multisig, plugins, and hardware support.</p>
-          <span class="sc-text-link">Read Electrum notes <i class="bi bi-arrow-right"></i></span>
+          <span class="sc-text-link">Read notes <i class="bi bi-arrow-right"></i></span>
         </div>
       </a>
     </div>
               
     <div class="col-md-6 col-xl-3">
-      <a class="sc-card sc-path-card-link" href="#bluewallet">
+      <a class="sc-card sc-path-card-link sc-software-card" href="#bluewallet">
         <div class="sc-card-body">
-          <div class="sc-icon"><i class="bi bi-wallet2"></i></div>
-          <h3>BlueWallet</h3>
+          <div class="sc-software-card-heading">
+            <span class="sc-software-logo"><img src="assets/img/software/bluewallet.png" alt="" width="48" height="48" loading="lazy"></span>
+            <h3>BlueWallet</h3>
+          </div>
           <p>Mobile Bitcoin and Lightning wallet with watch-only monitoring, multisig vaults, coin control, and hardware-wallet PSBT support.</p>
-          <span class="sc-text-link">Read BlueWallet notes <i class="bi bi-arrow-right"></i></span>
+          <span class="sc-text-link">Read notes <i class="bi bi-arrow-right"></i></span>
         </div>
       </a>
     </div>
               
     <div class="col-md-6 col-xl-3">
-      <a class="sc-card sc-path-card-link" href="#wasabi">
+      <a class="sc-card sc-path-card-link sc-software-card" href="#wasabi">
         <div class="sc-card-body">
-          <div class="sc-icon"><i class="bi bi-shuffle"></i></div>
-          <h3>Wasabi Wallet</h3>
+          <div class="sc-software-card-heading">
+            <span class="sc-software-logo"><img src="assets/img/software/wasabi.svg" alt="" width="48" height="48" loading="lazy"></span>
+            <h3>Wasabi Wallet</h3>
+          </div>
           <p>Privacy-focused desktop wallet built around CoinJoin, mandatory Tor routing, advanced coin control, and broad hardware-wallet support via HWI.</p>
-          <span class="sc-text-link">Read Wasabi notes <i class="bi bi-arrow-right"></i></span>
+          <span class="sc-text-link">Read notes <i class="bi bi-arrow-right"></i></span>
         </div>
       </a>
     </div>
               
     <div class="col-md-6 col-xl-3">
-      <a class="sc-card sc-path-card-link" href="#specter">
+      <a class="sc-card sc-path-card-link sc-software-card" href="#specter">
         <div class="sc-card-body">
-          <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
-          <h3>Specter</h3>
+          <div class="sc-software-card-heading">
+            <span class="sc-software-logo"><img src="assets/img/software/specter.png" alt="" width="48" height="48" loading="lazy"></span>
+            <h3>Specter</h3>
+          </div>
           <p>Desktop multisig coordinator built for air-gapped signing, pairing with the widest range of hardware wallets of any option here.</p>
-          <span class="sc-text-link">Read Specter notes <i class="bi bi-arrow-right"></i></span>
+          <span class="sc-text-link">Read notes <i class="bi bi-arrow-right"></i></span>
         </div>
       </a>
     </div>
@@ -322,16 +353,40 @@
           </div>
         </section>
 
-        <section class="sc-section">
+        <section id="software-detail" class="sc-section sc-software-details">
           <div class="container">
-            <article id="sparrow" class="sc-detail"><h2>Sparrow Wallet</h2><p>Sparrow is a desktop Bitcoin wallet for users who want visibility into transactions and UTXOs. It supports single-signature and multisig policies, common script types, output descriptors, PSBTs, hardware wallets, QR signing, coin control, labeling, Tor, Bitcoin Core, and private Electrum servers.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Hardware-wallet setup and transaction review.</li><li>Coin selection, fee control, labeling, and privacy education.</li><li>Air-gapped and multisig PSBT workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A public server can learn wallet activity. Move toward your own node or private server when privacy matters.</li><li>The interface exposes more detail than a beginner mobile wallet.</li></ul></div></div><a class="sc-text-link" href="https://sparrowwallet.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article>
-            <article id="nunchuk" class="sc-detail"><h2>Nunchuk</h2><p>Nunchuk focuses on single-signature and multisig wallets, shared access, air-gapped signing, broad hardware support, and optional assisted services such as recovery and inheritance planning. It supports products including COLDCARD, TAPSIGNER, Jade, SeedSigner, Trezor, Ledger, BitBox, Passport, and Keystone.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Families, partners, and businesses that need multi-user multisig.</li><li>People building a deliberate inheritance or assisted-recovery plan.</li><li>NFC TAPSIGNER and multiple hardware-key setups.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Understand which features are self-serve and which depend on a paid service or platform key.</li><li>Back up the complete wallet configuration as well as every private key.</li></ul></div></div><a class="sc-text-link" href="https://nunchuk.io/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article>
-            <article id="cove" class="sc-detail"><h2>Cove Wallet</h2><p>Cove is a Bitcoin-only mobile wallet designed for both straightforward on-chain use and more advanced workflows. It supports UTXO management, BIP329 labels, hardware-wallet PSBTs, and signing or wallet imports over QR and NFC.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Bitcoin-only mobile self custody.</li><li>Managing and labeling individual UTXOs.</li><li>Using supported hardware wallets through PSBT, QR, or NFC workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone remains a general-purpose, internet-connected device; use dedicated hardware for long-term savings keys when appropriate.</li><li>Test hardware-wallet and backup workflows with a small amount before relying on them.</li></ul></div></div><a class="sc-text-link" href="https://covebitcoin.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article>
-            <article id="electrum" class="sc-detail"><h2>Electrum</h2><p>Electrum is a mature Bitcoin wallet whose private keys stay encrypted on the local device. It uses decentralized Electrum servers, verifies transaction history with SPV, supports watch-only cold storage, multisig, and hardware-wallet plugins, and can export keys without platform lock-in.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Users who value a mature, lightweight Bitcoin-only desktop wallet.</li><li>Watch-only and offline-signing arrangements.</li><li>Custom server and hardware integrations.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Electrum is frequently impersonated by phishing sites. Use only electrum.org and verify downloads.</li><li>Server selection affects privacy and the trust placed in transaction information.</li></ul></div></div><a class="sc-text-link" href="https://electrum.org/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article>
-            <article id="bluewallet" class="sc-detail"><h2>BlueWallet</h2><p>BlueWallet is a mobile Bitcoin wallet with watch-only wallets, multisig vaults, coin control, fee tools, batch transactions, hardware-wallet PSBT support, and connections to personal Electrum infrastructure. It is useful both as a spending wallet and as a watch-only interface for cold storage.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Learning on mobile with small amounts.</li><li>Monitoring hardware wallets without importing private keys.</li><li>Creating or moving PSBTs for supported air-gapped devices.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone is a general-purpose internet-connected device; keep long-term savings keys on dedicated hardware.</li><li>Lightning use requires a compatible node or service configuration—understand who controls the keys and channels.</li></ul></div></div><a class="sc-text-link" href="https://bluewallet.io/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article>
-            <article id="wasabi" class="sc-detail"><h2>Wasabi Wallet</h2><p>Wasabi is a privacy-focused desktop wallet built around the WabiSabi CoinJoin protocol, with Silent Payments support and mandatory Tor routing for every connection. It pairs advanced coin control and a full labeling system with hardware-wallet support through HWI, covering Trezor, COLDCARD, Ledger, Blockstream Jade, and BitBox02.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want CoinJoin and Tor-by-default as part of normal use, not an add-on.</li><li>Detailed coin control and labeling to avoid mixing tainted history.</li><li>Pairing a hardware signer with a privacy-first coordinator.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>No multisig or air-gapped QR signing—it's a hot-wallet coordinator, not an air-gap tool.</li><li>CoinJoin has real fees and timing trade-offs; read the docs before mixing meaningful amounts.</li></ul></div></div><a class="sc-text-link" href="https://wasabiwallet.io/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article>
-            <article id="specter" class="sc-detail"><h2>Specter</h2><p>Specter Desktop is a multisig coordinator built specifically for air-gapped signing, connecting to your own Bitcoin Core node and pairing with one of the widest hardware-wallet lineups of any wallet on this page—SeedSigner, Specter DIY, Blockstream Jade, COLDCARD, BitBox02, Passport, Keystone, Trezor, Ledger, KeepKey, and more, several of them fully air-gapped via QR or SD card.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Multisig setups spanning several different hardware-wallet brands.</li><li>Air-gapped signing as the default workflow, not an exception.</li><li>Running against your own Bitcoin Core node over Tor.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Desktop only—no mobile app, and no Lightning support.</li><li>Built for coordinating hardware signers, not as a general-purpose spending wallet.</li></ul></div></div><a class="sc-text-link" href="https://specter.solutions/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article>
-            <div class="sc-callout mt-4"><h3>Never import hardware-wallet recovery words into ordinary software just to “connect” it</h3><p>Connect using the hardware integration, xpub, descriptor, wallet file, or PSBT process documented by the device maker. Typing the recovery phrase into an online computer defeats key isolation.</p></div>
+            <div class="sc-section-head">
+              <span class="sc-eyebrow">In detail</span>
+              <h2>Seven wallets, up close</h2>
+              <p>Where each one is strong, and what to weigh before relying on it.</p>
+            </div>
+            <article id="sparrow" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/sparrow.png" alt="" width="48" height="48" loading="lazy"><h2>Sparrow Wallet</h2></div><p>Sparrow is a desktop Bitcoin wallet for users who want visibility into transactions and UTXOs. It supports single-signature and multisig policies, common script types, output descriptors, PSBTs, hardware wallets, QR signing, coin control, labeling, Tor, Bitcoin Core, and private Electrum servers.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Hardware-wallet setup and transaction review.</li><li>Coin selection, fee control, labeling, and privacy education.</li><li>Air-gapped and multisig PSBT workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A public server can learn wallet activity. Move toward your own node or private server when privacy matters.</li><li>The interface exposes more detail than a beginner mobile wallet.</li></ul></div></div><div class="sc-detail-footer"><a class="sc-text-link" href="https://sparrowwallet.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
+    <div class="sc-product-guides"><a class="sc-text-link" href="guides/sparrow-first-wallet.html" title="Sparrow: pair a hardware wallet and verify a receive address — Beginner · 30 min" aria-label="Sparrow: pair a hardware wallet and verify a receive address — Beginner · 30 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
+            <article id="nunchuk" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/nunchuk.png" alt="" width="48" height="48" loading="lazy"><h2>Nunchuk</h2></div><p>Nunchuk focuses on single-signature and multisig wallets, shared access, air-gapped signing, broad hardware support, and optional assisted services such as recovery and inheritance planning. It supports products including COLDCARD, TAPSIGNER, Jade, SeedSigner, Trezor, Ledger, BitBox, Passport, and Keystone.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Families, partners, and businesses that need multi-user multisig.</li><li>People building a deliberate inheritance or assisted-recovery plan.</li><li>NFC TAPSIGNER and multiple hardware-key setups.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Understand which features are self-serve and which depend on a paid service or platform key.</li><li>Back up the complete wallet configuration as well as every private key.</li></ul></div></div><div class="sc-detail-footer"><a class="sc-text-link" href="https://nunchuk.io/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
+    <div class="sc-product-guides"><a class="sc-text-link" href="guides/nunchuk-setup.html" title="Nunchuk: first wallet and shared access — Beginner · 30 min" aria-label="Nunchuk: first wallet and shared access — Beginner · 30 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
+            <article id="cove" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/cove.png" alt="" width="48" height="48" loading="lazy"><h2>Cove Wallet</h2></div><p>Cove is a Bitcoin-only mobile wallet designed for both straightforward on-chain use and more advanced workflows. It supports UTXO management, BIP329 labels, hardware-wallet PSBTs, and signing or wallet imports over QR and NFC.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Bitcoin-only mobile self custody.</li><li>Managing and labeling individual UTXOs.</li><li>Using supported hardware wallets through PSBT, QR, or NFC workflows.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone remains a general-purpose, internet-connected device; use dedicated hardware for long-term savings keys when appropriate.</li><li>Test hardware-wallet and backup workflows with a small amount before relying on them.</li></ul></div></div><div class="sc-detail-footer"><a class="sc-text-link" href="https://covebitcoin.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
+            <article id="electrum" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/electrum.png" alt="" width="48" height="48" loading="lazy"><h2>Electrum</h2></div><p>Electrum is a mature Bitcoin wallet whose private keys stay encrypted on the local device. It uses decentralized Electrum servers, verifies transaction history with SPV, supports watch-only cold storage, multisig, and hardware-wallet plugins, and can export keys without platform lock-in.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Users who value a mature, lightweight Bitcoin-only desktop wallet.</li><li>Watch-only and offline-signing arrangements.</li><li>Custom server and hardware integrations.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Electrum is frequently impersonated by phishing sites. Use only electrum.org and verify downloads.</li><li>Server selection affects privacy and the trust placed in transaction information.</li></ul></div></div><div class="sc-detail-footer"><a class="sc-text-link" href="https://electrum.org/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
+    <div class="sc-product-guides"><a class="sc-text-link" href="guides/electrum-setup.html" title="Electrum: watch-only and offline signing — Intermediate · 45 min" aria-label="Electrum: watch-only and offline signing — Intermediate · 45 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
+            <article id="bluewallet" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/bluewallet.png" alt="" width="48" height="48" loading="lazy"><h2>BlueWallet</h2></div><p>BlueWallet is a mobile Bitcoin wallet with watch-only wallets, multisig vaults, coin control, fee tools, batch transactions, hardware-wallet PSBT support, and connections to personal Electrum infrastructure. It is useful both as a spending wallet and as a watch-only interface for cold storage.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Learning on mobile with small amounts.</li><li>Monitoring hardware wallets without importing private keys.</li><li>Creating or moving PSBTs for supported air-gapped devices.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>A phone is a general-purpose internet-connected device; keep long-term savings keys on dedicated hardware.</li><li>Lightning use requires a compatible node or service configuration—understand who controls the keys and channels.</li></ul></div></div><div class="sc-detail-footer"><a class="sc-text-link" href="https://bluewallet.io/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
+            <article id="wasabi" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/wasabi.svg" alt="" width="48" height="48" loading="lazy"><h2>Wasabi Wallet</h2></div><p>Wasabi is a privacy-focused desktop wallet built around the WabiSabi CoinJoin protocol, with Silent Payments support and mandatory Tor routing for every connection. It pairs advanced coin control and a full labeling system with hardware-wallet support through HWI, covering Trezor, COLDCARD, Ledger, Blockstream Jade, and BitBox02.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want CoinJoin and Tor-by-default as part of normal use, not an add-on.</li><li>Detailed coin control and labeling to avoid mixing tainted history.</li><li>Pairing a hardware signer with a privacy-first coordinator.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>No multisig or air-gapped QR signing—it's a hot-wallet coordinator, not an air-gap tool.</li><li>CoinJoin has real fees and timing trade-offs; read the docs before mixing meaningful amounts.</li></ul></div></div><div class="sc-detail-footer"><a class="sc-text-link" href="https://wasabiwallet.io/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
+            <article id="specter" class="sc-detail"><div class="sc-software-brand"><img src="assets/img/software/specter.png" alt="" width="48" height="48" loading="lazy"><h2>Specter</h2></div><p>Specter Desktop is a multisig coordinator built specifically for air-gapped signing, connecting to your own Bitcoin Core node and pairing with one of the widest hardware-wallet lineups of any wallet on this page—SeedSigner, Specter DIY, Blockstream Jade, COLDCARD, BitBox02, Passport, Keystone, Trezor, Ledger, KeepKey, and more, several of them fully air-gapped via QR or SD card.</p><div class="row g-4"><div class="col-md-6"><h3>Strong fit</h3><ul class="sc-check-list"><li>Multisig setups spanning several different hardware-wallet brands.</li><li>Air-gapped signing as the default workflow, not an exception.</li><li>Running against your own Bitcoin Core node over Tor.</li></ul></div><div class="col-md-6"><h3>Consider</h3><ul class="sc-caution-list"><li>Desktop only—no mobile app, and no Lightning support.</li><li>Built for coordinating hardware signers, not as a general-purpose spending wallet.</li></ul></div></div><div class="sc-detail-footer"><a class="sc-text-link" href="https://specter.solutions/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
+            <aside class="sc-software-key-warning mt-4" aria-labelledby="software-key-warning-title">
+              <div class="sc-software-key-warning-head">
+                <span class="sc-software-key-warning-mark" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></span>
+                <div><span class="sc-software-key-warning-kicker">Key isolation rule</span><h2 id="software-key-warning-title">Never import hardware-wallet recovery words into ordinary software</h2></div>
+              </div>
+              <div class="sc-software-key-warning-grid">
+                <section>
+                  <span class="sc-software-key-warning-label is-danger"><i class="bi bi-shield-exclamation" aria-hidden="true"></i> Why it matters</span>
+                  <p>Typing the recovery phrase into an online computer turns an isolated hardware key into a software-exposed key. It defeats the protection the signer was meant to provide.</p>
+                </section>
+                <section>
+                  <span class="sc-software-key-warning-label is-safe"><i class="bi bi-diagram-2" aria-hidden="true"></i> Connect safely</span>
+                  <p>Use the connection process documented by the device maker and wallet project.</p>
+                  <div class="sc-software-key-methods"><span>Hardware integration</span><a href="glossary.html#term-xpub">XPUB</a><a href="glossary.html#term-descriptor">Descriptor</a><span>Wallet file</span><a href="glossary.html#term-psbt">PSBT</a></div>
+                </section>
+              </div>
+            </aside>
             
     <p class="sc-source-note">
       Product details checked against <a href="https://sparrowwallet.com/features/" target="_blank" rel="noopener">Sparrow</a>, <a href="https://bluewallet.io/features/" target="_blank" rel="noopener">BlueWallet</a>, <a href="https://electrum.org/" target="_blank" rel="noopener">Electrum</a>, <a href="https://nunchuk.io/" target="_blank" rel="noopener">Nunchuk</a>, <a href="https://covebitcoin.com/" target="_blank" rel="noopener">Cove</a>, <a href="https://wasabiwallet.io/" target="_blank" rel="noopener">Wasabi</a>, <a href="https://specter.solutions/" target="_blank" rel="noopener">Specter</a>.
@@ -353,10 +408,12 @@
             <ul class="sc-footer-links sc-footer-links-grid">
               <li><a href="index.html">Home</a></li>
               <li><a href="guides.html">Guides</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
               <li><a href="devices.html">Devices</a></li>
               <li><a href="software.html">Software</a></li>
               <li><a href="exchanges.html">Exchanges</a></li>
               <li><a href="dashboard.html">Dashboard</a></li>
+              <li><a href="merch.html">Merch</a></li>
               <li><a href="contact.html">Get Help</a></li>
             </ul>
           </div>
@@ -374,7 +431,7 @@
         </div>
       </div>
     </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260815-200"></script>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="merch.html">Merch</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="assets/js/site-refresh.js?v=20260817-914"></script>
 </body>
 </html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A beginner's breakdown of what your wallet actually holds. There are no coins anywhere — and once that clicks, most of bitcoin's odder behaviour starts making sense.">
+  <title>Keys, addresses, and UTXOs | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/keys-addresses-utxos.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Keys, addresses, and UTXOs | SelfCustody.ca">
+  <meta property="og:description" content="A beginner's breakdown of what your wallet actually holds. There are no coins anywhere — and once that clicks, most of bitcoin's odder behaviour starts making sense.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/keys-addresses-utxos.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Keys, addresses, and UTXOs","description":"A beginner's breakdown of what your wallet actually holds. There are no coins anywhere — and once that clicks, most of bitcoin's odder behaviour starts making sense.","url":"https://selfcustody.ca/guides/keys-addresses-utxos.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/keys-addresses-utxos.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
+            <li><a class="" href="../glossary.html">Glossary</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#fundamentals">Start here</a>
+        </nav>
+        <span class="sc-eyebrow">Foundations</span>
+        <h1>Keys, addresses, and UTXOs</h1>
+        <p class="sc-lead">A beginner's breakdown of what your wallet actually holds. There are no coins anywhere — and once that clicks, most of bitcoin's odder behaviour starts making sense.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 15 minutes</span>
+          <span>Updated Aug 17, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">Fundamentals</span><span class="sc-tag">How it works</span></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Almost everyone starts with the same mental picture: a wallet is a container, bitcoin sits inside it, and sending bitcoin moves it from your container to someone else's. It is a reasonable guess and it is wrong in every part, which is why so much of bitcoin seems arbitrary until you replace it.</p>
+
+      <p>This page builds the correct picture from the bottom up. It takes about fifteen minutes and it makes everything afterwards easier &mdash; why fees behave oddly, why your wallet keeps generating new addresses, why you can restore everything from twelve words, and why sending a small amount sometimes moves your entire balance.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-wallet2" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A clean overhead flat-lay: a key, a padlock, and a small pile of mismatched cash notes of odd denominations, arranged left to right.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The three ideas on this page, in order.</figcaption>
+  </figure>
+
+      <h2><span class="sc-article-num">1</span>There are no coins</h2>
+
+      <p>Nothing is stored in your wallet. There is no file containing bitcoin, and nothing physically moves when you send a payment.</p>
+
+      <p>What exists is a public ledger &mdash; a record, copied across thousands of computers, of every transaction ever made. That ledger does not track balances by person. It tracks <em>amounts and the conditions required to spend them</em>. Somewhere in it are entries saying, in effect, "this much bitcoin, spendable by whoever can prove they hold a particular key."</p>
+
+      <p>Your wallet's job is to hold that key and to prove it, on demand, without ever revealing it. That is the entire trick.</p>
+
+      <h2><span class="sc-article-num">2</span>The private key is a number that can sign</h2>
+
+      <p>A private key is, underneath, an enormous random number. Its usefulness is that it can produce a <em>signature</em>: a piece of data that anyone can check, that could only have been produced by that key, and that reveals nothing about the key itself.</p>
+
+      <p>That last part is what makes bitcoin work. You prove you are allowed to spend without ever handing over the thing that allows it. Every payment you make is a signature saying "the holder of this key authorises this exact transaction" &mdash; and if a single detail of the transaction changes, the signature no longer matches.</p>
+
+      <div class="sc-callout mt-4"><h3>This is why the phrase not your keys, not your coins is literal</h3><p>Ownership of bitcoin is not a name on an account. It is the ability to produce a valid signature. Whoever can do that owns the bitcoin, and anyone who cannot does not — including you, if your bitcoin sits on an exchange and only their system can sign.</p></div>
+
+      <h2><span class="sc-article-num">3</span>Addresses are a one-way street</h2>
+
+      <p>From your private key, your wallet derives a <strong>public key</strong>, and from that, an <strong>address</strong>. The derivation only runs one way: address from key is easy, key from address is impossible.</p>
+
+      <p>Think of an address as a padlock you can hand out freely. Anyone can snap it shut on a payment. Only your key opens it.</p>
+
+      <p>That one-way property is why publishing an address is safe. It is also why an address is not a wallet, not an account, and not a login &mdash; it is a destination, and one wallet can produce an effectively unlimited number of them.</p>
+
+      <h2><span class="sc-article-num">4</span>One seed, unlimited keys</h2>
+
+      <p>If a wallet needed a separate backup for every key, self-custody would be unmanageable. It does not, because the keys are not independent.</p>
+
+      <p>Your twelve or twenty-four recovery words encode a single starting number: the <strong>seed</strong>. From that seed, your wallet derives every key it will ever use, in a fixed and standardised order. Key number one, key number two, key number five hundred &mdash; all reproducible, from those words, forever.</p>
+
+      <ul class="sc-check-list"><li>This is why the words are the backup, and the only backup that matters.</li><li>This is why you can restore the same wallet in different software and see the same coins.</li><li>This is why anyone who has the words has everything, immediately and permanently.</li><li>And it is why the words can be written on paper: they encode one number, and that number regenerates the rest.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Why your wallet keeps making new addresses</h2>
+
+      <p>You may have noticed that asking for a receive address twice gives you two different addresses, and that the old one still works. That is deliberate.</p>
+
+      <p>Because the ledger is public, anyone who knows one of your addresses can see every payment it ever received. Reusing a single address builds a public, permanent record of your income in one convenient place. Using a fresh address each time scatters that information instead.</p>
+
+      <p>It is a privacy measure rather than a security one &mdash; an old address is not unsafe, it is just revealing. All of them belong to the same wallet, and your wallet watches all of them.</p>
+
+      <h2><span class="sc-article-num">6</span>Your balance is a pile of chunks</h2>
+
+      <p>Here is the idea that surprises people most, and the one that explains the most.</p>
+
+      <p>The ledger does not store "you have 0.5 bitcoin." It stores individual, indivisible outputs &mdash; each one created by a specific past transaction, each with its own amount. The unspent ones are called <strong>UTXOs</strong>: unspent transaction outputs. Your balance is simply the sum of yours.</p>
+
+      <p>The closest everyday comparison is cash, but cash in strange denominations. If someone paid you 0.3, someone else paid you 0.15, and you bought 0.05, you do not have "0.5." You have a 0.3 note, a 0.15 note, and a 0.05 note. Your wallet adds them up and shows one number, which is a convenience, not the truth.</p>
+
+      <div class="sc-callout mt-4"><h3>And this is why change exists</h3><p>You cannot tear a note in half. To pay 0.1 using your 0.3 chunk, the whole chunk gets spent — 0.1 goes to the recipient and roughly 0.2 comes straight back to you as a brand-new chunk at a fresh address of your own. That returning amount is called change, and it is why your transaction history sometimes looks like you sent yourself money. You did.</p></div>
+
+      <h2><span class="sc-article-num">7</span>What follows from all this</h2>
+
+      <p>Almost every piece of bitcoin behaviour that seems arbitrary at first is a direct consequence of the four ideas above.</p>
+
+      <div class="sc-consequence-map" aria-label="The odd behaviour, and where it comes from">
+        <div class="sc-consequence-head"><span>What you notice</span><span>What causes it</span></div>
+        <article><h3>Fees follow transaction size, not value</h3><i class="bi bi-arrow-right" aria-hidden="true"></i><p>You pay for data. Five small chunks take more space than one large one, whatever the totals are.</p></article>
+        <article><h3>A small payment seems to move everything</h3><i class="bi bi-arrow-right" aria-hidden="true"></i><p>The whole chunk is spent and the remainder returns to you as change.</p></article>
+        <article><h3>A wallet restores in different software</h3><i class="bi bi-arrow-right" aria-hidden="true"></i><p>Every key is reproduced from the seed in a standard order.</p></article>
+        <article><h3>Watch-only wallets can exist</h3><i class="bi bi-arrow-right" aria-hidden="true"></i><p>Public keys can find your coins; only spending requires the private key.</p></article>
+        <article><h3>The chunks you spend together matter</h3><i class="bi bi-arrow-right" aria-hidden="true"></i><p>Spending two chunks together publicly links them as belonging to one owner.</p></article>
+        <article><h3>Transactions cannot be reversed</h3><i class="bi bi-arrow-right" aria-hidden="true"></i><p>There is no account to credit back—only a new transaction signed by the new owner.</p></article>
+      </div>
+
+      <p>That fifth row is worth pursuing once the rest has settled. It is the entire basis of <a href='sparrow-coin-control.html'>coin control and labelling</a>, and it is the difference between a wallet that quietly assembles a public map of your finances and one that does not.</p>
+
+      <h2>The short version</h2>
+
+      <ul class="sc-check-list"><li><strong>You own keys, not coins.</strong> Ownership is the ability to sign.</li><li><strong>Addresses are one-way</strong> and safe to share. Use a fresh one each time.</li><li><strong>One seed makes every key</strong>, which is why the recovery words are the whole backup.</li><li><strong>Your balance is a set of chunks</strong>, and spending one always spends all of it, with the remainder returning as change.</li></ul>
+
+      <p>If those four sentences make sense, you have the model. Everything else on this site is detail hung on that frame.</p>
+
+      <div class="sc-callout mt-4"><h3>Looking up a word</h3><p>This page explains how the pieces fit together rather than defining every term you will meet. For quick definitions — script types, derivation paths, mempool, PSBT, and the rest — the <a href='../glossary.html'>glossary</a> is searchable and built for exactly that.</p></div>
+
+      <div class="sc-callout mt-4"><h3>Ready to do it rather than read about it</h3><p><a href='complete-path.html'>Start Here</a> takes you from an exchange account to a wallet you have proven you can recover, in five stages.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="complete-path.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-signpost-split"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>From Exchange to Self-Custody</h3>
+              <p>Move your bitcoin, secure the backup, and prove you can recover it.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="owning-your-bitcoin.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-currency-bitcoin"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>With great power comes great responsibility</h3>
+              <p>Self-custody does not just remove the middleman. It removes the work the middleman was doing, and hands you the job. Here is exactly what that job is.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-coin-control.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-pie-chart"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Sparrow: coin control and labelling</h3>
+              <p>Your balance is not a number, it is a pile of separate chunks — and which ones you spend together tells anyone watching that they belong to the same person.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+</body>
+</html>
