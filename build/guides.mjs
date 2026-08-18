@@ -4832,7 +4832,7 @@ const guides = [
       <p>Less than people expect, but not nothing, and the honest figures are worth knowing before you start.</p>
 
       ${checklist([
-        "<strong>Disk.</strong> The full chain is past 600 gigabytes and grows on the order of 100 gigabytes a year while blocks stay full. A 2TB SSD is the comfortable choice; check current figures before buying.",
+        "<strong>Disk.</strong> The full chain is around 750 gigabytes, growing by roughly 50 to 100 gigabytes a year while blocks stay full. Bitcoin Core's own guidance is to have at least 1TB free; a 2TB SSD means not thinking about it again. Check the current figure before buying — it only moves one way.",
         "<strong>Initial sync.</strong> Verifying the whole history from scratch takes anywhere from several hours to a couple of days depending on hardware and connection. It happens once.",
         "<strong>Bandwidth.</strong> Modest for your own use; higher if you let other nodes download blocks from you, which is the neighbourly default and can be limited.",
         "<strong>Hardware.</strong> A Raspberry Pi-class machine is enough. Any desktop from the last decade is more than enough.",
