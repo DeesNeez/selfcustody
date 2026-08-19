@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260819-1935" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260819-1935" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260819-1935" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"COLDCARD Q and Mk5: first-time setup","description":"Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified. One path, with the handful of places the two models differ called out as you reach them.","url":"https://selfcustody.ca/guides/coldcard-setup.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/coldcard-setup.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -52,7 +52,7 @@
             <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
           </button>
           <ul class="sc-nav-submenu">
-            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html">Start here</a></li>
             <li><a href="../guides.html#devices">Devices</a></li>
             <li><a href="../guides.html#software">Software</a></li>
             <li><a href="../guides.html#exchanges">Exchanges</a></li>
@@ -68,7 +68,7 @@
             <li><a class="" href="../software.html">Software</a></li>
             <li><a class="" href="../exchanges.html">Exchanges</a></li>
           </ul>
-        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
         </div>
@@ -99,14 +99,14 @@
         <div class="sc-article">
       <p class="sc-guide-intro">A COLDCARD is a deliberately awkward device. It has a slot for a memory card and no way at all to talk to your computer over the internet. That awkwardness is the product &mdash; every inconvenience in this guide is a connection somebody decided not to give an attacker.</p>
 
-      <p>This page covers both current models. They run the same firmware and the setup is the same sequence on each, so rather than two nearly identical guides, the differences are flagged at the four or five points where they actually change what you press.</p>
+      <p>This page covers both current models. They share the same codebase and the setup sequence is the same on each &mdash; Coinkite ships them as separate firmware builds with independent version numbers, but nothing below depends on that &mdash; so rather than two nearly identical guides, the differences are flagged at the four or five points where they actually change what you press.</p>
 
       <p>Setting one up properly takes about forty-five minutes. Most of that is not fiddly; it is writing things down carefully and resisting the urge to hurry. Read the whole page once before you start, then work through it.</p>
 
       
   <figure class="sc-figure">
-    <img src="../assets/img/coldcard-q-mk5-devices.jpg" alt="A COLDCARD Q and a COLDCARD Mk5 side by side on a wooden desk, both powered on and showing their home screens" width="1584" height="672" loading="lazy">
-    <figcaption>Same firmware, two keyboards. The Q's full QWERTY on the left, the Mk5's numeric keypad on the right &mdash; the difference that shapes everything below.</figcaption>
+    <img src="../assets/img/coldcard-q-mk5-devices.jpg" alt="A COLDCARD Q and a COLDCARD Mk5 side by side on a wooden desk, both powered on and showing their home screens" width="1195" height="672" loading="lazy">
+    <figcaption>Same codebase, two keyboards. The Q's full QWERTY on the left, the Mk5's numeric keypad on the right.</figcaption>
   </figure>
 
       <h2>Which one are you holding?</h2>
@@ -115,7 +115,7 @@
 
       <ul class="sc-check-list"><li><strong>Typing.</strong> The Q has a full QWERTY keyboard with dedicated QR and NFC keys. The Mk5 has a numeric keypad, so anything involving letters &mdash; a passphrase especially &mdash; is slower and more deliberate.</li><li><strong>Cards.</strong> The Q has two microSD slots and stows two spare cards under the battery door. The Mk5 has one slot, so a second backup copy means swapping cards.</li><li><strong>Power.</strong> The Q runs from USB-C or three AAA batteries, so it can be set up nowhere near a computer. The Mk5 needs USB-C power throughout.</li><li><strong>Getting data out.</strong> The Q has a built-in QR scanner and can move wallet exports and signed transactions by camera. The Mk5 uses microSD, USB, or NFC.</li></ul>
 
-      <p>If you are choosing between them, that list is the whole decision. The security model, the firmware, and every step below are shared.</p>
+      <p>If you are choosing between them, that list is the whole decision. The security model and every step below are shared.</p>
 
       
   <div class="sc-guide-prereq">
@@ -156,13 +156,9 @@
       <ul class="sc-caution-list"><li>Never type these words into a phone, a computer, a password manager, or a photograph.</li><li>Never use words that came printed with the device or were supplied by anyone else.</li><li>Do not add a passphrase on a first setup unless you already understand how to recover from one.</li></ul>
 
       
-  <figure class="sc-figure sc-figure-slot">
-    <div class="sc-figure-slot-frame" style="aspect-ratio: 4 / 3">
-      <i class="bi bi-usb-drive" aria-hidden="true"></i>
-      <p class="sc-figure-slot-shot">A COLDCARD screen showing a numbered word list during seed generation, angled so the words are not legible, with a hand writing on the backup card in the foreground.</p>
-      <p class="sc-figure-slot-note">Image to come</p>
-    </div>
-    <figcaption>In order, by hand, once. The quiz afterwards is there to catch you.</figcaption>
+  <figure class="sc-figure">
+    <img src="../assets/img/coldcard-seed-word-writing.jpg" alt="A COLDCARD Q and Mk5 beside a blank metal seed plate, ready to have the recovery words stamped into it in order" width="1300" height="726" loading="lazy">
+    <figcaption>Write it, stamp it, in order. The quiz afterwards is there to catch you.</figcaption>
   </figure>
 
       <h2><span class="sc-article-num">4</span>Take the encrypted backup</h2>
@@ -267,7 +263,6 @@
               <li><a href="../exchanges.html">Exchanges</a></li>
               <li><a href="../glossary.html">Glossary</a></li>
               <li><a href="../dashboard.html">Dashboard</a></li>
-              <li><a href="../merch.html">Merch</a></li>
               <li><a href="../contact.html">Get Help</a></li>
             </ul>
           </div>
@@ -285,7 +280,7 @@
         </div>
       </div>
     </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260819-1935"></script>
 </body>
 </html>
