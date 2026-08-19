@@ -7478,15 +7478,16 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     padding: 9px 7px;
     border-radius: 8px;
   }
-  /* Same fill as desktop, but phone screens run brighter/more saturated by
-     default, so the same 0.085/0.025 highlight over #0d0f11 reads as light
-     grey instead of near-black. Cutting the highlight opacity and dropping
-     the border alpha keeps the card visibly darker without touching the
-     desktop rule. */
+  /* Same fill as desktop, but real phone hardware (Safari on iOS in
+     particular -- True Tone/auto-brightness shifts near-black warmer and
+     lighter) renders the desktop's 0.085/0.025 highlight over #0d0f11 as
+     light grey rather than near-black, worse than desktop's own mobile-width
+     emulation shows. Cut the highlight almost to nothing and darken the
+     border further so it still reads dark once the display shifts it. */
   .sc-block-confirmed {
-    border-color: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.08);
     background:
-      linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0)),
       #0d0f11;
   }
   /* 17px, not 8. The dissolve is what makes this read as a chain continuing
