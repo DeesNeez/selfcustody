@@ -16,7 +16,6 @@ const currentYear = new Date().getFullYear();
     ["exchanges", "Exchanges", "exchanges.html"],
     ["glossary", "Glossary", "glossary.html"],
     ["dashboard", "Dashboard", "dashboard.html"],
-    ["merch", "Merch", "merch.html"],
     ["contact", "Get Help", "contact.html"]
   ];
 
@@ -156,7 +155,7 @@ const currentYear = new Date().getFullYear();
 
   const pages = {
     home: {
-      title: "SelfCustody.ca | Control your money",
+      title: "SelfCustody.ca | Control Your Money",
       description: "Clear, practical guidance for learning how to buy bitcoin, choose a wallet, protect recovery material, and withdraw to self custody.",
       content: `
         ${hero(
@@ -1753,7 +1752,14 @@ const currentYear = new Date().getFullYear();
       if (key === "guides") {
         const menuActive = pageKey === "guides" ? "active" : "";
         const items = guideCategories
-          .map(cat => `<li><a href="${base}guides.html#${cat.key}">${cat.label}</a></li>`)
+          .map(cat => {
+            /* "Start here" is the hub's first section, so everything above
+               it -- the hero and the finder -- is part of starting. It gets
+               the top of the page rather than a jump past them; the rest
+               stay jump links to their own section. */
+            const target = cat.key === "fundamentals" ? `${base}guides.html` : `${base}guides.html#${cat.key}`;
+            return `<li><a href="${target}">${cat.label}</a></li>`;
+          })
           .join("\n            ");
         /* Unlike Compare, "Guides" is itself a real destination, so the
            label is a plain link and a separate chevron button opens the

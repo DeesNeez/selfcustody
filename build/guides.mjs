@@ -677,11 +677,12 @@ const guides = [
 
       <p>Take custody of your own bitcoin and those tasks do not disappear. They transfer. This page is an inventory of exactly which ones, so you can decide with your eyes open rather than discovering them one at a time.</p>
 
-      ${figureSlot({
-        shot: "A single key on a plain surface, shot from above, with a long hard shadow. Sparse and slightly severe rather than triumphant.",
+      ${figure({
+        src: "../assets/img/owning-your-bitcoin-key.jpg",
+        alt: "A single key on a plain surface, shot from above, with a long hard shadow",
         caption: "The whole proposition, and the whole problem, in one object.",
-        ratio: "16 / 9",
-        icon: "bi-shield-lock"
+        width: 1300,
+        height: 726
       })}
 
       <h2>What the bank was actually doing</h2>
@@ -868,11 +869,12 @@ const guides = [
         "Store the device and the backup separately, so one theft, fire, or flood cannot take both."
       ])}
 
-      ${figureSlot({
-        shot: "Close-up of a hand writing recovery words onto a numbered backup card, hardware wallet screen visible but deliberately out of focus so no real words are legible.",
-        caption: "By hand, in order, offline. This is the step with no undo.",
-        ratio: "4 / 3",
-        icon: "bi-box-seam"
+      ${figure({
+        src: "../assets/img/complete-path-seed-words.jpg",
+        alt: "A close-up of a hand writing a recovery word onto a numbered backup card",
+        caption: "By hand, offline. This is the step with no undo.",
+        width: 1300,
+        height: 726
       })}
 
       ${callout("A passphrase is not a casual extra password", "A forgotten or mistyped BIP39 passphrase does not lock you out with an error &mdash; it silently opens a different, empty wallet. Add one only when you understand the recovery procedure and have a durable way to preserve it. If you do use one, write down that you used one.")}
@@ -947,11 +949,12 @@ const guides = [
 
       <p>Each of the six habits below is normal enough that you will find people recommending it. Each one has a specific, well-documented way of taking everything. None of them require you to be hacked, targeted, or unlucky &mdash; only to be slightly busy on the wrong afternoon.</p>
 
-      ${figureSlot({
-        shot: "A phone lying face-up on a desk showing a photo gallery, with a seed-phrase card visible as one of the thumbnails.",
+      ${figure({
+        src: "../assets/img/what-not-to-normalize-phone-gallery.jpg",
+        alt: "A phone lying face-up on a desk showing a photo gallery, with a seed-phrase card visible as one of the thumbnails",
         caption: "The most expensive photograph most people will ever take.",
-        ratio: "16 / 9",
-        icon: "bi-camera"
+        width: 1300,
+        height: 726
       })}
 
       <h2><span class="sc-article-num">1</span>Keeping a digital copy of your recovery words</h2>
@@ -1047,11 +1050,12 @@ const guides = [
 
       <p>This page builds the correct picture from the bottom up. It takes about fifteen minutes and it makes everything afterwards easier &mdash; why fees behave oddly, why your wallet keeps generating new addresses, why you can restore everything from twelve words, and why sending a small amount sometimes moves your entire balance.</p>
 
-      ${figureSlot({
-        shot: "A clean overhead flat-lay: a key, a padlock, and a small pile of mismatched cash notes of odd denominations, arranged left to right.",
+      ${figure({
+        src: "../assets/img/keys-addresses-utxos-flatlay.jpg",
+        alt: "A clean overhead flat-lay: a key, a padlock, and a small pile of mismatched cash notes of odd denominations, arranged left to right",
         caption: "The three ideas on this page, in order.",
-        ratio: "16 / 9",
-        icon: "bi-wallet2"
+        width: 1300,
+        height: 726
       })}
 
       <h2><span class="sc-article-num">1</span>There are no coins</h2>
@@ -1156,15 +1160,16 @@ const guides = [
     related: ["complete-path", "owning-your-bitcoin", "keys-addresses-utxos"],
     layout: "article",
     body: `
-      <p class="sc-guide-intro">There is no best bitcoin wallet, and the search for one is where a lot of people stall &mdash; comparing devices for weeks while their bitcoin sits on an exchange, which is the one option they had already decided against.</p>
+      <p class="sc-guide-intro">There is no one-size-fits-all bitcoin wallet, and the search for one is where a lot of people stall &mdash; comparing devices for weeks while their bitcoin sits on an exchange, which is the one option they had already decided against.</p>
 
       <p>The choice is not really between products. It is between <em>shapes</em>: how many keys, on what kind of hardware, in how many places. Pick the shape first and the product question becomes small and easy.</p>
 
-      ${figureSlot({
-        shot: "Three setups arranged left to right on a desk: a phone alone, a phone beside a hardware wallet, and three hardware wallets together.",
-        caption: "Three shapes. Most people should start at the left and move right over years.",
-        ratio: "16 / 9",
-        icon: "bi-signpost-split"
+      ${figure({
+        src: "../assets/img/choosing-your-first-setup-three-shapes.jpg",
+        alt: "Three setups arranged left to right on a desk: a phone alone, a phone beside a hardware wallet, and three hardware wallets together",
+        caption: "A hot wallet, a single hardware wallet, and multisig. The goal isn't to end up at the right &mdash; it's to match the shape to what you're actually holding.",
+        width: 1300,
+        height: 726
       })}
 
       <h2><span class="sc-article-num">1</span>You probably want two wallets, not one</h2>
@@ -1306,11 +1311,12 @@ const guides = [
 
       <p>What follows is the order to work through it: how to tell whether it is genuinely stuck, the two ways to push it through, and the one category of &ldquo;help&rdquo; that turns an irritating wait into a permanent loss.</p>
 
-      ${figureSlot({
-        shot: "A single envelope sitting alone in a wire out-tray on an empty desk, late light, nobody around to collect it.",
+      ${figure({
+        src: "../assets/img/stuck-transaction-envelope.jpg",
+        alt: "A single envelope sitting alone in a wire out-tray on an empty desk, late light, nobody around to collect it",
         caption: "Posted, not delivered, and still yours until somebody picks it up.",
-        ratio: "16 / 9",
-        icon: "bi-hourglass-split"
+        width: 1300,
+        height: 726
       })}
 
       <h2><span class="sc-article-num">1</span>Nothing is lost, and that is not reassurance</h2>
@@ -1421,11 +1427,12 @@ const guides = [
 
       <p>The good news is that this is a genuinely finishable task, usually under half an hour. The bad news is that the obvious way to do it &mdash; wipe the device and type the words back in &mdash; is also the one way to turn a bad backup into an immediate, permanent loss. So the first decision is which method you use.</p>
 
-      ${figureSlot({
-        shot: "Two hardware wallets side by side on a desk, one powered on mid-restore, the other switched off. A seed card sits between them.",
-        caption: "A restore performed deliberately, while everything still works, is the only version of this that is safe.",
-        ratio: "16 / 9",
-        icon: "bi-arrow-counterclockwise"
+      ${figure({
+        src: "../assets/img/recovery-test-drill-two-devices.jpg",
+        alt: "Two hardware wallets side by side on a desk with a seed card between them",
+        caption: "A restore performed deliberately, while everything still works, is the only version of this that is safe. (The card shown is a deliberately low-entropy demo phrase &mdash; never reuse a word twelve times on a real seed.)",
+        width: 1300,
+        height: 726
       })}
 
       ${prerequisites([
@@ -1561,15 +1568,15 @@ const guides = [
     body: `
       <p class="sc-guide-intro">A COLDCARD is a deliberately awkward device. It has a slot for a memory card and no way at all to talk to your computer over the internet. That awkwardness is the product &mdash; every inconvenience in this guide is a connection somebody decided not to give an attacker.</p>
 
-      <p>This page covers both current models. They run the same firmware and the setup is the same sequence on each, so rather than two nearly identical guides, the differences are flagged at the four or five points where they actually change what you press.</p>
+      <p>This page covers both current models. They share the same codebase and the setup sequence is the same on each &mdash; Coinkite ships them as separate firmware builds with independent version numbers, but nothing below depends on that &mdash; so rather than two nearly identical guides, the differences are flagged at the four or five points where they actually change what you press.</p>
 
       <p>Setting one up properly takes about forty-five minutes. Most of that is not fiddly; it is writing things down carefully and resisting the urge to hurry. Read the whole page once before you start, then work through it.</p>
 
       ${figure({
         src: "../assets/img/coldcard-q-mk5-devices.jpg",
         alt: "A COLDCARD Q and a COLDCARD Mk5 side by side on a wooden desk, both powered on and showing their home screens",
-        caption: "Same firmware, two keyboards. The Q's full QWERTY on the left, the Mk5's numeric keypad on the right &mdash; the difference that shapes everything below.",
-        width: 1584,
+        caption: "Same codebase, two keyboards. The Q's full QWERTY on the left, the Mk5's numeric keypad on the right.",
+        width: 1195,
         height: 672
       })}
 
@@ -1584,7 +1591,7 @@ const guides = [
         "<strong>Getting data out.</strong> The Q has a built-in QR scanner and can move wallet exports and signed transactions by camera. The Mk5 uses microSD, USB, or NFC."
       ])}
 
-      <p>If you are choosing between them, that list is the whole decision. The security model, the firmware, and every step below are shared.</p>
+      <p>If you are choosing between them, that list is the whole decision. The security model and every step below are shared.</p>
 
       ${prerequisites([
         "Your COLDCARD, unopened, bought from Coinkite or an authorised reseller.",
@@ -1644,11 +1651,12 @@ const guides = [
         "Do not add a passphrase on a first setup unless you already understand how to recover from one."
       ])}
 
-      ${figureSlot({
-        shot: "A COLDCARD screen showing a numbered word list during seed generation, angled so the words are not legible, with a hand writing on the backup card in the foreground.",
-        caption: "In order, by hand, once. The quiz afterwards is there to catch you.",
-        ratio: "4 / 3",
-        icon: "bi-usb-drive"
+      ${figure({
+        src: "../assets/img/coldcard-seed-word-writing.jpg",
+        alt: "A COLDCARD Q and Mk5 beside a blank metal seed plate, ready to have the recovery words stamped into it in order",
+        caption: "Write it, stamp it, in order. The quiz afterwards is there to catch you.",
+        width: 1300,
+        height: 726
       })}
 
       <h2><span class="sc-article-num">4</span>Take the encrypted backup</h2>
@@ -1682,7 +1690,7 @@ const guides = [
       <p class="mt-4"><a class="sc-text-link" href="sparrow-first-wallet.html">Next: pair it with Sparrow <i class="bi bi-arrow-right"></i></a></p>`
   },
   /* The planned standalone Mk5 setup guide was folded into coldcard-setup
-     above: same firmware, same sequence, and two near-identical pages would
+     above: same codebase, same sequence, and two near-identical pages would
      have put two links both labelled "Guide" on the one COLDCARD product
      card. */
   {
@@ -1855,11 +1863,12 @@ const guides = [
 
       <p>Two things around that core have changed with Passport Prime, and both are setup decisions rather than details. The backup system moved from a microSD card to NFC Keycards and SeedQR. And the device is no longer bitcoin-only &mdash; its firmware also runs 2FA codes, security keys, and encrypted file storage. Whether you use any of that is up to you, and worth deciding deliberately.</p>
 
-      ${figureSlot({
-        shot: "A Passport held in one hand with its camera aimed at a laptop screen showing a QR code, the device's own screen lit with a transaction summary.",
-        caption: "The whole data path, in both directions, is a camera and a screen.",
-        ratio: "16 / 9",
-        icon: "bi-usb-drive"
+      ${figure({
+        src: "../assets/img/passport-setup-qr-scan.jpg",
+        alt: "A Foundation Passport device resting on a laptop trackpad, no cable connected",
+        caption: "No cable, because there is nothing here to plug in. Every transaction crosses this gap as a QR code, read by the Passport's camera.",
+        width: 1300,
+        height: 726
       })}
 
       ${prerequisites([
@@ -1980,11 +1989,12 @@ const guides = [
 
       <p>That thing is the PIN. On most hardware wallets a dedicated secure element chip stores your key and counts failed attempts. Jade takes a different route, and the consequence is a design decision you make during setup rather than a detail you can ignore.</p>
 
-      ${figureSlot({
-        shot: "A Blockstream Jade Plus held up with its camera facing a laptop screen displaying a QR code, mid-scan.",
-        caption: "The camera is the reason to buy this device. Signing without ever plugging it in is the default, not a workaround.",
-        ratio: "16 / 9",
-        icon: "bi-usb-drive"
+      ${figure({
+        src: "../assets/img/jade-setup-qr-scan.jpg",
+        alt: "A Blockstream Jade Plus resting on a laptop keyboard, its screen showing the device's own logo",
+        caption: "The camera is the reason to buy this device. Every transaction crosses as a QR code, read by the Jade's own camera &mdash; signing without ever plugging it in is the default, not a workaround.",
+        width: 1300,
+        height: 769
       })}
 
       ${prerequisites([
@@ -3401,11 +3411,12 @@ const guides = [
 
       <p>This takes about half an hour, and covers the piece most people get wrong: verifying a receive address on the device rather than on the screen.</p>
 
-      ${figureSlot({
-        shot: "A laptop running Sparrow beside a hardware wallet on a desk, the same bitcoin address visible on both screens.",
-        caption: "Two screens, one address. Only one of them is hard for malware to lie on.",
-        ratio: "16 / 9",
-        icon: "bi-window"
+      ${figure({
+        src: "../assets/img/sparrow-laptop-hardware-wallet.jpg",
+        alt: "A laptop on a desk running the Sparrow bitcoin wallet, showing a transaction list and balance",
+        caption: "The Sparrow interface: balance, transaction history, and the tools to build a spend.",
+        width: 1300,
+        height: 726
       })}
 
       ${prerequisites([
