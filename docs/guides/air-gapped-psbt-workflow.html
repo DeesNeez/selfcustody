@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.">
+  <title>The air-gapped PSBT workflow | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/air-gapped-psbt-workflow.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="The air-gapped PSBT workflow | SelfCustody.ca">
+  <meta property="og:description" content="How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/air-gapped-psbt-workflow.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"The air-gapped PSBT workflow","description":"How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.","url":"https://selfcustody.ca/guides/air-gapped-psbt-workflow.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/air-gapped-psbt-workflow.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#advanced">Techniques</a>
+        </nav>
+        <span class="sc-eyebrow">Advanced techniques</span>
+        <h1>The air-gapped PSBT workflow</h1>
+        <p class="sc-lead">How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-intermediate">Intermediate</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 25 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-psbt">PSBT</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-air_gap">Air-gapped</a></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Every air-gapped signer works the same way underneath. A wallet on your computer builds a transaction it cannot sign, that transaction crosses to a device holding keys but no network connection, the device signs, and the signature comes back. The gap is never bridged by a cable, and the private key never crosses it in either direction.</p>
+
+      <p>The thing making the round trip is a <strong>PSBT</strong> &mdash; a partially signed bitcoin transaction. Four guides on this site mention it in passing; this one explains what is actually in it, because the contents are what determine whether your device can protect you or is merely signing whatever it is handed.</p>
+
+      <p>There is also one output in every transaction that almost nobody thinks to check, and it is the one an attacker would use to rob you.</p>
+
+      <h2><span class="sc-article-num">1</span>Two halves of a wallet</h2>
+
+      <p>An air-gapped setup splits the job of "a wallet" into two pieces that never touch.</p>
+
+      <ul class="sc-check-list"><li><strong>The coordinator</strong> runs on your computer or phone &mdash; Sparrow, Nunchuk, Electrum, and the rest. It talks to the network, watches your balance, knows your addresses, chooses which coins to spend, and builds transactions. It holds no private keys and cannot sign anything.</li><li><strong>The signer</strong> is the offline device &mdash; a COLDCARD, SeedSigner, Krux, or similar. It holds the keys and can sign, but knows nothing about the blockchain, cannot see your balance, and has no idea what has happened since you last used it.</li></ul>
+
+      <p>Neither half can spend your bitcoin alone, and that is the entire architecture. The PSBT is how they cooperate without ever being connected.</p>
+
+      <h2><span class="sc-article-num">2</span>What is actually in the file</h2>
+
+      <p>A PSBT is not just an unsigned transaction. If it were, your signer would be helpless &mdash; it would see addresses and amounts it could not verify and would have to take them on faith.</p>
+
+      <p>So the coordinator packs in everything the offline device needs to check the work itself:</p>
+
+      <ul class="sc-check-list"><li><strong>The transaction being proposed</strong> &mdash; which coins are being spent, and to which addresses, in what amounts.</li><li><strong>The full details of every input being spent.</strong> This is the part that matters most, and section 3 explains why.</li><li><strong>Derivation paths</strong>, so the device knows which of its keys apply to which input, and which outputs belong to your own wallet.</li><li><strong>Any signatures already collected</strong>, which is what makes multisig possible &mdash; each signer adds theirs and passes it along.</li></ul>
+
+      <p>The device reads all of that, works out the truth for itself, shows you the result on its own screen, and only then signs.</p>
+
+      <h2><span class="sc-article-num">3</span>Why the input details matter</h2>
+
+      <p>Here is a subtlety worth understanding, because it explains a design decision that otherwise looks like bloat.</p>
+
+      <p>Your offline signer cannot look up the blockchain. If the PSBT told it only "you are spending these coins" without saying how much each one was worth, the device would have no way to calculate the fee &mdash; and the fee is simply whatever is left over after the outputs are paid.</p>
+
+      <p>A dishonest coordinator could exploit exactly that. It tells the device the inputs are small, the device computes a modest fee and displays it, you approve, and the real transaction burns an enormous amount to the miner. You signed something whose true cost you were never shown.</p>
+
+      <div class="sc-callout mt-4"><h3>This is why a PSBT carries the value of every input</h3><p>Given the amounts, the device does its own arithmetic: total in, minus total out, equals fee. It is no longer repeating a number the computer told it &mdash; it is computing one and showing you the answer. Believe the number on the signer's screen, not the one on your monitor.</p></div>
+
+      <h2><span class="sc-article-num">4</span>Getting it across the gap</h2>
+
+      <p>The PSBT has to physically travel. Four routes are in common use, and the choice is mostly about which device you own.</p>
+
+      <div class="sc-psbt-routes-panel" aria-label="Transport options and what each costs you">
+        <div class="sc-psbt-routes-heading">
+          <span class="sc-psbt-routes-mark" aria-hidden="true"><i></i></span>
+          <div><span>Transport layer</span><h3>Four ways across the gap</h3></div>
+          <strong>QR + microSD preserve the air gap</strong>
+        </div>
+        <div class="sc-psbt-routes-grid">
+          <article class="is-microsd">
+            <div class="sc-psbt-route-title"><span>microSD</span><strong>Physical shuttle</strong></div>
+            <div class="sc-psbt-route-track" aria-hidden="true"><span>Wallet</span><i>&rarr;</i><b>Card</b><i>&rarr;</i><span>Signer</span></div>
+            <p>Coordinator writes a file; you carry the card to the signer and back.</p>
+            <aside>Simple and reliable. The card has touched both machines, so dedicate one to this job.</aside>
+          </article>
+          <article class="is-qr">
+            <div class="sc-psbt-route-title"><span>QR codes</span><strong>Optical only</strong></div>
+            <div class="sc-psbt-route-track" aria-hidden="true"><span>Screen</span><i>&rarr;</i><b>Light</b><i>&rarr;</i><span>Camera</span></div>
+            <p>Screens and cameras move larger transactions across several animated frames.</p>
+            <aside>Nothing physical crosses. Complex transactions and poor screens can slow scanning down.</aside>
+          </article>
+          <article class="is-nfc">
+            <div class="sc-psbt-route-title"><span>NFC</span><strong>Radio contact</strong></div>
+            <div class="sc-psbt-route-track" aria-hidden="true"><span>Phone</span><i>&rarr;</i><b>Tap</b><i>&rarr;</i><span>Signer</span></div>
+            <p>Tap the signing device against a compatible phone.</p>
+            <aside>Fast and pleasant. Radio contact is still contact, so some people disable it on principle.</aside>
+          </article>
+          <article class="is-usb">
+            <div class="sc-psbt-route-title"><span>USB</span><strong>Direct connection</strong></div>
+            <div class="sc-psbt-route-track" aria-hidden="true"><span>Computer</span><i>&rarr;</i><b>Cable</b><i>&rarr;</i><span>Signer</span></div>
+            <p>Connect the signing device directly to the computer.</p>
+            <aside>Convenient, but not air-gapped. The signer is talking to a machine that may be compromised.</aside>
+          </article>
+        </div>
+      </div>
+
+      <p>Only the first two involve no electrical or radio connection whatsoever. If the reason you bought an air-gapped signer was to avoid that connection, using it over USB gives most of that back.</p>
+
+      <h2><span class="sc-article-num">5</span>The output nobody checks</h2>
+
+      <p>This is the section to read twice.</p>
+
+      <p>A typical payment has two outputs, not one. There is the amount going to the person you are paying, and there is the <strong>change</strong> coming back to you &mdash; because coins are spent whole, and the remainder has to go somewhere.</p>
+
+      <p>Everyone verifies the recipient address. Almost nobody looks at the change output, because it is "just my own money coming back". And that is precisely the gap.</p>
+
+      <blockquote class="sc-pull-quote"><p>A compromised coordinator does not need to alter the address you are watching. It only needs to alter the one you are not.</p></blockquote>
+
+      <p>If malicious software sets the change address to one it controls, you would see a correct payment to your intended recipient, approve it, and unknowingly send the entire remainder of the coin to an attacker. The transaction looks perfect on the half of it you inspected.</p>
+
+      <p>The defence is built into the PSBT, and it only works if your device is in a position to use it:</p>
+
+      <ul class="sc-check-list"><li><strong>The device verifies the change output derives from your own wallet.</strong> It has your keys, so it can check whether it could produce that address. If it cannot, the address is not yours.</li><li><strong>For single-sig, this works out of the box</strong>, because the device knows its own key and can derive its own addresses.</li><li><strong>For multisig, the device must know the whole wallet</strong> &mdash; every co-signer's public key. A change address in a 2-of-3 is derived from all three, and a device that has only seen its own key cannot tell a legitimate change address from a hostile one.</li><li><strong>So register the wallet on each signer</strong> before you fund a multisig. This is the step that makes change verification possible, and <a href='multisig-2of3.html'>the multisig guide</a> covers why that configuration matters for recovery too.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>The round trip, start to finish</h2>
+
+      <ul class="sc-check-list"><li><strong>Build.</strong> The coordinator selects coins, sets the fee, and produces the PSBT.</li><li><strong>Transfer.</strong> The file goes across by card, camera, or tap.</li><li><strong>Verify on the signer.</strong> Amount, recipient, fee, and &mdash; where the device supports it &mdash; confirmation that the change is coming home. Read these on the signer's screen, which is the whole reason it has one.</li><li><strong>Sign.</strong> The device adds its signature into the PSBT. The key does not move.</li><li><strong>Transfer back</strong> the same way it came.</li><li><strong>Finalise and broadcast.</strong> The coordinator assembles the finished transaction and sends it to the network.</li><li><strong>For multisig, repeat</strong> steps two to five with each signer until enough signatures are collected.</li></ul>
+
+      <h2><span class="sc-article-num">7</span>When it goes wrong</h2>
+
+      <p>Air-gapped signing fails in a small number of recognisable ways, and none of them put your coins at risk &mdash; an unsigned or unbroadcast transaction has changed nothing.</p>
+
+      <ul class="sc-check-list"><li><strong>The signer cannot find the file.</strong> Usually a card formatted the wrong way, or the file written to a folder the device does not look in.</li><li><strong>The animated QR will not scan.</strong> Raise the screen brightness, slow the animation if the coordinator allows it, and clean the camera lens. Transactions with many inputs make long animations.</li><li><strong>The device will not show a change address as its own.</strong> On multisig this almost always means the wallet was never registered on that device.</li><li><strong>The fee on the device does not match the computer.</strong> Stop. The device is doing arithmetic on real values; something is wrong on the other side.</li><li><strong>A signature is rejected as invalid.</strong> Typically the wrong device for the wallet, or a derivation path mismatch.</li></ul>
+
+      <h2><span class="sc-article-num">8</span>What the air gap does not do</h2>
+
+      <p>Worth stating plainly, because "air-gapped" is often heard as a broader claim than it is.</p>
+
+      <ul class="sc-caution-list"><li><strong>It does not make you private.</strong> The coordinator still talks to the network and still knows every address you own.</li><li><strong>It does not protect a bad backup.</strong> Losing your recovery words loses the wallet regardless of how the signing was done.</li><li><strong>It does not verify the recipient for you.</strong> If you pasted an address from a compromised source, the device faithfully signs a payment to the attacker &mdash; correctly, exactly as instructed.</li><li><strong>It does not help if you approve without reading.</strong> The screen is the protection. Skipping it removes the entire benefit of the arrangement.</li></ul>
+
+      <h2>The short version</h2>
+
+      <p>A PSBT carries the proposed transaction plus everything an offline device needs to check it independently &mdash; including the value of every input, so the device computes the fee rather than believing one. It crosses the gap by card, camera, or tap, gets signed, and comes back to be broadcast. Verify on the signer's screen, and register multisig wallets on every device so change addresses can be verified too.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Check the change output, not just the recipient. Every other verification habit is widely taught; this is the one that gets skipped, and it is the one a compromised computer is counting on you skipping.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="multisig-2of3.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Build a 2-of-3 multisig</h3>
+              <p>Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="seedsigner-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-cpu"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>SeedSigner: build and first use</h3>
+              <p>Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-first-wallet.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-window"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Sparrow: pair a hardware wallet and verify a receive address</h3>
+              <p>Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

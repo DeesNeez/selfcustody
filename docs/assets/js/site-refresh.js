@@ -123,8 +123,15 @@
   const toggle = document.querySelector(".mobile-nav-toggle");
   const navMenus = [...(nav?.querySelectorAll(".sc-nav-menu") || [])];
 
+  /* The control that opens a submenu isn't always the same element: "Compare"
+     has no page of its own, so its whole .sc-nav-menu-toggle is a button that
+     only ever opens the list. "Guides" is a real destination, so its label is
+     a plain link and a separate .sc-nav-menu-chevron-btn is the thing that
+     opens the list -- that one wins here when both exist. */
+  const menuOpener = menu => menu?.querySelector(".sc-nav-menu-chevron-btn") || menu?.querySelector(".sc-nav-menu-toggle");
+
   const setNavMenu = (menu, open) => {
-    const menuToggle = menu?.querySelector(".sc-nav-menu-toggle");
+    const menuToggle = menuOpener(menu);
     if (!menu || !menuToggle) return;
     menu.classList.toggle("is-open", open);
     menuToggle.setAttribute("aria-expanded", String(open));
@@ -137,7 +144,7 @@
   };
 
   navMenus.forEach(menu => {
-    const menuToggle = menu.querySelector(".sc-nav-menu-toggle");
+    const menuToggle = menuOpener(menu);
 
     menuToggle?.addEventListener("click", event => {
       event.preventDefault();
@@ -2840,6 +2847,12 @@
     const clearBtn = finderSection.querySelector("[data-finder-clear]");
     const pick = finderSection.querySelector("[data-finder-pick]");
     const noneEl = finderSection.querySelector("[data-guide-none]");
+    const searchInput = finderSection.querySelector("[data-guide-search]");
+    const searchClear = finderSection.querySelector("[data-guide-search-clear]");
+
+    /* Searched against a card's full text (title, summary, tags) rather than
+       just the title, computed once since the cards themselves never change. */
+    const cellText = new Map(cells.map(cell => [cell, cell.textContent.toLowerCase()]));
 
     /* Saying you are advanced should never hide the basics, so each answer maps
        to the set of levels it keeps rather than to a single level. */
@@ -2849,7 +2862,10 @@
       advanced: ["beginner", "intermediate", "advanced"]
     };
 
-    const answers = { goal: null, product: null, level: null };
+    /* `query` is a fourth answer alongside the three chip questions -- typing
+       into the search box surfaces matches in the same results box a chip
+       pick does, rather than filtering the library below on its own. */
+    const answers = { goal: null, product: null, level: null, query: "" };
     const anyAnswer = () => Object.values(answers).some(Boolean);
 
     const matches = cell => {
@@ -2862,6 +2878,7 @@
          Unchained surfaced a dozen unrelated guides instead of the one that
          actually names it. */
       if (answers.product && !cell.dataset.guideProducts.split(" ").includes(answers.product)) return false;
+      if (answers.query && !cellText.get(cell).includes(answers.query)) return false;
       return true;
     };
 
@@ -2878,10 +2895,15 @@
        directly above already says "N guides ready to read", so a second
        "N guides available" line here was the same fact twice.
 
-       Every match is rendered, not a top-few preview -- the library below is
-       no longer filtered, so this box is the only place the answer appears.
-       Document order is already the curated order (foundations before devices
-       before advanced), so no re-sort is needed. */
+       Capped at PICK_LIMIT cards up front -- a wide-open question like just
+       picking a level can match a dozen guides, and this box sits above the
+       full, un-filtered library anyway, so there is no need to dump all of
+       them here at once. The rest sit in the DOM already hidden, so "Show
+       more" is just an unhide rather than a second render pass. Document
+       order is already the curated order (foundations before devices before
+       advanced), so no re-sort is needed either way. */
+    const PICK_LIMIT = 3;
+
     const renderPick = matched => {
       const readable = matched.filter(c => c.dataset.guideStatus === "published");
       if (!anyAnswer() || !readable.length) {
@@ -2892,11 +2914,12 @@
 
       const row = document.createElement("div");
       row.className = "row g-4";
-      readable.forEach(cell => {
+      readable.forEach((cell, index) => {
         const card = cell.querySelector(".sc-guide-card");
         if (!card) return;
         const col = document.createElement("div");
         col.className = "col-md-6 col-xl-4";
+        col.hidden = index >= PICK_LIMIT;
         const clone = card.cloneNode(true);
         /* Cards further down the page may not have been scroll-revealed yet,
            and the clone inherits .sc-reveal's opacity: 0 with them. The finder
@@ -2906,8 +2929,22 @@
         row.appendChild(col);
       });
 
-      pick.replaceChildren(row);
+      const extra = readable.length - PICK_LIMIT;
+      const children = extra > 0 ? [row, moreButton(row, extra)] : [row];
+      pick.replaceChildren(...children);
       pick.hidden = false;
+    };
+
+    const moreButton = (row, extra) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "sc-finder-more";
+      button.textContent = `Show ${extra} more`;
+      button.addEventListener("click", () => {
+        row.querySelectorAll("[hidden]").forEach(col => { col.hidden = false; });
+        button.remove();
+      });
+      return button;
     };
 
     const apply = () => {
@@ -2965,26 +3002,54 @@
       });
     });
 
+    searchInput.addEventListener("input", () => {
+      answers.query = searchInput.value.trim().toLowerCase();
+      searchClear.hidden = !answers.query;
+      apply();
+      syncUrl();
+    });
+
+    searchClear.addEventListener("click", () => {
+      searchInput.value = "";
+      answers.query = "";
+      searchClear.hidden = true;
+      apply();
+      syncUrl();
+      searchInput.focus();
+    });
+
     clearBtn.addEventListener("click", () => {
-      Object.keys(answers).forEach(k => { answers[k] = null; });
+      answers.goal = null;
+      answers.product = null;
+      answers.level = null;
+      answers.query = "";
+      searchInput.value = "";
+      searchClear.hidden = true;
       syncChips();
       apply();
       syncUrl();
       finderSection.scrollIntoView({ block: "start" });
     });
 
-    /* Read any incoming ?goal=&product=&level= before the first paint of the
-       revealed finder, so a deep link never flashes the unfiltered library. */
+    /* Read any incoming ?goal=&product=&level=&query= before the first paint
+       of the revealed finder, so a deep link never flashes the unfiltered
+       library. */
     const incoming = new URLSearchParams(location.search);
     const valid = {
       goal: new Set(chips.filter(c => c.dataset.finderGroup === "goal").map(c => c.dataset.finderValue)),
       product: new Set(chips.filter(c => c.dataset.finderGroup === "product").map(c => c.dataset.finderValue)),
       level: new Set(Object.keys(LEVELS))
     };
-    Object.keys(answers).forEach(key => {
+    ["goal", "product", "level"].forEach(key => {
       const value = incoming.get(key);
       if (value && valid[key].has(value)) answers[key] = value;
     });
+    const incomingQuery = incoming.get("query");
+    if (incomingQuery) {
+      answers.query = incomingQuery.trim().toLowerCase();
+      searchInput.value = incomingQuery;
+      searchClear.hidden = false;
+    }
 
     finderSection.hidden = false;
     syncChips();
@@ -3092,6 +3157,20 @@
         definition: "A wallet that tracks addresses, balances, and transactions without holding the private keys needed to spend. It can receive funds and usually construct unsigned transactions, but signing must happen in a separate wallet or hardware device. Importing an XPUB or descriptor can create a watch-only wallet while also exposing wallet history to the software or server used.",
         example: "Sparrow on an online computer watches the wallet and prepares a PSBT; an offline hardware wallet reviews and signs it.",
         categories: ["Wallets", "Security", "Privacy", "Technical"]
+      },
+      {
+        id: "wrench_attack",
+        title: "Wrench attack",
+        definition: "An attack that bypasses cryptography entirely by coercing the owner into handing over their keys or moving funds. Also called the $5 wrench attack, after a well-known comic observing that an adversary is far more likely to threaten a person than to break their encryption. Because no key length or signing policy applies, the defences are different in kind: discretion about holdings, arrangements that make immediate transfer genuinely impossible, and keeping a small amount available to surrender.",
+        example: "A holder is confronted at home and forced to unlock a wallet; a mandatory login countdown means the funds cannot be moved that evening by anyone, including them.",
+        categories: ["Security", "Risk", "Planning"]
+      },
+      {
+        id: "checksum",
+        title: "Checksum",
+        definition: "A short value calculated from a larger piece of data specifically to catch errors in it. Bitcoin uses checksums in several unrelated places: the final word of a BIP39 recovery phrase encodes a checksum of the words before it, so most (not all) transcription mistakes produce an invalid phrase rather than a silently different wallet; bech32 addresses carry a checksum strong enough to catch typos reliably; and software releases are distributed with a checksum file so a download can be verified against what the developers actually published.",
+        example: "Before flashing a signer's firmware, a user checks the published SHA256 checksum against the file they downloaded to confirm nothing was altered in transit.",
+        categories: ["Technical", "Backups", "Security"]
       }
     ];
 

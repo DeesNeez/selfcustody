@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A wallet with no recovery phrase to write down, because the company holds a third key you can call on. Setting it up, and the honest accounting of what that recovery service can and cannot do.">
+  <title>Bitkey: first-time setup | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/bitkey-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Bitkey: first-time setup | SelfCustody.ca">
+  <meta property="og:description" content="A wallet with no recovery phrase to write down, because the company holds a third key you can call on. Setting it up, and the honest accounting of what that recovery service can and cannot do.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/bitkey-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Bitkey: first-time setup","description":"A wallet with no recovery phrase to write down, because the company holds a third key you can call on. Setting it up, and the honest accounting of what that recovery service can and cannot do.","url":"https://selfcustody.ca/guides/bitkey-setup.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/bitkey-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#devices">Devices</a>
+        </nav>
+        <span class="sc-eyebrow">Hardware</span>
+        <h1>Bitkey: first-time setup</h1>
+        <p class="sc-lead">A wallet with no recovery phrase to write down, because the company holds a third key you can call on. Setting it up, and the honest accounting of what that recovery service can and cannot do.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 25 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-mobile_wallet">Mobile</a><span class="sc-tag">Assisted recovery</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../devices.html#bitkey-device">About Bitkey <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Every other guide in this section ends with the same instruction: write twenty-four words on something durable and never lose them. Bitkey does not have those words. There is nothing to write down, nothing to hide, and nothing to lose in a house fire.</p>
+
+      <p>That is not a shortcut around the problem. It is a different answer to it. Instead of one secret that must survive forever, Bitkey splits control across three keys and requires any two to spend &mdash; a hardware device, your phone, and a key held by Block, the company behind it, purely so that you can recover if one of yours goes missing.</p>
+
+      <p>Whether that is a good trade depends entirely on details most reviews skip, so this page sets up the wallet and then does the accounting: precisely what Block can do, what it cannot, and what happens to your coins if the company vanishes tomorrow.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-phone" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A Bitkey hardware device resting on a phone showing the Bitkey app, shot from above on a plain surface, no seed backup card anywhere in frame.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>Two of the three keys. The third is somewhere else entirely, and that is the point.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li><strong>The Bitkey hardware device.</strong> It sells for around CA$360 and includes the fingerprint sensor and screen you will approve transactions on.</li><li><strong>A phone</strong>, iOS or Android, with NFC. The app and the hardware talk by tapping rather than by cable.</li><li><strong>A cloud account you actually control</strong> &mdash; iCloud or Google Drive &mdash; for the encrypted backup of your phone's key.</li><li><strong>Ten minutes and no bitcoin.</strong> As always, fund nothing until the check at the end passes.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>The three keys, and who holds them</h2>
+
+      <p>Bitkey is a 2-of-3 multisig wallet. Three keys exist, any two can move coins, and no single key can do anything alone. If the shape of that is unfamiliar, <a href='multisig-2of3.html'>the 2-of-3 guide</a> covers the concept properly &mdash; the difference here is who holds what.</p>
+
+      <ul class="sc-check-list"><li><strong>The hardware key</strong> lives on the Bitkey device, unlocked by your fingerprint. It never leaves.</li><li><strong>The app key</strong> lives on your phone, with an encrypted copy backed up to your cloud account.</li><li><strong>The recovery key</strong> is held by Block. It exists solely to help you replace one of the other two, and it is never used in your ordinary spending.</li></ul>
+
+      <p>Two of those three are yours, which is the whole architecture in one sentence: <strong>you can always spend without asking anyone, and nobody can spend without you.</strong> Block holding one key of three means they can participate in a recovery. It does not mean they can move your coins, because one key of three moves nothing.</p>
+
+      <h2><span class="sc-article-num">2</span>Setting it up</h2>
+
+      <p>This is the easiest setup on the site, deliberately so. There is no seed to transcribe and no quiz to pass.</p>
+
+      <ul class="sc-check-list"><li><strong>Install the Bitkey app</strong> and create your wallet in it.</li><li><strong>Pair the hardware device</strong> by tapping it against the phone. NFC does the rest.</li><li><strong>Enrol your fingerprint</strong> on the device. This is what authorises the hardware key to sign.</li><li><strong>Complete the cloud backup</strong> when prompted. This is not optional in practice &mdash; it is what makes losing your phone a minor inconvenience instead of a recovery ordeal.</li><li><strong>Add one or two trusted contacts</strong> in settings. They cannot see or spend your bitcoin; they can only help you prove you are you if things go badly.</li></ul>
+
+      <h2><span class="sc-article-num">3</span>What &ldquo;no seed phrase&rdquo; actually changes</h2>
+
+      <p>Removing the recovery phrase removes the single most common way people lose bitcoin: a backup that was never written down, written down wrong, lost, destroyed, or photographed and stolen. That is a genuine and substantial win, and it is why this device exists.</p>
+
+      <p>It also removes something. A seed phrase is portable &mdash; twenty-four words restore into any wallet software, from any maker, decades from now, with nobody's permission. You do not have that here. Your recovery path is Bitkey's recovery path.</p>
+
+      <blockquote class="sc-pull-quote"><p>A recovery phrase is a thing you must protect forever. Bitkey trades that burden for a dependency. Neither is free, and pretending otherwise is how people choose badly.</p></blockquote>
+
+      <p>The rest of this page is about that dependency, because it is the part worth understanding before you fund the wallet rather than after.</p>
+
+      <h2><span class="sc-article-num">4</span>The recovery routes</h2>
+
+      <p>Bitkey has four separate mechanisms, and which one applies depends on what you lost.</p>
+
+      <div class="sc-bitkey-recovery-panel" aria-label="What to expect when something goes missing">
+        <div class="sc-bitkey-recovery-heading">
+          <span class="sc-bitkey-recovery-mark" aria-hidden="true">2<span>/3</span></span>
+          <div><span>Recovery map</span><h3>Four ways back in</h3></div>
+          <strong>What you lose decides the route</strong>
+        </div>
+        <div class="sc-bitkey-recovery-grid">
+          <article class="is-cloud">
+            <span class="sc-bitkey-loss">Phone lost</span>
+            <h3>Your phone, with its cloud backup intact</h3>
+            <dl><div><dt>Recovery route</dt><dd>Cloud Recovery</dd></div><div><dt>Expected time</dt><dd>Seconds</dd></div></dl>
+          </article>
+          <article class="is-delay">
+            <span class="sc-bitkey-loss">One key lost</span>
+            <h3>A key is genuinely gone, but you hold the other</h3>
+            <dl><div><dt>Recovery route</dt><dd>Delay + Notify</dd></div><div><dt>Expected time</dt><dd>7 days</dd></div></dl>
+          </article>
+          <article class="is-contacts">
+            <span class="sc-bitkey-loss">Both keys lost</span>
+            <h3>Your phone and hardware are both unavailable</h3>
+            <dl><div><dt>Recovery route</dt><dd>Trusted contacts, or Delay + Notify</dd></div><div><dt>Expected time</dt><dd>Up to 7 days</dd></div></dl>
+          </article>
+          <article class="is-inheritance">
+            <span class="sc-bitkey-loss">Inheritance</span>
+            <h3>You are unavailable in the estate sense</h3>
+            <dl><div><dt>Recovery route</dt><dd>Claim by your beneficiary</dd></div><div><dt>Expected time</dt><dd>6 months</dd></div></dl>
+          </article>
+        </div>
+      </div>
+
+      <p><strong>Cloud Recovery</strong> is the everyday case. Your encrypted app key comes back from iCloud or Google Drive onto a new phone, and you are working again in seconds.</p>
+
+      <p><strong>Delay + Notify</strong> is the one to understand properly, because it behaves differently from how people assume. You start it with the key you still have, then wait seven days while Bitkey notifies you repeatedly and offers to cancel. At the end, it does <em>not</em> restore your old wallet &mdash; it builds a new one with new keys and moves your funds across.</p>
+
+      <p>That design is deliberate and rather good. It means a key you lost, if it ever surfaces in the wrong hands, is cryptographically disconnected from the wallet holding your coins. It also means recovery is an on-chain transaction, so it costs a network fee and your addresses change.</p>
+
+      <div class="sc-callout mt-4"><h3>Why seven days is a feature, not friction</h3><p>The delay exists so that a recovery started by somebody who is not you cannot complete quietly. You get notified throughout and can cancel at any point. An attacker who somehow got one of your keys still has to wait a week in full view of you &mdash; which is precisely the window in which you stop them.</p></div>
+
+      <p><strong>Inheritance</strong> runs the same idea over six months. You name another Bitkey owner as beneficiary; their claim starts a long, loudly-notified clock, and until it completes they learn nothing &mdash; not even your balance.</p>
+
+      <h2><span class="sc-article-num">5</span>What Block can and cannot do</h2>
+
+      <p>The honest accounting, since this is the question the whole product turns on.</p>
+
+      <ul class="sc-check-list"><li><strong>They cannot spend your bitcoin.</strong> One key of three authorises nothing. This is arithmetic, not a promise in a terms-of-service document.</li><li><strong>They cannot freeze your wallet.</strong> You hold two keys, which is a spending majority, and you never need their participation to transact.</li><li><strong>They can take part in replacing a lost key</strong> &mdash; which is the service you bought &mdash; but only through a process that notifies you and gives you seven days to stop it.</li><li><strong>They know your wallet exists</strong>, and the addresses in it. This is a real privacy cost, and it is not one the multisig arithmetic removes.</li></ul>
+
+      <ul class="sc-caution-list"><li>A company that can help you recover is a company with something worth attacking. The seven-day delay is what stands between a compromise at Block and a compromise of your coins.</li><li>Assisted recovery means an identifiable relationship with a business. If your reason for holding bitcoin is that nobody should know you hold it, this is the wrong product.</li><li>Trusted contacts are people. Choose ones who will still be reachable, and still like you, in five years.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>If Bitkey disappeared tomorrow</h2>
+
+      <p>This is the question to ask of any wallet with a company inside it, and it is the one most such products answer badly.</p>
+
+      <p>Bitkey's answer is the <strong>Emergency Exit Kit</strong>: a way to move your funds using your own two keys, without Bitkey's servers being involved at all. Because you hold a spending majority, the company's participation was never required to spend &mdash; the exit kit is what lets you exercise that fact if their infrastructure is gone.</p>
+
+      <ul class="sc-check-list"><li><strong>Generate and store the Emergency Exit Kit when you set the wallet up</strong>, not when you need it. A tool that lives only on a server you can no longer reach is not a contingency.</li><li><strong>Keep it where you would have kept a seed backup.</strong> The phrase went away; the discipline of an offline copy somewhere safe did not.</li><li><strong>Understand it before you need it.</strong> Read what it does now, while nothing is urgent.</li></ul>
+
+      <h2><span class="sc-article-num">7</span>Before you fund it</h2>
+
+      <ul class="sc-check-list"><li>Confirm the cloud backup completed, and that you can actually sign in to that cloud account independently.</li><li>Generate and store the Emergency Exit Kit.</li><li>Add your trusted contacts and tell them they are on the list.</li><li>Send a small test amount, confirm it arrives, and send it back out &mdash; approving on the device screen, which is where you should always read the details.</li><li>If you plan to hold a meaningful amount, rehearse a recovery on a wallet holding almost nothing first.</li></ul>
+
+      <h2>Who this is actually for</h2>
+
+      <p>Bitkey is a good answer for somebody who wants genuine self-custody, knows themselves well enough to distrust their own filing, and would rather depend on a company's recovery process than on a piece of paper surviving a decade of house moves.</p>
+
+      <p>It is the wrong answer for somebody whose priority is privacy from all counterparties, or who wants a wallet that can be restored into any software decades from now with nobody's help. Those people want a recovery phrase and the burden that comes with it.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Block cannot move your coins, and that is arithmetic rather than trust &mdash; two of three keys are yours. What you are actually buying is a recovery service, priced in a seven-day delay and a company knowing your wallet exists. Generate the Emergency Exit Kit on day one, and the dependency stays a convenience rather than a trap.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="multisig-2of3.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Build a 2-of-3 multisig</h3>
+              <p>Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="choosing-your-first-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-signpost-split"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Choosing your first setup</h3>
+              <p>Most people ask which wallet is best. The useful question is how much you are protecting, from what, and who else needs to be able to recover it — which has a different answer.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

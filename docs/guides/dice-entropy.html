@@ -13,14 +13,14 @@
   <meta property="og:title" content="Roll the dice: generating your own entropy | SelfCustody.ca">
   <meta property="og:description" content="Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.">
   <meta property="og:url" content="https://selfcustody.ca/guides/dice-entropy.html">
-  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="1774">
-  <meta property="og:image:height" content="887">
-  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
-  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Roll the dice: generating your own entropy","description":"Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.","url":"https://selfcustody.ca/guides/dice-entropy.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/dice-entropy.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -44,13 +44,20 @@
             <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
           </a>
           <nav id="navbar" class="navbar" aria-label="Primary navigation">
-            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
-          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
-            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
           </button>
           <ul class="sc-nav-submenu">
-            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
-            <li><a class="" href="../glossary.html">Glossary</a></li>
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
           </ul>
         </li><li class="sc-nav-menu">
           <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
@@ -61,7 +68,7 @@
             <li><a class="" href="../software.html">Software</a></li>
             <li><a class="" href="../exchanges.html">Exchanges</a></li>
           </ul>
-        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
         </div>
@@ -75,7 +82,7 @@
           <a href="../guides.html#advanced">Techniques</a>
         </nav>
         <span class="sc-eyebrow">Advanced techniques</span>
-        <h1>Roll the dice: generating your own entropy</h1>
+        <div class="sc-guide-title-row"><span class="sc-die-mark" aria-hidden="true"></span><h1>Roll the dice: generating your own entropy</h1></div>
         <p class="sc-lead">Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.</p>
         <div class="sc-guide-meta">
           <span class="sc-level sc-level-intermediate">Intermediate</span>
@@ -148,43 +155,87 @@
 
       <p>This is the question people worry about most, and it is the one that matters least.</p>
 
-      <p>Real dice are never perfectly even. People have actually measured this properly &mdash; studies rolling dice hundreds of thousands of times have found individual faces turning up around 1.3% to 1.4% more often than they should. Cheap moulded dice are worse than casino dice with sharp square edges.</p>
+      <p>Real dice are never perfectly even. People have actually measured this properly &mdash; a 1971 <em>Psychometrika</em> study rolling dice a few million times found even faces turning up about 1.4% more often than they should, and a 2009 automated re-run of a classic 1894 dice experiment, published in <em>CHANCE</em>, found a comparable 1.3% bias. Cheap moulded dice are worse than casino dice with sharp square edges.</p>
 
       <p>The effect on your wallet is almost nothing. Below is what happens to the randomness as the die gets progressively worse, starting from a perfect one and ending at a die so skewed you would notice it across the room.</p>
 
       
     <figure class="sc-figure sc-chart-figure">
+      <div class="sc-chart-heading">
+        <span class="sc-chart-mark" aria-hidden="true"></span>
+        <div>
+          <span>Bias stress test</span>
+          <h3>How much randomness survives?</h3>
+        </div>
+        <strong>99 rolls keep a wide margin</strong>
+      </div>
+
       <div class="sc-chart-legend">
         <span><i class="sc-chart-key sc-chart-key-24" aria-hidden="true"></i>24 words &middot; 99 rolls</span>
         <span><i class="sc-chart-key sc-chart-key-12" aria-hidden="true"></i>12 words &middot; 50 rolls</span>
         <span><i class="sc-chart-key sc-chart-key-line" aria-hidden="true"></i>Security thresholds</span>
       </div>
 
-      <svg class="sc-chart-svg" viewBox="0 0 720 400" role="img" aria-labelledby="entropy-chart-title entropy-chart-desc" preserveAspectRatio="xMidYMid meet">
-        <title id="entropy-chart-title">Randomness retained as a die becomes less fair</title>
-        <desc id="entropy-chart-desc">A 24-word seed from 99 rolls stays between 256 and 198 bits across every scenario. A 12-word seed from 50 rolls starts at 128 bits and falls to 100 bits with a badly skewed die, dropping below both the 128-bit and 112-bit thresholds.</desc>
-        <line class="sc-chart-grid" x1="56" y1="248" x2="704" y2="248"/>
+      <div class="sc-chart-plot">
+        <svg class="sc-chart-svg" viewBox="0 0 720 400" role="img" aria-labelledby="entropy-chart-title entropy-chart-desc" preserveAspectRatio="xMidYMid meet">
+          <title id="entropy-chart-title">Randomness retained as a die becomes less fair</title>
+          <desc id="entropy-chart-desc">A 24-word seed from 99 rolls stays between 256 and 198 bits across every scenario. A 12-word seed from 50 rolls starts at 128 bits and falls to 100 bits with a badly skewed die, dropping below both the 128-bit and 112-bit thresholds.</desc>
+          <defs>
+            <linearGradient id="entropy-bar-24" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ff9f24"/>
+              <stop offset="1" stop-color="#c75f00"/>
+            </linearGradient>
+            <linearGradient id="entropy-bar-12" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#4dcc9f"/>
+              <stop offset="1" stop-color="#238564"/>
+            </linearGradient>
+          </defs>
+          <line class="sc-chart-grid" x1="56" y1="248" x2="704" y2="248"/>
      <text class="sc-chart-axis-text" x="46" y="252.0" text-anchor="end">64</text><line class="sc-chart-grid" x1="56" y1="104" x2="704" y2="104"/>
      <text class="sc-chart-axis-text" x="46" y="108.0" text-anchor="end">192</text><line class="sc-chart-grid" x1="56" y1="32" x2="704" y2="32"/>
      <text class="sc-chart-axis-text" x="46" y="36.0" text-anchor="end">256</text>
-        <line class="sc-chart-threshold" x1="56" y1="176" x2="704" y2="176"/>
+          <line class="sc-chart-threshold" x1="56" y1="176" x2="704" y2="176"/>
      <text class="sc-chart-threshold-text" x="46" y="180.0" text-anchor="end">128</text><line class="sc-chart-threshold" x1="56" y1="194" x2="704" y2="194"/>
      <text class="sc-chart-threshold-text" x="46" y="198.0" text-anchor="end">112</text>
-        <line class="sc-chart-axis" x1="56" y1="320" x2="704" y2="320"/>
-        <text class="sc-chart-axis-text" x="46" y="324" text-anchor="end">0</text>
-        <path class="sc-chart-bar-24" d="M95.8 320L95.8 36.1Q95.8 32.1 99.8 32.1L115.8 32.1Q119.8 32.1 119.8 36.1L119.8 320Z"/><path class="sc-chart-bar-12" d="M121.8 320L121.8 180.0Q121.8 176 125.8 176L141.8 176Q145.8 176 145.8 180.0L145.8 320Z"/><text class="sc-chart-value" x="107.8" y="24.1">256</text><text class="sc-chart-value" x="133.8" y="168.0">128</text><path class="sc-chart-bar-24" d="M225.4 320L225.4 39.3Q225.4 35.3 229.4 35.3L245.4 35.3Q249.4 35.3 249.4 39.3L249.4 320Z"/><path class="sc-chart-bar-12" d="M251.4 320L251.4 180.2Q251.4 176.2 255.4 176.2L271.4 176.2Q275.4 176.2 275.4 180.2L275.4 320Z"/><path class="sc-chart-bar-24" d="M355 320L355 48.5Q355 44.5 359 44.5L375 44.5Q379 44.5 379 48.5L379 320Z"/><path class="sc-chart-bar-12" d="M381 320L381 184.8Q381 180.8 385 180.8L401 180.8Q405 180.8 405 184.8L405 320Z"/><path class="sc-chart-bar-24" d="M484.6 320L484.6 65.4Q484.6 61.4 488.6 61.4L504.6 61.4Q508.6 61.4 508.6 65.4L508.6 320Z"/><path class="sc-chart-bar-12" d="M510.6 320L510.6 193.4Q510.6 189.4 514.6 189.4L530.6 189.4Q534.6 189.4 534.6 193.4L534.6 320Z"/><path class="sc-chart-bar-24" d="M614.2 320L614.2 101.3Q614.2 97.3 618.2 97.3L634.2 97.3Q638.2 97.3 638.2 101.3L638.2 320Z"/><path class="sc-chart-bar-12" d="M640.2 320L640.2 211.5Q640.2 207.5 644.2 207.5L660.2 207.5Q664.2 207.5 664.2 211.5L664.2 320Z"/><text class="sc-chart-value" x="626.2" y="89.3">198</text><text class="sc-chart-value is-inside" x="652.2" y="224.5">100</text>
-        <text class="sc-chart-axis-text" x="120.8" y="342" text-anchor="middle">Perfectly<tspan x="120.8" dy="14">fair die</tspan></text><text class="sc-chart-axis-text" x="250.4" y="342" text-anchor="middle">Cheap die,<tspan x="250.4" dy="14">2% bias</tspan></text><text class="sc-chart-axis-text" x="380" y="342" text-anchor="middle">One face<tspan x="380" dy="14">8% high</tspan></text><text class="sc-chart-axis-text" x="509.6" y="342" text-anchor="middle">One face<tspan x="509.6" dy="14">20% high</tspan></text><text class="sc-chart-axis-text" x="639.2" y="342" text-anchor="middle">One face<tspan x="639.2" dy="14">50% high</tspan></text>
-        <text class="sc-chart-axis-title" x="14" y="176" transform="rotate(-90 14 176)" text-anchor="middle">Bits of randomness</text>
-      </svg>
+          <line class="sc-chart-axis" x1="56" y1="320" x2="704" y2="320"/>
+          <text class="sc-chart-axis-text" x="46" y="324" text-anchor="end">0</text>
+          <path class="sc-chart-bar-24" d="M95.8 320L95.8 36.1Q95.8 32.1 99.8 32.1L115.8 32.1Q119.8 32.1 119.8 36.1L119.8 320Z"/><path class="sc-chart-bar-12" d="M121.8 320L121.8 180.0Q121.8 176 125.8 176L141.8 176Q145.8 176 145.8 180.0L145.8 320Z"/><text class="sc-chart-value" x="107.8" y="24.1">256</text><text class="sc-chart-value" x="133.8" y="168.0">128</text><path class="sc-chart-bar-24" d="M225.4 320L225.4 39.3Q225.4 35.3 229.4 35.3L245.4 35.3Q249.4 35.3 249.4 39.3L249.4 320Z"/><path class="sc-chart-bar-12" d="M251.4 320L251.4 180.2Q251.4 176.2 255.4 176.2L271.4 176.2Q275.4 176.2 275.4 180.2L275.4 320Z"/><path class="sc-chart-bar-24" d="M355 320L355 48.5Q355 44.5 359 44.5L375 44.5Q379 44.5 379 48.5L379 320Z"/><path class="sc-chart-bar-12" d="M381 320L381 184.8Q381 180.8 385 180.8L401 180.8Q405 180.8 405 184.8L405 320Z"/><path class="sc-chart-bar-24" d="M484.6 320L484.6 65.4Q484.6 61.4 488.6 61.4L504.6 61.4Q508.6 61.4 508.6 65.4L508.6 320Z"/><path class="sc-chart-bar-12" d="M510.6 320L510.6 193.4Q510.6 189.4 514.6 189.4L530.6 189.4Q534.6 189.4 534.6 193.4L534.6 320Z"/><path class="sc-chart-bar-24" d="M614.2 320L614.2 101.3Q614.2 97.3 618.2 97.3L634.2 97.3Q638.2 97.3 638.2 101.3L638.2 320Z"/><path class="sc-chart-bar-12" d="M640.2 320L640.2 211.5Q640.2 207.5 644.2 207.5L660.2 207.5Q664.2 207.5 664.2 211.5L664.2 320Z"/><text class="sc-chart-value" x="626.2" y="89.3">198</text><text class="sc-chart-value is-inside" x="652.2" y="224.5">100</text>
+          <text class="sc-chart-axis-text" x="120.8" y="342" text-anchor="middle">Perfectly<tspan x="120.8" dy="14">fair die</tspan></text><text class="sc-chart-axis-text" x="250.4" y="342" text-anchor="middle">Cheap die,<tspan x="250.4" dy="14">2% bias</tspan></text><text class="sc-chart-axis-text" x="380" y="342" text-anchor="middle">One face<tspan x="380" dy="14">8% high</tspan></text><text class="sc-chart-axis-text" x="509.6" y="342" text-anchor="middle">One face<tspan x="509.6" dy="14">20% high</tspan></text><text class="sc-chart-axis-text" x="639.2" y="342" text-anchor="middle">One face<tspan x="639.2" dy="14">50% high</tspan></text>
+          <text class="sc-chart-axis-title" x="14" y="176" transform="rotate(-90 14 176)" text-anchor="middle">Bits of randomness</text>
+        </svg>
+      </div>
 
-      <figcaption>Even a die skewed far beyond anything you would own leaves a 24-word wallet with more randomness than a perfect 12-word one. The 12-word bar, by contrast, starts level with the 128-bit mark and loses ground straight away.</figcaption>
+      <figcaption class="sc-chart-summary"><strong>What it shows</strong><span>Even a die skewed far beyond anything you would own leaves a 24-word wallet with more randomness than a perfect 12-word one. The 12-word bar, by contrast, starts level with the 128-bit mark and loses ground straight away.</span></figcaption>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Bits of randomness by die fairness</caption>
-          <thead><tr><th scope="col">Die</th><th scope="col">24 words (99 rolls)</th><th scope="col">12 words (50 rolls)</th></tr></thead>
-          <tbody><tr><th scope="row">A perfectly fair die</th><td>255.9</td><td>128.0</td></tr><tr><th scope="row">A cheap die, 2% bias</th><td>253.1</td><td>127.8</td></tr><tr><th scope="row">One face 8% high</th><td>244.9</td><td>123.7</td></tr><tr><th scope="row">One face 20% high</th><td>229.9</td><td>116.1</td></tr><tr><th scope="row">One face 50% high</th><td>198.0</td><td>100.0</td></tr></tbody>
-        </table>
+      <div class="sc-entropy-grid" role="table" aria-label="Bits of randomness by die fairness">
+        <div class="sc-entropy-head" role="row">
+          <span role="columnheader">Die fairness</span>
+          <span class="is-24" role="columnheader">24 words <small>99 rolls</small></span>
+          <span class="is-12" role="columnheader">12 words <small>50 rolls</small></span>
+        </div>
+        <div role="rowgroup">
+          <div class="sc-entropy-row" role="row">
+      <strong role="rowheader">A perfectly fair die</strong>
+      <span class="sc-entropy-value is-24" role="cell"><b>255.9</b><small>bits</small></span>
+      <span class="sc-entropy-value is-12" role="cell"><b>128.0</b><small>bits</small></span>
+    </div><div class="sc-entropy-row" role="row">
+      <strong role="rowheader">A cheap die, 2% bias</strong>
+      <span class="sc-entropy-value is-24" role="cell"><b>253.1</b><small>bits</small></span>
+      <span class="sc-entropy-value is-12" role="cell"><b>127.8</b><small>bits</small></span>
+    </div><div class="sc-entropy-row" role="row">
+      <strong role="rowheader">One face 8% high</strong>
+      <span class="sc-entropy-value is-24" role="cell"><b>244.9</b><small>bits</small></span>
+      <span class="sc-entropy-value is-12" role="cell"><b>123.7</b><small>bits</small></span>
+    </div><div class="sc-entropy-row" role="row">
+      <strong role="rowheader">One face 20% high</strong>
+      <span class="sc-entropy-value is-24" role="cell"><b>229.9</b><small>bits</small></span>
+      <span class="sc-entropy-value is-12" role="cell"><b>116.1</b><small>bits</small></span>
+    </div><div class="sc-entropy-row" role="row">
+      <strong role="rowheader">One face 50% high</strong>
+      <span class="sc-entropy-value is-24" role="cell"><b>198.0</b><small>bits</small></span>
+      <span class="sc-entropy-value is-12" role="cell"><b>100.0</b><small>bits</small></span>
+    </div>
+        </div>
       </div>
     </figure>
 
@@ -210,7 +261,7 @@
 
       <p>You may notice that the final word of your phrase seems fixed, or that the device has to work it out for you rather than letting you pick. That is normal and it is not the dice being ignored.</p>
 
-      <p>The last word is mostly a checksum &mdash; a small built-in error check, calculated from all the words before it. It is quietly one of the most useful things in the whole design: if you copy a word down wrong, the phrase gets rejected when you try to restore it, instead of silently opening a different, empty wallet and leaving you to work out what happened.</p>
+      <p>The last word is mostly a <a href="../glossary.html#term-checksum">checksum</a> &mdash; a small built-in error check, calculated from all the words before it. It is quietly one of the most useful things in the whole design: if you copy a word down wrong, the phrase gets rejected when you try to restore it, instead of silently opening a different, empty wallet and leaving you to work out what happened.</p>
 
       <h2>Checking that your device did what it said</h2>
 
@@ -229,9 +280,7 @@
       <p class="mt-4"><a class="sc-text-link" href="what-not-to-normalize.html">Read the habits that undo all of this <i class="bi bi-arrow-right"></i></a></p>
 
       <p class="sc-source-note">
-        Roll counts, the differences between wallets, and the dice-fairness figures charted above are drawn from
-        <a class="sc-text-link" href="https://kdmukai-bot.github.io/seedsigner-ai-analysis/dice/standard.html" target="_blank" rel="noopener">an AI-assisted analysis of dice entropy across wallet implementations <i class="bi bi-arrow-up-right"></i></a>
-        published alongside SeedSigner's own dice research. Devices change between firmware releases &mdash; check the roll count and method in your own device's current documentation before creating a wallet you intend to fund.
+        Dice-bias figures above come from Iversen, Longcor, Mosteller, Gilbert &amp; Youtz, &ldquo;Bias and Runs in Dice Throwing and Recording: A Few Million Throws,&rdquo; <em>Psychometrika</em> 36(1), 1971, and Zacariah Labby, &ldquo;Weldon&rsquo;s Dice, Automated,&rdquo; <em>CHANCE</em> 22(4), 2009. Roll counts and the entropy-loss figures charted above follow from applying those measured biases to a standard 50- or 99-roll wallet. Devices change between firmware releases &mdash; check the roll count and method in your own device's current documentation before creating a wallet you intend to fund.
       </p></div>
       </div>
     </section>
@@ -259,25 +308,25 @@
     <section class="sc-section sc-section-muted sc-related-guides">
       <div class="container">
         <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
-        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="coldcard-q-setup.html">
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="coldcard-setup.html">
             <div class="sc-card-body">
               <div class="sc-guide-card-top">
                 <div class="sc-icon"><i class="bi bi-usb-drive"></i></div>
                 <span class="sc-level sc-level-beginner">Beginner</span>
               </div>
-              <h3>COLDCARD Q: first-time setup</h3>
-              <p>Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.</p>
+              <h3>COLDCARD Q and Mk5: first-time setup</h3>
+              <p>Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified. One path, with the handful of places the two models differ called out as you reach them.</p>
               <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
-            </div></a></div><div class="col-md-6 col-xl-4"><article class="sc-card sc-guide-card is-planned">
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="seedsigner-setup.html">
             <div class="sc-card-body">
               <div class="sc-guide-card-top">
                 <div class="sc-icon"><i class="bi bi-cpu"></i></div>
                 <span class="sc-level sc-level-advanced">Advanced</span>
               </div>
               <h3>SeedSigner: build and first use</h3>
-              <p>Assembling the hardware, flashing the image, and the stateless signing model that keeps nothing on the device.</p>
-              <span class="sc-guide-card-soon">Being written</span>
-            </div></article></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+              <p>Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
             <div class="sc-card-body">
               <div class="sc-guide-card-top">
                 <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
@@ -302,10 +351,10 @@
             <ul class="sc-footer-links sc-footer-links-grid">
               <li><a href="../index.html">Home</a></li>
               <li><a href="../guides.html">Guides</a></li>
-              <li><a href="../glossary.html">Glossary</a></li>
               <li><a href="../devices.html">Devices</a></li>
               <li><a href="../software.html">Software</a></li>
               <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
               <li><a href="../dashboard.html">Dashboard</a></li>
               <li><a href="../merch.html">Merch</a></li>
               <li><a href="../contact.html">Get Help</a></li>
@@ -325,7 +374,7 @@
         </div>
       </div>
     </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
 </body>
 </html>

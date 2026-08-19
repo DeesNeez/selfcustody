@@ -76,14 +76,26 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://selfcustody.ca/guides/stuck-transaction.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://selfcustody.ca/guides/recovery-test-drill.html</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://selfcustody.ca/guides/coldcard-q-setup.html</loc>
-    <lastmod>2026-08-17</lastmod>
+    <loc>https://selfcustody.ca/guides/coldcard-setup.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/coldcard-advanced-features.html</loc>
+    <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -112,8 +124,44 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://selfcustody.ca/guides/seedsigner-setup.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/krux-setup.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://selfcustody.ca/guides/ledger-setup.html</loc>
     <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/bitkey-setup.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/tapsigner-setup.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/satscard-setup.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/air-gapped-psbt-workflow.html</loc>
+    <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -136,8 +184,38 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://selfcustody.ca/guides/cove-setup.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://selfcustody.ca/guides/electrum-setup.html</loc>
     <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/bluewallet-watch-only.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/wasabi-coinjoin-basics.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/specter-multisig-coordinator.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/own-node-connection.html</loc>
+    <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -166,6 +244,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://selfcustody.ca/guides/multisig-key-geography.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://selfcustody.ca/guides/passphrase-setup.html</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>monthly</changefreq>
@@ -180,6 +264,24 @@
   <url>
     <loc>https://selfcustody.ca/guides/seed-backup-metal.html</loc>
     <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/inheritance-plan.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/chain-analysis-heuristics.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/duress-and-coercion.html</loc>
+    <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

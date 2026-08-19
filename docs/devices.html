@@ -13,14 +13,14 @@
   <meta property="og:title" content="Hardware Wallets & Signing Devices | SelfCustody.ca">
   <meta property="og:description" content="Compare current Bitcoin hardware wallets and signing devices by security model, connectivity, usability, openness, and ideal use case.">
   <meta property="og:url" content="https://selfcustody.ca/devices.html">
-  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="1774">
-  <meta property="og:image:height" content="887">
-  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
-  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <link rel="icon" type="image/svg+xml" href="assets/img/self-custody-favicon.svg">
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260817-914" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="devices">
   <div id="site-header">
@@ -43,13 +43,20 @@
             <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
           </a>
           <nav id="navbar" class="navbar" aria-label="Primary navigation">
-            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li class="sc-nav-menu">
-          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
-            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle " href="guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn " type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
           </button>
           <ul class="sc-nav-submenu">
-            <li><a class="" href="guides.html">All guides</a></li>
-            <li><a class="" href="glossary.html">Glossary</a></li>
+            <li><a href="guides.html#fundamentals">Start here</a></li>
+            <li><a href="guides.html#devices">Devices</a></li>
+            <li><a href="guides.html#software">Software</a></li>
+            <li><a href="guides.html#exchanges">Exchanges</a></li>
+            <li><a href="guides.html#advanced">Techniques</a></li>
+            <li><a href="guides.html#concepts">Concepts</a></li>
           </ul>
         </li><li class="sc-nav-menu">
           <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
@@ -60,7 +67,7 @@
             <li><a class="" href="software.html">Software</a></li>
             <li><a class="" href="exchanges.html">Exchanges</a></li>
           </ul>
-        </li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
+        </li><li><a class=" " href="glossary.html"><span>Glossary</span></a></li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
         </div>
@@ -90,8 +97,7 @@
           <div class="container">
             <aside class="sc-device-preflight mb-5" aria-labelledby="device-preflight-title">
               <div class="sc-device-preflight-head">
-                <span class="sc-eyebrow">Before you choose</span>
-                <h2 id="device-preflight-title">Protect the purchase and the seed</h2>
+                <h2 id="device-preflight-title">What to know before you buy</h2>
               </div>
               <div class="sc-device-preflight-grid">
                 <section>
@@ -107,7 +113,10 @@
               </div>
               <div class="sc-device-preflight-guide">
                 <div><strong>Generate verifiable entropy yourself</strong><span>Learn the exact dice-roll workflow, conversion process, and checks before using it with a compatible signer.</span></div>
-                <a class="sc-text-link" href="guides/dice-entropy.html">Read the dice-roll guide <i class="bi bi-arrow-right"></i></a>
+                <div class="sc-device-preflight-guide-cta">
+                  <a class="sc-text-link" href="guides/dice-entropy.html">Read the dice-roll guide <i class="bi bi-arrow-right"></i></a>
+                  <span class="sc-die-mark" aria-hidden="true"></span>
+                </div>
               </div>
             </aside>
             <div class="sc-section-head"><span class="sc-eyebrow">Shortlist</span><h2>Nine useful reference points</h2><p>This is not a winner-takes-all ranking. Each device represents a different balance of transparency, convenience, connectivity, and operator skill.</p></div>
@@ -115,14 +124,14 @@
               
     <div class="col-md-6 col-xl-4">
       <article class="sc-card sc-product-card sc-path-card-link">
-        <a class="sc-card-cover-link" href="#trezor" aria-label="Read details: Trezor Safe 7 Bitcoin-only"></a>
+        <a class="sc-card-cover-link" href="#trezor" aria-label="Read details: Trezor Safe 7"></a>
         <div class="sc-product-image">
           <img src="assets/img/devices/trezor-safe-7-shortlist.png" alt="Trezor Safe 7 hardware wallet" width="560" height="560" loading="lazy">
         </div>
         <div class="sc-card-body">
-          <h3>Trezor Safe 7 Bitcoin-only</h3>
+          <h3>Trezor Safe 7</h3>
           <p>Premium touchscreen signer with a dedicated Bitcoin-only firmware edition, open-source security, and encrypted Bluetooth.</p>
-          <div class="sc-tags"><a class="sc-tag sc-tag-scope sc-tag-link" href="glossary.html#term-bitcoin_only">Bitcoin only</a><a class="sc-tag sc-tag-security sc-tag-link" href="glossary.html#term-secure_element">Secure element</a><a class="sc-tag sc-tag-open sc-tag-link" href="glossary.html#term-open_source">Open source</a></div>
+          <div class="sc-tags"><a class="sc-tag sc-tag-security sc-tag-link" href="glossary.html#term-secure_element">Secure element</a><a class="sc-tag sc-tag-open sc-tag-link" href="glossary.html#term-open_source">Open source</a><span class="sc-tag sc-tag-connect">Bluetooth</span></div>
           <span class="sc-text-link">Read details <i class="bi bi-arrow-right"></i></span>
         </div>
       </article>
@@ -145,14 +154,14 @@
               
     <div class="col-md-6 col-xl-4">
       <article class="sc-card sc-product-card sc-path-card-link">
-        <a class="sc-card-cover-link" href="#bitbox" aria-label="Read details: BitBox02 Bitcoin-only"></a>
+        <a class="sc-card-cover-link" href="#bitbox" aria-label="Read details: BitBox02"></a>
         <div class="sc-product-image">
           <img src="assets/img/devices/bitbox02.webp" alt="BitBox02 hardware wallet" width="1020" height="574" loading="lazy">
         </div>
         <div class="sc-card-body">
-          <h3>BitBox02 Bitcoin-only</h3>
+          <h3>BitBox02</h3>
           <p>Compact Swiss-made signer with a secure dual-chip architecture, open-source firmware, touch controls, and microSD backup.</p>
-          <div class="sc-tags"><a class="sc-tag sc-tag-scope sc-tag-link" href="glossary.html#term-bitcoin_only">Bitcoin only</a><span class="sc-tag sc-tag-connect">USB-C</span><a class="sc-tag sc-tag-feature sc-tag-link" href="glossary.html#term-microsd_backup">microSD backup</a></div>
+          <div class="sc-tags"><span class="sc-tag sc-tag-connect">USB-C</span><a class="sc-tag sc-tag-feature sc-tag-link" href="glossary.html#term-microsd_backup">microSD backup</a><a class="sc-tag sc-tag-security sc-tag-link" href="glossary.html#term-secure_element">Secure element</a></div>
           <span class="sc-text-link">Read details <i class="bi bi-arrow-right"></i></span>
         </div>
       </article>
@@ -242,7 +251,7 @@
         <div class="sc-card-body">
           <h3>Ledger</h3>
           <p>Widely used multi-asset signer line (Nano S Plus, Nano X, Flex, Stax) with a certified secure element, USB and Bluetooth connectivity, and a companion app.</p>
-          <div class="sc-tags"><span class="sc-tag sc-tag-scope">Multi-asset</span><span class="sc-tag sc-tag-connect">USB / Bluetooth</span><a class="sc-tag sc-tag-security sc-tag-link" href="glossary.html#term-secure_element">Secure element</a></div>
+          <div class="sc-tags"><span class="sc-tag sc-tag-scope">Multi-asset</span><span class="sc-tag sc-tag-connect">Bluetooth</span><a class="sc-tag sc-tag-security sc-tag-link" href="glossary.html#term-secure_element">Secure element</a></div>
           <span class="sc-text-link">Read details <i class="bi bi-arrow-right"></i></span>
         </div>
       </article>
@@ -264,9 +273,9 @@
                 <thead>
                   <tr>
                     <th scope="col">Feature</th>
-                    <th scope="col">Trezor Safe 7<br>Bitcoin-only</th>
+                    <th scope="col">Trezor Safe 7</th>
                     <th scope="col">Bitkey</th>
-                    <th scope="col">BitBox02<br>Bitcoin-only</th>
+                    <th scope="col">BitBox02</th>
                     <th scope="col">Blockstream<br>Jade Plus</th>
                     <th scope="col">COLDCARD<br>Q / Mk5</th>
                     <th scope="col">Foundation<br>Passport</th>
@@ -302,13 +311,13 @@
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EAL5+ / EAL6+</small></td>
                   </tr>
                   <tr>
-                    <th scope="row">Bitcoin-only operation</th>
+                    <th scope="row">Bitcoin only firmware</th>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Separate firmware edition</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Locked at factory</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Separate edition, locked at factory</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Plus Liquid</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Plus 2FA, keys, files</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Multi-purpose</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Multi-asset only</small></td>
@@ -451,7 +460,7 @@
             <article id="trezor" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/trezor-safe-7-detail.png" alt="Trezor Safe 7" width="660" height="1118" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Trezor Safe 7 Bitcoin-only</h2><p>Trezor's current premium model is also available as a dedicated Bitcoin-only firmware edition: same hardware as the standard Safe 7—large colour touchscreen, open-source software, a secure element plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging—with altcoin functionality removed entirely.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Bitcoin-only holders who still want a premium touchscreen experience.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul></div>
+                <div class="col-lg-7"><h2>Trezor Safe 7</h2><p>Trezor's current premium model is also available as a dedicated Bitcoin-only firmware edition: same hardware as the standard Safe 7—large colour touchscreen, open-source software, a secure element plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging—with altcoin functionality removed entirely.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Bitcoin-only holders who still want a premium touchscreen experience.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul></div>
               </div>
             <div class="sc-detail-footer"><a class="sc-text-link" href="https://trezor.io/trezor-safe-7-bitcoin-only" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
     <div class="sc-product-guides"><a class="sc-text-link" href="guides/trezor-safe-setup.html" title="Trezor Safe: first-time setup — Beginner · 35 min" aria-label="Trezor Safe: first-time setup — Beginner · 35 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
@@ -461,12 +470,13 @@
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/bitkey.png" alt="Bitkey hardware key" width="320" height="363" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>Bitkey</h2><p>Bitkey is Block's Bitcoin-only wallet: a hardware key, a mobile app, and a Block-held recovery key form a 2-of-3 multisignature wallet by design—no single key can move funds alone. The hardware key has an OLED display, a fingerprint sensor, connects via NFC, and charges over USB-C. Firmware, app, server code, and hardware schematics are published on GitHub under the Commons Clause license, though the firmware cannot be independently rebuilt end-to-end because it depends on a proprietary third-party fingerprint-matching library Block cannot redistribute.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want multisig-level protection without configuring it themselves.</li><li>Users who prefer a polished, guided consumer product over a DIY or advanced setup.</li><li>Anyone comfortable with Block holding one of three keys to help with recovery.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The published code carries a Commons Clause restriction and isn't independently buildable end-to-end—source-available, not fully open source.</li><li>Recovery leans on the app, encrypted cloud backup, and social recovery rather than a single standard seed phrase.</li><li>A company-held key is a different trust model than a fully self-contained signer.</li></ul></div>
               </div>
-            <div class="sc-detail-footer"><a class="sc-text-link" href="https://bitkey.world/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
+            <div class="sc-detail-footer"><a class="sc-text-link" href="https://bitkey.world/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
+    <div class="sc-product-guides"><a class="sc-text-link" href="guides/bitkey-setup.html" title="Bitkey: first-time setup — Beginner · 25 min" aria-label="Bitkey: first-time setup — Beginner · 25 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
 
             <article id="bitbox" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/bitbox02.webp" alt="BitBox02 hardware wallet" width="1020" height="574" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>BitBox02 Bitcoin-only</h2><p>The BitBox02 Bitcoin-only edition combines open-source firmware with a secure dual-chip design, a compact OLED display, touch sliders, USB-C, and a fast microSD backup workflow. The Bitcoin-only firmware edition is locked at the factory and cannot be switched to multi-asset firmware.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a compact, approachable Bitcoin-only device.</li><li>Users who like guided desktop software and microSD recovery.</li><li>Sparrow, Electrum, Specter, and personal-node users.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Normal use is connected over USB-C rather than camera-based air gap.</li><li>The original BitBox02 does not work with iPhone/iPad; verify the current Nova model if iOS matters.</li></ul></div>
+                <div class="col-lg-7"><h2>BitBox02</h2><p>The BitBox02 Bitcoin-only edition combines open-source firmware with a secure dual-chip design, a compact OLED display, touch sliders, USB-C, and a fast microSD backup workflow. The Bitcoin-only firmware edition is locked at the factory and cannot be switched to multi-asset firmware.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a compact, approachable Bitcoin-only device.</li><li>Users who like guided desktop software and microSD recovery.</li><li>Sparrow, Electrum, Specter, and personal-node users.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Normal use is connected over USB-C rather than camera-based air gap.</li><li>The original BitBox02 does not work with iPhone/iPad; verify the current Nova model if iOS matters.</li></ul></div>
               </div>
             <div class="sc-detail-footer"><a class="sc-text-link" href="https://bitbox.swiss/bitbox02/bitcoin-only/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
     <div class="sc-product-guides"><a class="sc-text-link" href="guides/bitbox02-setup.html" title="BitBox02: first-time setup — Beginner · 30 min" aria-label="BitBox02: first-time setup — Beginner · 30 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
@@ -485,7 +495,7 @@
                 <div class="col-lg-7"><h2>COLDCARD Q / Mk5</h2><p>COLDCARD Q and Mk5 are Bitcoin-only signers with dual secure elements from different vendors, publicly reviewable and reproducible firmware, and some of the deepest transaction-policy controls available on a consumer signer, while still working for someone building their first air-gapped setup.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want one device that scales from a first air-gapped wallet to advanced multisig and policy rules.</li><li>Users who value dual, independently-sourced secure elements and open, reproducible firmware.</li><li>Anyone who wants microSD, NFC, and (on the Q) QR/camera air-gap options in a single signer.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Read the docs to get the most out of its more advanced features.</li><li>Choosing between Q and Mk5 comes down to keyboard-and-camera versus a smaller, simpler form factor.</li></ul><div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="coinkite.html"><span>Explore Coinkite products</span></a></div></div>
               </div>
             <div class="sc-detail-footer"><a class="sc-text-link" href="https://coldcard.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
-    <div class="sc-product-guides"><a class="sc-text-link" href="guides/coldcard-q-setup.html" title="COLDCARD Q: first-time setup — Beginner · 45 min" aria-label="COLDCARD Q: first-time setup — Beginner · 45 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
+    <div class="sc-product-guides"><a class="sc-text-link" href="guides/coldcard-setup.html" title="COLDCARD Q and Mk5: first-time setup — Beginner · 45 min" aria-label="COLDCARD Q and Mk5: first-time setup — Beginner · 45 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
 
             <article id="passport" class="sc-detail">
               <div class="row g-5 align-items-center">
@@ -500,14 +510,16 @@
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/seedsigner.webp" alt="SeedSigner open-source hardware wallet" width="1586" height="992" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>SeedSigner</h2><p>SeedSigner is open-source, Bitcoin-only firmware that you build yourself from off-the-shelf parts—typically a Raspberry Pi Zero, a camera module, and a small screen—into a fully air-gapped, QR-code-based signer. It has no secure element and, by design, does not persist your seed on the device: you re-enter it each session from words, dice rolls, or a SeedQR.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer built from cheap, replaceable hardware.</li><li>QR-based single-sig and multisig workflows, including stateless "amnesic" use.</li><li>Users comfortable assembling hardware and flashing firmware themselves.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>No secure element—encryption and process-level protections are a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li><li>Re-entering your seed each session is deliberate, but means you need a reliable physical backup.</li></ul></div>
               </div>
-            <div class="sc-detail-footer"><a class="sc-text-link" href="https://seedsigner.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
+            <div class="sc-detail-footer"><a class="sc-text-link" href="https://seedsigner.com/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
+    <div class="sc-product-guides"><a class="sc-text-link" href="guides/seedsigner-setup.html" title="SeedSigner: build and first use — Advanced · 60 min" aria-label="SeedSigner: build and first use — Advanced · 60 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
 
             <article id="krux" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/krux-yahboom.png" alt="Krux running on a Yahboom K210 touchscreen device" width="312" height="440" loading="lazy"></div></div>
                 <div class="col-lg-7"><h2>Krux</h2><p>Krux is open-source, Bitcoin-only firmware that turns off-the-shelf Kendryte K210 devices—such as the Yahboom K210 module or M5StickV—into air-gapped signers using QR codes or an SD card. It has no secure element; protection relies on encryption. Krux was built amnesic-first—by default it holds nothing between sessions and you load your key each time—with optional encrypted storage on the device or an SD card if you want persistence.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a fully inspectable, DIY Bitcoin-only signer.</li><li>QR-based single-sig and multisig workflows.</li><li>Users comfortable flashing firmware and sourcing their own hardware.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>The project states it has not yet been formally audited by a third party.</li><li>No secure element—encryption-based protection is a different trust model than a certified chip.</li><li>Built on commodity consumer electronics rather than purpose-built security hardware.</li></ul></div>
               </div>
-            <div class="sc-detail-footer"><a class="sc-text-link" href="https://selfcustody.github.io/krux/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></div></article>
+            <div class="sc-detail-footer"><a class="sc-text-link" href="https://selfcustody.github.io/krux/" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a>
+    <div class="sc-product-guides"><a class="sc-text-link" href="guides/krux-setup.html" title="Krux: install and first use — Advanced · 60 min" aria-label="Krux: install and first use — Advanced · 60 min">Guide <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div></div></article>
 
             <article id="ledger" class="sc-detail">
               <div class="row g-5 align-items-center">
@@ -538,10 +550,10 @@
             <ul class="sc-footer-links sc-footer-links-grid">
               <li><a href="index.html">Home</a></li>
               <li><a href="guides.html">Guides</a></li>
-              <li><a href="glossary.html">Glossary</a></li>
               <li><a href="devices.html">Devices</a></li>
               <li><a href="software.html">Software</a></li>
               <li><a href="exchanges.html">Exchanges</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
               <li><a href="dashboard.html">Dashboard</a></li>
               <li><a href="merch.html">Merch</a></li>
               <li><a href="contact.html">Get Help</a></li>
@@ -561,7 +573,7 @@
         </div>
       </div>
     </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="merch.html">Merch</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260817-914"></script>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="merch.html">Merch</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="assets/js/site-refresh.js?v=20260818-946"></script>
 </body>
 </html>
