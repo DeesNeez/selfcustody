@@ -670,7 +670,17 @@ body[data-page="home"] .sc-sequence-section {
     scale 240ms cubic-bezier(0.22, 1, 0.36, 1),
     border-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform, translate, box-shadow;
+  /* No will-change here, deliberately. Listing transform/opacity on it pins
+     every card to its own GPU layer for the life of the page. These cards are
+     edged with a 1px semi-transparent border and the hover applies a
+     fractional scale (1.012 -- ~313.7px on a ~310px card), so the promoted
+     layer gets re-rasterized with that border resampled across two physical
+     pixels at partial intensity. Held promoted, it never re-rasterizes back
+     at 1:1, so the edge stays visibly dimmer than its untouched neighbours
+     once the hover ends -- computed styles identical, the difference is
+     purely in the raster. Letting the layer be created and torn down per
+     hover forces the clean 1:1 repaint. will-change is for a hint just
+     before an animation, not a permanent declaration on a whole grid. */
 }
 
 .sc-path-card-link {
@@ -1632,12 +1642,41 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
   }
 }
 
-.sc-device-card-grid .sc-product-card {
+/* Devices' shortlist and the home path cards share one resting treatment, so
+   the two can't drift apart. The base .sc-card underneath is flat
+   --sc-surface plus a 4.5% near-black drop shadow -- invisible against a
+   near-black page -- which left the home grid reading as flat grey panels
+   next to every other card grid on the site.
+   Selector notes: the home grid is the bare .sc-path-options, so it matches
+   on that alone. Exchanges and software carry their own grid class and set
+   their own surfaces later in the file, so they still win at this identical
+   (0,2,0) specificity and keep their deliberate opt-outs. Kept below
+   .sc-path-options .sc-card:hover (0,3,0) so the hover glow still replaces
+   this shadow rather than fighting it. */
+.sc-device-card-grid .sc-product-card,
+.sc-path-options .sc-card {
   overflow: hidden;
   background: linear-gradient(145deg, #262523, #201f1d);
+  /* Shaped to interpolate against the hover glow, which is why this reads as
+     five layers for a two-layer effect. box-shadow animates layer by layer,
+     and a pair of layers can only interpolate when they agree on `inset` --
+     one mismatch anywhere makes the WHOLE property discrete, so it snaps in a
+     single frame instead of easing. The hover list is
+     [outset, outset, outset, outset, inset]; writing the resting shadow the
+     natural way (inset highlight first, then the drop shadow) mismatches at
+     layer 1 and kills the transition. The glow vanished instantly on
+     mouse-out while border-color kept easing for its full 240ms, and that
+     split read as the card flicking off for a moment before settling.
+     So: drop shadow first, the three glow layers padded in as fully
+     transparent placeholders that cost nothing at rest, inset highlight last
+     to line up with the hover's inset. Layer order here is load-bearing --
+     keep it in lockstep with .sc-path-options .sc-card:hover above. */
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.045),
-    0 12px 28px rgba(0, 0, 0, 0.14);
+    0 12px 28px rgba(0, 0, 0, 0.14),
+    0 0 16px rgba(255, 255, 255, 0),
+    0 0 42px rgba(255, 231, 166, 0),
+    0 0 76px rgba(255, 215, 112, 0),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
 }
 
 .sc-device-card-grid .sc-product-image {
@@ -2104,9 +2143,14 @@ p.sc-price {
 
 .sc-software-card-grid .sc-software-card {
   background: linear-gradient(145deg, #272624, #201f1d);
+  /* Five layers, inset last, for the same reason as the device/path cards --
+     see the box-shadow comment on .sc-device-card-grid .sc-product-card. */
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.045),
-    0 12px 28px rgba(0, 0, 0, 0.14);
+    0 12px 28px rgba(0, 0, 0, 0.14),
+    0 0 16px rgba(255, 255, 255, 0),
+    0 0 42px rgba(255, 231, 166, 0),
+    0 0 76px rgba(255, 215, 112, 0),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
 }
 
 .sc-software-card .sc-card-body {
@@ -4068,25 +4112,52 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
     background: rgba(25, 25, 25, 0.98);
   }
 
+  /* Column flex rather than the inherited block so Get Help can be pushed to
+     the foot of the sheet with margin-top: auto -- style.css already pins this
+     panel top and bottom, so it is full height and there is real space to
+     push into. */
+  /* align-items must be restated: the desktop .navbar ul centres its items for
+     the horizontal bar, and that value survives the switch to column here,
+     collapsing every row to shrink-to-fit and leaving ragged stub dividers. */
   .site-refresh .navbar-mobile ul {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     height: auto;
+    padding: 6px 0 0;
     background: var(--sc-surface);
+  }
+
+  /* Hairlines separate the navigation rows only. Direct-child combinators
+     throughout: the submenu is also a ul of lis inside .navbar-mobile, and
+     without them every dropdown item would get its own divider too. */
+  .site-refresh .navbar-mobile > ul > li + li {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* Get Help is a button, not a row -- it drops out of the divider rhythm and
+     takes the leftover vertical space as its top margin. */
+  .site-refresh .navbar-mobile > ul > li:has(> .sc-contact-link) {
+    margin-top: auto;
+    border-top: 0;
   }
 
   .site-refresh .navbar-mobile a,
   .site-refresh .navbar-mobile a:focus {
-    padding-right: 17px;
-    padding-left: 17px;
+    padding: 15px 22px;
     color: var(--sc-ink);
-    font-size: 15px;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   .site-refresh .navbar .sc-contact-link {
-    margin: 8px;
-    padding-right: 7px;
-    padding-left: 7px;
+    justify-content: center;
+    margin: 20px 16px 16px;
+    padding: 15px 22px;
     color: var(--sc-ink);
     border-radius: var(--sc-radius-sm);
+    font-size: 18px;
   }
 
   .site-refresh .navbar .sc-contact-link:hover,
@@ -4676,13 +4747,24 @@ body.site-refresh .navbar .sc-nav-menu-toggle {
   transition: color 0.2s ease;
 }
 
-body.site-refresh .navbar .sc-nav-menu-toggle:hover,
+/* .active and .is-open are genuine state in both layouts, so they stay
+   unscoped. :hover and :focus-within are deliberately desktop-only: on a
+   touch device a tap leaves both latched on with nothing to clear them,
+   and since these selectors outrank the mobile block below (0,0,5,1 vs
+   0,0,3,1) that latched state is what kept Guides and Compare showing
+   orange permanently in the mobile drawer. */
 body.site-refresh .navbar .sc-nav-menu-toggle:focus-visible,
 body.site-refresh .navbar .sc-nav-menu-toggle.active,
-body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-toggle,
-body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-menu-toggle,
-body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-menu-toggle {
+body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-toggle {
   color: var(--sc-orange);
+}
+
+@media (min-width: 992px) {
+  body.site-refresh .navbar .sc-nav-menu-toggle:hover,
+  body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-menu-toggle,
+  body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-menu-toggle {
+    color: var(--sc-orange);
+  }
 }
 
 /* Guides' separate chevron button. Its own complete rule rather than
@@ -4703,13 +4785,19 @@ body.site-refresh .navbar .sc-nav-menu-chevron-btn {
   transition: color 0.2s ease;
 }
 
-body.site-refresh .navbar .sc-nav-menu-chevron-btn:hover,
 body.site-refresh .navbar .sc-nav-menu-chevron-btn:focus-visible,
 body.site-refresh .navbar .sc-nav-menu-chevron-btn.active,
-body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-chevron-btn,
-body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-menu-chevron-btn,
-body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-menu-chevron-btn {
+body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-chevron-btn {
   color: var(--sc-orange);
+}
+
+/* Desktop-only for the same reason as the label above. */
+@media (min-width: 992px) {
+  body.site-refresh .navbar .sc-nav-menu-chevron-btn:hover,
+  body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-menu-chevron-btn,
+  body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-menu-chevron-btn {
+    color: var(--sc-orange);
+  }
 }
 
 /* Reproduces Compare's exact 12px outer insets + 7px inner gap across two
@@ -4776,13 +4864,20 @@ body.site-refresh .navbar .sc-nav-submenu::before {
   height: 7px;
 }
 
-body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-submenu,
-body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-submenu,
-body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-submenu {
-  visibility: visible;
-  opacity: 1;
-  transform: translateX(-50%);
-  pointer-events: auto;
+/* Desktop-only -- the translateX(-50%) here pairs with the floating panel's
+   left: 50%. The mobile drawer makes the submenu position: static and
+   transform: none, but this selector outranks that rule (0,0,5,1 vs
+   0,0,3,1), so leaving it unscoped dragged the open submenu half its own
+   width off to the left instead of dropping it under the label. */
+@media (min-width: 992px) {
+  body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-submenu,
+  body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-submenu,
+  body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-submenu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%);
+    pointer-events: auto;
+  }
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -4815,9 +4910,11 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
   body.site-refresh .navbar-mobile .sc-nav-menu-toggle {
     width: 100%;
     justify-content: space-between;
-    padding: 10px 20px;
-    color: #f38908;
-    font-size: 15px;
+    padding: 15px 22px;
+    color: var(--sc-ink);
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   /* Guides' split control reproduces the same full-width, label-left/
@@ -4826,8 +4923,23 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
      the link no longer needs width: 100% since it's not the only child, and
      its own right padding is zeroed so the row's gap is the only space
      between it and the chevron button. */
+  /* No align-items -- grid's default `stretch` keeps the chevron button as
+     tall as the label row, which matters more on touch than on desktop:
+     centering it collapses the button to the glyph's own ~26px and shrinks
+     the tap target. */
   body.site-refresh .navbar-mobile .sc-nav-menu-split {
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  /* The submenu is a third child of the split row, so in the drawer it has to
+     be told to take a line of its own -- left to itself it lands in the grid's
+     next implicit column, wedged beside the label and chevron. Grid rather
+     than a wrapped flex row because the submenu carries side margins, and a
+     flex-basis of 100% would add them on top of a full-width box and push it
+     past the drawer's edge. */
+  body.site-refresh .navbar-mobile .sc-nav-menu-split > .sc-nav-submenu {
+    grid-column: 1 / -1;
   }
 
   body.site-refresh .navbar-mobile .sc-nav-menu-split > .sc-nav-menu-toggle {
@@ -4836,8 +4948,15 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
   }
 
   body.site-refresh .navbar-mobile .sc-nav-menu-chevron-btn {
-    padding: 10px 20px 10px 0;
-    color: #f38908;
+    padding: 15px 22px 15px 0;
+    color: var(--sc-ink);
+  }
+
+  /* The arrow is drawn from two borders, so it scales by box size, not
+     font-size -- it needs its own bump to stay proportionate to 21px text. */
+  body.site-refresh .navbar-mobile .sc-nav-menu-chevron {
+    width: 9px;
+    height: 9px;
   }
 
   body.site-refresh .navbar-mobile .sc-nav-submenu,
@@ -4846,12 +4965,14 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
     position: static;
     display: none;
     min-width: 0;
-    margin: 0 10px 6px;
-    padding: 4px;
+    margin: 0 22px 12px;
+    padding: 2px 0 2px 16px;
     visibility: visible;
     opacity: 1;
-    background: rgba(242, 138, 0, 0.07);
-    border-color: rgba(242, 138, 0, 0.14);
+    background: none;
+    border: 0;
+    border-left: 2px solid rgba(242, 138, 0, 0.4);
+    border-radius: 0;
     box-shadow: none;
     transform: none;
     pointer-events: auto;
@@ -4866,8 +4987,11 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
   }
 
   body.site-refresh .navbar-mobile .sc-nav-submenu a {
-    padding: 9px 12px;
+    padding: 11px 12px;
     color: rgba(255, 255, 255, 0.78);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: normal;
   }
 }
 
@@ -5437,9 +5561,10 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   padding-top: 52px;
 }
 
-/* A restrained warm bloom ties the pending block to the price readout without
-   tinting the green chart or softening the rest of the black canvas. */
+/* Warm bloom behind the price readout -- removed per design request, kept
+   as display:none rather than deleted so the markup/JS hook stays intact. */
 .sc-dash-glow {
+  display: none;
   position: absolute;
   z-index: -1;
   top: -128px;
@@ -7448,6 +7573,17 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     flex-basis: 116px;
     padding: 9px 7px;
     border-radius: 8px;
+  }
+  /* Same fill as desktop, but phone screens run brighter/more saturated by
+     default, so the same 0.085/0.025 highlight over #0d0f11 reads as light
+     grey instead of near-black. Cutting the highlight opacity and dropping
+     the border alpha keeps the card visibly darker without touching the
+     desktop rule. */
+  .sc-block-confirmed {
+    border-color: rgba(255, 255, 255, 0.14);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+      #0d0f11;
   }
   /* 17px, not 8. The dissolve is what makes this read as a chain continuing
      off-frame rather than a solid nub parked at the gutter, and that depends
