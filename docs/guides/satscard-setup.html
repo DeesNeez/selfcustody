@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Ten slots, one sealed at a time, and bitcoin that travels with the physical card. How to load one, what to check before accepting one, and why unsealing is a door that only opens once.">
+  <title>SATSCARD: loading and unsealing | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/satscard-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="SATSCARD: loading and unsealing | SelfCustody.ca">
+  <meta property="og:description" content="Ten slots, one sealed at a time, and bitcoin that travels with the physical card. How to load one, what to check before accepting one, and why unsealing is a door that only opens once.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/satscard-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"SATSCARD: loading and unsealing","description":"Ten slots, one sealed at a time, and bitcoin that travels with the physical card. How to load one, what to check before accepting one, and why unsealing is a door that only opens once.","url":"https://selfcustody.ca/guides/satscard-setup.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/satscard-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#devices">Devices</a>
+        </nav>
+        <span class="sc-eyebrow">Hardware</span>
+        <h1>SATSCARD: loading and unsealing</h1>
+        <p class="sc-lead">Ten slots, one sealed at a time, and bitcoin that travels with the physical card. How to load one, what to check before accepting one, and why unsealing is a door that only opens once.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 15 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-nfc">NFC</a><span class="sc-tag">Card</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../coinkite.html#satscard">About SATSCARD <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">A SATSCARD looks almost exactly like a <a href='tapsigner-setup.html'>TAPSIGNER</a> and does something close to the opposite. A TAPSIGNER is a key that signs and never reveals itself. A SATSCARD is a key you eventually <em>do</em> reveal &mdash; because revealing it is how the coins come out.</p>
+
+      <p>It is a bearer instrument. Load bitcoin onto it, hand the physical card to somebody, and the bitcoin is theirs &mdash; no transaction, no fee, no confirmation wait. Whoever holds the card holds the coins, exactly like cash, with all of the same qualities and all of the same dangers.</p>
+
+      <p>This is a genuinely useful object and a terrible place to keep savings. Both of those are worth understanding before you buy one.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-credit-card-2-front" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A SATSCARD being passed from one hand to another across a cafe table, card face visible, no screen or electronics apparent.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The entire transfer mechanism. Nothing touches the blockchain at the moment the value changes hands.</figcaption>
+  </figure>
+
+      <h2><span class="sc-article-num">1</span>Ten slots, one at a time</h2>
+
+      <p>Each SATSCARD contains ten independent slots, each holding its own private key and its own address. Exactly one slot is active at any moment, and it is in one of two states.</p>
+
+      <ul class="sc-check-list"><li><strong>Sealed.</strong> The slot has an address you can fund and read, but the private key is locked inside the chip. Nobody &mdash; including you, including Coinkite &mdash; can extract it.</li><li><strong>Unsealed.</strong> The private key has been released. The slot is finished, and the card automatically advances to the next one.</li></ul>
+
+      <p>That is the whole mechanism. A sealed slot is a container the coins sit in; unsealing is opening it, and there is no closing it again.</p>
+
+      <h2><span class="sc-article-num">2</span>Loading one</h2>
+
+      <p>Tap the card against an NFC phone with a compatible app and it will show you the current slot's address. Send bitcoin to that address as you would to any other, and wait for it to confirm.</p>
+
+      <p>There is no setup, no PIN, and no pairing. The card was ready when it arrived.</p>
+
+      <ul class="sc-caution-list"><li>Fund the <em>currently sealed</em> slot's address only. An old address from a slot you already unsealed is not yours in any meaningful sense any more.</li><li>The card cannot tell you a balance. It tells you an address; the blockchain tells you the balance. Check with a block explorer or a wallet.</li></ul>
+
+      <h2><span class="sc-article-num">3</span>Handing it over</h2>
+
+      <p>This is the point of the object. You give somebody the card, and the bitcoin at the sealed slot goes with it. Nothing is broadcast, nothing is confirmed, no fee is paid, and the blockchain does not record that anything happened &mdash; because on-chain, nothing did.</p>
+
+      <p>The coins have not moved. Control of them has, because control was always physical.</p>
+
+      <h2><span class="sc-article-num">4</span>Accepting one from somebody else</h2>
+
+      <p>If you are on the receiving end, this is where your attention belongs, because a card in your hand proves less than it appears to.</p>
+
+      <ul class="sc-check-list"><li><strong>Verify the card is genuine</strong> through the app's authenticity check.</li><li><strong>Confirm the slot is still sealed.</strong> An unsealed slot means the key is already out in the world.</li><li><strong>Check the address matches</strong> what the app reports for the current slot.</li><li><strong>Look up the funding on-chain</strong> and confirm the amount is really there and confirmed.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>What those checks cannot tell you</h3><p>They prove the card is authentic and the slot is sealed. They cannot prove nobody photographed or copied anything along the way, and they cannot tell you who held the card before. A sealed slot is strong evidence, not a custody history. Accept a SATSCARD from a stranger the way you would accept a hundred-dollar note from one — for amounts where being wrong is survivable.</p></div>
+
+      <h2><span class="sc-article-num">5</span>Unsealing, which happens once</h2>
+
+      <p>When you want the coins in a wallet of your own rather than on a card, you unseal. The chip releases the private key, the slot is spent as a concept, and the card moves on to the next slot.</p>
+
+      <p>The rule that follows is absolute and worth stating flatly:</p>
+
+      <blockquote class="sc-pull-quote"><p>Sweep the entire balance to a wallet you control, immediately, and never send anything to that address again.</p></blockquote>
+
+      <p>Once unsealed, that private key exists outside the chip. It is on your phone, in your app, and possibly in places you did not intend. The address it controls should be treated as public property from that moment onward.</p>
+
+      <ul class="sc-caution-list"><li><strong>Unsealing is irreversible.</strong> There is no resealing a slot and no undoing the reveal.</li><li><strong>Sweep everything, not some.</strong> Leaving a remainder behind at an exposed address is how people lose the last of it.</li><li><strong>Never reuse the address</strong>, including months later when it looks like just another address in your history.</li><li><strong>Ten slots means ten uses.</strong> When the last one is unsealed the card is finished as a bearer instrument.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>Why this is not savings</h2>
+
+      <p>Everything that makes a SATSCARD good at handing bitcoin to someone in a pub makes it bad at holding bitcoin for a decade.</p>
+
+      <ul class="sc-check-list"><li><strong>There is no backup.</strong> No words, no file, no recovery. A lost card is lost coins, precisely as a dropped banknote is.</li><li><strong>There is no PIN.</strong> Whoever picks it up can unseal it. There is nothing to stop them and nothing to prove it was yours.</li><li><strong>It cannot sign.</strong> A SATSCARD is not a wallet and cannot participate in a transaction &mdash; it can only be funded, carried, and eventually opened.</li><li><strong>The design assumes a short life.</strong> Load, hand over, unseal, sweep. Every month it spends sitting in a drawer is a month of unnecessary risk.</li></ul>
+
+      <p>If you want a card-shaped device to hold a key for the long term, that is what a <a href='tapsigner-setup.html'>TAPSIGNER</a> is for. If you want to hand somebody bitcoin across a table, this is the better object by a distance.</p>
+
+      <h2>The short version</h2>
+
+      <p>Ten slots, one sealed at a time, funded like any address. Handing over the card hands over the coins with no transaction at all. Unsealing releases the key permanently, so sweep the whole balance immediately and never touch that address again. Treat the card as cash, in amounts you would carry as cash.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>A sealed SATSCARD is a banknote with no serial number and no bank behind it. That is exactly what makes it useful for a physical handoff, and exactly why it should never hold more than you would be willing to lose in a coat pocket.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="tapsigner-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-credit-card-2-front"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>TAPSIGNER: setup and NFC signing</h3>
+              <p>A bitcoin key in a credit card, signing by tap. Initialising it, the backup that must happen before you fund it, and the one number printed on the card that you have to copy down before it goes anywhere.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="keys-addresses-utxos.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-wallet2"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Keys, addresses, and UTXOs</h3>
+              <p>A beginner's breakdown of what your wallet actually holds. There are no coins anywhere — and once that clicks, most of bitcoin's odder behaviour starts making sense.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="what-not-to-normalize.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shield-exclamation"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>What not to normalize</h3>
+              <p>Six habits that look harmless, are extremely common, and are the reason most self-custody losses happen. None of them involve being hacked.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

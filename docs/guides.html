@@ -13,14 +13,14 @@
   <meta property="og:title" content="Guides | SelfCustody.ca">
   <meta property="og:description" content="Step-by-step Bitcoin self-custody guides: device setup, wallet software, withdrawing from Canadian exchanges, multisig, passphrases, and recovery testing.">
   <meta property="og:url" content="https://selfcustody.ca/guides.html">
-  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="1774">
-  <meta property="og:image:height" content="887">
-  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
-  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <link rel="icon" type="image/svg+xml" href="assets/img/self-custody-favicon.svg">
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260817-914" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="guides">
   <div id="site-header">
@@ -43,13 +43,20 @@
             <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
           </a>
           <nav id="navbar" class="navbar" aria-label="Primary navigation">
-            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li class="sc-nav-menu">
-          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
-            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
           </button>
           <ul class="sc-nav-submenu">
-            <li><a class="active" href="guides.html" aria-current="page">All guides</a></li>
-            <li><a class="" href="glossary.html">Glossary</a></li>
+            <li><a href="guides.html#fundamentals">Start here</a></li>
+            <li><a href="guides.html#devices">Devices</a></li>
+            <li><a href="guides.html#software">Software</a></li>
+            <li><a href="guides.html#exchanges">Exchanges</a></li>
+            <li><a href="guides.html#advanced">Techniques</a></li>
+            <li><a href="guides.html#concepts">Concepts</a></li>
           </ul>
         </li><li class="sc-nav-menu">
           <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
@@ -60,41 +67,36 @@
             <li><a class="" href="software.html">Software</a></li>
             <li><a class="" href="exchanges.html">Exchanges</a></li>
           </ul>
-        </li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
+        </li><li><a class=" " href="glossary.html"><span>Glossary</span></a></li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
         </div>
       </header></div>
     <main id="main-content">
         
-      <section class="sc-hero has-media">
+      <section class="sc-hero has-background-media">
         
+          <figure class="sc-hero-background-media" aria-hidden="true">
+            <img src="assets/img/guides-library-hero.jpg" alt="" width="1584" height="672" fetchpriority="high">
+          </figure>
         <div class="container">
           
-            <div class="row g-5 align-items-center">
-                  <div class="col-lg-7 sc-hero-copy">
-      <span class="sc-eyebrow">Guide library</span>
-      <h1>Learn the system,<br><em>not just the buttons.</em></h1>
-      <p class="sc-lead">Setup walkthroughs for every device and wallet, withdrawal guides for Canadian platforms, and the advanced material worth earning. Answer three questions and the library narrows to what applies to you.</p>
+            <div class="sc-hero-copy">
+      <span class="sc-eyebrow">Library</span>
+      <h1>A wealth of knowledge,<br><em>at your fingertips.</em></h1>
+      <p class="sc-lead">Setup walkthroughs for every device and wallet, withdrawal guides for Canadian platforms, and advanced material worth a read.</p>
       <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#finder">Find my guide</a>
            <a class="sc-btn sc-btn-ghost" href="guides/complete-path.html">Start here</a></div></div>
-                  <div class="col-lg-5">
-                    <figure class="sc-hero-media">
-                      <img src="assets/img/education-library.jpeg" alt="Bookshelves and a reading lamp in a quiet library" width="1600" height="2400" fetchpriority="high">
-                    </figure>
-                  </div>
-                </div>
         </div>
       </section>
 
-        <nav class="sc-guide-nav" aria-label="Guide sections"><ul><li><a href="#fundamentals">Start here <span class="sc-guide-nav-count">6</span></a></li><li><a href="#devices">Devices <span class="sc-guide-nav-count">6</span></a></li><li><a href="#software">Software <span class="sc-guide-nav-count">4</span></a></li><li><a href="#exchanges">Exchanges <span class="sc-guide-nav-count">2</span></a></li><li><a href="#advanced">Techniques <span class="sc-guide-nav-count">5</span></a></li><li><a href="#concepts">Concepts <span class="sc-guide-nav-count">10</span></a></li></ul></nav>
+        <nav class="sc-guide-nav" aria-label="Guide sections"><ul><li><a href="#fundamentals">Start here <span class="sc-guide-nav-count">7</span></a></li><li><a href="#devices">Devices <span class="sc-guide-nav-count">12</span></a></li><li><a href="#software">Software <span class="sc-guide-nav-count">8</span></a></li><li><a href="#exchanges">Exchanges <span class="sc-guide-nav-count">2</span></a></li><li><a href="#advanced">Techniques <span class="sc-guide-nav-count">10</span></a></li><li><a href="#concepts">Concepts <span class="sc-guide-nav-count">11</span></a></li></ul></nav>
         
     <section id="finder" class="sc-section sc-section-muted sc-finder-section" hidden data-guide-finder>
       <div class="container">
         <div class="sc-section-head">
-          <span class="sc-eyebrow">Guide finder</span>
-          <h2>Tell us what you are doing</h2>
-          <p>Answer one question or all three. The library below narrows as you go, and you can clear it at any point.</p>
+          <h2>Guide finder</h2>
+          <p>Tell us what you are doing. Answer one question or all three, and the library below narrows as you go — clear it at any point.</p>
         </div>
 
         <div class="sc-finder">
@@ -110,8 +112,17 @@
   <button type="button" class="sc-chip" data-finder-group="goal" data-finder-value="harden" aria-pressed="false">
     <i class="bi bi-shield-lock" aria-hidden="true"></i><span>Harden what I already have</span>
   </button>
+  <button type="button" class="sc-chip" data-finder-group="goal" data-finder-value="privacy" aria-pressed="false">
+    <i class="bi bi-window" aria-hidden="true"></i><span>Improve my privacy</span>
+  </button>
+  <button type="button" class="sc-chip" data-finder-group="goal" data-finder-value="multisig" aria-pressed="false">
+    <i class="bi bi-diagram-3" aria-hidden="true"></i><span>Set up multisig</span>
+  </button>
+  <button type="button" class="sc-chip" data-finder-group="goal" data-finder-value="inherit" aria-pressed="false">
+    <i class="bi bi-people" aria-hidden="true"></i><span>Plan for inheritance</span>
+  </button>
   <button type="button" class="sc-chip" data-finder-group="goal" data-finder-value="recover" aria-pressed="false">
-    <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i><span>Recover or restore a wallet</span>
+    <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i><span>Back up or recover</span>
   </button>
   <button type="button" class="sc-chip" data-finder-group="goal" data-finder-value="learn" aria-pressed="false">
     <i class="bi bi-signpost-split" aria-hidden="true"></i><span>Understand how this works</span>
@@ -174,7 +185,13 @@
   </button>
   <button type="button" class="sc-chip" data-finder-group="product" data-finder-value="specter" aria-pressed="false">
     <span class="sc-chip-logo" aria-hidden="true"><img src="assets/img/software/specter.png" alt="" width="24" height="24"></span><span>Specter</span>
-  </button></div></div><div class="sc-chip-group"><h4>Exchanges</h4><div class="sc-chips">
+  </button></div><div class="sc-chip-divider" aria-hidden="true"></div><div class="sc-chip-subgroup"><h5>Collaborative custody</h5><div class="sc-chips">
+  <button type="button" class="sc-chip" data-finder-group="product" data-finder-value="unchained" aria-pressed="false">
+    <span class="sc-chip-logo" aria-hidden="true"><img src="assets/img/custody/unchained-icon.svg" alt="" width="24" height="24"></span><span>Unchained</span>
+  </button>
+  <button type="button" class="sc-chip" data-finder-group="product" data-finder-value="casa" aria-pressed="false">
+    <span class="sc-chip-logo" aria-hidden="true"><img src="assets/img/custody/casa-icon-transparent.png" alt="" width="24" height="24"></span><span>Casa</span>
+  </button></div></div></div><div class="sc-chip-group"><h4>Canadian exchanges</h4><div class="sc-chips">
   <button type="button" class="sc-chip" data-finder-group="product" data-finder-value="shakepay" aria-pressed="false">
     <span class="sc-chip-logo" aria-hidden="true"><img src="assets/img/exchanges/shakepay.png" alt="" width="24" height="24"></span><span>Shakepay</span>
   </button>
@@ -192,12 +209,6 @@
   </button>
   <button type="button" class="sc-chip" data-finder-group="product" data-finder-value="ndax" aria-pressed="false">
     <span class="sc-chip-logo" aria-hidden="true"><img src="assets/img/exchanges/ndax.png" alt="" width="24" height="24"></span><span>Ndax</span>
-  </button></div></div><div class="sc-chip-group sc-chip-group-collaborative"><h4>Collaborative custody</h4><div class="sc-chips">
-  <button type="button" class="sc-chip" data-finder-group="product" data-finder-value="unchained" aria-pressed="false">
-    <span class="sc-chip-logo" aria-hidden="true"><img src="assets/img/custody/unchained-icon.svg" alt="" width="24" height="24"></span><span>Unchained</span>
-  </button>
-  <button type="button" class="sc-chip" data-finder-group="product" data-finder-value="casa" aria-pressed="false">
-    <span class="sc-chip-logo" aria-hidden="true"><img src="assets/img/custody/casa-icon-transparent.png" alt="" width="24" height="24"></span><span>Casa</span>
   </button></div></div></div>
           </fieldset>
 
@@ -215,13 +226,22 @@
   </button></div>
           </fieldset>
 
+          <div class="sc-finder-search">
+            <label class="sc-finder-search-label" for="guide-search">Or search directly</label>
+            <div class="sc-finder-search-wrap">
+              <span class="sc-finder-search-icon" aria-hidden="true"></span>
+              <input id="guide-search" class="sc-finder-search-input" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Title, device, wallet, or topic…" data-guide-search>
+              <button type="button" class="sc-finder-search-clear" data-guide-search-clear hidden>Clear</button>
+            </div>
+          </div>
+
           <div class="sc-finder-bar" data-finder-bar hidden>
             <p class="sc-finder-count" data-finder-count aria-live="polite"></p>
             <button type="button" class="sc-finder-clear" data-finder-clear><i class="bi bi-x" aria-hidden="true"></i> Clear answers</button>
           </div>
 
           <div class="sc-finder-pick" data-finder-pick hidden></div>
-          <p class="sc-guides-empty" data-guide-none hidden>Nothing matches that combination yet. Clear an answer, or <a href="contact.html">ask for the guide</a> and it moves up the queue.</p>
+          <p class="sc-guides-empty" data-guide-none hidden>Nothing matches that combination yet. Clear an answer or your search, or <a href="contact.html">ask for the guide</a> and it moves up the queue.</p>
         </div>
       </div>
     </section>
@@ -320,7 +340,24 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="recovery-test-drill" data-guide-category="fundamentals" data-guide-goals="recover harden" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="stuck-transaction" data-guide-category="fundamentals" data-guide-goals="learn" data-guide-products="" data-guide-level="beginner" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/stuck-transaction.html" aria-label="Read guide: Your transaction is stuck"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-icon"><i class="bi bi-hourglass-split"></i></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+        </div>
+      </div>
+      <h3>Your transaction is stuck</h3>
+      <p>It has been hours, the explorer still says unconfirmed, and the money has left your balance. Nothing is lost. Here is how to tell whether it is genuinely stuck, the two ways to push it through, and the kind of help that will cost you everything.</p>
+      <div class="sc-tags"><span class="sc-tag">Fees</span><span class="sc-tag">Mempool</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 12 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="recovery-test-drill" data-guide-category="fundamentals" data-guide-goals="recover harden inherit" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/recovery-test-drill.html" aria-label="Read guide: Test your recovery without risking your coins"></a>
     <div class="sc-card-body">
       
@@ -348,8 +385,8 @@
           <p class="sc-section-head-aside"><a class="sc-text-link" href="devices.html">Compare hardware <i class="bi bi-arrow-right"></i></a></p>
         </div>
         <div class="row g-4">
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="coldcard-q-setup" data-guide-category="devices" data-guide-goals="setup" data-guide-products="coldcard" data-guide-level="beginner" data-guide-status="published">
-      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/coldcard-q-setup.html" aria-label="Read guide: COLDCARD Q"></a>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="coldcard-setup" data-guide-category="devices" data-guide-goals="setup" data-guide-products="coldcard" data-guide-level="beginner" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/coldcard-setup.html" aria-label="Read guide: COLDCARD Q and Mk5"></a>
     <div class="sc-card-body">
       
       <div class="sc-guide-card-top">
@@ -358,10 +395,27 @@
           <span class="sc-level sc-level-beginner">Beginner</span>
         </div>
       </div>
-      <h3>COLDCARD Q</h3>
-      <p>Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.</p>
+      <h3>COLDCARD Q and Mk5</h3>
+      <p>Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified. One path, with the handful of places the two models differ called out as you reach them.</p>
       <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-air_gap">Air-gapped</a><a class="sc-tag sc-tag-link" href="glossary.html#term-microsd_backup">microSD</a><span class="sc-tag">Seed backup</span></div>
-      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 45 min</span><span>Updated Aug 17, 2026</span></p>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 45 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="coldcard-advanced-features" data-guide-category="devices" data-guide-goals="harden" data-guide-products="coldcard" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/coldcard-advanced-features.html" aria-label="Read guide: COLDCARD: the features worth turning on next"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-coldcard" aria-hidden="true"><img src="assets/img/device-logos/coldcard.svg" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>COLDCARD: the features worth turning on next</h3>
+      <p>Trick PINs, duress wallets, the brick-me PIN, and the login countdown. What each one actually does, and the honest accounting of which of them can cost you your own coins.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-wrench_attack">Duress</a><span class="sc-tag">PIN policy</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 30 min</span><span>Updated Aug 18, 2026</span></p>
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
@@ -433,6 +487,40 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="seedsigner-setup" data-guide-category="devices" data-guide-goals="setup" data-guide-products="seedsigner" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/seedsigner-setup.html" aria-label="Read guide: SeedSigner: build and first use"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-seedsigner" aria-hidden="true"><img src="assets/img/device-logos/seedsigner.svg" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>SeedSigner: build and first use</h3>
+      <p>Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.</p>
+      <div class="sc-tags"><span class="sc-tag">DIY</span><span class="sc-tag">Stateless</span><span class="sc-tag">QR</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 60 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="krux-setup" data-guide-category="devices" data-guide-goals="setup" data-guide-products="krux" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/krux-setup.html" aria-label="Read guide: Krux: install and first use"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-krux" aria-hidden="true"><img src="assets/img/device-logos/krux.png" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>Krux: install and first use</h3>
+      <p>Krux is firmware, not a device. Choosing hardware to put it on, verifying and flashing the release, generating a seed from dice or a photograph, and the storage feature its own documentation tells you is not a backup.</p>
+      <div class="sc-tags"><span class="sc-tag">DIY</span><span class="sc-tag">QR</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 60 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
     <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="ledger-setup" data-guide-category="devices" data-guide-goals="setup" data-guide-products="ledger" data-guide-level="beginner" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/ledger-setup.html" aria-label="Read guide: Ledger"></a>
     <div class="sc-card-body">
@@ -447,6 +535,57 @@
       <p>Why the box seal proves nothing, what the genuine check actually verifies, the one optional service to think hard about, and the phishing every Ledger owner should expect.</p>
       <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-secure_element">Secure element</a><span class="sc-tag">Ledger Live</span><a class="sc-tag sc-tag-link" href="glossary.html#term-phishing">Phishing</a></div>
       <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 35 min</span><span>Updated Aug 17, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="bitkey-setup" data-guide-category="devices" data-guide-goals="setup" data-guide-products="bitkey" data-guide-level="beginner" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/bitkey-setup.html" aria-label="Read guide: Bitkey"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-bitkey" aria-hidden="true"><img src="assets/img/device-logos/bitkey.svg" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+        </div>
+      </div>
+      <h3>Bitkey</h3>
+      <p>A wallet with no recovery phrase to write down, because the company holds a third key you can call on. Setting it up, and the honest accounting of what that recovery service can and cannot do.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-mobile_wallet">Mobile</a><span class="sc-tag">Assisted recovery</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 25 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="tapsigner-setup" data-guide-category="devices" data-guide-goals="setup" data-guide-products="tapsigner" data-guide-level="beginner" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/tapsigner-setup.html" aria-label="Read guide: TAPSIGNER: setup and NFC signing"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-tapsigner" aria-hidden="true"><img src="assets/img/device-logos/tapsigner.svg" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+        </div>
+      </div>
+      <h3>TAPSIGNER: setup and NFC signing</h3>
+      <p>A bitcoin key in a credit card, signing by tap. Initialising it, the backup that must happen before you fund it, and the one number printed on the card that you have to copy down before it goes anywhere.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-nfc">NFC</a><span class="sc-tag">Card</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 20 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="satscard-setup" data-guide-category="devices" data-guide-goals="setup learn" data-guide-products="satscard" data-guide-level="beginner" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/satscard-setup.html" aria-label="Read guide: SATSCARD: loading and unsealing"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-satscard" aria-hidden="true"><img src="assets/img/device-logos/satscard.svg" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+        </div>
+      </div>
+      <h3>SATSCARD: loading and unsealing</h3>
+      <p>Ten slots, one sealed at a time, and bitcoin that travels with the physical card. How to load one, what to check before accepting one, and why unsealing is a door that only opens once.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-nfc">NFC</a><span class="sc-tag">Card</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 15 min</span><span>Updated Aug 18, 2026</span></p>
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div></div>
@@ -478,7 +617,7 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="sparrow-coin-control" data-guide-category="software" data-guide-goals="harden learn" data-guide-products="sparrow" data-guide-level="intermediate" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="sparrow-coin-control" data-guide-category="software" data-guide-goals="harden learn privacy" data-guide-products="sparrow" data-guide-level="intermediate" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/sparrow-coin-control.html" aria-label="Read guide: Sparrow: coin control and labelling"></a>
     <div class="sc-card-body">
       
@@ -495,7 +634,7 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="nunchuk-setup" data-guide-category="software" data-guide-goals="setup" data-guide-products="nunchuk" data-guide-level="beginner" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="nunchuk-setup" data-guide-category="software" data-guide-goals="setup multisig" data-guide-products="nunchuk" data-guide-level="beginner" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/nunchuk-setup.html" aria-label="Read guide: Nunchuk: first wallet and shared access"></a>
     <div class="sc-card-body">
       
@@ -509,6 +648,23 @@
       <p>A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.</p>
       <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-mobile_wallet">Mobile</a><a class="sc-tag sc-tag-link" href="glossary.html#term-multisig">Multisig</a><span class="sc-tag">Shared access</span></div>
       <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 30 min</span><span>Updated Aug 17, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="cove-setup" data-guide-category="software" data-guide-goals="setup" data-guide-products="cove" data-guide-level="beginner" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/cove-setup.html" aria-label="Read guide: Cove: mobile wallet setup"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-cove" aria-hidden="true"><img src="assets/img/software/cove.png" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+        </div>
+      </div>
+      <h3>Cove: mobile wallet setup</h3>
+      <p>A Bitcoin-only phone wallet that can hold a little money itself or drive a hardware signer over QR and NFC. Setting up both, and being clear about which screen you are actually trusting.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-mobile_wallet">Mobile</a><a class="sc-tag sc-tag-link" href="glossary.html#term-bitcoin_only">Bitcoin-only</a></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 20 min</span><span>Updated Aug 18, 2026</span></p>
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
@@ -526,6 +682,57 @@
       <p>Turn two ordinary computers into cold storage — one that watches the blockchain and one that holds the keys and never goes online. Plus why this is the most impersonated wallet in bitcoin.</p>
       <div class="sc-tags"><span class="sc-tag">Desktop</span><a class="sc-tag sc-tag-link" href="glossary.html#term-cold_storage">Cold storage</a><a class="sc-tag sc-tag-link" href="glossary.html#term-air_gap">Air-gapped</a></div>
       <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 45 min</span><span>Updated Aug 17, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="bluewallet-watch-only" data-guide-category="software" data-guide-goals="setup privacy" data-guide-products="bluewallet" data-guide-level="beginner" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/bluewallet-watch-only.html" aria-label="Read guide: BlueWallet: watch your cold storage from a phone"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-bluewallet" aria-hidden="true"><img src="assets/img/software/bluewallet.png" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+        </div>
+      </div>
+      <h3>BlueWallet: watch your cold storage from a phone</h3>
+      <p>Import a public key and your phone can see the balance but never spend it. What that genuinely costs you, and the one thing you should not use the phone for — which is the thing it makes most tempting.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-mobile_wallet">Mobile</a><a class="sc-tag sc-tag-link" href="glossary.html#term-watch_only_wallet">Watch-only</a></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 15 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="wasabi-coinjoin-basics" data-guide-category="software" data-guide-goals="harden learn privacy" data-guide-products="wasabi" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/wasabi-coinjoin-basics.html" aria-label="Read guide: Wasabi: what CoinJoin does and costs"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-wasabi" aria-hidden="true"><img src="assets/img/software/wasabi.svg" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>Wasabi: what CoinJoin does and costs</h3>
+      <p>How a collaborative transaction breaks the link between your coins and your history, what it cannot undo, and why the piece that makes it work is also the piece that has already collapsed once.</p>
+      <div class="sc-tags"><span class="sc-tag">Privacy</span><span class="sc-tag">CoinJoin</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 30 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="specter-multisig-coordinator" data-guide-category="software" data-guide-goals="setup harden multisig" data-guide-products="specter" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/specter-multisig-coordinator.html" aria-label="Read guide: Specter: coordinating a multi-brand multisig"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-guide-card-brand sc-guide-card-brand-specter" aria-hidden="true"><img src="assets/img/software/specter.png" alt="" width="52" height="52"></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>Specter: coordinating a multi-brand multisig</h3>
+      <p>Specter is a face for your own Bitcoin Core node and nothing else, which matters more for multisig than for any other wallet. Building a wallet from three different manufacturers, and collecting signatures across three different transports.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-multisig">Multisig</a><span class="sc-tag">Node</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 45 min</span><span>Updated Aug 18, 2026</span></p>
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div></div>
@@ -585,6 +792,40 @@
           
         </div>
         <div class="row g-4">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="air-gapped-psbt-workflow" data-guide-category="advanced" data-guide-goals="harden learn multisig" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/air-gapped-psbt-workflow.html" aria-label="Read guide: The air-gapped PSBT workflow"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-icon"><i class="bi bi-arrow-repeat"></i></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-intermediate">Intermediate</span>
+        </div>
+      </div>
+      <h3>The air-gapped PSBT workflow</h3>
+      <p>How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-psbt">PSBT</a><a class="sc-tag sc-tag-link" href="glossary.html#term-air_gap">Air-gapped</a></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 25 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="own-node-connection" data-guide-category="advanced" data-guide-goals="harden privacy" data-guide-products="" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/own-node-connection.html" aria-label="Read guide: Point your wallet at your own node"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-icon"><i class="bi bi-cpu"></i></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>Point your wallet at your own node</h3>
+      <p>Running a node and using it are two different achievements. The index layer nobody mentions, connecting each wallet to it, reaching it from outside your house, and proving your wallet is not quietly still using somebody else's server.</p>
+      <div class="sc-tags"><span class="sc-tag">Node</span><span class="sc-tag">Privacy</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 40 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
     <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="dice-entropy" data-guide-category="advanced" data-guide-goals="setup harden learn" data-guide-products="coldcard seedsigner krux jade bitbox" data-guide-level="intermediate" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/dice-entropy.html" aria-label="Read guide: Roll the dice: generating your own entropy"></a>
     <div class="sc-card-body">
@@ -602,7 +843,7 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="multisig-2of3" data-guide-category="advanced" data-guide-goals="harden setup" data-guide-products="unchained casa" data-guide-level="advanced" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="multisig-2of3" data-guide-category="advanced" data-guide-goals="harden setup multisig" data-guide-products="unchained casa" data-guide-level="advanced" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/multisig-2of3.html" aria-label="Read guide: Build a 2-of-3 multisig"></a>
     <div class="sc-card-body">
       
@@ -619,7 +860,24 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="passphrase-setup" data-guide-category="advanced" data-guide-goals="harden" data-guide-products="" data-guide-level="advanced" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="multisig-key-geography" data-guide-category="advanced" data-guide-goals="harden multisig inherit" data-guide-products="" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/multisig-key-geography.html" aria-label="Read guide: Where the keys actually live"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-icon"><i class="bi bi-people"></i></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>Where the keys actually live</h3>
+      <p>Three keys in three places is easy to say and easy to get wrong. The locations that only look independent, the window when your keys travel together, and an honest account of what a safe deposit box and a trusted friend each actually do.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-multisig">Multisig</a><a class="sc-tag sc-tag-link" href="glossary.html#term-threat_model">Threat model</a></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 30 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="passphrase-setup" data-guide-category="advanced" data-guide-goals="harden recover" data-guide-products="" data-guide-level="advanced" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/passphrase-setup.html" aria-label="Read guide: BIP39 passphrases, and when not to use one"></a>
     <div class="sc-card-body">
       
@@ -636,7 +894,7 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="bip85-child-seeds" data-guide-category="advanced" data-guide-goals="harden learn" data-guide-products="" data-guide-level="advanced" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="bip85-child-seeds" data-guide-category="advanced" data-guide-goals="harden learn recover" data-guide-products="" data-guide-level="advanced" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/bip85-child-seeds.html" aria-label="Read guide: BIP85: one backup, many wallets"></a>
     <div class="sc-card-body">
       
@@ -653,7 +911,7 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="seed-backup-metal" data-guide-category="advanced" data-guide-goals="harden" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="seed-backup-metal" data-guide-category="advanced" data-guide-goals="harden recover" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/seed-backup-metal.html" aria-label="Read guide: Durable seed backups"></a>
     <div class="sc-card-body">
       
@@ -669,6 +927,40 @@
       <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 25 min</span><span>Updated Aug 17, 2026</span></p>
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="inheritance-plan" data-guide-category="advanced" data-guide-goals="harden inherit multisig" data-guide-products="unchained casa" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/inheritance-plan.html" aria-label="Read guide: An inheritance plan that does not leak the secret"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-icon"><i class="bi bi-people"></i></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>An inheritance plan that does not leak the secret</h3>
+      <p>Instructions someone can follow while grieving, that are not enough to steal with while you are alive. Why your will is the wrong place for any of it, and the failure that loses more coins than any other.</p>
+      <div class="sc-tags"><span class="sc-tag">Inheritance</span><span class="sc-tag">Estate</span></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 45 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="duress-and-coercion" data-guide-category="advanced" data-guide-goals="harden inherit" data-guide-products="" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/duress-and-coercion.html" aria-label="Read guide: Planning for coercion"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-icon"><i class="bi bi-shield-exclamation"></i></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>Planning for coercion</h3>
+      <p>The attack that ignores your cryptography and comes for you instead. Why decoy wallets are weaker than they sound, why being genuinely unable to comply beats lying convincingly, and the arrangements that make a bad situation worse.</p>
+      <div class="sc-tags"><a class="sc-tag sc-tag-link" href="glossary.html#term-threat_model">Threat model</a><a class="sc-tag sc-tag-link" href="glossary.html#term-wrench_attack">Duress</a></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 30 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
     </div></div>
       </div>
     </section>
@@ -681,6 +973,23 @@
           
         </div>
         <div class="row g-4">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="chain-analysis-heuristics" data-guide-category="concepts" data-guide-goals="learn harden privacy" data-guide-products="" data-guide-level="advanced" data-guide-status="published">
+      <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/chain-analysis-heuristics.html" aria-label="Read guide: How chain analysis reads your wallet"></a>
+    <div class="sc-card-body">
+      
+      <div class="sc-guide-card-top">
+        <div class="sc-icon"><i class="bi bi-pie-chart"></i></div>
+        <div class="sc-guide-card-badges">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+        </div>
+      </div>
+      <h3>How chain analysis reads your wallet</h3>
+      <p>Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.</p>
+      <div class="sc-tags"><span class="sc-tag">Privacy</span><a class="sc-tag sc-tag-link" href="glossary.html#term-utxo">UTXO</a></div>
+      <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 35 min</span><span>Updated Aug 18, 2026</span></p>
+      <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+    </div></article>
+    </div>
     <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="double-spend-problem" data-guide-category="concepts" data-guide-goals="learn" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/double-spend-problem.html" aria-label="Read guide: The problem bitcoin solved"></a>
     <div class="sc-card-body">
@@ -783,7 +1092,7 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="why-run-a-node" data-guide-category="concepts" data-guide-goals="learn harden" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="why-run-a-node" data-guide-category="concepts" data-guide-goals="learn harden privacy" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/why-run-a-node.html" aria-label="Read guide: Why run a node"></a>
     <div class="sc-card-body">
       
@@ -800,7 +1109,7 @@
       <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
     </div></article>
     </div>
-    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="bitcoin-privacy" data-guide-category="concepts" data-guide-goals="learn harden" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
+    <div class="col-md-6 col-xl-4 sc-guide-cell" data-guide="bitcoin-privacy" data-guide-category="concepts" data-guide-goals="learn harden privacy" data-guide-products="" data-guide-level="intermediate" data-guide-status="published">
       <article class="sc-card sc-guide-card sc-path-card-link"><a class="sc-card-cover-link" href="guides/bitcoin-privacy.html" aria-label="Read guide: The privacy you actually have"></a>
     <div class="sc-card-body">
       
@@ -879,10 +1188,10 @@
             <ul class="sc-footer-links sc-footer-links-grid">
               <li><a href="index.html">Home</a></li>
               <li><a href="guides.html">Guides</a></li>
-              <li><a href="glossary.html">Glossary</a></li>
               <li><a href="devices.html">Devices</a></li>
               <li><a href="software.html">Software</a></li>
               <li><a href="exchanges.html">Exchanges</a></li>
+              <li><a href="glossary.html">Glossary</a></li>
               <li><a href="dashboard.html">Dashboard</a></li>
               <li><a href="merch.html">Merch</a></li>
               <li><a href="contact.html">Get Help</a></li>
@@ -902,7 +1211,7 @@
         </div>
       </div>
     </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="merch.html">Merch</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260817-914"></script>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="merch.html">Merch</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="assets/js/site-refresh.js?v=20260818-946"></script>
 </body>
 </html>

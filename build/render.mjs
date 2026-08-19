@@ -32,7 +32,7 @@ const FILES = {
 };
 
 const SITE = 'https://selfcustody.ca';
-const ASSET_VERSION = '20260817-914';
+const ASSET_VERSION = '20260818-946';
 const ASSET_QUERY = /(assets\/(?:vendor\/bootstrap-icons\/bootstrap-icons\.css|css\/(?:style|site-refresh)\.css|js\/site-refresh\.js)\?v=)[^"']+/g;
 
 /* The whole container block, anchored on the <noscript> that always follows it.
@@ -137,14 +137,14 @@ const guideHead = guide => {
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${desc}">
   <meta property="og:url" content="${url}">
-  <meta property="og:image" content="${SITE}/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image" content="${SITE}/assets/img/social-preview.jpg?v=5">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="1774">
-  <meta property="og:image:height" content="887">
-  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="${SITE}/assets/img/social-preview.jpg?v=4">
-  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:image" content="${SITE}/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
@@ -213,8 +213,35 @@ for (const guide of publishedGuides) {
   console.log(`  guides/${guide.slug}.html`.padEnd(46) + `${Math.round(html.length / 1024)} KB`);
 }
 
+/* A guide that has been renamed or absorbed into another keeps its old paths
+   alive through `aliases`. Pages are static, so there is no server redirect to
+   configure -- a stub carrying rel=canonical (for crawlers) and a meta refresh
+   (for people) is the whole mechanism. docs/guides is rebuilt from scratch on
+   every run, so these have to be generated rather than left lying around. */
+let aliasCount = 0;
+for (const guide of publishedGuides) {
+  for (const alias of guide.aliases || []) {
+    writeFileSync(`docs/guides/${alias}.html`, `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Moved: ${guide.title}</title>
+  <link rel="canonical" href="https://selfcustody.ca/guides/${guide.slug}.html">
+  <meta name="robots" content="noindex, follow">
+  <meta http-equiv="refresh" content="0; url=${guide.slug}.html">
+</head>
+<body>
+  <p>This guide has moved to <a href="${guide.slug}.html">${guide.title}</a>.</p>
+</body>
+</html>
+`);
+    aliasCount++;
+    console.log(`  guides/${alias}.html`.padEnd(46) + `redirect -> ${guide.slug}.html`);
+  }
+}
+
 const planned = guides.length - publishedGuides.length;
-console.log(`\n${publishedGuides.length} guide page(s) written, ${planned} planned`);
+console.log(`\n${publishedGuides.length} guide page(s) written, ${planned} planned, ${aliasCount} redirect(s)`);
 
 /* ---- sitemap ------------------------------------------------------------
    Planned guides are deliberately absent: they have no page to point at. */
