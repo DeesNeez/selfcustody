@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A Bitcoin-only phone wallet that can hold a little money itself or drive a hardware signer over QR and NFC. Setting up both, and being clear about which screen you are actually trusting.">
+  <title>Cove: mobile wallet setup | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/cove-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Cove: mobile wallet setup | SelfCustody.ca">
+  <meta property="og:description" content="A Bitcoin-only phone wallet that can hold a little money itself or drive a hardware signer over QR and NFC. Setting up both, and being clear about which screen you are actually trusting.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/cove-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cove: mobile wallet setup","description":"A Bitcoin-only phone wallet that can hold a little money itself or drive a hardware signer over QR and NFC. Setting up both, and being clear about which screen you are actually trusting.","url":"https://selfcustody.ca/guides/cove-setup.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/cove-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#software">Software</a>
+        </nav>
+        <span class="sc-eyebrow">Wallets</span>
+        <h1>Cove: mobile wallet setup</h1>
+        <p class="sc-lead">A Bitcoin-only phone wallet that can hold a little money itself or drive a hardware signer over QR and NFC. Setting up both, and being clear about which screen you are actually trusting.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 20 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-mobile_wallet">Mobile</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-bitcoin_only">Bitcoin-only</a></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../software.html#cove">About Cove <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Cove is an open-source, Bitcoin-only wallet for iOS and Android. It will happily hold a small amount of bitcoin itself, and it will also act as the coordinator for a hardware signer &mdash; building transactions, passing them to a COLDCARD or a TAPSIGNER over QR or NFC, and broadcasting what comes back.</p>
+
+      <p>That second job is the interesting one. Most people assume driving a hardware wallet means sitting at a desktop with Sparrow or Electrum. Cove puts that whole workflow on a phone, which for a lot of people is the difference between using their hardware wallet and leaving it in a drawer.</p>
+
+      <p>It also means being honest about which screen you are trusting, and that depends entirely on which signer you pair with. This page sets up both modes and then makes that distinction explicit.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-phone" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A phone running Cove displaying a QR code, propped beside a hardware signer that is scanning it, on a plain desk with no computer in sight.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The whole coordinator, in a pocket. No desktop involved anywhere in this loop.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li><strong>A phone</strong>, iOS or Android. NFC if you want to tap-sign with a card.</li><li><strong>Optionally, a hardware signer.</strong> Cove works with COLDCARD, TAPSIGNER, Krux, SeedSigner, Blockstream Jade, and Foundation Passport.</li><li><strong>Somewhere to write recovery words</strong>, if you are creating a wallet on the phone itself.</li><li>No bitcoin yet. Fund nothing until the check at the end passes.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>Three ways to use it</h2>
+
+      <p>Decide which of these you are doing before you start, because the security properties are completely different.</p>
+
+      <ul class="sc-check-list"><li><strong>A hot wallet.</strong> Cove generates and holds the keys on your phone. Convenient, genuinely useful, and appropriate for spending money rather than savings.</li><li><strong>A watch-only wallet.</strong> Import an xpub or a descriptor and Cove shows balances and builds transactions, but holds no keys and can sign nothing.</li><li><strong>A coordinator for a hardware signer.</strong> The keys stay on the hardware; Cove does everything else. This is the setup worth aiming for if you hold a meaningful amount.</li></ul>
+
+      <p>The first and third are not rivals. <a href='choosing-your-first-setup.html'>A spending wallet and a savings wallet</a> is the shape most people should end up with, and Cove can be either.</p>
+
+      <h2><span class="sc-article-num">2</span>Creating a hot wallet</h2>
+
+      <p>If you want a phone wallet for everyday amounts, this takes two minutes.</p>
+
+      <ul class="sc-check-list"><li><strong>Install Cove</strong> from the App Store or Google Play and choose to create a new wallet.</li><li><strong>Write the recovery words down on paper or metal</strong>, in order, before going any further. These are ordinary BIP39 words and they restore into any wallet, so this backup is genuinely portable.</li><li><strong>Set the app lock</strong> &mdash; a PIN or biometrics. This protects the app on an unlocked phone; it is not what protects the coins.</li><li><strong>Decide about cloud backup.</strong> Cove offers an end-to-end encrypted cloud backup protected by passkeys. It is a real convenience and it is not a substitute for the written words.</li></ul>
+
+      <ul class="sc-caution-list"><li>A hot wallet's keys live on a phone that browses the internet, installs apps, and gets left on tables. Keep the balance to what you would carry in a physical wallet.</li><li>The encrypted cloud backup depends on your cloud account and your passkeys. Words on metal depend on nothing.</li></ul>
+
+      <h2><span class="sc-article-num">3</span>Pairing a hardware signer</h2>
+
+      <p>This is where Cove earns its place. Import the signer's public keys and Cove becomes the coordinator while the private keys never leave the device.</p>
+
+      <ul class="sc-check-list"><li><strong>Choose to import a hardware wallet</strong> and pick the transfer method your device supports.</li><li><strong>By QR</strong> &mdash; hold the phone up to the device's screen. Cove reads both BBQr and UR, the two formats used to split large payloads across animated codes.</li><li><strong>By NFC</strong> &mdash; tap the device or card against the phone.</li><li><strong>By file</strong> &mdash; import the export your device wrote to a microSD card.</li><li><strong>Confirm the fingerprint matches</strong> what the device shows. This is the check that proves Cove is watching the wallet your device will actually sign for.</li></ul>
+
+      <h2><span class="sc-article-num">4</span>Signing from a phone</h2>
+
+      <p>The round trip is the standard <a href='air-gapped-psbt-workflow.html'>air-gapped PSBT workflow</a>, with the phone playing the part the desktop usually plays.</p>
+
+      <ul class="sc-check-list"><li>Build the payment in Cove. It selects coins, sets a fee, and produces a PSBT.</li><li>Pass it to the signer &mdash; show a QR code for the device's camera, tap over NFC, or write a file.</li><li><strong>Verify on the signer, then approve.</strong> More on this in the next section.</li><li>Bring the signature back the same way.</li><li>Cove finalises the transaction and broadcasts it.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Which screen are you trusting?</h2>
+
+      <p>This is the part that decides how much this setup is really worth, and it depends on the signer rather than on Cove.</p>
+
+      <p>The point of a hardware wallet with a display is that a compromised coordinator cannot lie to you about a payment: the device shows the amount and destination from the data it is signing, on hardware the attacker does not control.</p>
+
+      <ul class="sc-check-list"><li><strong>With a COLDCARD, Krux, SeedSigner, Jade, or Passport</strong>, that protection is intact. Read the amount, the address, and the fee on the device's own screen. The phone is just the thing that built the transaction.</li><li><strong>With a TAPSIGNER</strong>, there is no screen. The card signs what it is handed and cannot tell you what that is, so the phone display is the only thing you have. That is a reasonable trade for an everyday key and a poor one for savings &mdash; the <a href='tapsigner-setup.html'>TAPSIGNER guide</a> goes into it properly.</li></ul>
+
+      <blockquote class="sc-pull-quote"><p>A hardware signer with a screen protects you from your coordinator. A signer without one asks you to trust it.</p></blockquote>
+
+      <h2><span class="sc-article-num">6</span>The app-lock features, and their cost</h2>
+
+      <p>Cove offers more than a PIN: there are trick PINs that wipe the app's data or open a decoy wallet, in the same spirit as the ones on a <a href='coldcard-advanced-features.html'>COLDCARD</a>.</p>
+
+      <p>They carry the same trade, and it is worth stating in the same terms. Each one is a defence against somebody holding your phone, purchased with a new way to destroy your own access.</p>
+
+      <ul class="sc-caution-list"><li><strong>A wipe is only survivable because of your written words.</strong> If the recovery words are not on paper or metal and tested, a wipe is a permanent loss rather than a clever defence.</li><li><strong>A decoy wallet you never funded is not convincing</strong>, and one you did fund is money you may hand over.</li><li><strong>Write down what you enabled</strong>, and keep that note with your backup. A trick PIN you have forgotten configuring is a trap you set for yourself.</li></ul>
+
+      <h2><span class="sc-article-num">7</span>Point it at your own server</h2>
+
+      <p>By default a wallet app asks somebody else's server for your balance, which means telling that server every address you own. Cove lets you connect to your own Electrum or Esplora node instead.</p>
+
+      <p>If you already run a node, this is a five-minute settings change that closes a real privacy leak. If you do not, it is the strongest argument for eventually running one &mdash; and nothing else in this guide depends on it.</p>
+
+      <h2><span class="sc-article-num">8</span>Before you fund it</h2>
+
+      <ul class="sc-check-list"><li>Confirm the recovery words are written down and stored offline, for a hot wallet.</li><li>For a hardware setup, confirm the fingerprint in Cove matches the one on the device.</li><li>Generate a receive address and <strong>verify it on the hardware device's screen</strong> before sending anything to it.</li><li>Send a small test amount, confirm it arrives, then sign a transaction sending it back out.</li><li>Only then move a balance you would mind losing.</li></ul>
+
+      <h2>The short version</h2>
+
+      <p>Cove is a Bitcoin-only, open-source phone wallet that works as a hot wallet for spending money or as a coordinator for a hardware signer over QR, NFC, or file. Everything about how much that protects you comes down to whether the signer has a screen you can read the transaction on.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Putting the coordinator on your phone is a genuine convenience win and costs you nothing in security &mdash; as long as the device you pair with has its own display and you actually read it. Pair with something screenless and the phone becomes the thing you are trusting, which is the arrangement a hardware wallet exists to avoid.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="air-gapped-psbt-workflow.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-repeat"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The air-gapped PSBT workflow</h3>
+              <p>How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="tapsigner-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-credit-card-2-front"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>TAPSIGNER: setup and NFC signing</h3>
+              <p>A bitcoin key in a credit card, signing by tap. Initialising it, the backup that must happen before you fund it, and the one number printed on the card that you have to copy down before it goes anywhere.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="choosing-your-first-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-signpost-split"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Choosing your first setup</h3>
+              <p>Most people ask which wallet is best. The useful question is how much you are protecting, from what, and who else needs to be able to recover it — which has a different answer.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

@@ -13,14 +13,14 @@
   <meta property="og:title" content="Nunchuk: first wallet and shared access | SelfCustody.ca">
   <meta property="og:description" content="A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.">
   <meta property="og:url" content="https://selfcustody.ca/guides/nunchuk-setup.html">
-  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="1774">
-  <meta property="og:image:height" content="887">
-  <meta property="og:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=4">
-  <meta name="twitter:image:alt" content="SelfCustody.ca with an illustrated portrait and orange glow">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
   <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260817-914" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260817-914" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260817-914" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Nunchuk: first wallet and shared access","description":"A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.","url":"https://selfcustody.ca/guides/nunchuk-setup.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/nunchuk-setup.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -44,13 +44,20 @@
             <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
           </a>
           <nav id="navbar" class="navbar" aria-label="Primary navigation">
-            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
-          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
-            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
           </button>
           <ul class="sc-nav-submenu">
-            <li><a class="active" href="../guides.html" aria-current="page">All guides</a></li>
-            <li><a class="" href="../glossary.html">Glossary</a></li>
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
           </ul>
         </li><li class="sc-nav-menu">
           <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
@@ -61,7 +68,7 @@
             <li><a class="" href="../software.html">Software</a></li>
             <li><a class="" href="../exchanges.html">Exchanges</a></li>
           </ul>
-        </li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
             <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
           </nav>
         </div>
@@ -239,10 +246,10 @@
             <ul class="sc-footer-links sc-footer-links-grid">
               <li><a href="../index.html">Home</a></li>
               <li><a href="../guides.html">Guides</a></li>
-              <li><a href="../glossary.html">Glossary</a></li>
               <li><a href="../devices.html">Devices</a></li>
               <li><a href="../software.html">Software</a></li>
               <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
               <li><a href="../dashboard.html">Dashboard</a></li>
               <li><a href="../merch.html">Merch</a></li>
               <li><a href="../contact.html">Get Help</a></li>
@@ -262,7 +269,7 @@
         </div>
       </div>
     </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260817-914"></script>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
 </body>
 </html>

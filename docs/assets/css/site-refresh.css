@@ -313,6 +313,121 @@ body.site-refresh[data-page="contact"] #site-footer {
     linear-gradient(135deg, #202020, #303030);
 }
 
+/* Guides: the library photograph runs the full width of the page rather than
+   sitting in the hero's media box. The open book is dead centre in the frame,
+   so the copy is capped to the left half and never reaches it -- see the
+   max-width on .sc-hero-copy below, and the stacked layout under 992px where a
+   centre crop would otherwise put the book directly behind the text. */
+body[data-page="guides"] .sc-hero.has-background-media {
+  display: flex;
+  align-items: center;
+  min-height: clamp(400px, 34vw, 520px);
+  padding: 150px 0 70px;
+  isolation: isolate;
+  background: var(--sc-paper);
+}
+
+body[data-page="guides"] .sc-hero-background-media {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  margin: 0;
+}
+
+body[data-page="guides"] .sc-hero-background-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Y biased upward so the vaulted ceiling and the book stay in frame while the
+     empty floor in the lower third is cropped away. X biased left of centre so
+     the crop pushes the lectern to the right of the copy instead of behind it --
+     the photograph is a symmetric corridor, so an off-centre crop reads as a
+     normal framing choice rather than a mistake. */
+  object-position: 36% 38%;
+}
+
+/* Legibility scrim: heavy at the left edge where the copy sits, fully clear
+   before the centre so the book is never dimmed, plus a bottom fade into the
+   page surface so the photograph does not end on a hard line. */
+body[data-page="guides"] .sc-hero-background-media::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(26, 25, 24, 0.95) 0%, rgba(26, 25, 24, 0.88) 20%, rgba(26, 25, 24, 0.55) 30%, rgba(26, 25, 24, 0.14) 38%, transparent 46%),
+    linear-gradient(180deg, rgba(26, 25, 24, 0.72) 0%, rgba(26, 25, 24, 0.12) 26%, transparent 55%, rgba(26, 25, 24, 0.85) 92%, var(--sc-paper) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+body[data-page="guides"] .sc-hero.has-background-media .sc-hero-copy {
+  /* Measured against the lectern's on-screen position after the cover crop,
+     not against the container's centre line -- the book occupies a band, so
+     clearing the midpoint is not enough. Verified clear from 1024px up. */
+  max-width: min(470px, 38%);
+}
+
+/* Type sits over a photograph rather than a flat panel, so it carries the same
+   shadow the home hero uses over its background media: enough to hold the
+   letterforms against the brightest thing behind them (the sunlit window and
+   pale stonework) without reading as an outline. */
+body[data-page="guides"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .sc-lead, .sc-eyebrow) {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    0 2px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* Past the container's 1320px cap the copy stops tracking the viewport while
+   the lectern keeps moving right with it, so the gap closes and eventually
+   collides. Above roughly 1950px the photograph also stops cropping
+   horizontally, which means object-position has nothing left to shift and the
+   book is pinned at 42.5% of the viewport.
+
+   Solving copyLeft + width < bookLeft for the capped container gives
+   width < 648px - 7.5vw; the value below carries a ~40px safety margin, and
+   the min() keeps the ordinary 470px in force until that becomes the tighter
+   of the two. Verified clear at 1600, 1920, 2560 and 3440. */
+@media (min-width: 1600px) {
+  body[data-page="guides"] .sc-hero-background-media img {
+    object-position: 28% 38%;
+  }
+
+  body[data-page="guides"] .sc-hero.has-background-media .sc-hero-copy {
+    max-width: min(470px, calc(608px - 7.5vw));
+  }
+}
+
+/* 991px rather than 991.98px so this pairs exactly with the header's own
+   breakpoint below -- the padding-top here has to equal the fixed header's
+   height, and an off-by-one breakpoint would leave the two disagreeing in a
+   sliver of viewport widths. */
+@media (max-width: 991px) {
+  /* Under this width a centre crop puts the book behind the copy, so the
+     photograph becomes a band above the text instead of a backdrop behind it.
+     Padding-top is the header height exactly (70px at this breakpoint), so the
+     top edge of the photograph butts against the header with no gap. */
+  body[data-page="guides"] .sc-hero.has-background-media {
+    display: block;
+    min-height: 0;
+    padding: 70px 0 44px;
+  }
+
+  body[data-page="guides"] .sc-hero-background-media {
+    position: relative;
+    inset: auto;
+    height: clamp(180px, 34vw, 260px);
+    margin-bottom: 30px;
+  }
+
+  body[data-page="guides"] .sc-hero-background-media::after {
+    background: linear-gradient(180deg, rgba(26, 25, 24, 0.55) 0%, transparent 34%, transparent 62%, rgba(26, 25, 24, 0.9) 94%, var(--sc-paper) 100%);
+  }
+
+  body[data-page="guides"] .sc-hero.has-background-media .sc-hero-copy {
+    max-width: none;
+  }
+}
+
 /* The homepage uses the animated cash vortex as its hero environment. */
 body[data-page="home"] .sc-hero.has-background-media {
   min-height: clamp(980px, calc(66.667vw + 193px), 1115px);
@@ -599,16 +714,17 @@ body[data-page="home"] .sc-sequence-section {
    blocks run an entrance animation on transform with fill-mode:both, and an
    animation's final keyframe outranks a normal declaration -- a transform
    hover there silently does nothing. */
-/* The block cards take :focus-visible where the other two take :focus-within.
-   A block card is itself the link, so clicking one focused it and left it lit
-   and lifted long after the pointer had gone -- most obviously when a drag off
-   the card meant no click ever landed elsewhere to move focus away.
-   :focus-visible still lights it for keyboard arrival, which is the case the
-   affordance is actually for, and ignores the mouse. */
+/* Every card here takes :focus-visible rather than :focus-within, because each
+   one wraps (or is) a link. Clicking one focused that link and left the card
+   lit and lifted long after the pointer had gone -- most obviously on the
+   product and guide grids, whose links are in-page anchors, so the click never
+   moves focus off the card at all. :has(:focus-visible) still lights it for
+   keyboard arrival, which is the case the affordance is actually for, and
+   ignores the mouse. */
 .sc-path-options .sc-card:hover,
-.sc-path-options .sc-card:focus-within,
+.sc-path-options .sc-card:has(:focus-visible),
 .sc-card.sc-guide-card:hover,
-.sc-card.sc-guide-card:focus-within,
+.sc-card.sc-guide-card:has(:focus-visible),
 .sc-dash-tile:hover,
 .sc-dash-tile:has(:focus-visible),
 .sc-block:hover,
@@ -1291,11 +1407,17 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
   color: rgba(255, 255, 255, 0.68);
 }
 
+/* The resting edge for every card on the site: a dimmed version of the shared
+   hover cream, so hover reads as the same colour brightening rather than a
+   switch to a different one. Set here rather than per-grid, because the plain
+   .sc-card (home path cards, the Coinkite grid) has no modifier class to hang
+   it off -- those were the ones that fell back to grey the moment a hover
+   ended. Exchange and featured cards override it deliberately below. */
 .sc-card {
   height: 100%;
   overflow: hidden;
   background: var(--sc-surface);
-  border: 1px solid var(--sc-line);
+  border: 1px solid rgba(255, 237, 184, 0.38);
   border-radius: var(--sc-radius);
   box-shadow: 0 10px 30px rgba(28, 28, 28, 0.045);
   transition: 0.22s ease;
@@ -1402,17 +1524,11 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
 
 /* Devices: richer card surfaces without an accent strip. The shortlist keeps
    the shared sc-path-options hover motion and glow defined above. */
-.sc-device-card-grid,
-.sc-device-details {
-  --device-accent: #74b6ce;
-  --device-accent-surface: #24353c;
-  --device-accent-border: #4d7280;
-}
 
 .sc-device-preflight {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, #242627, #1d1f20);
+  background: linear-gradient(145deg, #272624, #201f1d);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--sc-radius);
   box-shadow:
@@ -1493,6 +1609,15 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
   white-space: nowrap;
 }
 
+/* Link and die travel together as one block, so space-between still pushes the
+   pair to the right rather than spreading three items across the row. */
+.sc-device-preflight-guide-cta {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 18px;
+}
+
 @media (max-width: 767.98px) {
   .sc-device-preflight-grid { grid-template-columns: 1fr; }
 
@@ -1509,15 +1634,14 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
 
 .sc-device-card-grid .sc-product-card {
   overflow: hidden;
-  background: linear-gradient(145deg, #232526, #1d1f20);
-  border-color: rgba(116, 182, 206, 0.28);
+  background: linear-gradient(145deg, #262523, #201f1d);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.045),
     0 12px 28px rgba(0, 0, 0, 0.14);
 }
 
 .sc-device-card-grid .sc-product-image {
-  background: linear-gradient(145deg, #202223, #292b2c);
+  background: linear-gradient(145deg, #232220, #2c2b29);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -1537,10 +1661,6 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
 }
 
 .sc-device-card-grid .sc-tag {
-  --sc-tag-text: #edfaff;
-  color: #edfaff;
-  background: var(--device-accent-surface);
-  border-color: var(--device-accent-border);
   border-radius: 8px;
   opacity: 1;
 }
@@ -1594,7 +1714,7 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
   margin-top: auto;
   padding: 10px 13px;
   color: #f4f4f4;
-  background: #2d2f30;
+  background: #302f2d;
   border: 1px solid #55595b;
   border-radius: 9px;
   font-weight: 800;
@@ -1603,20 +1723,20 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
 .sc-device-card-grid .sc-path-card-link:hover .sc-text-link,
 .sc-device-card-grid .sc-path-card-link:focus-visible .sc-text-link {
   color: #fff;
-  background: #363839;
+  background: #393836;
   border-color: rgba(255, 181, 94, 0.72);
 }
 
 .sc-device-details .sc-detail {
-  background: linear-gradient(145deg, #232526, #1d1f20);
-  border-color: rgba(255, 255, 255, 0.16);
+  background: linear-gradient(145deg, #262523, #201f1d);
+  border-color: rgba(255, 237, 184, 0.38);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.045),
     0 12px 30px rgba(0, 0, 0, 0.14);
 }
 
 .sc-device-details .sc-detail-media {
-  background: linear-gradient(145deg, #1d1f20, #292b2c);
+  background: linear-gradient(145deg, #201f1d, #2c2b29);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
 }
@@ -1647,7 +1767,7 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
   gap: 7px;
   padding: 10px 13px;
   color: #f4f4f4;
-  background: #2d2f30;
+  background: #302f2d;
   border: 1px solid #55595b;
   border-radius: 9px;
   font-weight: 800;
@@ -1655,7 +1775,7 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
 
 .sc-device-details .sc-detail-footer > a.sc-text-link:hover {
   color: #fff;
-  background: #363839;
+  background: #393836;
   border-color: rgba(255, 181, 94, 0.72);
 }
 
@@ -1817,17 +1937,17 @@ p.sc-price {
 
 /* Exchanges: two custody models keep the existing lift/glow interaction,
    but their resting surfaces now explain the distinction before hover. */
-.sc-exchange-models > .col-lg-6:first-child { --exchange-model-accent: #35b48a; }
-.sc-exchange-models > .col-lg-6:last-child { --exchange-model-accent: var(--sc-orange); }
+.sc-exchange-models > .col-lg-6:first-child { --exchange-model-accent: var(--sc-orange); }
+.sc-exchange-models > .col-lg-6:last-child { --exchange-model-accent: #3c9056; }
 
 .sc-exchange-models .sc-card {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   background:
-    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--exchange-model-accent) 18%, transparent), transparent 48%),
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--exchange-model-accent) 11%, transparent), transparent 48%),
     linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
-  border-color: color-mix(in srgb, var(--exchange-model-accent) 43%, var(--sc-line));
+  border-color: color-mix(in srgb, var(--exchange-model-accent) 28%, var(--sc-line));
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.16);
 }
 
@@ -1857,9 +1977,9 @@ p.sc-price {
 
 .sc-exchange-models .sc-icon {
   color: var(--exchange-model-accent);
-  background: color-mix(in srgb, var(--exchange-model-accent) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--exchange-model-accent) 32%, transparent);
-  box-shadow: inset 0 0 18px color-mix(in srgb, var(--exchange-model-accent) 7%, transparent);
+  background: color-mix(in srgb, var(--exchange-model-accent) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--exchange-model-accent) 22%, transparent);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--exchange-model-accent) 5%, transparent);
 }
 
 .sc-exchange-models h3 {
@@ -1870,9 +1990,11 @@ p.sc-price {
 .sc-exchange-models p strong { color: var(--exchange-model-accent); }
 
 /* The platform cards share one structural rhythm. Direct-to-wallet services
-   use green; custodial platforms use orange. Every official-site action is a
-   direct flex child, so margin-top:auto pins it to the same lower-left edge. */
+   use orange (the default); custodial platforms carry .is-custodial and use
+   green. Every official-site action is a direct flex child, so margin-top:auto
+   pins it to the same lower-left edge. */
 .sc-exchange-card-grid { --exchange-card-accent: var(--sc-orange); }
+.sc-exchange-card-grid .sc-detail.is-custodial { --exchange-card-accent: #3c9056; }
 
 .sc-exchange-card-grid .sc-detail {
   position: relative;
@@ -1881,18 +2003,18 @@ p.sc-price {
   overflow: hidden;
   padding: 32px;
   background:
-    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--exchange-card-accent) 12%, transparent), transparent 44%),
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--exchange-card-accent) 8%, transparent), transparent 44%),
     linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
-  border-color: color-mix(in srgb, var(--exchange-card-accent) 32%, var(--sc-line));
+  border-color: color-mix(in srgb, var(--exchange-card-accent) 22%, var(--sc-line));
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.15);
   transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
 }
 
 .sc-exchange-card-grid .sc-detail:hover {
-  border-color: color-mix(in srgb, var(--exchange-card-accent) 72%, #fff);
+  border-color: color-mix(in srgb, var(--exchange-card-accent) 55%, #fff);
   box-shadow:
     0 22px 50px rgba(0, 0, 0, 0.28),
-    0 0 34px color-mix(in srgb, var(--exchange-card-accent) 10%, transparent);
+    0 0 34px color-mix(in srgb, var(--exchange-card-accent) 7%, transparent);
   transform: translateY(-5px);
 }
 
@@ -1923,9 +2045,8 @@ p.sc-price {
   object-fit: contain;
   padding: 7px;
   background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 138, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 11px;
-  box-shadow: inset 0 0 16px rgba(255, 138, 0, 0.045);
 }
 
 .sc-software-brand h2 {
@@ -1956,7 +2077,7 @@ p.sc-price {
   margin-top: auto;
   padding: 9px 12px;
   color: #f2f2f2;
-  background: #2d2f30;
+  background: #302f2d;
   border: 1px solid #55595b;
   border-radius: 9px;
   font-weight: 800;
@@ -1964,7 +2085,7 @@ p.sc-price {
 
 .sc-exchange-card-grid .sc-detail > a.sc-text-link:hover {
   color: #fff;
-  background: #363839;
+  background: #393836;
   border-color: rgba(255, 181, 94, 0.72);
 }
 
@@ -1982,8 +2103,7 @@ p.sc-price {
 }
 
 .sc-software-card-grid .sc-software-card {
-  background: linear-gradient(145deg, #242627, #1d1f20);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(145deg, #272624, #201f1d);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.045),
     0 12px 28px rgba(0, 0, 0, 0.14);
@@ -2038,7 +2158,7 @@ p.sc-price {
   margin-top: auto;
   padding: 10px 13px;
   color: #f4f4f4;
-  background: #2d2f30;
+  background: #302f2d;
   border: 1px solid #55595b;
   border-radius: 9px;
   font-weight: 800;
@@ -2047,14 +2167,14 @@ p.sc-price {
 .sc-software-card-grid .sc-path-card-link:hover .sc-text-link,
 .sc-software-card-grid .sc-path-card-link:focus-visible .sc-text-link {
   color: #fff;
-  background: #363839;
+  background: #393836;
   border-color: rgba(255, 181, 94, 0.72);
 }
 
 /* The long-form wallet notes only need a modest lift from the page surface. */
 .sc-software-details .sc-detail {
-  background: linear-gradient(145deg, #242627, #1f2122);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(145deg, #272624, #22211f);
+  border-color: rgba(255, 237, 184, 0.38);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 11px 26px rgba(0, 0, 0, 0.13);
@@ -2083,7 +2203,7 @@ p.sc-price {
   gap: 7px;
   padding: 9px 12px;
   color: #f2f2f2;
-  background: #2d2f30;
+  background: #302f2d;
   border: 1px solid #55595b;
   border-radius: 9px;
   font-weight: 800;
@@ -2091,7 +2211,7 @@ p.sc-price {
 
 .sc-software-details .sc-detail-footer > a.sc-text-link:hover {
   color: #fff;
-  background: #363839;
+  background: #393836;
   border-color: rgba(255, 181, 94, 0.72);
 }
 
@@ -2118,7 +2238,7 @@ p.sc-price {
 .sc-software-key-warning {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #2b2020, #1c1e1f 62%);
+  background: linear-gradient(135deg, #2b2020, #1f1e1c 62%);
   border: 1px solid rgba(223, 139, 130, 0.4);
   border-radius: 13px;
   box-shadow:
@@ -2989,6 +3109,563 @@ p.sc-price {
 .sc-passphrase-map p { margin: 0; color: var(--sc-muted); font-size: 0.83rem; line-height: 1.55; }
 .sc-passphrase-map strong { color: var(--sc-ink-soft); }
 
+.sc-coldcard-cost-card {
+  position: relative;
+  overflow: hidden;
+  margin: 2em 0;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 0 0, rgba(242, 138, 0, 0.13), transparent 34%),
+    radial-gradient(circle at 100% 0, rgba(214, 94, 64, 0.1), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(217, 194, 143, 0.27);
+  border-radius: var(--sc-radius);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.19), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sc-coldcard-cost-card::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sc-orange), #d9c28f 48%, #d65e40);
+  content: "";
+}
+
+.sc-coldcard-cost-heading {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.sc-coldcard-cost-mark {
+  position: relative;
+  display: block;
+  width: 46px;
+  height: 46px;
+  background: rgba(242, 138, 0, 0.1);
+  border: 1px solid rgba(242, 138, 0, 0.3);
+  border-radius: 11px;
+}
+
+.sc-coldcard-cost-mark::before {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 5px;
+  height: 5px;
+  background: var(--sc-orange);
+  border-radius: 2px;
+  box-shadow:
+    10px 0 var(--sc-orange), 20px 0 var(--sc-orange),
+    0 10px var(--sc-orange), 10px 10px var(--sc-orange), 20px 10px var(--sc-orange),
+    0 20px var(--sc-orange), 10px 20px var(--sc-orange), 20px 20px var(--sc-orange);
+  content: "";
+}
+
+.sc-coldcard-cost-heading > div > span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--sc-orange);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sc-coldcard-cost-heading h3 { margin: 0; color: #fff; font-size: 1.22rem; line-height: 1.25; }
+.sc-coldcard-cost-heading > strong {
+  padding: 7px 10px;
+  color: #ffad9d;
+  background: rgba(214, 94, 64, 0.09);
+  border: 1px solid rgba(214, 94, 64, 0.27);
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.sc-coldcard-cost-grid {
+  overflow: hidden;
+  background: rgba(18, 18, 17, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 13px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.sc-coldcard-cost-head,
+.sc-coldcard-cost-row {
+  display: grid;
+  grid-template-columns: 0.9fr 1.35fr 1.2fr;
+  align-items: stretch;
+}
+
+.sc-coldcard-cost-head {
+  color: var(--sc-muted);
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sc-coldcard-cost-head span,
+.sc-coldcard-cost-row > * { padding: 13px 15px; }
+.sc-coldcard-cost-head span + span,
+.sc-coldcard-cost-row > * + * { border-left: 1px solid rgba(255, 255, 255, 0.075); }
+.sc-coldcard-cost-row { border-top: 1px solid rgba(255, 255, 255, 0.075); }
+.sc-coldcard-cost-row:nth-child(even) { background: rgba(255, 255, 255, 0.014); }
+
+.sc-coldcard-cost-row > strong {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--sc-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.sc-coldcard-cost-row > strong::before {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  background: #7fe0c0;
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(53, 180, 138, 0.2);
+  content: "";
+}
+
+.sc-coldcard-cost-row.is-contained > strong::before { background: var(--sc-orange); box-shadow: 0 0 12px rgba(242, 138, 0, 0.2); }
+.sc-coldcard-cost-row.is-delay > strong::before { background: #f3bf6b; box-shadow: 0 0 12px rgba(243, 191, 107, 0.2); }
+.sc-coldcard-cost-row.is-terminal > strong::before { background: #ff826e; box-shadow: 0 0 12px rgba(214, 94, 64, 0.23); }
+
+.sc-coldcard-cost-row > span {
+  display: flex;
+  align-items: center;
+  color: var(--sc-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.48;
+}
+
+.sc-coldcard-cost-row > span small { display: none; }
+.sc-coldcard-cost-row > span.is-safe { color: #8be3c6; background: rgba(53, 180, 138, 0.07); }
+.sc-coldcard-cost-row > span.is-contained { color: #ffc16d; background: rgba(242, 138, 0, 0.065); }
+.sc-coldcard-cost-row > span.is-delay { color: #f3ca86; background: rgba(243, 191, 107, 0.065); }
+.sc-coldcard-cost-row > span.is-backup { color: #ffad9d; background: rgba(214, 94, 64, 0.085); font-weight: 800; }
+
+.sc-krux-dice-panel {
+  position: relative;
+  overflow: hidden;
+  margin: 2em 0;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 0 0, rgba(242, 138, 0, 0.13), transparent 34%),
+    radial-gradient(circle at 100% 0, rgba(105, 153, 218, 0.12), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(205, 199, 172, 0.27);
+  border-radius: var(--sc-radius);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.19), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sc-krux-dice-panel::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sc-orange), #d9c28f 50%, #6999da);
+  content: "";
+}
+
+.sc-krux-dice-heading {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.sc-krux-dice-mark {
+  position: relative;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  color: var(--sc-orange);
+  background: rgba(242, 138, 0, 0.1);
+  border: 1px solid rgba(242, 138, 0, 0.3);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.sc-krux-dice-mark > span {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  color: #b9d4f7;
+  background: #263142;
+  border: 1px solid rgba(105, 153, 218, 0.46);
+  border-radius: 7px;
+  box-shadow: 0 5px 13px rgba(0, 0, 0, 0.3);
+  font-size: 0.56rem;
+}
+
+.sc-krux-dice-heading > div > span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--sc-orange);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sc-krux-dice-heading h3 { margin: 0; color: #fff; font-size: 1.22rem; line-height: 1.25; }
+.sc-krux-dice-heading > strong {
+  padding: 7px 10px;
+  color: #b9d4f7;
+  background: rgba(105, 153, 218, 0.09);
+  border: 1px solid rgba(105, 153, 218, 0.28);
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.sc-krux-dice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sc-krux-dice-grid article {
+  --die-accent: var(--sc-orange);
+  --die-glow: rgba(242, 138, 0, 0.12);
+  --die-chip: rgba(242, 138, 0, 0.1);
+  --die-line: rgba(242, 138, 0, 0.35);
+  overflow: hidden;
+  background: radial-gradient(circle at 100% 0, var(--die-glow), transparent 44%), rgba(18, 18, 17, 0.63);
+  border: 1px solid rgba(242, 138, 0, 0.26);
+  border-radius: 13px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.sc-krux-dice-grid article.is-d20 {
+  --die-accent: #8ab6ef;
+  --die-glow: rgba(105, 153, 218, 0.13);
+  --die-chip: rgba(105, 153, 218, 0.1);
+  --die-line: rgba(105, 153, 218, 0.36);
+  border-color: rgba(105, 153, 218, 0.29);
+}
+
+.sc-krux-die-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.sc-krux-die-title > span {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--die-accent);
+  background: var(--die-chip);
+  border: 1px solid var(--die-line);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.sc-krux-die-title h3 { margin: 0; color: #fff; font-size: 1rem; }
+.sc-krux-die-title p { margin: 2px 0 0; color: var(--sc-muted); font-size: 0.7rem; }
+.sc-krux-dice-grid dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
+.sc-krux-dice-grid dl > div { padding: 15px; }
+.sc-krux-dice-grid dl > div + div { border-left: 1px solid rgba(255, 255, 255, 0.075); }
+.sc-krux-dice-grid dt { min-height: 2.6em; margin-bottom: 7px; color: var(--sc-muted); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.07em; line-height: 1.3; text-transform: uppercase; }
+.sc-krux-dice-grid dd { margin: 0; color: var(--die-accent); font-size: 1.12rem; font-weight: 900; line-height: 1.2; }
+.sc-krux-dice-grid dd small { display: block; margin-top: 3px; color: var(--sc-muted); font-size: 0.56rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+
+.sc-bitkey-recovery-panel {
+  position: relative;
+  overflow: hidden;
+  margin: 2em 0;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 0 0, rgba(53, 180, 138, 0.12), transparent 35%),
+    radial-gradient(circle at 100% 0, rgba(214, 94, 64, 0.11), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(190, 203, 190, 0.27);
+  border-radius: var(--sc-radius);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.19), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sc-bitkey-recovery-panel::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #35b48a, #d9c28f 50%, #d65e40);
+  content: "";
+}
+
+.sc-bitkey-recovery-heading {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.sc-bitkey-recovery-mark {
+  position: relative;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  color: #7fe0c0;
+  background: rgba(53, 180, 138, 0.1);
+  border: 1px solid rgba(53, 180, 138, 0.31);
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.sc-bitkey-recovery-mark > span { color: var(--sc-muted); font-size: 0.62rem; }
+.sc-bitkey-recovery-heading > div > span {
+  display: block;
+  margin-bottom: 3px;
+  color: #7fe0c0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sc-bitkey-recovery-heading h3 { margin: 0; color: #fff; font-size: 1.22rem; line-height: 1.25; }
+.sc-bitkey-recovery-heading > strong {
+  padding: 7px 10px;
+  color: #e8d7ad;
+  background: rgba(217, 194, 143, 0.09);
+  border: 1px solid rgba(217, 194, 143, 0.28);
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.sc-bitkey-recovery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sc-bitkey-recovery-grid article {
+  --recovery-accent: #7fe0c0;
+  --recovery-glow: rgba(53, 180, 138, 0.11);
+  display: flex;
+  min-height: 210px;
+  flex-direction: column;
+  padding: 18px;
+  background: radial-gradient(circle at 100% 0, var(--recovery-glow), transparent 44%), rgba(18, 18, 17, 0.63);
+  border: 1px solid rgba(53, 180, 138, 0.27);
+  border-radius: 13px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.sc-bitkey-recovery-grid article.is-delay { --recovery-accent: var(--sc-orange); --recovery-glow: rgba(242, 138, 0, 0.11); border-color: rgba(242, 138, 0, 0.27); }
+.sc-bitkey-recovery-grid article.is-contacts { --recovery-accent: #e8d7ad; --recovery-glow: rgba(217, 194, 143, 0.11); border-color: rgba(217, 194, 143, 0.29); }
+.sc-bitkey-recovery-grid article.is-inheritance { --recovery-accent: #ff9d8a; --recovery-glow: rgba(214, 94, 64, 0.12); border-color: rgba(214, 94, 64, 0.3); }
+
+.sc-bitkey-loss {
+  align-self: flex-start;
+  padding: 5px 8px;
+  color: var(--recovery-accent);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.sc-bitkey-recovery-grid h3 {
+  max-width: 28rem;
+  min-height: 2.7em;
+  margin: 14px 0 18px;
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.sc-bitkey-recovery-grid dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(110px, 0.65fr);
+  margin: auto -18px -18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.sc-bitkey-recovery-grid dl > div { padding: 14px 18px; }
+.sc-bitkey-recovery-grid dl > div + div { background: var(--recovery-glow); border-left: 1px solid rgba(255, 255, 255, 0.075); }
+.sc-bitkey-recovery-grid dt { margin-bottom: 5px; color: var(--sc-muted); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.sc-bitkey-recovery-grid dd { margin: 0; color: var(--sc-ink-soft); font-size: 0.78rem; font-weight: 700; line-height: 1.42; }
+.sc-bitkey-recovery-grid dl > div:last-child dd { color: var(--recovery-accent); font-size: 1rem; font-weight: 900; }
+
+.sc-psbt-routes-panel {
+  position: relative;
+  overflow: hidden;
+  margin: 2em 0;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 0 0, rgba(217, 194, 143, 0.12), transparent 34%),
+    radial-gradient(circle at 100% 0, rgba(214, 94, 64, 0.1), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(217, 194, 143, 0.27);
+  border-radius: var(--sc-radius);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.19), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sc-psbt-routes-panel::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d9c28f, #35b48a 34%, var(--sc-orange) 67%, #d65e40);
+  content: "";
+}
+
+.sc-psbt-routes-heading {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.sc-psbt-routes-mark {
+  position: relative;
+  display: block;
+  width: 46px;
+  height: 46px;
+  background: rgba(217, 194, 143, 0.09);
+  border: 1px solid rgba(217, 194, 143, 0.3);
+  border-radius: 12px;
+}
+
+.sc-psbt-routes-mark::before,
+.sc-psbt-routes-mark::after {
+  position: absolute;
+  top: 20px;
+  width: 12px;
+  height: 6px;
+  background: #e8d7ad;
+  border-radius: 3px;
+  content: "";
+}
+
+.sc-psbt-routes-mark::before { left: 7px; }
+.sc-psbt-routes-mark::after { right: 7px; }
+.sc-psbt-routes-mark i {
+  position: absolute;
+  top: 15px;
+  left: 21px;
+  width: 5px;
+  height: 16px;
+  border-top: 2px solid var(--sc-orange);
+  border-bottom: 2px solid var(--sc-orange);
+  transform: skew(-18deg);
+}
+
+.sc-psbt-routes-heading > div > span {
+  display: block;
+  margin-bottom: 3px;
+  color: #e8d7ad;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sc-psbt-routes-heading h3 { margin: 0; color: #fff; font-size: 1.22rem; line-height: 1.25; }
+.sc-psbt-routes-heading > strong {
+  padding: 7px 10px;
+  color: #7fe0c0;
+  background: rgba(53, 180, 138, 0.09);
+  border: 1px solid rgba(53, 180, 138, 0.27);
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.sc-psbt-routes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sc-psbt-routes-grid article {
+  --route-accent: #e8d7ad;
+  --route-glow: rgba(217, 194, 143, 0.1);
+  display: flex;
+  min-height: 330px;
+  flex-direction: column;
+  padding: 16px;
+  background: radial-gradient(circle at 100% 0, var(--route-glow), transparent 42%), rgba(18, 18, 17, 0.64);
+  border: 1px solid rgba(217, 194, 143, 0.27);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.sc-psbt-routes-grid article.is-qr { --route-accent: #7fe0c0; --route-glow: rgba(53, 180, 138, 0.11); border-color: rgba(53, 180, 138, 0.28); }
+.sc-psbt-routes-grid article.is-nfc { --route-accent: var(--sc-orange); --route-glow: rgba(242, 138, 0, 0.11); border-color: rgba(242, 138, 0, 0.28); }
+.sc-psbt-routes-grid article.is-usb { --route-accent: #ff9d8a; --route-glow: rgba(214, 94, 64, 0.12); border-color: rgba(214, 94, 64, 0.3); }
+
+.sc-psbt-route-title { display: flex; min-height: 62px; align-items: flex-start; justify-content: space-between; gap: 7px; }
+.sc-psbt-route-title > span {
+  padding: 5px 7px;
+  color: var(--route-accent);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.sc-psbt-route-title > strong { color: var(--sc-muted); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.06em; line-height: 1.35; text-align: right; text-transform: uppercase; }
+.sc-psbt-route-track { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(38px, auto) auto minmax(0, 1fr); align-items: center; gap: 4px; margin: 4px 0 17px; }
+.sc-psbt-route-track span,
+.sc-psbt-route-track b { padding: 7px 3px; color: var(--sc-muted); background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.075); border-radius: 5px; font-size: 0.54rem; font-weight: 800; text-align: center; }
+.sc-psbt-route-track b { color: var(--route-accent); background: var(--route-glow); border-color: currentColor; }
+.sc-psbt-route-track i { color: var(--route-accent); font-size: 0.66rem; font-style: normal; }
+.sc-psbt-routes-grid article > p { margin: 0 0 14px; color: var(--sc-ink-soft); font-size: 0.76rem; line-height: 1.55; }
+.sc-psbt-routes-grid aside { margin: auto -16px -16px; padding: 14px 16px; color: var(--sc-muted); background: var(--route-glow); border-top: 1px solid rgba(255, 255, 255, 0.075); font-size: 0.7rem; line-height: 1.5; }
+
+@media (max-width: 991.98px) {
+  .sc-psbt-routes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sc-psbt-routes-grid article { min-height: 280px; }
+}
+
 @media (max-width: 767.98px) {
   .sc-handoff-row { grid-template-columns: 1fr; }
   .sc-handoff-row i { min-height: 28px; border: 0; border-top: 1px solid rgba(242,138,0,.16); border-bottom: 1px solid rgba(242,138,0,.16); transform: rotate(90deg); }
@@ -3012,6 +3689,48 @@ p.sc-price {
   .sc-survival-row span::before { display: block; margin-right: 6px; color: var(--sc-muted); font-size: 0.58rem; text-transform: uppercase; }
   .sc-survival-row span:nth-of-type(1)::before { content: "Single:"; }
   .sc-survival-row span:nth-of-type(2)::before { content: "2-of-3:"; }
+  .sc-coldcard-cost-card { padding: 15px; }
+  .sc-coldcard-cost-heading { grid-template-columns: 42px minmax(0, 1fr); gap: 11px; margin-bottom: 16px; }
+  .sc-coldcard-cost-mark { width: 42px; height: 42px; }
+  .sc-coldcard-cost-mark::before { top: 8px; left: 8px; }
+  .sc-coldcard-cost-heading h3 { font-size: 1.06rem; }
+  .sc-coldcard-cost-heading > strong { grid-column: 2; justify-self: start; }
+  .sc-coldcard-cost-head { display: none; }
+  .sc-coldcard-cost-row { grid-template-columns: 1fr 1fr; }
+  .sc-coldcard-cost-row > strong { grid-column: 1 / -1; padding: 12px 13px; background: rgba(255, 255, 255, 0.035); }
+  .sc-coldcard-cost-row > span { display: block; padding: 11px 13px 13px; border-top: 1px solid rgba(255, 255, 255, 0.075); border-left: 0; font-size: 0.72rem; }
+  .sc-coldcard-cost-row > span + span { border-left: 1px solid rgba(255, 255, 255, 0.075); }
+  .sc-coldcard-cost-row > span small { display: block; margin-bottom: 5px; color: var(--sc-muted); font-size: 0.56rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  .sc-krux-dice-panel { padding: 15px; }
+  .sc-krux-dice-heading { grid-template-columns: 42px minmax(0, 1fr); gap: 11px; margin-bottom: 16px; }
+  .sc-krux-dice-mark { width: 42px; height: 42px; }
+  .sc-krux-dice-heading h3 { font-size: 1.06rem; }
+  .sc-krux-dice-heading > strong { grid-column: 2; justify-self: start; }
+  .sc-krux-dice-grid { grid-template-columns: 1fr; }
+  .sc-krux-dice-grid dl > div { padding: 13px 11px; }
+  .sc-krux-dice-grid dt { min-height: 2.5em; font-size: 0.56rem; }
+  .sc-krux-dice-grid dd { font-size: 1rem; }
+  .sc-bitkey-recovery-panel { padding: 15px; }
+  .sc-bitkey-recovery-heading { grid-template-columns: 42px minmax(0, 1fr); gap: 11px; margin-bottom: 16px; }
+  .sc-bitkey-recovery-mark { width: 42px; height: 42px; }
+  .sc-bitkey-recovery-heading h3 { font-size: 1.06rem; }
+  .sc-bitkey-recovery-heading > strong { grid-column: 2; justify-self: start; }
+  .sc-bitkey-recovery-grid { grid-template-columns: 1fr; }
+  .sc-bitkey-recovery-grid article { min-height: 0; padding: 16px; }
+  .sc-bitkey-recovery-grid h3 { min-height: 0; margin-bottom: 16px; }
+  .sc-bitkey-recovery-grid dl { grid-template-columns: minmax(0, 1.3fr) minmax(100px, 0.7fr); margin: auto -16px -16px; }
+  .sc-bitkey-recovery-grid dl > div { padding: 13px 15px; }
+  .sc-psbt-routes-panel { padding: 15px; }
+  .sc-psbt-routes-heading { grid-template-columns: 42px minmax(0, 1fr); gap: 11px; margin-bottom: 16px; }
+  .sc-psbt-routes-mark { width: 42px; height: 42px; }
+  .sc-psbt-routes-mark::before,
+  .sc-psbt-routes-mark::after { top: 18px; }
+  .sc-psbt-routes-mark i { top: 13px; left: 19px; }
+  .sc-psbt-routes-heading h3 { font-size: 1.06rem; }
+  .sc-psbt-routes-heading > strong { grid-column: 2; justify-self: start; }
+  .sc-psbt-routes-grid { grid-template-columns: 1fr; }
+  .sc-psbt-routes-grid article { min-height: 0; }
+  .sc-psbt-route-title { min-height: 50px; }
 }
 
 .sc-step {
@@ -3914,17 +4633,30 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
   }
 
   .sc-path-options .sc-card:hover,
-  .sc-path-options .sc-card:focus-within,
+  .sc-path-options .sc-card:has(:focus-visible),
   .sc-card.sc-guide-card:hover,
-  .sc-card.sc-guide-card:focus-within,
+  .sc-card.sc-guide-card:has(:focus-visible),
   .sc-dash-tile:hover,
   .sc-dash-tile:has(:focus-visible),
   .sc-block:hover,
-  .sc-block:focus-within {
+  .sc-block:focus-visible {
     translate: none;
     scale: none;
   }
 
+}
+
+/* Guides only -- lays its label link and chevron button side by side as one
+   visual unit. Compare's .sc-nav-menu has no second child, so it never gets
+   this class and is untouched. No align-items here: default `stretch` makes
+   the chevron button match the label link's full height (the link's own
+   line-height makes it the taller of the two), instead of centering at its
+   own shorter natural height and leaving a gap top and bottom of the arrow
+   that the label doesn't have. .sc-nav-menu-chevron-btn's own
+   align-items: center re-centers the small chevron glyph inside that now
+   taller box. */
+.sc-nav-menu-split {
+  display: flex;
 }
 
 /* Homepage actions share one compact, control-panel treatment. */
@@ -3947,8 +4679,45 @@ body.site-refresh .navbar .sc-nav-menu-toggle {
 body.site-refresh .navbar .sc-nav-menu-toggle:hover,
 body.site-refresh .navbar .sc-nav-menu-toggle:focus-visible,
 body.site-refresh .navbar .sc-nav-menu-toggle.active,
-body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-toggle {
+body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-toggle,
+body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-menu-toggle,
+body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-menu-toggle {
   color: var(--sc-orange);
+}
+
+/* Guides' separate chevron button. Its own complete rule rather than
+   sharing .sc-nav-menu-toggle -- the 7px left padding is deliberately what
+   used to be the single button's internal `gap: 7px`, moved onto this box
+   since the label link's own padding-right is zeroed out below (see
+   .sc-nav-menu-split). Colored on hover/focus of *either* sibling, not just
+   itself -- they used to be one button sharing one color via currentColor,
+   and splitting them shouldn't make hovering the label leave the arrow
+   behind, or leave it behind once the click that opens the list is over. */
+body.site-refresh .navbar .sc-nav-menu-chevron-btn {
+  display: flex;
+  align-items: center;
+  padding: 11px 12px 11px 7px;
+  color: rgba(255, 255, 255, 0.78);
+  background: none;
+  border: 0;
+  transition: color 0.2s ease;
+}
+
+body.site-refresh .navbar .sc-nav-menu-chevron-btn:hover,
+body.site-refresh .navbar .sc-nav-menu-chevron-btn:focus-visible,
+body.site-refresh .navbar .sc-nav-menu-chevron-btn.active,
+body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-chevron-btn,
+body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-menu-chevron-btn,
+body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-menu-chevron-btn {
+  color: var(--sc-orange);
+}
+
+/* Reproduces Compare's exact 12px outer insets + 7px inner gap across two
+   boxes instead of one: the link keeps its normal 12px on every side except
+   the right (zeroed here), and the chevron button's own 7px left padding
+   above supplies that gap, so nothing is doubled up and nothing shrinks. */
+body.site-refresh .navbar .sc-nav-menu-split > .sc-nav-menu-toggle {
+  padding-right: 0;
 }
 
 .sc-nav-menu-chevron {
@@ -3960,13 +4729,16 @@ body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-toggle {
   transition: transform 0.16s ease;
 }
 
-.sc-nav-menu.is-open > .sc-nav-menu-toggle .sc-nav-menu-chevron {
+.sc-nav-menu.is-open > .sc-nav-menu-toggle .sc-nav-menu-chevron,
+.sc-nav-menu.is-open > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron {
   transform: translateY(2px) rotate(225deg);
 }
 
 @media (min-width: 992px) {
   .sc-nav-menu:hover > .sc-nav-menu-toggle .sc-nav-menu-chevron,
-  .sc-nav-menu:focus-within > .sc-nav-menu-toggle .sc-nav-menu-chevron {
+  .sc-nav-menu:hover > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron,
+  .sc-nav-menu:focus-within > .sc-nav-menu-toggle .sc-nav-menu-chevron,
+  .sc-nav-menu:focus-within > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron {
     transform: translateY(2px) rotate(225deg);
   }
 }
@@ -4019,6 +4791,10 @@ body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-submenu {
     padding-left: 9px;
     font-size: 13px;
   }
+
+  body.site-refresh .navbar .sc-nav-menu-chevron-btn {
+    padding-right: 9px;
+  }
 }
 
 body.site-refresh .navbar .sc-nav-submenu a {
@@ -4042,6 +4818,26 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
     padding: 10px 20px;
     color: #f38908;
     font-size: 15px;
+  }
+
+  /* Guides' split control reproduces the same full-width, label-left/
+     chevron-right layout as Compare's single button, just spread across
+     the .sc-nav-menu-split row instead of one button's own space-between --
+     the link no longer needs width: 100% since it's not the only child, and
+     its own right padding is zeroed so the row's gap is the only space
+     between it and the chevron button. */
+  body.site-refresh .navbar-mobile .sc-nav-menu-split {
+    justify-content: space-between;
+  }
+
+  body.site-refresh .navbar-mobile .sc-nav-menu-split > .sc-nav-menu-toggle {
+    width: auto;
+    padding-right: 0;
+  }
+
+  body.site-refresh .navbar-mobile .sc-nav-menu-chevron-btn {
+    padding: 10px 20px 10px 0;
+    color: #f38908;
   }
 
   body.site-refresh .navbar-mobile .sc-nav-submenu,
@@ -6976,6 +7772,96 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   text-decoration: none;
 }
 
+/* Sits inside .sc-finder as a fourth item, after the three chip fieldsets --
+   same divider convention as .sc-finder-q + .sc-finder-q, so it reads as
+   "or do it this way" rather than a fourth question. Styled off .sc-chip's
+   own palette (transparent fill, --sc-line border, orange on focus) instead
+   of a boxed-and-lit search widget, since it's one plain input living inside
+   a box that already has its own border and background. */
+.sc-finder-search {
+  padding-top: 24px;
+  border-top: 1px solid rgba(110, 105, 94, 0.35);
+}
+
+.sc-finder-search-label {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--sc-ink);
+  font-family: "Jost", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.sc-finder-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 420px;
+}
+
+.sc-finder-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--sc-muted);
+  border-radius: 50%;
+  /* Centers the circle itself, then nudges up and left a touch more --
+     the handle (::after) hangs off the bottom-right corner, which pulls the
+     glass's visual weight down and to the right of the plain circle. */
+  transform: translate(-1px, calc(-50% - 1px));
+  pointer-events: none;
+}
+
+.sc-finder-search-icon::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  bottom: -2px;
+  width: 6px;
+  height: 2px;
+  background: var(--sc-muted);
+  border-radius: 2px;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.sc-finder-search-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 62px 8px 38px;
+  color: var(--sc-ink);
+  background: transparent;
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius-sm);
+  font-size: 0.93rem;
+  font-weight: 600;
+  outline: none;
+  transition: 0.18s ease;
+}
+
+.sc-finder-search-input::placeholder { color: var(--sc-muted); }
+
+.sc-finder-search-input:focus { border-color: var(--sc-orange); }
+
+.sc-finder-search-input::-webkit-search-cancel-button { display: none; }
+
+.sc-finder-search-clear {
+  position: absolute;
+  right: 8px;
+  padding: 6px 10px;
+  color: var(--sc-ink-soft);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.sc-finder-search-clear:hover,
+.sc-finder-search-clear:focus-visible { color: #fff; }
+
 .sc-guide-nav-count {
   padding: 1px 8px;
   color: var(--sc-paper);
@@ -7047,13 +7933,34 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   gap: 20px;
 }
 
-.sc-chip-group h4 {
+.sc-chip-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.sc-chip-group h4,
+.sc-chip-group h5 {
   margin: 0 0 10px;
   color: var(--sc-muted);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+/* The line itself carries the spacing, split evenly above and below by its
+   own margin rather than a margin above paired with a border's padding
+   below -- the two were never guaranteed to match otherwise. Fixed 16px
+   both sides below 768px, where .sc-chip-groups is one column and every
+   group is its own natural height (no slack to distribute). At 768px+ the
+   grid stretches every column to the height of the tallest one (Hardware,
+   with the most chips); margin: auto on both sides there splits that slack
+   evenly around the line instead of dumping it all above, and still leaves
+   the Casa/Unchained row flush with the bottom of the Hardware column,
+   since an even split still spends all of it. */
+.sc-chip-divider {
+  margin: 16px 0;
+  border-top: 1px dashed rgba(110, 105, 94, 0.35);
 }
 
 .sc-chip {
@@ -7175,6 +8082,24 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-finder-pick {
   padding-top: 22px;
   border-top: 1px solid rgba(110, 105, 94, 0.35);
+}
+
+.sc-finder-more {
+  display: flex;
+  margin: 20px auto 0;
+  padding: 8px 18px;
+  color: var(--sc-ink-soft);
+  background: transparent;
+  border: 1px solid var(--sc-line);
+  border-radius: var(--sc-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: 0.18s ease;
+}
+
+.sc-finder-more:hover {
+  color: #fff;
+  border-color: var(--sc-orange);
 }
 
 /* .sc-guides-empty already has its own dashed-card treatment defined further
@@ -7428,6 +8353,26 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-guide-head h1 {
   margin: 0 0 16px;
   font-size: clamp(2rem, 4.2vw, 3.1rem);
+}
+
+/* Optional mark set beside a guide's title (see titleMark in build/guides.mjs).
+   The row carries the heading's bottom margin so the mark centres against the
+   title text itself, and the mark is sized up from the 46px chart version to
+   hold its own against a display-size heading. */
+.sc-guide-title-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.sc-guide-title-row h1 { margin-bottom: 0; }
+
+.sc-guide-title-row .sc-die-mark {
+  flex: 0 0 auto;
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
 }
 
 .sc-guide-head .sc-lead { max-width: 760px; }
@@ -7980,6 +8925,12 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
 @media (max-width: 767.98px) {
   .sc-finder { padding: 22px 20px; }
   .sc-guide-head { padding: 124px 0 36px; }
+
+  /* A display heading wraps to several lines on a phone, so the mark sits with
+     the first line rather than floating against the vertical centre. */
+  .sc-guide-title-row { align-items: flex-start; gap: 14px; }
+  .sc-guide-title-row .sc-die-mark { width: 44px; height: 44px; border-radius: 11px; }
+
   .sc-guide-prereq { padding: 24px 22px; }
   .sc-guide-foot { padding: 4px 0 20px; }
   .sc-guide-next { grid-template-columns: 1fr; gap: 22px; padding: 26px 22px; }
@@ -8002,7 +8953,7 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
 
 @media (min-width: 768px) {
   .sc-chip-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .sc-chip-group-collaborative { grid-column: 1 / -1; }
+  .sc-chip-divider { margin-top: auto; margin-bottom: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -8182,19 +9133,105 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
    alone. Text never wears a series colour. */
 
 .sc-chart-figure {
-  padding: 26px 24px 20px;
-  background: var(--sc-surface);
-  border: 1px solid var(--sc-line);
+  --chart-24: #f28a00;
+  --chart-12: #35b48a;
+  position: relative;
+  overflow: hidden;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 0 0, rgba(242, 138, 0, 0.13), transparent 34%),
+    radial-gradient(circle at 100% 0, rgba(53, 180, 138, 0.11), transparent 32%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(217, 194, 143, 0.28);
   border-radius: var(--sc-radius);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065);
+}
+
+.sc-chart-figure::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--chart-24), #d9c28f 52%, var(--chart-12));
+  content: "";
+}
+
+.sc-chart-heading {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+/* The chart's mark is the face of a black die showing four, with the brand's
+   four circles standing in for the pips — same quadrant order and roughly the
+   same pip-to-face proportions as the favicon, so it reads as the logo without
+   ceasing to read as a die. The pips are an inline SVG rather than CSS radial
+   gradients: a gradient's hard colour stop is rasterised without antialiasing,
+   which left the dots visibly stair-stepped, whereas the SVG circles scale
+   smoothly to whatever size the face is drawn at.
+
+   .sc-die-mark is the same face used outside a chart heading — currently the
+   dice-roll guide row on the devices page. */
+.sc-chart-mark,
+.sc-die-mark {
+  position: relative;
+  display: block;
+  width: 46px;
+  height: 46px;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 46'%3E%3Cdefs%3E%3CradialGradient id='a' cx='.38' cy='.32' r='.78'%3E%3Cstop offset='0' stop-color='%23ff6a71'/%3E%3Cstop offset='.55' stop-color='%23f5222b'/%3E%3Cstop offset='1' stop-color='%23bc0f19'/%3E%3C/radialGradient%3E%3CradialGradient id='b' cx='.38' cy='.32' r='.78'%3E%3Cstop offset='0' stop-color='%23fffaef'/%3E%3Cstop offset='.55' stop-color='%23eee2c7'/%3E%3Cstop offset='1' stop-color='%23bfae8e'/%3E%3C/radialGradient%3E%3CradialGradient id='c' cx='.38' cy='.32' r='.78'%3E%3Cstop offset='0' stop-color='%236cc687'/%3E%3Cstop offset='.55' stop-color='%233c9056'/%3E%3Cstop offset='1' stop-color='%23246438'/%3E%3C/radialGradient%3E%3CradialGradient id='d' cx='.38' cy='.32' r='.78'%3E%3Cstop offset='0' stop-color='%23ffcb68'/%3E%3Cstop offset='.55' stop-color='%23ff9900'/%3E%3Cstop offset='1' stop-color='%23cb6d00'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='13.5' cy='13.5' r='4.6' fill='url(%23a)'/%3E%3Ccircle cx='32.5' cy='13.5' r='4.6' fill='url(%23b)'/%3E%3Ccircle cx='13.5' cy='32.5' r='4.6' fill='url(%23c)'/%3E%3Ccircle cx='32.5' cy='32.5' r='4.6' fill='url(%23d)'/%3E%3C/svg%3E"),
+    linear-gradient(152deg, #23262c 0%, #101318 46%, #06070a 100%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  background-origin: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.5),
+    0 5px 12px rgba(0, 0, 0, 0.42);
+}
+
+.sc-chart-heading > div > span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--chart-24);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sc-chart-heading h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.24rem;
+  line-height: 1.25;
+}
+
+.sc-chart-heading > strong {
+  padding: 7px 10px;
+  color: #8be3c6;
+  background: rgba(53, 180, 138, 0.09);
+  border: 1px solid rgba(53, 180, 138, 0.28);
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
 }
 
 .sc-chart-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 22px;
-  margin-bottom: 18px;
+  gap: 8px;
+  margin: 22px 0 14px;
   color: var(--sc-ink-soft);
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 700;
 }
 
@@ -8202,6 +9239,10 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.028);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
 }
 
 .sc-chart-key {
@@ -8210,13 +9251,25 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   border-radius: 3px;
 }
 
-.sc-chart-key-24 { background: #d96f00; }
-.sc-chart-key-12 { background: #2e9e78; }
+.sc-chart-key-24 { background: var(--chart-24); }
+.sc-chart-key-12 { background: var(--chart-12); }
 
 .sc-chart-key-line {
   height: 0;
-  border-top: 2px dashed var(--sc-muted);
+  border-top: 2px dashed #c7bda8;
   border-radius: 0;
+}
+
+.sc-chart-plot {
+  padding: 10px 12px 2px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.014), rgba(255, 255, 255, 0)),
+    #181817;
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    inset 0 -26px 60px rgba(0, 0, 0, 0.13);
 }
 
 .sc-chart-svg {
@@ -8225,32 +9278,40 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   height: auto;
 }
 
-.sc-chart-bar-24 { fill: #d96f00; }
-.sc-chart-bar-12 { fill: #2e9e78; }
+.sc-chart-bar-24 {
+  fill: url(#entropy-bar-24);
+  filter: drop-shadow(0 4px 7px rgba(242, 138, 0, 0.14));
+}
+
+.sc-chart-bar-12 {
+  fill: url(#entropy-bar-12);
+  filter: drop-shadow(0 4px 7px rgba(53, 180, 138, 0.13));
+}
 
 .sc-chart-grid,
 .sc-chart-axis {
-  stroke: rgba(110, 105, 94, 0.55);
+  stroke: rgba(217, 210, 193, 0.16);
   stroke-width: 1;
 }
 
-.sc-chart-axis { stroke: var(--sc-line); }
+.sc-chart-axis { stroke: rgba(217, 210, 193, 0.34); }
 
 .sc-chart-threshold {
-  stroke: var(--sc-muted);
+  stroke: #c7bda8;
   stroke-width: 1.5;
   stroke-dasharray: 6 5;
+  opacity: 0.76;
 }
 
 .sc-chart-axis-text {
-  fill: var(--sc-muted);
+  fill: #aaa396;
   font-family: "Open Sans", sans-serif;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
 .sc-chart-threshold-text {
-  fill: var(--sc-ink-soft);
+  fill: #e7dcc6;
   font-family: "Open Sans", sans-serif;
   font-size: 12px;
   font-weight: 700;
@@ -8258,14 +9319,14 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
 }
 
 .sc-chart-axis-title {
-  fill: var(--sc-muted);
+  fill: #aaa396;
   font-family: "Open Sans", sans-serif;
   font-size: 12px;
   font-weight: 700;
 }
 
 .sc-chart-value {
-  fill: var(--sc-ink);
+  fill: #f4efe6;
   font-family: "Open Sans", sans-serif;
   font-size: 13px;
   font-weight: 700;
@@ -8273,14 +9334,107 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   font-variant-numeric: tabular-nums;
 }
 
-.sc-chart-figure .sc-table-wrap { margin-top: 22px; }
+.sc-chart-value.is-inside { fill: #171715; }
 
-.sc-chart-figure table caption {
-  padding-bottom: 10px;
+.sc-chart-summary {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin-top: 14px;
+  padding: 16px 18px;
+  color: var(--sc-ink-soft);
+  background: linear-gradient(90deg, rgba(242, 138, 0, 0.075), rgba(53, 180, 138, 0.045));
+  border: 1px solid rgba(217, 194, 143, 0.2);
+  border-radius: 11px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.sc-chart-summary strong {
+  color: #f6ae55;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sc-entropy-grid {
+  overflow: hidden;
+  margin-top: 18px;
+  background: rgba(15, 15, 14, 0.46);
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  border-radius: 13px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.sc-entropy-head,
+.sc-entropy-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.38fr) minmax(110px, 0.82fr) minmax(110px, 0.82fr);
+  align-items: stretch;
+}
+
+.sc-entropy-head {
   color: var(--sc-muted);
-  font-size: 0.86rem;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sc-entropy-head > span,
+.sc-entropy-row > * { padding: 12px 15px; }
+
+.sc-entropy-head span + span,
+.sc-entropy-row > span { border-left: 1px solid rgba(255, 255, 255, 0.075); }
+
+.sc-entropy-head .is-24 { color: #f6ae55; }
+.sc-entropy-head .is-12 { color: #7fe0c0; }
+
+.sc-entropy-head small {
+  display: block;
+  margin-top: 2px;
+  color: var(--sc-muted);
+  font-size: 0.59rem;
+  letter-spacing: 0.04em;
+}
+
+.sc-entropy-row {
+  min-height: 54px;
+  background: rgba(255, 255, 255, 0.012);
+  border-top: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.sc-entropy-row:nth-child(even) { background: rgba(255, 255, 255, 0.026); }
+
+.sc-entropy-row strong {
+  display: flex;
+  align-items: center;
+  color: var(--sc-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.sc-entropy-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-entropy-value.is-24 { color: #f6ae55; background: rgba(242, 138, 0, 0.055); }
+.sc-entropy-value.is-12 { color: #7fe0c0; background: rgba(53, 180, 138, 0.055); }
+
+.sc-entropy-value b { font-size: 0.94rem; font-weight: 800; }
+
+.sc-entropy-value small {
+  color: var(--sc-muted);
+  font-size: 0.62rem;
   font-weight: 700;
-  text-align: left;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 767.98px) {
@@ -8288,10 +9442,24 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   .sc-article > .sc-guide-intro { font-size: 1.12rem; }
   .sc-pull-quote { padding-left: 18px; }
   .sc-pull-quote p { font-size: 1.14rem; }
-  .sc-chart-figure { padding: 18px 14px 14px; }
+  .sc-chart-figure { padding: 20px 14px 16px; }
+  .sc-chart-heading { grid-template-columns: 42px minmax(0, 1fr); gap: 11px; }
+  /* The pip SVG is sized to the face, so the smaller mark needs no repositioned
+     artwork — only the box and its corner radius change. */
+  .sc-chart-mark { width: 42px; height: 42px; border-radius: 11px; }
+  .sc-chart-heading h3 { font-size: 1.08rem; }
+  .sc-chart-heading > strong { grid-column: 2; justify-self: start; }
+  .sc-chart-legend { margin-top: 18px; }
+  .sc-chart-plot { padding: 6px 5px 0; }
+  .sc-chart-summary { grid-template-columns: 1fr; gap: 5px; padding: 14px; }
+  .sc-entropy-head,
+  .sc-entropy-row { grid-template-columns: minmax(0, 1.2fr) minmax(74px, 0.72fr) minmax(74px, 0.72fr); }
+  .sc-entropy-head > span,
+  .sc-entropy-row > * { padding: 10px 9px; }
+  .sc-entropy-row strong { font-size: 0.72rem; }
+  .sc-entropy-value { flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }
+  .sc-entropy-value b { font-size: 0.82rem; }
 }
-
-.sc-chart-value.is-inside { fill: var(--sc-paper); }
 
 /* Footer row on a product's card: the official-site link anchored bottom
    left, the guide button (if any) anchored bottom right. Replaces having
@@ -8676,17 +9844,17 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
 }
 
 .sc-glossary-source {
-  margin-top: 64px;
-  padding: 28px 0 0;
-  border-top: 1px solid var(--sc-line);
+  margin-top: 32px;
 }
 
 .sc-glossary-source p {
   max-width: 72ch;
-  margin: 9px 0 0;
+  margin: 0;
   color: var(--sc-muted);
   line-height: 1.7;
 }
+
+.sc-glossary-source strong { color: var(--sc-ink); }
 
 .sc-glossary-source a { color: var(--sc-link); }
 

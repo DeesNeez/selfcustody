@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Import a public key and your phone can see the balance but never spend it. What that genuinely costs you, and the one thing you should not use the phone for — which is the thing it makes most tempting.">
+  <title>BlueWallet: watch your cold storage from a phone | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/bluewallet-watch-only.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="BlueWallet: watch your cold storage from a phone | SelfCustody.ca">
+  <meta property="og:description" content="Import a public key and your phone can see the balance but never spend it. What that genuinely costs you, and the one thing you should not use the phone for — which is the thing it makes most tempting.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/bluewallet-watch-only.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"BlueWallet: watch your cold storage from a phone","description":"Import a public key and your phone can see the balance but never spend it. What that genuinely costs you, and the one thing you should not use the phone for — which is the thing it makes most tempting.","url":"https://selfcustody.ca/guides/bluewallet-watch-only.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/bluewallet-watch-only.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#software">Software</a>
+        </nav>
+        <span class="sc-eyebrow">Wallets</span>
+        <h1>BlueWallet: watch your cold storage from a phone</h1>
+        <p class="sc-lead">Import a public key and your phone can see the balance but never spend it. What that genuinely costs you, and the one thing you should not use the phone for — which is the thing it makes most tempting.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 15 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-mobile_wallet">Mobile</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-watch_only_wallet">Watch-only</a></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../software.html#bluewallet">About BlueWallet <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Your hardware wallet is in a safe. Your coordinator software is on a desktop at home. And you are standing somewhere else, wondering whether that payment arrived.</p>
+
+      <p>A watch-only wallet solves exactly that. You give BlueWallet a public key, and the phone can see every address, every balance, and every transaction &mdash; while being completely unable to spend any of it. Lose the phone and you lose a phone.</p>
+
+      <p>It is a genuinely good idea with one cost that is worth understanding before you do it, and one temptation you should refuse.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-phone" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A phone showing a bitcoin balance, held in one hand outdoors, with no hardware wallet or computer anywhere nearby.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The whole point: the keys are somewhere else entirely, and it does not matter.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li><strong>An existing wallet you already set up properly</strong>, with its keys on a hardware device. This guide adds a window onto it, not a new wallet.</li><li><strong>BlueWallet</strong> on iOS or Android.</li><li><strong>Your account's extended public key</strong> &mdash; the xpub, zpub, or output descriptor. Your hardware wallet or coordinator can export it, usually as a QR code.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>What a watch-only wallet can and cannot do</h2>
+
+      <p>An extended public key lets anyone derive every address in the account, but no private keys. That asymmetry is the whole feature.</p>
+
+      <ul class="sc-check-list"><li><strong>It can</strong> show your balance, your full transaction history, and every address you have used or will use.</li><li><strong>It can</strong> generate receive addresses and build unsigned transactions.</li><li><strong>It cannot</strong> sign anything, and therefore cannot move a single satoshi. There is no PIN to defeat and no setting to change &mdash; the capability is simply absent.</li></ul>
+
+      <p>So a stolen phone is a stolen phone. Whoever takes it gets a view of your finances and no ability to touch them.</p>
+
+      <h2><span class="sc-article-num">2</span>The cost: a view is not nothing</h2>
+
+      <p>That safety is real, and it makes people describe watch-only as risk-free. It is not &mdash; it is <em>theft</em>-free. The privacy cost is genuine and permanent.</p>
+
+      <p>An xpub reveals every address in the account, past and future, so anyone holding it can see your complete balance and history forever, and you cannot revoke it. <a href='how-wallets-find-coins.html'>How wallets find coins</a> explains the mechanics properly; the practical consequence is what matters here.</p>
+
+      <ul class="sc-caution-list"><li><strong>The phone itself is a copy of that xpub</strong>, sitting in the most frequently lost, stolen, and inspected device you own.</li><li><strong>By default your wallet asks somebody else's server</strong> for those balances, which tells that server every address you hold. See step 5.</li><li><strong>Border crossings and casual snooping</strong> reveal your total holdings to anyone who opens the app. Consider whether that is a picture you want available on your person.</li></ul>
+
+      <p>None of that means do not do it. It means do it deliberately, and consider watching only the account you actually need to watch rather than importing everything you own.</p>
+
+      <h2><span class="sc-article-num">3</span>Importing the key</h2>
+
+      <ul class="sc-check-list"><li><strong>Export the extended public key</strong> from your hardware wallet or coordinator. Most devices will show it as a QR code; Sparrow, Electrum, and the rest can export one too.</li><li><strong>In BlueWallet, add a wallet and choose the watch-only type.</strong></li><li><strong>Scan the QR code</strong>, or paste the key if you must. Scanning avoids retyping a long string incorrectly.</li><li><strong>Check the balance and the last few transactions match</strong> what your desktop coordinator shows. If they do not, you have imported a different account &mdash; often the wrong script type or derivation path.</li><li><strong>Name it clearly</strong>, something that tells you which physical device holds the keys. Future you will have forgotten.</li></ul>
+
+      <h2><span class="sc-article-num">4</span>The temptation to refuse</h2>
+
+      <p>This is the section that justifies the page, so it is worth being blunt.</p>
+
+      <p>A watch-only wallet can generate receive addresses. It is right there, on your phone, when somebody asks where to send you bitcoin. And the entire reason the phone is useful is that your hardware wallet is somewhere else &mdash; which means you cannot verify that address on the device screen.</p>
+
+      <blockquote class="sc-pull-quote"><p>The situation that makes the phone convenient is exactly the situation in which you cannot check its work.</p></blockquote>
+
+      <p>Verifying receive addresses on the hardware device's own screen is the standard defence against malware substituting an address, and it is covered in <a href='sparrow-first-wallet.html'>the Sparrow guide</a>. On a phone away from your device, that check is unavailable.</p>
+
+      <ul class="sc-check-list"><li><strong>For small amounts</strong>, taking an address from the phone is a reasonable everyday risk, the same judgement you make with any hot wallet.</li><li><strong>For anything significant</strong>, wait. Go home, generate the address in your coordinator, and verify it on the hardware device before handing it over.</li><li><strong>Never use a phone-generated address for an exchange withdrawal of real size.</strong> That is precisely the transaction worth attacking, and precisely the one where you skipped the check.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Choose what it talks to</h2>
+
+      <p>By default, BlueWallet asks a public Electrum server for your balances, which hands that server your addresses and links them to your IP address.</p>
+
+      <p>BlueWallet can connect to your own node instead. If you run one, change this in settings &mdash; it closes the leak described in step 2 in a single step, and <a href='bitcoin-privacy.html'>the privacy guide</a> explains why it matters more than most other measures.</p>
+
+      <h2><span class="sc-article-num">6</span>Two things worth knowing about the app</h2>
+
+      <ul class="sc-check-list"><li><strong>It can graduate to signing.</strong> BlueWallet works with COLDCARD, Passport, Jade, Keystone, and other PSBT-compatible devices, so the same app can later run the full sign-and-broadcast loop if you want it to. Watch-only is simply the safest place to start.</li><li><strong>Lightning is a separate thing in the same app.</strong> A Lightning balance is not your cold storage and does not live behind your hardware wallet. Keep the two mentally separate, and do not let a Lightning setup blur what your watch-only wallet is for.</li></ul>
+
+      <h2>The short version</h2>
+
+      <p>Import an extended public key and your phone becomes a window onto cold storage that cannot spend anything. The price is that the phone now carries a permanent, unrevocable view of your finances, so point it at your own node if you can. And do not take receive addresses from it for amounts that matter, because the device that could verify them is exactly the device you left at home.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Watch-only protects you from theft, not from being watched. Treat the phone as a read-only dashboard: excellent for answering "did it arrive?", and the wrong tool for answering "where should they send it?"</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-first-wallet.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-window"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Sparrow: pair a hardware wallet and verify a receive address</h3>
+              <p>Create a watch-only wallet from your signing device, check an address on the device screen, and sign a first transaction.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="how-wallets-find-coins.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-diagram-2"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>How a wallet finds your coins</h3>
+              <p>Your seed words are not a wallet. They are the root of a tree, and finding your money means knowing which branch to walk down — which is why the same words can restore perfectly and still show a balance of zero.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="bitcoin-privacy.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-wifi"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The privacy you actually have</h3>
+              <p>Bitcoin is not anonymous and never was. It is a permanent public ledger with pseudonyms attached, and most of what links those pseudonyms to you is done by ordinary arithmetic anyone can perform.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.">
+  <title>How chain analysis reads your wallet | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/chain-analysis-heuristics.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="How chain analysis reads your wallet | SelfCustody.ca">
+  <meta property="og:description" content="Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/chain-analysis-heuristics.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How chain analysis reads your wallet","description":"Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.","url":"https://selfcustody.ca/guides/chain-analysis-heuristics.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/chain-analysis-heuristics.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#concepts">Concepts</a>
+        </nav>
+        <span class="sc-eyebrow">How it works</span>
+        <h1>How chain analysis reads your wallet</h1>
+        <p class="sc-lead">Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 35 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">Privacy</span><a class="sc-tag sc-tag-link" href="../glossary.html#term-utxo">UTXO</a></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Chain analysis is not surveillance in the usual sense. Nobody is watching you. It is a set of assumptions applied at scale to a public ledger, and each assumption is individually unremarkable &mdash; the kind of reasoning you would do yourself if handed the data.</p>
+
+      <p>Most people who care about privacy know two of them. <a href='bitcoin-privacy.html'>The privacy guide</a> walks through both: coins spent together share an owner, and the round output is the payment while the awkward one is change. Those two do an enormous amount of work.</p>
+
+      <p>They are not the whole toolkit. This page covers the rest &mdash; the change-detection tricks past the obvious one, the way your software signs its own name on every transaction, and the two newer defences that operate at the protocol level rather than relying on you to have good habits.</p>
+
+      <h2><span class="sc-article-num">1</span>The two you have already met</h2>
+
+      <p>Briefly, so the rest has somewhere to stand.</p>
+
+      <ul class="sc-check-list"><li><strong>Common-input-ownership.</strong> If a transaction spends several coins, one entity controlled all of them. This is the single strongest signal in the field, and it is right the overwhelming majority of the time.</li><li><strong>Change identification by roundness.</strong> Pay someone 0.05 BTC from a 0.31 BTC coin and the outputs are a round number and a remainder. Payments are round; change is whatever is left.</li></ul>
+
+      <p>An analyst who has identified your change can follow it into your next transaction, and the next, indefinitely. That is why change detection matters so much: it is what turns isolated transactions into a chain.</p>
+
+      <h2><span class="sc-article-num">2</span>The other ways change gets spotted</h2>
+
+      <p>Roundness is the famous one. When it does not apply, several others usually do.</p>
+
+      <ul class="sc-check-list"><li><strong>Script-type matching.</strong> If a transaction spends from a native SegWit address and produces one native SegWit output and one legacy output, the matching one is almost certainly change &mdash; your wallet makes change in its own format, while you pay whatever the recipient asked for.</li><li><strong>Address reuse.</strong> If one output goes to an address that has been seen before and the other is fresh, the fresh one is the change. Reused addresses are almost never change, because wallets generate a new one every time.</li><li><strong>The unnecessary input.</strong> If a transaction includes more inputs than the payment required, the surplus was needed to cover a larger output &mdash; which tells the analyst which output was the large one.</li><li><strong>The self-transfer shape.</strong> A single input producing a single output, or two outputs that both look like change, is usually somebody moving their own coins rather than paying anyone.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>Why several weak signals beat one strong one</h3><p>No single heuristic here is reliable alone, and analysts do not use them alone. They apply all of them, score the result, and act on the aggregate. A transaction that defeats one heuristic while satisfying three others has not been made private — it has been made slightly more interesting.</p></div>
+
+      <h2><span class="sc-article-num">3</span>Your wallet has an accent</h2>
+
+      <p>This is the layer most people have never considered, and it requires nothing from you to leak.</p>
+
+      <p>Bitcoin's rules leave several choices to whoever builds the transaction, and different wallet software makes those choices differently. The resulting pattern is consistent enough to identify which software produced a transaction &mdash; a technique usually called wallet fingerprinting.</p>
+
+      <ul class="sc-check-list"><li><strong>The locktime field.</strong> Some wallets set it to the current block height to discourage fee sniping; many leave it at zero. That choice alone splits the population.</li><li><strong>Transaction version number.</strong> Wallets differ, and they differ consistently.</li><li><strong>Input and output ordering.</strong> Some sort deterministically, some shuffle randomly, some preserve the order they built in.</li><li><strong>Replace-by-fee signalling.</strong> Whether the transaction is marked replaceable is a per-wallet default more than a per-user decision.</li><li><strong>Change output position.</strong> Always last, always first, or randomised &mdash; another consistent per-wallet habit.</li></ul>
+
+      <p>The consequence is subtle but real. If your wallet's fingerprint appears on both sides of a transaction &mdash; on the spending side and on one of the outputs &mdash; that output is probably yours. Fingerprinting is a change-detection heuristic wearing a different hat, and no amount of careful coin selection affects it.</p>
+
+      <h2><span class="sc-article-num">4</span>Amounts and timing</h2>
+
+      <ul class="sc-check-list"><li><strong>Amount correlation.</strong> A withdrawal of an unusual amount leaving an exchange and an arrival of nearly that amount elsewhere, minus a plausible fee, is a link even with no shared inputs.</li><li><strong>Timing.</strong> Transactions that consistently appear during one part of the day describe a time zone, and eventually a routine.</li><li><strong>Fee-rate habits.</strong> Always paying the same wallet's default at the same urgency setting is one more consistent signature.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>What coin control actually defeats</h2>
+
+      <p>Now the practical question: which of these does careful spending address?</p>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>Heuristics against the defences available to you</caption>
+          <thead><tr><th scope="col">Heuristic</th><th scope="col">Coin control helps?</th></tr></thead>
+          <tbody>
+            <tr><td>Common-input-ownership</td><td><strong>Yes</strong> &mdash; this is exactly what choosing inputs prevents</td></tr>
+            <tr><td>Change by roundness</td><td>Partly &mdash; spending a coin close to the payment amount helps</td></tr>
+            <tr><td>Script-type matching</td><td>No &mdash; a wallet setting, not a spending choice</td></tr>
+            <tr><td>Address reuse</td><td>Yes &mdash; never reuse, and this one disappears</td></tr>
+            <tr><td>Unnecessary input</td><td>Partly &mdash; fewer, better-sized inputs</td></tr>
+            <tr><td>Wallet fingerprinting</td><td><strong>No</strong> &mdash; entirely outside your spending decisions</td></tr>
+            <tr><td>Amount and timing correlation</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a href='sparrow-coin-control.html'>Coin control</a> is genuinely the highest-value habit available, and this table is not an argument against it &mdash; it defeats the strongest heuristic in the field. But it is a habit-level defence, and several rows here are immune to habits. That is what the next two sections are for.</p>
+
+      <h2><span class="sc-article-num">6</span>Payjoin: making the strongest assumption false</h2>
+
+      <p>Every defence so far tries to avoid <em>triggering</em> common-input-ownership. Payjoin does something more interesting: it makes the assumption produce a wrong answer.</p>
+
+      <p>In a payjoin, the person receiving the payment also contributes an input to it. The finished transaction spends coins belonging to two different people, so any analyst applying the strongest heuristic in the field concludes that one entity owned both &mdash; and is simply incorrect.</p>
+
+      <blockquote class="sc-pull-quote"><p>CoinJoin makes you one of many indistinguishable candidates. Payjoin lets an ordinary payment quietly poison the data instead.</p></blockquote>
+
+      <p>It also breaks amount analysis, because the visible payment amount is no longer the amount that changed hands. And unlike a CoinJoin, a payjoin looks like a completely ordinary transaction &mdash; there is nothing conspicuous about having used one.</p>
+
+      <ul class="sc-check-list"><li><strong>The original design (BIP78)</strong> required the receiver to run a server and be online at the moment of payment, which restricted it in practice to merchants and enthusiasts.</li><li><strong>The newer variant (BIP77)</strong>, merged in 2025, removes that requirement by routing through an untrusted directory service, so the receiver no longer needs their own always-on infrastructure.</li><li><strong>Support is arriving but not universal.</strong> Bull Bitcoin &mdash; a Canadian exchange and wallet &mdash; and Cake Wallet are among those shipping the newer version.</li><li><strong>Both sides must support it.</strong> This is the honest limitation: a payjoin needs a willing counterparty, so its usefulness depends on adoption rather than on your own diligence.</li></ul>
+
+      <p>The wider benefit is worth noting. Every payjoin that occurs degrades the reliability of common-input-ownership for <em>everyone</em>, including people who never use it. It is one of the few privacy measures with a positive externality.</p>
+
+      <h2><span class="sc-article-num">7</span>Silent payments: a reusable address that is not reuse</h2>
+
+      <p>Address reuse is one of the clearest signals on the list, and there is a long-standing situation that forces it: publishing a donation address, putting one in a profile, or giving a static address to somebody who pays you regularly. You cannot hand out a fresh address every time if the point is to publish one.</p>
+
+      <p>Silent payments (BIP352) resolve that. You publish one static address, and each sender derives a <em>unique, unlinkable</em> on-chain output from it. Every payment lands somewhere different, nothing on the chain connects them, and there is no address reuse to detect &mdash; while you only ever published one string.</p>
+
+      <ul class="sc-check-list"><li><strong>The cost is scanning.</strong> Your wallet must check incoming blocks to find payments meant for you, which is more work than watching a list of known addresses. This is the main reason adoption has been gradual.</li><li><strong>Support is uneven and growing.</strong> Through 2026 the underlying cryptography landed in the standard library, and wallets including Sparrow, Nunchuk, Cake Wallet, and Silentium have shipped varying degrees of support &mdash; receiving typically arriving before sending.</li><li><strong>It solves publication, not everything.</strong> Silent payments fix the static-address problem specifically. They do not affect common-input-ownership, change detection, or fingerprinting.</li></ul>
+
+      <h2><span class="sc-article-num">8</span>What none of this fixes</h2>
+
+      <ul class="sc-caution-list"><li><strong>The past is permanent.</strong> Every link already published stays published. All of this changes your future only.</li><li><strong>Identity attaches off-chain.</strong> A verified exchange account ties your name to specific coins, and no on-chain technique reaches backwards through that.</li><li><strong>Your wallet's server sees your queries</strong> regardless of how the transactions look. That is a <a href='own-node-connection.html'>separate problem with a separate fix</a>.</li><li><strong>Amounts are always visible.</strong> Bitcoin's outputs are public values. Every technique here obscures ownership, not quantity.</li></ul>
+
+      <h2>The short version</h2>
+
+      <p>Analysts combine roughly eight inferences, not one: shared inputs, several independent ways of spotting change, the fingerprint your wallet software leaves on every transaction, and correlations of amount and time. Coin control defeats the strongest of them and is worth doing for that reason alone, but several are immune to spending habits. Payjoin attacks the biggest heuristic directly by making it produce false answers, and silent payments remove the need to ever reuse a published address.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Privacy on a public ledger is a question of how many weak signals point the same way, not whether you defeated one strong one. That is why habits, wallet choice, and protocol-level tools are complementary rather than alternatives — and why the honest goal is raising the cost of the inference rather than achieving anonymity.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="bitcoin-privacy.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-wifi"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The privacy you actually have</h3>
+              <p>Bitcoin is not anonymous and never was. It is a permanent public ledger with pseudonyms attached, and most of what links those pseudonyms to you is done by ordinary arithmetic anyone can perform.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-coin-control.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-pie-chart"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Sparrow: coin control and labelling</h3>
+              <p>Your balance is not a number, it is a pile of separate chunks — and which ones you spend together tells anyone watching that they belong to the same person.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="wasabi-coinjoin-basics.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shuffle"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Wasabi: what CoinJoin does and costs</h3>
+              <p>How a collaborative transaction breaks the link between your coins and your history, what it cannot undo, and why the piece that makes it work is also the piece that has already collapsed once.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

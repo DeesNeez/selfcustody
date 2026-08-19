@@ -4,17 +4,17 @@
 
    Do not hand-edit docs/*.html -- edit here and rebuild. */
 
-import { renderGuideFinder, renderGuideSections, renderGuideIndexNav, publishedGuides, productGuideLinks, renderGlossaryTag } from './guides.mjs';
+import { renderGuideFinder, renderGuideSections, renderGuideIndexNav, publishedGuides, productGuideLinks, renderGlossaryTag, guideCategories } from './guides.mjs';
 
 const currentYear = new Date().getFullYear();
 
   const routes = [
     ["home", "Home", "index.html"],
     ["guides", "Guides", "guides.html"],
-    ["glossary", "Glossary", "glossary.html"],
     ["devices", "Devices", "devices.html"],
     ["software", "Software", "software.html"],
     ["exchanges", "Exchanges", "exchanges.html"],
+    ["glossary", "Glossary", "glossary.html"],
     ["dashboard", "Dashboard", "dashboard.html"],
     ["merch", "Merch", "merch.html"],
     ["contact", "Get Help", "contact.html"]
@@ -263,16 +263,17 @@ const currentYear = new Date().getFullYear();
       description: "Step-by-step Bitcoin self-custody guides: device setup, wallet software, withdrawing from Canadian exchanges, multisig, passphrases, and recovery testing.",
       content: `
         ${hero(
-          "Guide library",
-          "Learn the system,<br><em>not just the buttons.</em>",
-          "Setup walkthroughs for every device and wallet, withdrawal guides for Canadian platforms, and the advanced material worth earning. Answer three questions and the library narrows to what applies to you.",
+          "Library",
+          "A wealth of knowledge,<br><em>at your fingertips.</em>",
+          "Setup walkthroughs for every device and wallet, withdrawal guides for Canadian platforms, and advanced material worth a read.",
           `<a class="sc-btn sc-btn-primary" href="#finder">Find my guide</a>
            <a class="sc-btn sc-btn-ghost" href="guides/complete-path.html">Start here</a>`,
           {
-            src: "assets/img/education-library.jpeg",
-            alt: "Bookshelves and a reading lamp in a quiet library",
-            width: 1600,
-            height: 2400
+            src: "assets/img/guides-library-hero.jpg",
+            alt: "",
+            width: 1584,
+            height: 672,
+            background: true
           }
         )}
 
@@ -315,8 +316,7 @@ const currentYear = new Date().getFullYear();
           <div class="container">
             <aside class="sc-device-preflight mb-5" aria-labelledby="device-preflight-title">
               <div class="sc-device-preflight-head">
-                <span class="sc-eyebrow">Before you choose</span>
-                <h2 id="device-preflight-title">Protect the purchase and the seed</h2>
+                <h2 id="device-preflight-title">What to know before you buy</h2>
               </div>
               <div class="sc-device-preflight-grid">
                 <section>
@@ -332,7 +332,10 @@ const currentYear = new Date().getFullYear();
               </div>
               <div class="sc-device-preflight-guide">
                 <div><strong>Generate verifiable entropy yourself</strong><span>Learn the exact dice-roll workflow, conversion process, and checks before using it with a compatible signer.</span></div>
-                <a class="sc-text-link" href="guides/dice-entropy.html">Read the dice-roll guide <i class="bi bi-arrow-right"></i></a>
+                <div class="sc-device-preflight-guide-cta">
+                  <a class="sc-text-link" href="guides/dice-entropy.html">Read the dice-roll guide <i class="bi bi-arrow-right"></i></a>
+                  <span class="sc-die-mark" aria-hidden="true"></span>
+                </div>
               </div>
             </aside>
             <div class="sc-section-head"><span class="sc-eyebrow">Shortlist</span><h2>Nine useful reference points</h2><p>This is not a winner-takes-all ranking. Each device represents a different balance of transparency, convenience, connectivity, and operator skill.</p></div>
@@ -342,9 +345,9 @@ const currentYear = new Date().getFullYear();
                 imageAlt: "Trezor Safe 7 hardware wallet",
                 imageWidth: 560,
                 imageHeight: 560,
-                title: "Trezor Safe 7 Bitcoin-only",
+                title: "Trezor Safe 7",
                 text: "Premium touchscreen signer with a dedicated Bitcoin-only firmware edition, open-source security, and encrypted Bluetooth.",
-                tags: ["Bitcoin only", "Secure element", "Open source"],
+                tags: ["Secure element", "Open source", "Bluetooth"],
                 href: "#trezor"
               })}
               ${productCard({
@@ -362,9 +365,9 @@ const currentYear = new Date().getFullYear();
                 imageAlt: "BitBox02 hardware wallet",
                 imageWidth: 1020,
                 imageHeight: 574,
-                title: "BitBox02 Bitcoin-only",
+                title: "BitBox02",
                 text: "Compact Swiss-made signer with a secure dual-chip architecture, open-source firmware, touch controls, and microSD backup.",
-                tags: ["Bitcoin only", "USB-C", "microSD backup"],
+                tags: ["USB-C", "microSD backup", "Secure element"],
                 href: "#bitbox"
               })}
               ${productCard({
@@ -424,7 +427,7 @@ const currentYear = new Date().getFullYear();
                 imageHeight: 480,
                 title: "Ledger",
                 text: "Widely used multi-asset signer line (Nano S Plus, Nano X, Flex, Stax) with a certified secure element, USB and Bluetooth connectivity, and a companion app.",
-                tags: ["Multi-asset", "USB / Bluetooth", "Secure element"],
+                tags: ["Multi-asset", "Bluetooth", "Secure element"],
                 href: "#ledger"
               })}
             </div>
@@ -444,9 +447,9 @@ const currentYear = new Date().getFullYear();
                 <thead>
                   <tr>
                     <th scope="col">Feature</th>
-                    <th scope="col">Trezor Safe 7<br>Bitcoin-only</th>
+                    <th scope="col">Trezor Safe 7</th>
                     <th scope="col">Bitkey</th>
-                    <th scope="col">BitBox02<br>Bitcoin-only</th>
+                    <th scope="col">BitBox02</th>
                     <th scope="col">Blockstream<br>Jade Plus</th>
                     <th scope="col">COLDCARD<br>Q / Mk5</th>
                     <th scope="col">Foundation<br>Passport</th>
@@ -482,13 +485,13 @@ const currentYear = new Date().getFullYear();
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>EAL5+ / EAL6+</small></td>
                   </tr>
                   <tr>
-                    <th scope="row">Bitcoin-only operation</th>
+                    <th scope="row">Bitcoin only firmware</th>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Separate firmware edition</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span><small>Locked at factory</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Separate edition, locked at factory</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Plus Liquid</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
-                    <td><span class="sc-matrix-mark sc-matrix-partial" aria-label="Optional or model-dependent">&#9680;</span><small>Plus 2FA, keys, files</small></td>
+                    <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Multi-purpose</small></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-yes" aria-label="Available">&#10003;</span></td>
                     <td><span class="sc-matrix-mark sc-matrix-no" aria-label="Not part of the standard workflow">&#8212;</span><small>Multi-asset only</small></td>
@@ -631,7 +634,7 @@ const currentYear = new Date().getFullYear();
             <article id="trezor" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/trezor-safe-7-detail.png" alt="Trezor Safe 7" width="660" height="1118" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>Trezor Safe 7 Bitcoin-only</h2><p>Trezor's current premium model is also available as a dedicated Bitcoin-only firmware edition: same hardware as the standard Safe 7—large colour touchscreen, open-source software, a secure element plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging—with altcoin functionality removed entirely.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Bitcoin-only holders who still want a premium touchscreen experience.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul></div>
+                <div class="col-lg-7"><h2>Trezor Safe 7</h2><p>Trezor's current premium model is also available as a dedicated Bitcoin-only firmware edition: same hardware as the standard Safe 7—large colour touchscreen, open-source software, a secure element plus a security microcontroller, encrypted Bluetooth, USB-C, wireless charging—with altcoin functionality removed entirely.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want clear on-device review and a guided companion app.</li><li>Users who value an open-source design but also want phone connectivity.</li><li>Bitcoin-only holders who still want a premium touchscreen experience.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>A premium device adds features, battery, radios, and complexity that a long-term Bitcoin-only holder may not need.</li><li>Bluetooth can be disabled; decide whether convenience belongs in your threat model.</li></ul></div>
               </div>
             ${detailFooter(externalLink("https://trezor.io/trezor-safe-7-bitcoin-only"), "trezor")}</article>
 
@@ -645,7 +648,7 @@ const currentYear = new Date().getFullYear();
             <article id="bitbox" class="sc-detail">
               <div class="row g-5 align-items-center">
                 <div class="col-lg-5"><div class="sc-detail-media"><img src="assets/img/devices/bitbox02.webp" alt="BitBox02 hardware wallet" width="1020" height="574" loading="lazy"></div></div>
-                <div class="col-lg-7"><h2>BitBox02 Bitcoin-only</h2><p>The BitBox02 Bitcoin-only edition combines open-source firmware with a secure dual-chip design, a compact OLED display, touch sliders, USB-C, and a fast microSD backup workflow. The Bitcoin-only firmware edition is locked at the factory and cannot be switched to multi-asset firmware.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a compact, approachable Bitcoin-only device.</li><li>Users who like guided desktop software and microSD recovery.</li><li>Sparrow, Electrum, Specter, and personal-node users.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Normal use is connected over USB-C rather than camera-based air gap.</li><li>The original BitBox02 does not work with iPhone/iPad; verify the current Nova model if iOS matters.</li></ul></div>
+                <div class="col-lg-7"><h2>BitBox02</h2><p>The BitBox02 Bitcoin-only edition combines open-source firmware with a secure dual-chip design, a compact OLED display, touch sliders, USB-C, and a fast microSD backup workflow. The Bitcoin-only firmware edition is locked at the factory and cannot be switched to multi-asset firmware.</p><h3>Strong fit</h3><ul class="sc-check-list"><li>People who want a compact, approachable Bitcoin-only device.</li><li>Users who like guided desktop software and microSD recovery.</li><li>Sparrow, Electrum, Specter, and personal-node users.</li></ul><h3>Consider</h3><ul class="sc-caution-list"><li>Normal use is connected over USB-C rather than camera-based air gap.</li><li>The original BitBox02 does not work with iPhone/iPad; verify the current Nova model if iOS matters.</li></ul></div>
               </div>
             ${detailFooter(externalLink("https://bitbox.swiss/bitbox02/bitcoin-only/"), "bitbox")}</article>
 
@@ -1210,10 +1213,10 @@ const currentYear = new Date().getFullYear();
             <div class="row g-4 sc-exchange-card-grid">
               <div class="col-lg-6"><article id="bullbitcoin" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bull-bitcoin.png" alt="" width="48" height="48" loading="lazy"><h2>Bull Bitcoin</h2></div><p>A Canadian Bitcoin-only broker that sends purchased bitcoin directly to an address you control. It supports Interac e-Transfer, larger bank transfers, recurring buys, on-chain Bitcoin, Lightning, and Liquid workflows.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>No exchange bitcoin balance to withdraw later in the normal purchase flow.</li><li>Bitcoin-focused support and direct settlement.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The all-in quoted rate and network fee for your order size.</li><li>Your address and wallet backup before placing the order.</li></ul>${externalLink("https://www.bullbitcoin.com/buy")}</article></div>
               <div class="col-lg-6"><article id="bitcoinwell" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitcoin-well.png" alt="" width="48" height="48" loading="lazy"><h2>Bitcoin Well</h2></div><p>A Canadian self-custody Bitcoin company offering an online portal, recurring buys, an OTC desk, and a network of cash ATMs. Its published model delivers purchased bitcoin to a wallet you control rather than providing custody.</p><h3>Why self-custody users consider it</h3><ul class="sc-check-list"><li>Automatic direct-to-wallet settlement.</li><li>Online, recurring, OTC, and cash purchase options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Online-portal and ATM pricing are different products.</li><li>Verification requirements and limits depend on the transaction method and amount.</li></ul>${externalLink("https://bitcoinwell.com/about")}</article></div>
-              <div class="col-lg-6"><article id="shakepay" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/shakepay.png" alt="" width="48" height="48" loading="lazy"><h2>Shakepay</h2></div><p>A Canadian app focused on a simple buy, earn, and withdraw experience. Shakepay currently advertises free Bitcoin mainnet withdrawals and Lightning transfers, but bitcoin is custodial until you send it to your wallet.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Simple onboarding, recurring buys, and Canadian app experience.</li><li>Beginner-friendly withdrawal flow.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The effective spread in the quote even when a separate trading fee is not shown.</li><li>Current withdrawal minimums and policy before relying on free withdrawals.</li></ul>${externalLink("https://shakepay.com/bitcoin")}</article></div>
-              <div class="col-lg-6"><article id="ndax" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/ndax.png" alt="" width="48" height="48" loading="lazy"><h2>Ndax</h2></div><p>A Canadian order-execution platform with CAD funding, an order book, multiple assets, and external withdrawals. Ndax currently publishes a flat 0.20% trading fee, while crypto withdrawals use asset-specific flat fees.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Visible order-book workflow and posted trading fee.</li><li>CAD Interac and bank-transfer options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The bid-ask spread and asset withdrawal fee, not just the trading percentage.</li><li>Whether a smaller withdrawal is economical after the flat fee.</li></ul>${externalLink("https://ndax.io/en/fees")}</article></div>
-              <div class="col-lg-6"><article id="kraken" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/kraken.png" alt="" width="48" height="48" loading="lazy"><h2>Kraken</h2></div><p>A large global exchange with Canadian CAD support, Interac e-Transfer, cards, wire transfers, Canada Post funding, simple purchases, recurring buys, and advanced Kraken Pro trading tools.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Deep product range, liquidity, advanced order types, and broad asset support.</li><li>Multiple Canadian funding methods.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Simple-buy pricing can differ materially from Kraken Pro.</li><li>Funding and withdrawal charges vary by method and asset.</li></ul>${externalLink("https://www.kraken.com/ca/lp/kraken-in-canada")}</article></div>
-              <div class="col-lg-6"><article id="bitbuy" class="sc-detail h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitbuy.png" alt="" width="48" height="48" loading="lazy"><h2>Bitbuy</h2></div><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul>${externalLink("https://bitbuy.ca/en-ca/fees")}</article></div>
+              <div class="col-lg-6"><article id="shakepay" class="sc-detail is-custodial h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/shakepay.png" alt="" width="48" height="48" loading="lazy"><h2>Shakepay</h2></div><p>A Canadian app focused on a simple buy, earn, and withdraw experience. Shakepay currently advertises free Bitcoin mainnet withdrawals and Lightning transfers, but bitcoin is custodial until you send it to your wallet.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Simple onboarding, recurring buys, and Canadian app experience.</li><li>Beginner-friendly withdrawal flow.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The effective spread in the quote even when a separate trading fee is not shown.</li><li>Current withdrawal minimums and policy before relying on free withdrawals.</li></ul>${externalLink("https://shakepay.com/bitcoin")}</article></div>
+              <div class="col-lg-6"><article id="ndax" class="sc-detail is-custodial h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/ndax.png" alt="" width="48" height="48" loading="lazy"><h2>Ndax</h2></div><p>A Canadian order-execution platform with CAD funding, an order book, multiple assets, and external withdrawals. Ndax currently publishes a flat 0.20% trading fee, while crypto withdrawals use asset-specific flat fees.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Visible order-book workflow and posted trading fee.</li><li>CAD Interac and bank-transfer options.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>The bid-ask spread and asset withdrawal fee, not just the trading percentage.</li><li>Whether a smaller withdrawal is economical after the flat fee.</li></ul>${externalLink("https://ndax.io/en/fees")}</article></div>
+              <div class="col-lg-6"><article id="kraken" class="sc-detail is-custodial h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/kraken.png" alt="" width="48" height="48" loading="lazy"><h2>Kraken</h2></div><p>A large global exchange with Canadian CAD support, Interac e-Transfer, cards, wire transfers, Canada Post funding, simple purchases, recurring buys, and advanced Kraken Pro trading tools.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Deep product range, liquidity, advanced order types, and broad asset support.</li><li>Multiple Canadian funding methods.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Simple-buy pricing can differ materially from Kraken Pro.</li><li>Funding and withdrawal charges vary by method and asset.</li></ul>${externalLink("https://www.kraken.com/ca/lp/kraken-in-canada")}</article></div>
+              <div class="col-lg-6"><article id="bitbuy" class="sc-detail is-custodial h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitbuy.png" alt="" width="48" height="48" loading="lazy"><h2>Bitbuy</h2></div><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul>${externalLink("https://bitbuy.ca/en-ca/fees")}</article></div>
             </div>
 
             <div class="sc-callout mt-5"><h3>Canadian recordkeeping</h3><p>Keep trade confirmations, CAD funding records, withdrawal transaction IDs, wallet labels, and the CAD value at acquisition and disposal. This site does not provide tax advice; use CRA guidance or a qualified Canadian tax professional for your situation.</p></div>
@@ -1701,8 +1704,7 @@ const currentYear = new Date().getFullYear();
           </noscript>
 
           <footer class="sc-glossary-source">
-            <span class="sc-eyebrow">Reference</span>
-            <p>The core term catalogue is provided by the public <a href="https://btclexicon.com/api/v2/terms" target="_blank" rel="noopener noreferrer">BTC Lexicon API</a>, as featured by <a href="https://timechainstats.com/" target="_blank" rel="noopener noreferrer">TimechainStats.com</a>. Additional entries are researched and written by SelfCustody.ca from primary specifications, official documentation, and public security guidance.</p>
+            <p><strong>Reference.</strong> The core term catalogue is provided by the public <a href="https://btclexicon.com/api/v2/terms" target="_blank" rel="noopener noreferrer">BTC Lexicon API</a>, as featured by <a href="https://timechainstats.com/" target="_blank" rel="noopener noreferrer">TimechainStats.com</a>. Additional entries are researched and written by SelfCustody.ca from primary specifications, official documentation, and public security guidance.</p>
           </footer>
         </div>
       </section>`
@@ -1747,18 +1749,26 @@ const currentYear = new Date().getFullYear();
      rather than duplicated into a second header. */
   const renderHeader = (pageKey, base = "") => {
     const links = routes.map(([key, label, href]) => {
-      if (["glossary", "software", "exchanges"].includes(key)) return "";
+      if (["software", "exchanges"].includes(key)) return "";
       if (key === "guides") {
-        const menuActive = pageKey === "guides" || pageKey === "glossary" ? "active" : "";
-        const guidesActive = pageKey === "guides" ? "active" : "";
-        const glossaryActive = pageKey === "glossary" ? "active" : "";
-        return `<li class="sc-nav-menu">
-          <button class="sc-nav-menu-toggle ${menuActive}" type="button" aria-expanded="false" aria-haspopup="true">
-            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+        const menuActive = pageKey === "guides" ? "active" : "";
+        const items = guideCategories
+          .map(cat => `<li><a href="${base}guides.html#${cat.key}">${cat.label}</a></li>`)
+          .join("\n            ");
+        /* Unlike Compare, "Guides" is itself a real destination, so the
+           label is a plain link and a separate chevron button opens the
+           submenu -- .sc-nav-menu-split gives the two of them Compare's
+           exact spacing (12px outer insets, 7px between label and chevron)
+           split across two boxes instead of one, see site-refresh.css. */
+        return `<li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle ${menuActive}" href="${base}guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn ${menuActive}" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
           </button>
           <ul class="sc-nav-submenu">
-            <li><a class="${guidesActive}" href="${base}guides.html"${guidesActive ? ' aria-current="page"' : ""}>All guides</a></li>
-            <li><a class="${glossaryActive}" href="${base}glossary.html"${glossaryActive ? ' aria-current="page"' : ""}>Glossary</a></li>
+            ${items}
           </ul>
         </li>`;
       }

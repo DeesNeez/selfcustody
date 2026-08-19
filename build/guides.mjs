@@ -60,12 +60,23 @@ const guideCategories = [
   }
 ];
 
-/* Finder question 1. `key` is matched against a guide's `goals`. */
+/* Finder question 1. `key` is matched against a guide's `goals`.
+
+   setup/harden/learn each match roughly twenty guides, so on their own they
+   barely narrow anything -- these three sit alongside them to catch the
+   clusters that had no entry point at all: privacy (the largest, and one of
+   the most common reasons people arrive), multisig, and inheritance. */
 const guideGoals = [
   { key: "setup", label: "Set up a device or wallet", icon: "bi-usb-drive" },
   { key: "withdraw", label: "Get bitcoin off an exchange", icon: "bi-arrow-left-right" },
   { key: "harden", label: "Harden what I already have", icon: "bi-shield-lock" },
-  { key: "recover", label: "Recover or restore a wallet", icon: "bi-arrow-counterclockwise" },
+  { key: "privacy", label: "Improve my privacy", icon: "bi-window" },
+  { key: "multisig", label: "Set up multisig", icon: "bi-diagram-3" },
+  { key: "inherit", label: "Plan for inheritance", icon: "bi-people" },
+  /* Was "Recover or restore a wallet" and matched two guides, which read as
+     broken when picked. Backups are the same job seen from the other end, so
+     the label covers both and the backup guides are tagged into it. */
+  { key: "recover", label: "Back up or recover", icon: "bi-arrow-counterclockwise" },
   { key: "learn", label: "Understand how this works", icon: "bi-signpost-split" }
 ];
 
@@ -328,36 +339,64 @@ const entropyChart = () => {
      <text class="sc-chart-threshold-text" x="${L - 10}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${text}</text>`).join("");
 
   const rows = ENTROPY_ROWS.map(r =>
-    `<tr><th scope="row">${r.long}</th><td>${r.w24.toFixed(1)}</td><td>${r.w12.toFixed(1)}</td></tr>`).join("");
+    `<div class="sc-entropy-row" role="row">
+      <strong role="rowheader">${r.long}</strong>
+      <span class="sc-entropy-value is-24" role="cell"><b>${r.w24.toFixed(1)}</b><small>bits</small></span>
+      <span class="sc-entropy-value is-12" role="cell"><b>${r.w12.toFixed(1)}</b><small>bits</small></span>
+    </div>`).join("");
 
   return `
     <figure class="sc-figure sc-chart-figure">
+      <div class="sc-chart-heading">
+        <span class="sc-chart-mark" aria-hidden="true"></span>
+        <div>
+          <span>Bias stress test</span>
+          <h3>How much randomness survives?</h3>
+        </div>
+        <strong>99 rolls keep a wide margin</strong>
+      </div>
+
       <div class="sc-chart-legend">
         <span><i class="sc-chart-key sc-chart-key-24" aria-hidden="true"></i>24 words &middot; 99 rolls</span>
         <span><i class="sc-chart-key sc-chart-key-12" aria-hidden="true"></i>12 words &middot; 50 rolls</span>
         <span><i class="sc-chart-key sc-chart-key-line" aria-hidden="true"></i>Security thresholds</span>
       </div>
 
-      <svg class="sc-chart-svg" viewBox="0 0 720 400" role="img" aria-labelledby="entropy-chart-title entropy-chart-desc" preserveAspectRatio="xMidYMid meet">
-        <title id="entropy-chart-title">Randomness retained as a die becomes less fair</title>
-        <desc id="entropy-chart-desc">A 24-word seed from 99 rolls stays between 256 and 198 bits across every scenario. A 12-word seed from 50 rolls starts at 128 bits and falls to 100 bits with a badly skewed die, dropping below both the 128-bit and 112-bit thresholds.</desc>
-        ${grid}
-        ${thresholds}
-        <line class="sc-chart-axis" x1="${L}" y1="${B}" x2="${R}" y2="${B}"/>
-        <text class="sc-chart-axis-text" x="${L - 10}" y="${B + 4}" text-anchor="end">0</text>
-        ${bars}
-        ${xLabels}
-        <text class="sc-chart-axis-title" x="14" y="176" transform="rotate(-90 14 176)" text-anchor="middle">Bits of randomness</text>
-      </svg>
+      <div class="sc-chart-plot">
+        <svg class="sc-chart-svg" viewBox="0 0 720 400" role="img" aria-labelledby="entropy-chart-title entropy-chart-desc" preserveAspectRatio="xMidYMid meet">
+          <title id="entropy-chart-title">Randomness retained as a die becomes less fair</title>
+          <desc id="entropy-chart-desc">A 24-word seed from 99 rolls stays between 256 and 198 bits across every scenario. A 12-word seed from 50 rolls starts at 128 bits and falls to 100 bits with a badly skewed die, dropping below both the 128-bit and 112-bit thresholds.</desc>
+          <defs>
+            <linearGradient id="entropy-bar-24" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#ff9f24"/>
+              <stop offset="1" stop-color="#c75f00"/>
+            </linearGradient>
+            <linearGradient id="entropy-bar-12" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#4dcc9f"/>
+              <stop offset="1" stop-color="#238564"/>
+            </linearGradient>
+          </defs>
+          ${grid}
+          ${thresholds}
+          <line class="sc-chart-axis" x1="${L}" y1="${B}" x2="${R}" y2="${B}"/>
+          <text class="sc-chart-axis-text" x="${L - 10}" y="${B + 4}" text-anchor="end">0</text>
+          ${bars}
+          ${xLabels}
+          <text class="sc-chart-axis-title" x="14" y="176" transform="rotate(-90 14 176)" text-anchor="middle">Bits of randomness</text>
+        </svg>
+      </div>
 
-      <figcaption>Even a die skewed far beyond anything you would own leaves a 24-word wallet with more randomness than a perfect 12-word one. The 12-word bar, by contrast, starts level with the 128-bit mark and loses ground straight away.</figcaption>
+      <figcaption class="sc-chart-summary"><strong>What it shows</strong><span>Even a die skewed far beyond anything you would own leaves a 24-word wallet with more randomness than a perfect 12-word one. The 12-word bar, by contrast, starts level with the 128-bit mark and loses ground straight away.</span></figcaption>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Bits of randomness by die fairness</caption>
-          <thead><tr><th scope="col">Die</th><th scope="col">24 words (99 rolls)</th><th scope="col">12 words (50 rolls)</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
+      <div class="sc-entropy-grid" role="table" aria-label="Bits of randomness by die fairness">
+        <div class="sc-entropy-head" role="row">
+          <span role="columnheader">Die fairness</span>
+          <span class="is-24" role="columnheader">24 words <small>99 rolls</small></span>
+          <span class="is-12" role="columnheader">12 words <small>50 rolls</small></span>
+        </div>
+        <div role="rowgroup">
+          ${rows}
+        </div>
       </div>
     </figure>`;
 };
@@ -735,7 +774,7 @@ const guides = [
     icon: "bi-signpost-split",
     updated: "2026-08-17",
     status: "published",
-    related: ["what-not-to-normalize", "coldcard-q-setup", "exchange-withdrawal"],
+    related: ["what-not-to-normalize", "coldcard-setup", "exchange-withdrawal"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">There is a version of this that takes an afternoon and a version that takes six months. The difference is not intelligence or technical skill &mdash; it is whether you moved money before you understood what you were doing with it.</p>
@@ -744,10 +783,12 @@ const guides = [
 
       <p>The rule that makes this work: <strong>do not move on until you can explain the outcome of the current stage in your own words</strong>. Not recite it &mdash; explain it, to yourself, without looking. Every expensive mistake in bitcoin custody is someone who skipped that check because they were nearly sure.</p>
 
-      ${figureSlot({
-        shot: "A desk laid out for a setup session: hardware wallet still boxed, a seed card and pen, a laptop closed, a cup of coffee. Calm and unhurried.",
+      ${figure({
+        src: "../assets/img/complete-path-desk.jpg",
+        alt: "A desk laid out for a setup session: a boxed hardware wallet, a recovery-phrase card and pen, a closed laptop, and a cup of coffee",
         caption: "Set aside a proper block of time. This is not a thing to do between meetings.",
-        ratio: "16 / 9"
+        width: 1375,
+        height: 768
       })}
 
       <h2><span class="sc-article-num">1</span>Understand what you own</h2>
@@ -1244,17 +1285,121 @@ const guides = [
       ${callout("Then just do it", `Whatever you pick, <a href='complete-path.html'>Start Here</a> takes it from decision to a wallet you have proven works — five stages, small amounts, no step you cannot undo except the ones clearly marked.`)}`
   },
   {
-    slug: "fees-and-confirmations",
+    slug: "stuck-transaction",
     category: "fundamentals",
     products: [],
-    title: "Fees, confirmations, and stuck transactions",
-    summary: "How fee rates are chosen, what a confirmation means, and what to do when a transaction sits unconfirmed.",
+    title: "Your transaction is stuck",
+    summary: "It has been hours, the explorer still says unconfirmed, and the money has left your balance. Nothing is lost. Here is how to tell whether it is genuinely stuck, the two ways to push it through, and the kind of help that will cost you everything.",
     level: "beginner",
-    minutes: 15,
+    minutes: 12,
     goals: ["learn"],
     tags: ["Fees", "Mempool"],
-    icon: "bi-calculator",
-    status: "idea"
+    icon: "bi-hourglass-split",
+    updated: "2026-08-18",
+    status: "published",
+    related: ["how-fees-work", "life-of-a-transaction", "sparrow-coin-control"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">It has been six hours. The explorer still says unconfirmed, your balance has gone down, and the person you were paying has received nothing. Every instinct says something has broken and you should try again.</p>
+
+      <p>Almost nothing has broken. An unconfirmed transaction has not failed &mdash; it is a bid that has not been accepted yet, and the coins are still entirely yours. Bitcoin has no state where money is in transit and belongs to nobody.</p>
+
+      <p>What follows is the order to work through it: how to tell whether it is genuinely stuck, the two ways to push it through, and the one category of &ldquo;help&rdquo; that turns an irritating wait into a permanent loss.</p>
+
+      ${figureSlot({
+        shot: "A single envelope sitting alone in a wire out-tray on an empty desk, late light, nobody around to collect it.",
+        caption: "Posted, not delivered, and still yours until somebody picks it up.",
+        ratio: "16 / 9",
+        icon: "bi-hourglass-split"
+      })}
+
+      <h2><span class="sc-article-num">1</span>Nothing is lost, and that is not reassurance</h2>
+
+      <p>It is worth being precise about where your coins are, because the fear driving most bad decisions here is that they are somewhere in between.</p>
+
+      <p>They are not. Your transaction is sitting in the mempool &mdash; the waiting room every node keeps of transactions it has heard about but not yet seen mined. From there exactly two things can happen. It gets confirmed, and the payment is made. Or it is eventually forgotten, and the coins are spendable again exactly as they were before. There is no third outcome where they vanish.</p>
+
+      ${callout("Why your balance already dropped", `Your wallet spent whole coins and is waiting on its own change to come back, so it shows the reduced figure immediately. That change is unconfirmed too, which is why the number can look alarming while nothing is actually wrong. <a href='life-of-a-transaction.html'>The life of a transaction</a> covers what a confirmation is and why depth matters more than status.`)}
+
+      <h2><span class="sc-article-num">2</span>Check whether it is actually stuck</h2>
+
+      <p>Blocks arrive about every ten minutes <em>on average</em>, and an average is not a schedule. Gaps of forty minutes are ordinary. Before doing anything, find out whether you are underpaying or simply impatient.</p>
+
+      ${checklist([
+        "<strong>Find the transaction ID.</strong> Your wallet lists it against the payment, often as a long string labelled txid. Copy it.",
+        "<strong>Look it up on a block explorer or mempool visualiser.</strong> Pasting a txid reveals nothing about you &mdash; it is already public.",
+        "<strong>Read the fee rate, not the fee.</strong> You want the figure in sats per virtual byte. The total in dollars tells you nothing about your position in the queue.",
+        "<strong>Compare it with what is clearing now.</strong> If your rate is above the current next-block rate, you are not stuck and there is nothing to fix.",
+        "<strong>Look at the size of the backlog.</strong> A mempool that is draining will reach you on its own. One that keeps growing will not."
+      ])}
+
+      <p>If your rate sits well below what is being mined and the backlog is not shrinking, it is genuinely stuck. Everything after this point assumes that is what you found.</p>
+
+      <h2><span class="sc-article-num">3</span>If you sent it: replace it</h2>
+
+      <p>The direct fix is to replace the transaction with an identical one paying more. Wallets label this <strong>bump fee</strong>, <strong>increase fee</strong>, or <strong>speed up</strong>. It is the same payment to the same recipient &mdash; you are not sending twice, and only one version can ever confirm.</p>
+
+      ${checklist([
+        "<strong>Bump generously, not by a hair.</strong> A replacement has to beat the original on both total fee and fee rate, and cover its own relay cost. Token increases are simply rejected, and you will have to do it again.",
+        "<strong>Aim at the current next-block rate</strong> rather than slightly above what you first paid. You are re-entering the auction at today's prices.",
+        "<strong>Re-verify the address on your device screen.</strong> A replacement is a new transaction requiring a new signature, so give it the same check you gave the first one.",
+        "<strong>Expect the txid to change.</strong> The old one may linger on explorers for a while. The new one is the real payment."
+      ])}
+
+      <p>One wrinkle: transactions have historically been marked as replaceable or not at the moment they were built, and older wallets that marked yours as final may refuse to bump it. Relay policy across the network has broadened considerably since, but what you can actually do is decided by your wallet's interface, not by the network. If the option is greyed out, move to the next section.</p>
+
+      <h2><span class="sc-article-num">4</span>If you are waiting to be paid: push from your end</h2>
+
+      <p>When somebody else underpaid, you cannot replace their transaction &mdash; it is not yours to re-sign. You can bribe a miner to want it, by spending the incoming coin onward in a second transaction paying a high rate.</p>
+
+      <p>The child cannot be mined unless the parent is mined first, so a miner evaluating the pair takes both or neither, at their combined rate. This is <strong>child pays for parent</strong>, and it is the standard tool for an incoming payment stuck in somebody else's underpaid transaction.</p>
+
+      ${checklist([
+        "Your wallet must allow spending unconfirmed coins, and must let you choose which coin to spend. <a href='sparrow-coin-control.html'>Coin control</a> is what makes this possible.",
+        "Send the stuck coin to another address you control, paying a deliberately high rate.",
+        "Size the fee to carry both transactions &mdash; you are paying off the parent's shortfall as well as the child's own cost.",
+        "If the amount is small, check the arithmetic first. Rescuing a tiny payment can cost more than the payment."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>If neither applies: wait properly</h2>
+
+      <p>Waiting is a legitimate strategy and frequently the right one. Backlogs clear, usually faster than they feel like they will, and it costs nothing.</p>
+
+      <p>Demand also has rhythms &mdash; weekends and overnight hours are routinely quieter, and a transaction that looked abandoned on Friday afternoon is often mined by Sunday without anyone touching it.</p>
+
+      <p>If it is never mined, nodes eventually drop it, typically after about a fortnight. The coins become spendable again with no action from you, though some wallets need a restart or a rescan before they notice. Until that happens, treat the payment as still live: it can confirm at any moment if the backlog clears.</p>
+
+      ${pullQuote("A stuck transaction is a payment waiting for a better price. It is not a payment that failed, and it is not money that went missing.")}
+
+      <h2><span class="sc-article-num">6</span>What not to do</h2>
+
+      <p>This is the part that matters most, because a stuck transaction produces exactly the anxious, hurried state that scams are built to catch.</p>
+
+      ${cautions([
+        "<strong>Do not send the payment again from a different wallet.</strong> Two transactions funded by different coins can both confirm, and you will have paid twice with no way to undo it.",
+        "<strong>Never enter your recovery words into anything offering to release, unstick, or rescue a transaction.</strong> There is no such service. It is the single most reliable way to lose everything you hold, and the sites are polished and convincing.",
+        "<strong>Treat paid accelerators with heavy suspicion.</strong> A legitimate one needs nothing but the txid. Anything asking for a seed phrase, a private key, or an upfront transfer is stealing from you.",
+        "<strong>Do not let urgency choose the fee.</strong> Panic-bumping to many times the going rate is a permanent overpayment to fix a temporary delay."
+      ])}
+
+      ${callout("The tell is always the same", `Unsticking a transaction never requires access to your wallet &mdash; only a higher fee, which only you can authorise from the device holding the keys. Any page that asks for your recovery phrase to solve this is not confused about how bitcoin works. It is counting on you being too rattled to notice.`)}
+
+      <h2><span class="sc-article-num">7</span>Making it rarer next time</h2>
+
+      <p>Most stuck transactions are set up long before the moment of paying, and the habits that prevent them are covered properly in <a href='how-fees-work.html'>what a fee actually buys</a>. In short:</p>
+
+      ${checklist([
+        "Check the going rate independently before anything large. Wallet defaults are guesses, and often stale ones.",
+        "Send fewer, larger coins. A payment assembled from fifteen small ones is many times the size, and size is what you pay for.",
+        "Consolidate small coins during quiet periods, weighing the <a href='bitcoin-privacy.html'>privacy trade-off</a> first.",
+        "Do not buy speed you cannot use. If the recipient waits for several confirmations anyway, paying for the very next block buys nothing."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Look up the txid and compare your fee rate against what is clearing. If you sent it, bump the fee properly. If you are receiving it, spend it onward at a high rate. If neither is available, wait &mdash; the backlog clears, or the transaction expires and your coins come back untouched.</p>
+
+      ${callout("If you take one thing from this page", `The coins never left your control, so there is no deadline and no emergency. The only irreversible mistake available to you here is handing your recovery phrase to somebody promising to fix it.`)}`
   },
   {
     slug: "recovery-test-drill",
@@ -1264,7 +1409,7 @@ const guides = [
     summary: "A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.",
     level: "intermediate",
     minutes: 25,
-    goals: ["recover", "harden"],
+    goals: ["recover", "harden", "inherit"],
     tags: ["Recovery", "Backups"],
     icon: "bi-arrow-counterclockwise",
     updated: "2026-08-17",
@@ -1365,7 +1510,7 @@ const guides = [
       ${checklist([
         "<strong>Address type.</strong> Restoring as Legacy when the original was Native SegWit produces a completely different-looking set of addresses from the same correct words. This is the most common cause by a distance.",
         "<strong>A missing passphrase.</strong> Without it you get the wallet that exists at the words alone, which is a real, valid, empty wallet. It looks exactly like a failure.",
-        "<strong>Word order.</strong> Two transposed words give a completely different wallet, and the checksum will often still accept it.",
+        "<strong>Word order.</strong> Two transposed words give a completely different wallet, and the <a href='../glossary.html#term-checksum'>checksum</a> will often still accept it.",
         "<strong>A misread word.</strong> Handwriting confusions and near-identical BIP39 words are common. Check each word against the official wordlist.",
         "<strong>Derivation path.</strong> Some wallets default to different paths. If the software lets you specify one, match the original."
       ])}
@@ -1397,44 +1542,62 @@ const guides = [
 
   /* ------------------------------------------------------------------ devices */
   {
-    slug: "coldcard-q-setup",
+    slug: "coldcard-setup",
+    aliases: ["coldcard-q-setup"],
     category: "devices",
     products: ["coldcard"],
-    title: "COLDCARD Q: first-time setup",
-    summary: "Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified.",
+    title: "COLDCARD Q and Mk5: first-time setup",
+    summary: "Unbox and check the tamper evidence, set a PIN, generate a seed on the device, and take a backup you have verified. One path, with the handful of places the two models differ called out as you reach them.",
     level: "beginner",
     minutes: 45,
     goals: ["setup"],
     tags: ["Air-gapped", "microSD", "Seed backup"],
     icon: "bi-usb-drive",
-    updated: "2026-08-17",
+    updated: "2026-08-18",
     productGuide: true,
     status: "published",
-    related: ["sparrow-first-wallet", "dice-entropy", "recovery-test-drill"],
+    related: ["sparrow-first-wallet", "coldcard-advanced-features", "air-gapped-psbt-workflow", "dice-entropy"],
     layout: "article",
     body: `
-      <p class="sc-guide-intro">The COLDCARD Q is a deliberately awkward device. It has a full keyboard and a slot for a memory card, and no way at all to talk to your computer over the internet. That awkwardness is the product &mdash; every inconvenience in this guide is a connection somebody decided not to give an attacker.</p>
+      <p class="sc-guide-intro">A COLDCARD is a deliberately awkward device. It has a slot for a memory card and no way at all to talk to your computer over the internet. That awkwardness is the product &mdash; every inconvenience in this guide is a connection somebody decided not to give an attacker.</p>
+
+      <p>This page covers both current models. They run the same firmware and the setup is the same sequence on each, so rather than two nearly identical guides, the differences are flagged at the four or five points where they actually change what you press.</p>
 
       <p>Setting one up properly takes about forty-five minutes. Most of that is not fiddly; it is writing things down carefully and resisting the urge to hurry. Read the whole page once before you start, then work through it.</p>
 
-      ${figureSlot({
-        shot: "The COLDCARD Q still in its sealed tamper-evident bag, serial number visible, resting on a plain dark surface next to a microSD card and a pen.",
-        caption: "Check the bag before you open it. It is the first security step, not packaging.",
-        ratio: "16 / 9",
-        icon: "bi-box-seam"
+      ${figure({
+        src: "../assets/img/coldcard-q-mk5-devices.jpg",
+        alt: "A COLDCARD Q and a COLDCARD Mk5 side by side on a wooden desk, both powered on and showing their home screens",
+        caption: "Same firmware, two keyboards. The Q's full QWERTY on the left, the Mk5's numeric keypad on the right &mdash; the difference that shapes everything below.",
+        width: 1584,
+        height: 672
       })}
 
+      <h2>Which one are you holding?</h2>
+
+      <p>Both models do the same job to the same standard, and nothing in this guide is easier or safer on one than the other. The differences are ergonomic, and they change four things during setup.</p>
+
+      ${checklist([
+        "<strong>Typing.</strong> The Q has a full QWERTY keyboard with dedicated QR and NFC keys. The Mk5 has a numeric keypad, so anything involving letters &mdash; a passphrase especially &mdash; is slower and more deliberate.",
+        "<strong>Cards.</strong> The Q has two microSD slots and stows two spare cards under the battery door. The Mk5 has one slot, so a second backup copy means swapping cards.",
+        "<strong>Power.</strong> The Q runs from USB-C or three AAA batteries, so it can be set up nowhere near a computer. The Mk5 needs USB-C power throughout.",
+        "<strong>Getting data out.</strong> The Q has a built-in QR scanner and can move wallet exports and signed transactions by camera. The Mk5 uses microSD, USB, or NFC."
+      ])}
+
+      <p>If you are choosing between them, that list is the whole decision. The security model, the firmware, and every step below are shared.</p>
+
       ${prerequisites([
-        "The COLDCARD Q, unopened, bought from Coinkite or an authorised reseller.",
-        "Two microSD cards &mdash; one for the encrypted backup, one spare.",
+        "Your COLDCARD, unopened, bought from Coinkite or an authorised reseller.",
+        "Two microSD cards &mdash; one for the encrypted backup, one spare. On the Mk5 you will swap them through the single slot.",
         "A pen and the supplied backup card, or a metal backup plate.",
+        "A USB-C cable and power source. On the Q, three AAA batteries instead if you would rather stay off a computer entirely.",
         "A private room, an uninterrupted hour, and no camera pointed at the desk.",
         "No bitcoin. Nothing here requires funds, and you should not move any until the check at the end passes."
       ])}
 
       <h2><span class="sc-article-num">1</span>Check the packaging before you power it on</h2>
 
-      <p>Coinkite ships the Q in a sealed bag with a serial number printed on it. During first boot the device shows you a number of its own, and the two are meant to match. That is the whole trick: a bag that has been opened and resealed around a substituted device will not produce a matching number.</p>
+      <p>Coinkite ships both models in a sealed bag with a serial number printed on it. During first boot the device shows you a number of its own, and the two are meant to match. That is the whole trick: a bag that has been opened and resealed around a substituted device will not produce a matching number.</p>
 
       <p>Read the number on the bag and keep it to hand. Inspect the bag for cuts, re-glued seams, or a second seal laid over the first, and look at the case seam and screen edge for scratches that suggest it has been opened.</p>
 
@@ -1443,7 +1606,7 @@ const guides = [
         "A device that arrives already showing a wallet, a PIN, or a set of recovery words is compromised. There are no exceptions to this and no innocent explanations worth gambling on."
       ])}
 
-      <p>${official("https://coldcard.com/docs/quick-start-q/", "COLDCARD Q quick start")}</p>
+      <p>${official("https://coldcard.com/docs/q-quick/", "COLDCARD Q quick start")} &nbsp; ${official("https://coldcard.com/guides/setup/coldcard-mk5-setup", "COLDCARD Mk5 quick start")}</p>
 
       <h2><span class="sc-article-num">2</span>Set the PIN, and understand why it comes in two halves</h2>
 
@@ -1454,14 +1617,15 @@ const guides = [
       ${checklist([
         "Choose a PIN you can recall under stress, not one you will need a note to remember.",
         "Write the two anti-phishing words down and keep them with your backup material.",
-        "Record the PIN somewhere durable, and somewhere separate from your recovery words."
+        "Record the PIN somewhere durable, and somewhere separate from your recovery words.",
+        "On the Mk5, the PIN is entered on the numeric keypad. On the Q it is typed on the keyboard. The two-halves behaviour and the anti-phishing words are identical either way."
       ])}
 
       ${callout("The PIN protects the device, not the seed", "Anyone holding your recovery words can rebuild this wallet without ever seeing the PIN. The PIN buys you time if the device is physically stolen. The words are the thing that actually has to stay secret.")}
 
       <h2><span class="sc-article-num">3</span>Generate a new seed on the device</h2>
 
-      <p>Choose the option to create a new wallet rather than importing one. The Q generates the seed itself, using its own entropy, and it never leaves the secure element in plaintext. Nothing you type into a computer is involved at any point.</p>
+      <p>Choose the option to create a new wallet rather than importing one. The device generates the seed itself, using its own entropy, and it never leaves the secure element in plaintext. Nothing you type into a computer is involved at any point.</p>
 
       ${checklist([
         "Select new wallet, not import, and let the device produce the words.",
@@ -1470,7 +1634,9 @@ const guides = [
         "Decide your passphrase policy now, and write down whether you used one."
       ])}
 
-      <p>If you would rather supply the randomness yourself rather than trust the device's generator, the Q accepts dice rolls at this step &mdash; see <a href="dice-entropy.html">rolling your own entropy</a>. It is optional, and it is not the thing standing between you and losing your coins.</p>
+      <p>If you would rather supply the randomness yourself rather than trust the device's generator, both models accept dice rolls at this step &mdash; see <a href="dice-entropy.html">rolling your own entropy</a>. It is optional, and it is not the thing standing between you and losing your coins.</p>
+
+      ${callout("A note on passphrases, and where the models part company", "A passphrase is a word or sentence added to the seed, producing a different wallet. On the Q you type it on a keyboard. On the Mk5 you assemble it from a numeric keypad, which is slow enough that people shorten the passphrase to get it over with &mdash; exactly the wrong instinct. If you want a passphrase on an Mk5, decide it in advance and accept the typing.")}
 
       ${cautions([
         "Never type these words into a phone, a computer, a password manager, or a photograph.",
@@ -1479,7 +1645,7 @@ const guides = [
       ])}
 
       ${figureSlot({
-        shot: "The Q's screen showing a numbered word list during seed generation, angled so the words are not legible, with a hand writing on the backup card in the foreground.",
+        shot: "A COLDCARD screen showing a numbered word list during seed generation, angled so the words are not legible, with a hand writing on the backup card in the foreground.",
         caption: "In order, by hand, once. The quiz afterwards is there to catch you.",
         ratio: "4 / 3",
         icon: "bi-usb-drive"
@@ -1487,13 +1653,14 @@ const guides = [
 
       <h2><span class="sc-article-num">4</span>Take the encrypted backup</h2>
 
-      <p>Separately from the words you just wrote down, the Q writes an encrypted backup file to microSD. This file is protected by a twelve-word backup password that the device displays exactly once.</p>
+      <p>Separately from the words you just wrote down, the device writes an encrypted backup file to microSD. This file is protected by a twelve-word backup password that the device displays exactly once.</p>
 
       <p>That password is not your seed and does not replace it. Write it down before you dismiss the screen &mdash; without it the backup file is inert.</p>
 
       ${checklist([
         "Write the twelve-word backup password down before moving on.",
         "Save the backup to microSD, then repeat it onto a second card kept somewhere else.",
+        "On the Q you can leave a card in each slot. On the Mk5, write the first card, eject it, and write the second &mdash; do not skip the second copy because it means swapping.",
         "Store the cards apart from the written recovery words where you practically can."
       ])}
 
@@ -1505,8 +1672,8 @@ const guides = [
 
       ${checklist([
         "Run the device's own verify-backup option against the file you just wrote.",
-        "Export the public keys to microSD and load them into your wallet software as a watch-only wallet.",
-        "Compare the master key fingerprint shown on the Q with the one shown in the software &mdash; they must match.",
+        "Export the public keys and load them into your wallet software as a watch-only wallet. Either model can do this by microSD; on the Q you can also press the QR key and let the software read it off the screen.",
+        "Compare the master key fingerprint shown on the device with the one shown in the software &mdash; they must match.",
         "Send a small test amount, confirm it arrives, then send it back out before committing real savings."
       ])}
 
@@ -1514,31 +1681,158 @@ const guides = [
 
       <p class="mt-4"><a class="sc-text-link" href="sparrow-first-wallet.html">Next: pair it with Sparrow <i class="bi bi-arrow-right"></i></a></p>`
   },
-  {
-    slug: "coldcard-mk4-setup",
-    category: "devices",
-    products: ["coldcard"],
-    title: "COLDCARD Mk4: first-time setup",
-    summary: "The same setup path on the Mk4 hardware, including the differences in the keypad and NFC handling.",
-    level: "beginner",
-    minutes: 45,
-    goals: ["setup"],
-    tags: ["Air-gapped", "microSD"],
-    icon: "bi-usb-drive",
-    status: "idea"
-  },
+  /* The planned standalone Mk5 setup guide was folded into coldcard-setup
+     above: same firmware, same sequence, and two near-identical pages would
+     have put two links both labelled "Guide" on the one COLDCARD product
+     card. */
   {
     slug: "coldcard-advanced-features",
     category: "devices",
     products: ["coldcard"],
     title: "COLDCARD: the features worth turning on next",
-    summary: "Duress wallets, brick-me PIN, trick PINs, login countdown, and which of them create recovery risk.",
+    summary: "Trick PINs, duress wallets, the brick-me PIN, and the login countdown. What each one actually does, and the honest accounting of which of them can cost you your own coins.",
     level: "advanced",
-    minutes: 35,
+    minutes: 30,
     goals: ["harden"],
     tags: ["Duress", "PIN policy"],
     icon: "bi-shield-lock",
-    status: "idea"
+    updated: "2026-08-18",
+    status: "published",
+    related: ["coldcard-setup", "duress-and-coercion", "passphrase-setup", "recovery-test-drill"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Once a COLDCARD is set up and holding coins, the settings menu offers a second layer: alternate PINs that open decoy wallets, wipe the seed, stall an attacker for days, or destroy the device outright. It is the most interesting menu on the device and the one most likely to lose you money.</p>
+
+      <p>Not because the features are badly built &mdash; they work exactly as described. The problem is that every one of them trades a defence against somebody else for a new way to lock yourself out, and the device will let you configure all of it without ever asking whether your backup is real.</p>
+
+      <p>This page explains what each option does and then does the accounting nobody enjoys: which of them you can walk back, and which are permanent.</p>
+
+      ${figureSlot({
+        shot: "A COLDCARD face down on a desk beside a fireproof document bag and a metal seed plate, lit hard from one side, nobody in frame.",
+        caption: "Everything on this page assumes the plate exists and has been tested. Without that, none of it is a safety feature.",
+        ratio: "16 / 9",
+        icon: "bi-shield-lock"
+      })}
+
+      <h2><span class="sc-article-num">1</span>The rule that governs everything else</h2>
+
+      <p>Before any of this, one fact about the main PIN, because it is the ground every other feature is built on.</p>
+
+      <p><strong>There is no PIN reset and no factory reset.</strong> Coinkite cannot recover it, and neither can you. After thirteen wrong attempts the secure element destroys its contents and the device is finished &mdash; permanently, by design, with no appeal.</p>
+
+      <p>That is not a bug to be nervous about. It is the reason the device is worth owning: a thief with your COLDCARD and no PIN gets thirteen guesses and then a paperweight. But it means the written recovery words are not a fallback for this device. They are the only copy of your wallet that exists.</p>
+
+      ${callout("Do the restore test first, not later", `If you have not already restored these words onto a wiped device and watched the balance reappear, stop and do that before enabling anything below. Every feature on this page increases the chance you will one day need that backup, and <a href='recovery-test-drill.html'>an untested backup is a guess</a>.`)}
+
+      <h2><span class="sc-article-num">2</span>What a trick PIN actually is</h2>
+
+      <p>A trick PIN is a second, third, or tenth PIN that you configure while logged in normally. Enter it at the login screen and the device does not log you in &mdash; it performs whatever action you attached to that PIN, while behaving as though nothing unusual happened.</p>
+
+      <p>The deception is the entire point. Someone standing over you sees a PIN typed and a device responding normally. They do not see which PIN it was, and the COLDCARD gives nothing away.</p>
+
+      <p>You can configure several at once, each with a different action. They live in the secure element alongside the real PIN, and they can only be added, changed, or removed by logging in with the main PIN first.</p>
+
+      <h2><span class="sc-article-num">3</span>The duress wallet</h2>
+
+      <p>The best known of the trick PINs. Enter the duress PIN and the COLDCARD opens a real, working, entirely separate wallet. Balances, addresses, signing &mdash; all genuine. It simply is not your wallet.</p>
+
+      <p>The seed for it is derived from your own seed along a fixed BIP-85 path, using reserved indices &mdash; 1001 to 1003 for a 24-word wallet, 2001 to 2003 for a 12-word one. Two consequences follow, and they matter in opposite directions:</p>
+
+      ${checklist([
+        "<strong>You can rebuild it.</strong> Because it is derived from your main seed, anything you leave in a duress wallet is recoverable later from your recovery words and a BIP-85 tool. It is not a black hole.",
+        "<strong>They cannot walk backwards.</strong> The derivation runs one way only. Somebody holding the duress wallet, its words, and all its coins has no route from there to your real wallet."
+      ])}
+
+      <p>That second property is what makes the feature worth anything. The first is what stops a decoy from being a write-off.</p>
+
+      ${cautions([
+        "<strong>An empty decoy is not a decoy.</strong> A wallet with nothing in it tells your attacker they have the wrong PIN, and you are back where you started, having burned your one deception.",
+        "<strong>A funded decoy is money you may actually hand over.</strong> Whatever you put in it should be an amount you would be willing to lose to end the situation.",
+        "<strong>It only works if you can perform.</strong> The whole mechanism rests on somebody believing you under pressure. <a href='passphrase-setup.html'>The case against decoy wallets</a> is worth reading before you commit to one &mdash; the argument applies just as much here."
+      ])}
+
+      <h2><span class="sc-article-num">4</span>The wipe options</h2>
+
+      <p>Several trick PINs destroy the seed on the device rather than hiding it. They differ only in what the attacker sees afterwards:</p>
+
+      ${checklist([
+        "<strong>Wipe and reboot.</strong> The seed is erased and the device restarts, looking freshly unboxed.",
+        "<strong>Silent wipe.</strong> The seed is erased and the device shows an ordinary wrong-PIN message, so the wipe is invisible.",
+        "<strong>Wipe, then open a wallet.</strong> The seed is erased and a duress wallet opens, so the device looks used rather than blank.",
+        "<strong>Say wiped and stop.</strong> The device states plainly that it has been wiped."
+      ])}
+
+      <p>These are genuinely effective against a thief who wants your coins. They are also the fastest way to destroy your own access, because a wiped COLDCARD is exactly as empty as a stolen one. Everything depends on the words on your backup plate.</p>
+
+      <h2><span class="sc-article-num">5</span>The brick-me PIN</h2>
+
+      <p>This one does what it says. Enter the brick PIN and the secure element is destroyed on the spot. The COLDCARD displays the word <em>Bricked</em> and will do so for the rest of its existence. It cannot be repaired, reflashed, or reset. Coinkite's own advice is to discard it as e-waste.</p>
+
+      <p>It is worth being clear about what this buys you, because it is narrower than it first appears. Bricking does not protect your coins &mdash; a wipe already does that, and leaves you a working device. What bricking adds is certainty that this specific piece of hardware will never be analysed, coerced, or brought back.</p>
+
+      <p>For the overwhelming majority of people that is a threat model they do not have, purchased at the price of a device they do.</p>
+
+      ${pullQuote("A wipe protects your coins and costs you a restore. A brick protects your coins and costs you the device. Be certain you know which problem you are solving.")}
+
+      <h2><span class="sc-article-num">6</span>The login countdown</h2>
+
+      <p>Rather than deceiving or destroying, this one simply refuses to hurry. Enter the PIN, and the device shows a countdown &mdash; anywhere from five minutes to twenty-eight days &mdash; and only accepts the PIN a second time once it has run out.</p>
+
+      <p>Against coercion this is the most quietly useful option on the menu. It converts &ldquo;unlock this now&rdquo; into &ldquo;stand here for a fortnight&rdquo;, which is not a demand most people can make good on.</p>
+
+      <p>There are variants that wipe first and then count down, or count down and then brick. And the obvious catch: <strong>the delay applies to you exactly as it applies to them.</strong> A twenty-eight day countdown means you cannot reach your own coins for twenty-eight days either, from the moment you set it.</p>
+
+      <h2><span class="sc-article-num">7</span>Delta mode, and why it is last</h2>
+
+      <p>Delta mode grants apparent access to your real wallet while quietly preventing transactions from being signed properly. The attacker sees the balance they were after and cannot move it.</p>
+
+      <p>It carries an unusual constraint: the trick PIN must be the same length as your main PIN and identical to it except for the last four digits. Coinkite's documentation says plainly that it is not recommended for novices, and that is the right note to end the menu on. Misconfigure it and you have built a very elaborate way to confuse yourself at the worst possible moment.</p>
+
+      <h2><span class="sc-article-num">8</span>The honest accounting</h2>
+
+      <p>Here is every option measured against the only question that matters: if this fires, by accident or by design, what does it cost you?</p>
+
+      <div class="sc-coldcard-cost-card">
+        <div class="sc-coldcard-cost-heading">
+          <span class="sc-coldcard-cost-mark" aria-hidden="true"></span>
+          <div><span>Consequence map</span><h3>What each trigger actually costs</h3></div>
+          <strong>Your backup is the exit</strong>
+        </div>
+        <div class="sc-coldcard-cost-grid" role="table" aria-label="What each COLDCARD feature costs you if it triggers">
+          <div class="sc-coldcard-cost-head" role="row"><span role="columnheader">Feature</span><span role="columnheader">What it costs you</span><span role="columnheader">Recovery path</span></div>
+          <div role="rowgroup">
+            <div class="sc-coldcard-cost-row is-low" role="row"><strong role="rowheader">Just reboot</strong><span role="cell"><small>Cost</small>Nothing</span><span class="is-safe" role="cell"><small>Recovery</small>Yes &mdash; nothing changed</span></div>
+            <div class="sc-coldcard-cost-row is-low" role="row"><strong role="rowheader">Look blank</strong><span role="cell"><small>Cost</small>Nothing; the seed is untouched</span><span class="is-safe" role="cell"><small>Recovery</small>Yes &mdash; nothing changed</span></div>
+            <div class="sc-coldcard-cost-row is-contained" role="row"><strong role="rowheader">Duress wallet</strong><span role="cell"><small>Cost</small>Whatever you funded the decoy with</span><span class="is-contained" role="cell"><small>Recovery</small>Yes, via BIP-85 from your seed</span></div>
+            <div class="sc-coldcard-cost-row is-delay" role="row"><strong role="rowheader">Login countdown</strong><span role="cell"><small>Cost</small>Your own access, for up to 28 days</span><span class="is-delay" role="cell"><small>Recovery</small>Yes, once it expires</span></div>
+            <div class="sc-coldcard-cost-row is-terminal" role="row"><strong role="rowheader">Any wipe variant</strong><span role="cell"><small>Cost</small>The seed on the device</span><span class="is-backup" role="cell"><small>Recovery</small>Only from your written backup</span></div>
+            <div class="sc-coldcard-cost-row is-terminal" role="row"><strong role="rowheader">Countdown, then brick</strong><span role="cell"><small>Cost</small>The device, after the delay</span><span class="is-backup" role="cell"><small>Recovery</small>Only from your written backup</span></div>
+            <div class="sc-coldcard-cost-row is-terminal" role="row"><strong role="rowheader">Brick me</strong><span role="cell"><small>Cost</small>The device, immediately and permanently</span><span class="is-backup" role="cell"><small>Recovery</small>Only from your written backup</span></div>
+            <div class="sc-coldcard-cost-row is-terminal" role="row"><strong role="rowheader">13 wrong main PINs</strong><span role="cell"><small>Cost</small>The device, permanently</span><span class="is-backup" role="cell"><small>Recovery</small>Only from your written backup</span></div>
+          </div>
+        </div>
+      </div>
+
+      <p>The bottom half of that table is not a warning against those features. It is a statement that they all resolve to the same place: a plate with words on it, in a drawer, that you have personally tested. Every one of them is safe if that plate is real, and every one of them is catastrophic if it is not.</p>
+
+      <h2><span class="sc-article-num">9</span>What to actually turn on</h2>
+
+      <p>A recommendation, since a menu of options is not advice.</p>
+
+      ${checklist([
+        "<strong>For nearly everyone: none of it.</strong> A tested backup, a PIN you will not forget, and a device nobody knows you own already defeat the threats most people genuinely face.",
+        "<strong>If you travel or cross borders:</strong> a modest login countdown, measured in hours rather than weeks, is the option with the best ratio of protection to self-inflicted risk.",
+        "<strong>If you are seriously worried about coercion:</strong> a funded duress wallet, but only after reading the case against decoys and only if you are honest about performing under pressure.",
+        "<strong>Brick-me and delta mode:</strong> leave them alone unless you can state precisely which adversary they defeat and why a wipe would not have."
+      ])}
+
+      <p>And whatever you enable, write down that you enabled it, and store that note with your recovery words. A trick PIN you have forgotten configuring is a trap you built for yourself.</p>
+
+      <h2>The short version</h2>
+
+      <p>Trick PINs are alternate PINs that deceive, delay, wipe, or destroy instead of logging you in. The duress wallet is derived from your own seed and runs one way, so a decoy is recoverable by you and useless to them. Wipes and bricks are only survivable because of your written backup, which means none of this is safe to enable until that backup has been tested.</p>
+
+      ${callout("If you take one thing from this page", `These features do not add security to your wallet &mdash; they add ways for your device to refuse. What actually keeps the coins is the plate in the drawer. Turn on the least you need, write down what you turned on, and never let a clever configuration substitute for a backup you have proven works.`)}`
   },
   {
     slug: "passport-setup",
@@ -2071,26 +2365,335 @@ const guides = [
     category: "devices",
     products: ["seedsigner"],
     title: "SeedSigner: build and first use",
-    summary: "Assembling the hardware, flashing the image, and the stateless signing model that keeps nothing on the device.",
+    summary: "Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.",
     level: "advanced",
     minutes: 60,
     goals: ["setup"],
     tags: ["DIY", "Stateless", "QR"],
     icon: "bi-cpu",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["krux-setup", "air-gapped-psbt-workflow", "dice-entropy", "recovery-test-drill"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">A SeedSigner is about fifty dollars of commodity electronics that you assemble yourself: a Raspberry Pi Zero, a small screen with a joystick, and a camera. There is no secure element, no company standing behind it, and nothing is sealed in a tamper-evident bag. It signs bitcoin transactions as capably as devices costing ten times more.</p>
+
+      <p>What makes that work is a design decision rather than a component. The device is <strong>stateless</strong>: it holds your seed only while powered on, and forgets it completely the moment you unplug it. There is nothing on the hardware to steal, which is why the hardware does not need to defend itself.</p>
+
+      <p>The trade is that you perform the security yourself &mdash; the checks a manufacturer would normally have done are now your job, and there is one in particular you must not skip. Budget an evening.</p>
+
+      ${figureSlot({
+        shot: "The three SeedSigner components laid out unassembled on a workbench: a Raspberry Pi Zero, a Waveshare 1.3 inch LCD hat with its joystick, and a small camera module with ribbon cable.",
+        caption: "Three parts, no enclosure yet. The screen is the one people buy wrong.",
+        ratio: "16 / 9",
+        icon: "bi-cpu"
+      })}
+
+      ${prerequisites([
+        "<strong>A Raspberry Pi Zero, ideally v1.3</strong> &mdash; the version with no wireless hardware at all. The W and 2 W models work, and so do larger Pis, but see the note in step 1.",
+        "<strong>A Waveshare 1.3&Prime; LCD hat, 240&times;240 resolution.</strong> This exact resolution. Waveshare sells several boards that look nearly identical and will not work.",
+        "<strong>A Pi Zero-compatible camera module.</strong> The OV5647-sensor 5MP boards are the commonly tested ones. Camera cables come in two styles, so check yours matches your enclosure.",
+        "<strong>A microSD card.</strong> Capacity is irrelevant &mdash; the image is well under 100MB.",
+        "A computer to verify and flash the image, and a soldering iron if your Pi's GPIO header is not pre-attached.",
+        "No bitcoin. Nothing here needs funds, and nothing should be funded until the check at the end passes."
+      ])}
+
+      <h2><span class="sc-article-num">1</span>What you are actually building</h2>
+
+      <p>Every other device in this section arrives finished. Someone chose the components, wrote the firmware, sealed the box, and put their name on the result. You check the seal and inherit their work.</p>
+
+      <p>Here you are the manufacturer. Nobody vetted your parts, and the tamper-evident bag does not exist. In exchange you get a device with no proprietary silicon, an image you can rebuild from source, and no supply chain to compromise except the one you ran yourself.</p>
+
+      <p>Two consequences shape the whole build:</p>
+
+      ${checklist([
+        "<strong>Verifying the image is not optional here.</strong> On a sealed device the bag is your integrity check. On this one, the signature on the software is the only one you get. Step 3 is the most important step on this page.",
+        "<strong>Wireless hardware you do not use is still wireless hardware.</strong> The SeedSigner image never touches WiFi or Bluetooth, but a Pi Zero 1.3 cannot use them because the radios are not on the board. That is a stronger statement than trusting software to leave them off, and it is why the 1.3 is preferred."
+      ])}
+
+      <p>${official("https://seedsigner.com/hardware/", "SeedSigner hardware list")} &nbsp; ${official("https://github.com/SeedSigner/seedsigner", "SeedSigner source and releases")}</p>
+
+      ${cautions([
+        "There are no official vendors. The project endorses nobody, so judge sellers on their own reputation rather than assuming a listing is legitimate.",
+        "Buy the 240&times;240 Waveshare screen specifically. Ordering the wrong lookalike is the single most common way a build fails, and it fails after assembly rather than before."
+      ])}
+
+      <h2><span class="sc-article-num">2</span>Assembly</h2>
+
+      <p>Mechanically this is a ten-minute job, assuming your Pi came with its GPIO header already soldered. If it did not, that is the one step needing an iron &mdash; forty pins, or a repair shop and a coffee.</p>
+
+      ${checklist([
+        "<strong>Seat the screen on the GPIO header.</strong> The hat covers the 40-pin connector, aligned from the pin-1 corner. It only goes on one way round.",
+        "<strong>Connect the camera to the CSI port</strong> with its ribbon cable, contacts facing the correct side for your Pi. The connector lifts, the ribbon slides in, the connector presses back down.",
+        "<strong>Leave the enclosure until it boots.</strong> Confirm the thing works before committing it to a case, because taking it apart again to reseat a ribbon is irritating."
+      ])}
+
+      <h2><span class="sc-article-num">3</span>Verify the image, then flash it</h2>
+
+      <p>This is the step that replaces the tamper-evident bag, and skipping it means running software of unknown origin on a device you are about to show your seed to.</p>
+
+      <p>Download the release image along with its <a href="../glossary.html#term-checksum">checksum</a> file and the signature of that checksum file. Then, on your computer, three commands do the work &mdash; substituting the version you actually downloaded:</p>
+
+      ${checklist([
+        "<strong>Fetch the project's signing key:</strong> <code>gpg --fetch-keys https://keybase.io/seedsigner/pgp_keys.asc</code>",
+        "<strong>Verify the checksum file was signed by that key:</strong> <code>gpg --verify seedsigner.0.8.7.sha256.txt.sig</code>",
+        "<strong>Verify the image matches the checksum:</strong> <code>shasum -a 256 --ignore-missing --check seedsigner.0.8.7.sha256.txt</code>"
+      ])}
+
+      <p>The first command establishes which key you are trusting. The second proves the checksum list came from that key. The third proves your download matches the list. All three have to pass; any one of them alone proves very little.</p>
+
+      <p>Once verified, write the image to the microSD card with Raspberry Pi Imager or Balena Etcher, and put the card in the Pi.</p>
+
+      ${callout("What a signature check does and does not tell you", "It confirms the image is the one the SeedSigner project published, unmodified in transit. It does not tell you the project is trustworthy &mdash; that judgement is yours, and it is the same judgement you make about any wallet maker. What it removes is the middle ground where a tampered download slips past unnoticed.")}
+
+      <h2><span class="sc-article-num">4</span>First boot, and the stateless model</h2>
+
+      <p>Power it on and it comes up in seconds with no setup wizard, no PIN, and no wallet. It is genuinely empty, and it will be empty again every time you power it on.</p>
+
+      <p>This is the part that surprises people arriving from other devices. A COLDCARD remembers its seed and defends it with a PIN and a secure element. A SeedSigner remembers nothing, so there is nothing to defend. Every session begins by loading a seed and ends, at power-off, by forgetting it.</p>
+
+      ${checklist([
+        "<strong>Nothing persists.</strong> A SeedSigner recovered from a drawer, or from a thief, holds no key material at all.",
+        "<strong>You re-enter the seed each session.</strong> By typing the words, by dice, or by scanning a SeedQR &mdash; see step 6.",
+        "<strong>The threat model moves.</strong> Your security no longer rests on the device resisting attack. It rests on where your words live when the device is off, and on nobody watching the screen while they are on it."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>Creating a seed on the device</h2>
+
+      <p>The SeedSigner can generate a seed for you, and it offers two sources of randomness rather than asking you to trust a chip you cannot inspect.</p>
+
+      ${checklist([
+        "<strong>Dice rolls.</strong> You roll, it converts. This is the most transparent option available on any device and is covered properly in <a href='dice-entropy.html'>rolling your own entropy</a>.",
+        "<strong>Image entropy.</strong> The camera photographs something unpredictable and derives randomness from the sensor data."
+      ])}
+
+      <p>Write the resulting words down immediately, on paper or metal, in order. On a stateless device this is not a backup step you can defer &mdash; if you power the thing off before recording them, the wallet is gone, and there is nothing anywhere to recover it from.</p>
+
+      ${cautions([
+        "The dice-to-seed method changed in 2022, so rolls recorded on older firmware will not reproduce the same wallet today. Your words are the backup; the rolls are working paper.",
+        "Decide your passphrase policy now. The device supports a BIP39 passphrase, and a passphrase you cannot reproduce is a wallet you cannot open."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>SeedQR, and the trade it asks of you</h2>
+
+      <p>Typing twenty-four words on a joystick every session gets old within a week, so the project offers <strong>SeedQR</strong>: your seed encoded as a QR code that the camera reads instantly. The device walks you through transcribing it by hand onto a blank grid, so the code is created by you rather than printed by anything.</p>
+
+      <p>It genuinely solves the usability problem. It also changes the shape of your risk, and this is worth sitting with before you make one.</p>
+
+      ${pullQuote("Written words have to be read, understood, and typed. A SeedQR only has to be photographed. Convenience for you is convenience for anyone who gets a look at it.")}
+
+      ${cautions([
+        "<strong>A photograph of a SeedQR is your wallet.</strong> No transcription, no reading skill, no delay &mdash; a glance from a phone camera is enough.",
+        "<strong>Store it as you would the words themselves</strong>, which for most people means not in the same place as the device, and never anywhere a camera can see.",
+        "<strong>It is not a substitute for the written words.</strong> Keep the plate. A damaged or unreadable QR with no word backup is a total loss."
+      ])}
+
+      <h2><span class="sc-article-num">7</span>Signing a transaction</h2>
+
+      <p>Nothing is plugged in, ever. The SeedSigner and your wallet software talk in QR codes across the air gap, and the round trip goes like this:</p>
+
+      ${checklist([
+        "Your wallet software builds an unsigned transaction &mdash; a PSBT &mdash; and shows it as a QR code on the computer screen.",
+        "You load your seed on the SeedSigner, then point its camera at that code.",
+        "<strong>The device shows you what you are signing.</strong> Amount, destination, fee. Read it here, on the device, not on the computer.",
+        "You approve, and the SeedSigner displays the signed result as a QR code.",
+        "Your wallet software reads that code with a webcam and broadcasts the transaction."
+      ])}
+
+      <p>The device supports single-sig and multisig, exports xpubs for both, and handles taproot, native segwit, nested segwit, and legacy address types &mdash; so it pairs with essentially any modern wallet software.</p>
+
+      ${callout("The screen you read is the screen that matters", "A compromised computer can display an honest-looking transaction while asking you to sign a dishonest one. The SeedSigner's screen is driven by the device doing the signing, which is the entire reason to check the amount and address there rather than on the machine that composed it.")}
+
+      <h2><span class="sc-article-num">8</span>Verify before you fund it</h2>
+
+      <p>Everything so far is an assumption until you prove it, and on a DIY device that proof matters more, not less.</p>
+
+      ${checklist([
+        "Export the public keys to your wallet software as a watch-only wallet, and confirm the fingerprint shown on the device matches the one in the software.",
+        "Power the SeedSigner off completely, then reload your seed from your written words &mdash; not from a SeedQR &mdash; and confirm you reach the same wallet. This tests your backup and your transcription in one go.",
+        "Send a small test amount, confirm it arrives, then sign a transaction sending it back out. Only then is the whole loop proven.",
+        "Note the firmware version you used, since the dice method belongs to that version."
+      ])}
+
+      <p>If the fingerprints disagree, stop. The software is watching a different wallet from the one the device will sign for, and every address it offers you would be wrong.</p>
+
+      <h2>The short version</h2>
+
+      <p>Buy the right screen, assemble three parts, and verify the image signature before flashing it &mdash; that check is the only supply-chain protection a DIY device has. Then treat the device as disposable and the words as everything, because the SeedSigner is designed to hold nothing at all when it is switched off.</p>
+
+      ${callout("If you take one thing from this page", `The security here does not live in the hardware, and it was never meant to. It lives in a verified image, a written backup you have tested, and the discipline of reading each transaction on the device's own screen. Get those three right and the fifty-dollar signer is not a compromise.`)}`
   },
   {
     slug: "krux-setup",
     category: "devices",
     products: ["krux"],
     title: "Krux: install and first use",
-    summary: "Flashing supported hardware, verifying the release, and signing over QR.",
+    summary: "Krux is firmware, not a device. Choosing hardware to put it on, verifying and flashing the release, generating a seed from dice or a photograph, and the storage feature its own documentation tells you is not a backup.",
     level: "advanced",
     minutes: 60,
     goals: ["setup"],
     tags: ["DIY", "QR"],
     icon: "bi-cpu",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["seedsigner-setup", "air-gapped-psbt-workflow", "dice-entropy"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Krux is not a product you buy. It is open-source firmware that turns an off-the-shelf Kendryte K210 board &mdash; a class of cheap Chinese microcontroller device sold for machine-vision experiments &mdash; into an air-gapped bitcoin signer.</p>
+
+      <p>That distinction shapes everything. There is no Krux hardware, no Krux company, and no Krux packaging to inspect. You choose a supported device, put verified firmware on it, and what you end up with is as trustworthy as those two decisions were.</p>
+
+      <p>In exchange you get a signer for well under a hundred dollars, often with a colour touchscreen, and a feature set that is frankly broader than devices costing five times more. Budget an evening for the first run.</p>
+
+      ${figureSlot({
+        shot: "A Krux-running K210 touchscreen device on a dark desk showing a QR code, beside a D20 die and a handwritten column of numbers.",
+        caption: "Ordinary machine-vision hardware, doing something its manufacturer never intended.",
+        ratio: "16 / 9",
+        icon: "bi-cpu"
+      })}
+
+      ${prerequisites([
+        "<strong>A supported K210 device.</strong> Maix Amigo, M5StickV, Yahboom, WonderMV, TZT, and Embed Fire are all supported. Some arrive ready to use with large touchscreens; others are development kits for people who enjoy that.",
+        "<strong>A computer to flash it from</strong>, with a USB cable that carries data rather than power alone.",
+        "<strong>A microSD card</strong> &mdash; optional for signing, but the route to air-gapped updates later.",
+        "<strong>A die, if you want to supply your own randomness.</strong> Krux takes a D6 or a D20.",
+        "Paper or metal for the recovery words, and somewhere private to work.",
+        "No bitcoin. Nothing here needs funds, and nothing should be funded until the check at the end passes."
+      ])}
+
+      <h2><span class="sc-article-num">1</span>Choosing what to run it on</h2>
+
+      <p>The supported devices differ more than the firmware does. Krux behaves the same on all of them; what changes is how pleasant the experience is and how much assembly you are signing up for.</p>
+
+      ${checklist([
+        "<strong>Ready-to-use touchscreen devices</strong> arrive assembled in a case with a battery. You unbox, flash, and use. For most people this is the correct choice and the reason to prefer Krux over a build-it-yourself signer.",
+        "<strong>Development board kits</strong> are cheaper and more open, at the cost of assembling and enclosing them yourself.",
+        "<strong>Screen size is not cosmetic here.</strong> You will be reading transaction details and scanning QR codes on this screen, repeatedly. A larger display is a security feature as much as a comfort one."
+      ])}
+
+      <p>This is the main practical difference from <a href='seedsigner-setup.html'>SeedSigner</a>, which is otherwise a close cousin: SeedSigner is three parts you assemble and possibly solder, while Krux is firmware for a device that may already be finished when it arrives.</p>
+
+      <p>${official("https://selfcustody.github.io/krux/", "Krux documentation")} &nbsp; ${official("https://github.com/selfcustody/krux", "Krux source and releases")}</p>
+
+      <h2><span class="sc-article-num">2</span>Install the firmware, and verify it first</h2>
+
+      <p>There is no tamper-evident bag in this story either, so the signature on the firmware is the only integrity check available. It is not optional.</p>
+
+      <p>Krux offers four installation routes: the Krux Installer GUI application, a pre-built official release, a pre-built test release, and building from source.</p>
+
+      ${checklist([
+        "<strong>The Krux Installer GUI is the sensible default.</strong> It downloads the release, verifies it, and flashes your device, which removes most of the ways this goes wrong by hand.",
+        "<strong>Take the official release, not the test one.</strong> Beta builds exist for people testing Krux, not for people securing savings.",
+        "<strong>Verify the signature before flashing</strong> if you are installing manually. This is the step that distinguishes running Krux from running something that says it is Krux.",
+        "<strong>After the first install you can update by microSD</strong>, which means every subsequent firmware update can happen without the device ever touching a computer again."
+      ])}
+
+      ${callout("The first install is the only one that needs a cable", "That microSD update path is worth planning around. Connect the device to a computer once, to put verified firmware on it, and from that point forward the air gap is never broken &mdash; not for updates, not for signing, not for anything.")}
+
+      <h2><span class="sc-article-num">3</span>Generating a seed</h2>
+
+      <p>Krux will not silently produce a seed from a chip you cannot inspect. It asks where the randomness should come from, and it shows its working.</p>
+
+      <p>The dice options are unusually generous, and Krux is one of the few signers that takes a twenty-sided die:</p>
+
+      <div class="sc-krux-dice-panel" aria-label="Minimum dice rolls Krux requires">
+        <div class="sc-krux-dice-heading">
+          <span class="sc-krux-dice-mark" aria-hidden="true">D6<span>D20</span></span>
+          <div><span>Entropy input</span><h3>More sides, fewer rolls</h3></div>
+          <strong>Both routes reach the same target</strong>
+        </div>
+        <div class="sc-krux-dice-grid">
+          <article class="is-d6">
+            <div class="sc-krux-die-title"><span>D6</span><div><h3>Ordinary die</h3><p>Six-sided</p></div></div>
+            <dl>
+              <div><dt>Bits per roll</dt><dd>2.585</dd></div>
+              <div><dt>12 words</dt><dd>50 <small>rolls</small></dd></div>
+              <div><dt>24 words</dt><dd>99 <small>rolls</small></dd></div>
+            </dl>
+          </article>
+          <article class="is-d20">
+            <div class="sc-krux-die-title"><span>D20</span><div><h3>Twenty-sided die</h3><p>Higher entropy per throw</p></div></div>
+            <dl>
+              <div><dt>Bits per roll</dt><dd>4.322</dd></div>
+              <div><dt>12 words</dt><dd>30 <small>rolls</small></dd></div>
+              <div><dt>24 words</dt><dd>60 <small>rolls</small></dd></div>
+            </dl>
+          </article>
+        </div>
+      </div>
+
+      <p>A D20 cuts a 24-word seed from ninety-nine rolls to sixty, which is a meaningful saving when you are doing it by hand. The rules from <a href='dice-entropy.html'>rolling your own entropy</a> apply unchanged: record every roll, never re-roll a result you dislike, and remember the rolls are working paper rather than a backup.</p>
+
+      <p>The alternative is <strong>image entropy</strong>: photograph something chaotic and Krux derives the seed from a hash of the image's raw sensor bytes. Krux displays live quality indicators while you frame the shot &mdash; and its own documentation is careful to say these are approximations meant to guide your choice of image, not absolute measurements of cryptographic entropy. Treat them as a nudge away from photographing a blank wall, not as a score to optimise.</p>
+
+      <p>Whichever source you pick, Krux hashes it with SHA256, shows you the hash, and converts it deterministically into BIP39 words. That displayed hash is the device showing its work, and you can check the conversion independently later if you want to.</p>
+
+      <h2><span class="sc-article-num">4</span>The stored-mnemonic feature, and what it is not</h2>
+
+      <p>Here is where Krux departs from its stateless cousins, and it is the part of the device most worth understanding properly.</p>
+
+      <p>Krux can store your mnemonic, encrypted, either in the device's own flash memory or on a microSD card. You choose a key, and the mnemonic comes back when you supply that key again. It is a real convenience: no re-typing twenty-four words at the start of every session.</p>
+
+      <p>The encryption is not decorative. Krux uses AES, and your key is not used directly &mdash; it is stretched through many rounds of PBKDF2 first, specifically so that guessing at it is slow.</p>
+
+      ${pullQuote("Krux's own documentation says it plainly: stored mnemonics are for convenience only and should not be considered a form of backup.")}
+
+      <p>That warning deserves repeating in the project's own terms, because the feature is genuinely easy to mistake for a backup. Encrypted storage lives on a device that can be lost, dropped, wiped by a firmware update, or simply fail. It protects the mnemonic <em>while the device works</em>. It does nothing at all once the device does not.</p>
+
+      ${cautions([
+        "<strong>Make a physical backup regardless</strong> &mdash; words on paper or metal, independent of any electronics.",
+        "<strong>Test recovering from that physical backup before you send funds</strong>, exactly as you would with any other wallet.",
+        "<strong>A forgotten encryption key is a lost mnemonic.</strong> The PBKDF2 stretching that protects you from an attacker protects the device from you too.",
+        "<strong>Storing on the device concentrates risk.</strong> An encrypted mnemonic on the same device you carry through an airport is a different proposition from one on a card in a drawer."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>Signing a transaction</h2>
+
+      <p>The signing loop is the familiar air-gapped round trip, with Krux offering two ways across the gap rather than one.</p>
+
+      ${checklist([
+        "Your coordinator wallet builds an unsigned transaction &mdash; a PSBT &mdash; and displays it as a QR code, or writes it to a microSD card.",
+        "You load your mnemonic on the Krux device and either scan the code with its camera or read the file from the card.",
+        "<strong>Check the amount, destination, and fee on the Krux screen.</strong> This is the whole reason the device has a display.",
+        "Approve, and Krux returns the signed transaction the same way it came in &mdash; as a QR code, or back onto the card.",
+        "Your coordinator reads the signature and broadcasts it."
+      ])}
+
+      <p>Krux works with the mainstream coordinator wallets and supports multisig, so it slots into an existing setup rather than demanding its own.</p>
+
+      <h2><span class="sc-article-num">6</span>The unusual extras</h2>
+
+      <p>Krux carries several features you will not find on most signers. None of them are required, and a first-time user should ignore all of them, but they are worth knowing exist:</p>
+
+      ${checklist([
+        "<strong>Printing and CNC engraving.</strong> Krux can drive a thermal printer, or output files for a CNC machine, to produce physical backups of a mnemonic or a QR code.",
+        "<strong>Tamper detection.</strong> An experimental check intended to reveal whether the device has been interfered with between sessions.",
+        "<strong>Mnemonic XOR.</strong> Splitting a mnemonic into parts that are individually useless and only reconstruct the original when combined.",
+        "<strong>QR transcription tools.</strong> Guided help for copying a QR code onto a physical medium by hand."
+      ])}
+
+      <p>Each of these adds a way to lose access if you misunderstand it. Get a plain wallet working and verified first; the extras will still be there next month.</p>
+
+      <h2><span class="sc-article-num">7</span>Verify before you fund it</h2>
+
+      <p>On firmware you flashed yourself, running on hardware nobody certified, this stage is the one that converts hope into knowledge.</p>
+
+      ${checklist([
+        "Export the public keys to your coordinator wallet as a watch-only wallet, and confirm the fingerprint on the device matches the one in the software.",
+        "Power the device off, then reload the mnemonic from your <em>written words</em> &mdash; not from encrypted storage &mdash; and confirm you reach the same wallet. This tests the backup you will actually need.",
+        "Send a small test amount, confirm it arrives, then sign a transaction sending it back out.",
+        "Note the firmware version and the device model, since both belong to the wallet you just made."
+      ])}
+
+      <p>If the fingerprints disagree, stop and find out why before going any further. The software would be watching a different wallet from the one the device signs for, and every address it showed you would be wrong.</p>
+
+      <h2>The short version</h2>
+
+      <p>Krux is firmware, so the device is your choice and the verification is your job. Flash a verified official release, generate a seed from dice or a photograph, write the words down on something physical, and treat the encrypted-storage feature as the convenience its authors say it is.</p>
+
+      ${callout("If you take one thing from this page", `The stored mnemonic is not your backup. Krux says so itself, in its own documentation, and it is the single most likely misunderstanding to cost somebody their coins on this device. The words on paper or metal are the wallet. Everything on the device is a copy that happens to be convenient.`)}`
   },
   {
     slug: "ledger-setup",
@@ -2248,52 +2851,530 @@ const guides = [
     category: "devices",
     products: ["bitkey"],
     title: "Bitkey: first-time setup",
-    summary: "The phone-plus-hardware-plus-recovery model, and what the recovery service can and cannot do.",
+    summary: "A wallet with no recovery phrase to write down, because the company holds a third key you can call on. Setting it up, and the honest accounting of what that recovery service can and cannot do.",
     level: "beginner",
     minutes: 25,
     goals: ["setup"],
     tags: ["Mobile", "Assisted recovery"],
     icon: "bi-phone",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["multisig-2of3", "choosing-your-first-setup", "recovery-test-drill"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Every other guide in this section ends with the same instruction: write twenty-four words on something durable and never lose them. Bitkey does not have those words. There is nothing to write down, nothing to hide, and nothing to lose in a house fire.</p>
+
+      <p>That is not a shortcut around the problem. It is a different answer to it. Instead of one secret that must survive forever, Bitkey splits control across three keys and requires any two to spend &mdash; a hardware device, your phone, and a key held by Block, the company behind it, purely so that you can recover if one of yours goes missing.</p>
+
+      <p>Whether that is a good trade depends entirely on details most reviews skip, so this page sets up the wallet and then does the accounting: precisely what Block can do, what it cannot, and what happens to your coins if the company vanishes tomorrow.</p>
+
+      ${figureSlot({
+        shot: "A Bitkey hardware device resting on a phone showing the Bitkey app, shot from above on a plain surface, no seed backup card anywhere in frame.",
+        caption: "Two of the three keys. The third is somewhere else entirely, and that is the point.",
+        ratio: "16 / 9",
+        icon: "bi-phone"
+      })}
+
+      ${prerequisites([
+        "<strong>The Bitkey hardware device.</strong> It sells for around CA$360 and includes the fingerprint sensor and screen you will approve transactions on.",
+        "<strong>A phone</strong>, iOS or Android, with NFC. The app and the hardware talk by tapping rather than by cable.",
+        "<strong>A cloud account you actually control</strong> &mdash; iCloud or Google Drive &mdash; for the encrypted backup of your phone's key.",
+        "<strong>Ten minutes and no bitcoin.</strong> As always, fund nothing until the check at the end passes."
+      ])}
+
+      <h2><span class="sc-article-num">1</span>The three keys, and who holds them</h2>
+
+      <p>Bitkey is a 2-of-3 multisig wallet. Three keys exist, any two can move coins, and no single key can do anything alone. If the shape of that is unfamiliar, <a href='multisig-2of3.html'>the 2-of-3 guide</a> covers the concept properly &mdash; the difference here is who holds what.</p>
+
+      ${checklist([
+        "<strong>The hardware key</strong> lives on the Bitkey device, unlocked by your fingerprint. It never leaves.",
+        "<strong>The app key</strong> lives on your phone, with an encrypted copy backed up to your cloud account.",
+        "<strong>The recovery key</strong> is held by Block. It exists solely to help you replace one of the other two, and it is never used in your ordinary spending."
+      ])}
+
+      <p>Two of those three are yours, which is the whole architecture in one sentence: <strong>you can always spend without asking anyone, and nobody can spend without you.</strong> Block holding one key of three means they can participate in a recovery. It does not mean they can move your coins, because one key of three moves nothing.</p>
+
+      <h2><span class="sc-article-num">2</span>Setting it up</h2>
+
+      <p>This is the easiest setup on the site, deliberately so. There is no seed to transcribe and no quiz to pass.</p>
+
+      ${checklist([
+        "<strong>Install the Bitkey app</strong> and create your wallet in it.",
+        "<strong>Pair the hardware device</strong> by tapping it against the phone. NFC does the rest.",
+        "<strong>Enrol your fingerprint</strong> on the device. This is what authorises the hardware key to sign.",
+        "<strong>Complete the cloud backup</strong> when prompted. This is not optional in practice &mdash; it is what makes losing your phone a minor inconvenience instead of a recovery ordeal.",
+        "<strong>Add one or two trusted contacts</strong> in settings. They cannot see or spend your bitcoin; they can only help you prove you are you if things go badly."
+      ])}
+
+      <h2><span class="sc-article-num">3</span>What &ldquo;no seed phrase&rdquo; actually changes</h2>
+
+      <p>Removing the recovery phrase removes the single most common way people lose bitcoin: a backup that was never written down, written down wrong, lost, destroyed, or photographed and stolen. That is a genuine and substantial win, and it is why this device exists.</p>
+
+      <p>It also removes something. A seed phrase is portable &mdash; twenty-four words restore into any wallet software, from any maker, decades from now, with nobody's permission. You do not have that here. Your recovery path is Bitkey's recovery path.</p>
+
+      ${pullQuote("A recovery phrase is a thing you must protect forever. Bitkey trades that burden for a dependency. Neither is free, and pretending otherwise is how people choose badly.")}
+
+      <p>The rest of this page is about that dependency, because it is the part worth understanding before you fund the wallet rather than after.</p>
+
+      <h2><span class="sc-article-num">4</span>The recovery routes</h2>
+
+      <p>Bitkey has four separate mechanisms, and which one applies depends on what you lost.</p>
+
+      <div class="sc-bitkey-recovery-panel" aria-label="What to expect when something goes missing">
+        <div class="sc-bitkey-recovery-heading">
+          <span class="sc-bitkey-recovery-mark" aria-hidden="true">2<span>/3</span></span>
+          <div><span>Recovery map</span><h3>Four ways back in</h3></div>
+          <strong>What you lose decides the route</strong>
+        </div>
+        <div class="sc-bitkey-recovery-grid">
+          <article class="is-cloud">
+            <span class="sc-bitkey-loss">Phone lost</span>
+            <h3>Your phone, with its cloud backup intact</h3>
+            <dl><div><dt>Recovery route</dt><dd>Cloud Recovery</dd></div><div><dt>Expected time</dt><dd>Seconds</dd></div></dl>
+          </article>
+          <article class="is-delay">
+            <span class="sc-bitkey-loss">One key lost</span>
+            <h3>A key is genuinely gone, but you hold the other</h3>
+            <dl><div><dt>Recovery route</dt><dd>Delay + Notify</dd></div><div><dt>Expected time</dt><dd>7 days</dd></div></dl>
+          </article>
+          <article class="is-contacts">
+            <span class="sc-bitkey-loss">Both keys lost</span>
+            <h3>Your phone and hardware are both unavailable</h3>
+            <dl><div><dt>Recovery route</dt><dd>Trusted contacts, or Delay + Notify</dd></div><div><dt>Expected time</dt><dd>Up to 7 days</dd></div></dl>
+          </article>
+          <article class="is-inheritance">
+            <span class="sc-bitkey-loss">Inheritance</span>
+            <h3>You are unavailable in the estate sense</h3>
+            <dl><div><dt>Recovery route</dt><dd>Claim by your beneficiary</dd></div><div><dt>Expected time</dt><dd>6 months</dd></div></dl>
+          </article>
+        </div>
+      </div>
+
+      <p><strong>Cloud Recovery</strong> is the everyday case. Your encrypted app key comes back from iCloud or Google Drive onto a new phone, and you are working again in seconds.</p>
+
+      <p><strong>Delay + Notify</strong> is the one to understand properly, because it behaves differently from how people assume. You start it with the key you still have, then wait seven days while Bitkey notifies you repeatedly and offers to cancel. At the end, it does <em>not</em> restore your old wallet &mdash; it builds a new one with new keys and moves your funds across.</p>
+
+      <p>That design is deliberate and rather good. It means a key you lost, if it ever surfaces in the wrong hands, is cryptographically disconnected from the wallet holding your coins. It also means recovery is an on-chain transaction, so it costs a network fee and your addresses change.</p>
+
+      ${callout("Why seven days is a feature, not friction", "The delay exists so that a recovery started by somebody who is not you cannot complete quietly. You get notified throughout and can cancel at any point. An attacker who somehow got one of your keys still has to wait a week in full view of you &mdash; which is precisely the window in which you stop them.")}
+
+      <p><strong>Inheritance</strong> runs the same idea over six months. You name another Bitkey owner as beneficiary; their claim starts a long, loudly-notified clock, and until it completes they learn nothing &mdash; not even your balance.</p>
+
+      <h2><span class="sc-article-num">5</span>What Block can and cannot do</h2>
+
+      <p>The honest accounting, since this is the question the whole product turns on.</p>
+
+      ${checklist([
+        "<strong>They cannot spend your bitcoin.</strong> One key of three authorises nothing. This is arithmetic, not a promise in a terms-of-service document.",
+        "<strong>They cannot freeze your wallet.</strong> You hold two keys, which is a spending majority, and you never need their participation to transact.",
+        "<strong>They can take part in replacing a lost key</strong> &mdash; which is the service you bought &mdash; but only through a process that notifies you and gives you seven days to stop it.",
+        "<strong>They know your wallet exists</strong>, and the addresses in it. This is a real privacy cost, and it is not one the multisig arithmetic removes."
+      ])}
+
+      ${cautions([
+        "A company that can help you recover is a company with something worth attacking. The seven-day delay is what stands between a compromise at Block and a compromise of your coins.",
+        "Assisted recovery means an identifiable relationship with a business. If your reason for holding bitcoin is that nobody should know you hold it, this is the wrong product.",
+        "Trusted contacts are people. Choose ones who will still be reachable, and still like you, in five years."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>If Bitkey disappeared tomorrow</h2>
+
+      <p>This is the question to ask of any wallet with a company inside it, and it is the one most such products answer badly.</p>
+
+      <p>Bitkey's answer is the <strong>Emergency Exit Kit</strong>: a way to move your funds using your own two keys, without Bitkey's servers being involved at all. Because you hold a spending majority, the company's participation was never required to spend &mdash; the exit kit is what lets you exercise that fact if their infrastructure is gone.</p>
+
+      ${checklist([
+        "<strong>Generate and store the Emergency Exit Kit when you set the wallet up</strong>, not when you need it. A tool that lives only on a server you can no longer reach is not a contingency.",
+        "<strong>Keep it where you would have kept a seed backup.</strong> The phrase went away; the discipline of an offline copy somewhere safe did not.",
+        "<strong>Understand it before you need it.</strong> Read what it does now, while nothing is urgent."
+      ])}
+
+      <h2><span class="sc-article-num">7</span>Before you fund it</h2>
+
+      ${checklist([
+        "Confirm the cloud backup completed, and that you can actually sign in to that cloud account independently.",
+        "Generate and store the Emergency Exit Kit.",
+        "Add your trusted contacts and tell them they are on the list.",
+        "Send a small test amount, confirm it arrives, and send it back out &mdash; approving on the device screen, which is where you should always read the details.",
+        "If you plan to hold a meaningful amount, rehearse a recovery on a wallet holding almost nothing first."
+      ])}
+
+      <h2>Who this is actually for</h2>
+
+      <p>Bitkey is a good answer for somebody who wants genuine self-custody, knows themselves well enough to distrust their own filing, and would rather depend on a company's recovery process than on a piece of paper surviving a decade of house moves.</p>
+
+      <p>It is the wrong answer for somebody whose priority is privacy from all counterparties, or who wants a wallet that can be restored into any software decades from now with nobody's help. Those people want a recovery phrase and the burden that comes with it.</p>
+
+      ${callout("If you take one thing from this page", `Block cannot move your coins, and that is arithmetic rather than trust &mdash; two of three keys are yours. What you are actually buying is a recovery service, priced in a seven-day delay and a company knowing your wallet exists. Generate the Emergency Exit Kit on day one, and the dependency stays a convenience rather than a trap.`)}`
   },
   {
     slug: "tapsigner-setup",
     category: "devices",
     products: ["tapsigner"],
     title: "TAPSIGNER: setup and NFC signing",
-    summary: "Initialising the card, recording the backup, and using it as a key in a supported mobile wallet.",
+    summary: "A bitcoin key in a credit card, signing by tap. Initialising it, the backup that must happen before you fund it, and the one number printed on the card that you have to copy down before it goes anywhere.",
     level: "beginner",
     minutes: 20,
     goals: ["setup"],
     tags: ["NFC", "Card"],
     icon: "bi-credit-card-2-front",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["satscard-setup", "nunchuk-setup", "recovery-test-drill"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">A TAPSIGNER is a bitcoin key inside a credit card. There is no screen, no battery, and no buttons &mdash; you build a transaction in a wallet app on your phone, hold the card against the back of it, and the card signs. The key itself never leaves the chip.</p>
+
+      <p>It is the least intrusive hardware wallet available: it lives in a wallet next to your bank cards and costs about as much as a nice dinner. That convenience is bought with one specific compromise, which this page will not bury &mdash; and there is a number printed on the card that you must copy down before the card ever leaves your desk.</p>
+
+      ${figureSlot({
+        shot: "A TAPSIGNER card held against the back of a phone showing a wallet app mid-signature, shot close, the card's printed back not legible.",
+        caption: "The entire interface. Everything you check happens on the phone, which is the trade worth understanding.",
+        ratio: "16 / 9",
+        icon: "bi-credit-card-2-front"
+      })}
+
+      ${prerequisites([
+        "<strong>A TAPSIGNER card</strong>, bought from Coinkite or an authorised reseller.",
+        "<strong>A phone with NFC</strong> and one of the supported wallet apps &mdash; Nunchuk, Cove, Bitcoin Keeper, or Sparrow on desktop.",
+        "<strong>Somewhere to store an encrypted backup file</strong> that is not only your phone.",
+        "<strong>A pen.</strong> Genuinely &mdash; see step 3.",
+        "No bitcoin yet. Do not fund this card until the backup exists and the check at the end passes."
+      ])}
+
+      <h2><span class="sc-article-num">1</span>What it is, and the one thing it cannot do</h2>
+
+      <p>The card holds a single BIP-32 master key in a secure element and signs with it on request. Your wallet app does everything else: watching balances, choosing coins, building transactions, and broadcasting them.</p>
+
+      <p>The compromise is the missing screen. Every other hardware wallet shows you the amount and the destination on its own display, precisely so that a compromised computer cannot show you one transaction while asking you to sign another. A TAPSIGNER has no display, so <strong>it signs what it is given and cannot tell you what that is.</strong></p>
+
+      ${callout("What that actually means for you", "Your phone becomes the thing you are trusting to tell the truth about a payment. That is a real step down from a device with its own screen, and it is the reason to think of a TAPSIGNER as an excellent everyday key rather than the place to keep your life savings.")}
+
+      <h2><span class="sc-article-num">2</span>Pair it with a wallet</h2>
+
+      <p>Setup happens through the wallet app rather than on the card, and takes a couple of minutes.</p>
+
+      ${checklist([
+        "<strong>Open your wallet app and add a TAPSIGNER</strong> as a new key or signer.",
+        "<strong>Let it verify the factory certificate.</strong> The card proves it is genuine Coinkite hardware and not a substitute. Do not skip past a failure here.",
+        "<strong>Create the key on the card.</strong> It generates its own BIP-32 master key internally; nothing is imported and nothing is typed.",
+        "<strong>Find the CVC.</strong> A six-digit code is printed on the back of the card &mdash; the spend code, sometimes called the starting PIN. You will need it for every signature, and you can change it later."
+      ])}
+
+      <h2><span class="sc-article-num">3</span>The backup, and the number on the card</h2>
+
+      <p>This is the most important section on this page, and the step people skip because the card works fine without it.</p>
+
+      <p>A TAPSIGNER has no recovery words. Instead, it gives you an <strong>encrypted backup file</strong> containing your master key. That file is encrypted with a 128-bit AES key, and that key is <em>printed on the back of the card</em>.</p>
+
+      <p>Read that again, because two conclusions follow and they point in opposite directions.</p>
+
+      ${cautions([
+        "<strong>Lose the card and you lose the decryption key with it</strong> &mdash; unless you copied it down first. The backup file alone is inert. Copy the printed key onto paper, now, before the card goes into a wallet or a drawer or a pocket.",
+        "<strong>Anyone holding both the file and that printed key has your wallet.</strong> They do not need the card, and they do not need the CVC. A photograph of the back of your card plus a copy of your backup file is a complete theft.",
+        "<strong>So store them apart.</strong> The printed key and the backup file in the same place is the same mistake as a seed phrase photographed next to its hardware wallet."
+      ])}
+
+      <p>There is also no restoring back onto the card. Recovery decrypts the master key so you can load it into other software &mdash; the original card is not part of the picture. That is fine, and worth knowing before the day you need it.</p>
+
+      ${pullQuote("The card is the convenience. The backup file and the number printed on its back are the wallet. Treat those two the way you would treat twenty-four words.")}
+
+      <h2><span class="sc-article-num">4</span>Signing a transaction</h2>
+
+      <p>Day to day, this is the whole workflow and it is genuinely pleasant:</p>
+
+      ${checklist([
+        "Build the payment in your wallet app as usual.",
+        "<strong>Check the amount and the destination address on the phone screen.</strong> This is your only opportunity &mdash; the card will not show you anything.",
+        "Enter the CVC when prompted.",
+        "Hold the card flat against the back of the phone until the app confirms. Finding the NFC sweet spot takes a couple of tries the first time.",
+        "The wallet broadcasts the signed transaction."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>Before you fund it</h2>
+
+      ${checklist([
+        "Confirm the backup file exists and is stored somewhere that is not just your phone.",
+        "Confirm you have written the printed decryption key down, separately from that file.",
+        "Change the CVC from the printed default if your wallet app supports it, and record the new one.",
+        "Send a small test amount, confirm it arrives, then sign a transaction sending it back out.",
+        "Consider where this card fits: excellent as an everyday spending key, or as one key of a <a href='multisig-2of3.html'>multisig</a> where the other signers have screens."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>A TAPSIGNER is a key in a card that signs by tap and never reveals itself. It has no screen, so your phone is what you are trusting about each payment. Its backup is an encrypted file whose decryption key is printed on the card &mdash; copy that number down before the card leaves your desk, and never store the copy beside the file.</p>
+
+      ${callout("If you take one thing from this page", `Copy the decryption key off the back of the card today. Everything else here can be fixed later; that number cannot be recovered once the card is gone, and without it the backup file is a permanently locked box.`)}`
   },
   {
     slug: "satscard-setup",
     category: "devices",
     products: ["satscard"],
     title: "SATSCARD: loading and unsealing",
-    summary: "How the slots work, what unsealing does, and why this is a bearer instrument rather than a savings wallet.",
+    summary: "Ten slots, one sealed at a time, and bitcoin that travels with the physical card. How to load one, what to check before accepting one, and why unsealing is a door that only opens once.",
     level: "beginner",
     minutes: 15,
     goals: ["setup", "learn"],
     tags: ["NFC", "Card"],
     icon: "bi-credit-card-2-front",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["tapsigner-setup", "keys-addresses-utxos", "what-not-to-normalize"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">A SATSCARD looks almost exactly like a <a href='tapsigner-setup.html'>TAPSIGNER</a> and does something close to the opposite. A TAPSIGNER is a key that signs and never reveals itself. A SATSCARD is a key you eventually <em>do</em> reveal &mdash; because revealing it is how the coins come out.</p>
+
+      <p>It is a bearer instrument. Load bitcoin onto it, hand the physical card to somebody, and the bitcoin is theirs &mdash; no transaction, no fee, no confirmation wait. Whoever holds the card holds the coins, exactly like cash, with all of the same qualities and all of the same dangers.</p>
+
+      <p>This is a genuinely useful object and a terrible place to keep savings. Both of those are worth understanding before you buy one.</p>
+
+      ${figureSlot({
+        shot: "A SATSCARD being passed from one hand to another across a cafe table, card face visible, no screen or electronics apparent.",
+        caption: "The entire transfer mechanism. Nothing touches the blockchain at the moment the value changes hands.",
+        ratio: "16 / 9",
+        icon: "bi-credit-card-2-front"
+      })}
+
+      <h2><span class="sc-article-num">1</span>Ten slots, one at a time</h2>
+
+      <p>Each SATSCARD contains ten independent slots, each holding its own private key and its own address. Exactly one slot is active at any moment, and it is in one of two states.</p>
+
+      ${checklist([
+        "<strong>Sealed.</strong> The slot has an address you can fund and read, but the private key is locked inside the chip. Nobody &mdash; including you, including Coinkite &mdash; can extract it.",
+        "<strong>Unsealed.</strong> The private key has been released. The slot is finished, and the card automatically advances to the next one."
+      ])}
+
+      <p>That is the whole mechanism. A sealed slot is a container the coins sit in; unsealing is opening it, and there is no closing it again.</p>
+
+      <h2><span class="sc-article-num">2</span>Loading one</h2>
+
+      <p>Tap the card against an NFC phone with a compatible app and it will show you the current slot's address. Send bitcoin to that address as you would to any other, and wait for it to confirm.</p>
+
+      <p>There is no setup, no PIN, and no pairing. The card was ready when it arrived.</p>
+
+      ${cautions([
+        "Fund the <em>currently sealed</em> slot's address only. An old address from a slot you already unsealed is not yours in any meaningful sense any more.",
+        "The card cannot tell you a balance. It tells you an address; the blockchain tells you the balance. Check with a block explorer or a wallet."
+      ])}
+
+      <h2><span class="sc-article-num">3</span>Handing it over</h2>
+
+      <p>This is the point of the object. You give somebody the card, and the bitcoin at the sealed slot goes with it. Nothing is broadcast, nothing is confirmed, no fee is paid, and the blockchain does not record that anything happened &mdash; because on-chain, nothing did.</p>
+
+      <p>The coins have not moved. Control of them has, because control was always physical.</p>
+
+      <h2><span class="sc-article-num">4</span>Accepting one from somebody else</h2>
+
+      <p>If you are on the receiving end, this is where your attention belongs, because a card in your hand proves less than it appears to.</p>
+
+      ${checklist([
+        "<strong>Verify the card is genuine</strong> through the app's authenticity check.",
+        "<strong>Confirm the slot is still sealed.</strong> An unsealed slot means the key is already out in the world.",
+        "<strong>Check the address matches</strong> what the app reports for the current slot.",
+        "<strong>Look up the funding on-chain</strong> and confirm the amount is really there and confirmed."
+      ])}
+
+      ${callout("What those checks cannot tell you", "They prove the card is authentic and the slot is sealed. They cannot prove nobody photographed or copied anything along the way, and they cannot tell you who held the card before. A sealed slot is strong evidence, not a custody history. Accept a SATSCARD from a stranger the way you would accept a hundred-dollar note from one — for amounts where being wrong is survivable.")}
+
+      <h2><span class="sc-article-num">5</span>Unsealing, which happens once</h2>
+
+      <p>When you want the coins in a wallet of your own rather than on a card, you unseal. The chip releases the private key, the slot is spent as a concept, and the card moves on to the next slot.</p>
+
+      <p>The rule that follows is absolute and worth stating flatly:</p>
+
+      ${pullQuote("Sweep the entire balance to a wallet you control, immediately, and never send anything to that address again.")}
+
+      <p>Once unsealed, that private key exists outside the chip. It is on your phone, in your app, and possibly in places you did not intend. The address it controls should be treated as public property from that moment onward.</p>
+
+      ${cautions([
+        "<strong>Unsealing is irreversible.</strong> There is no resealing a slot and no undoing the reveal.",
+        "<strong>Sweep everything, not some.</strong> Leaving a remainder behind at an exposed address is how people lose the last of it.",
+        "<strong>Never reuse the address</strong>, including months later when it looks like just another address in your history.",
+        "<strong>Ten slots means ten uses.</strong> When the last one is unsealed the card is finished as a bearer instrument."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>Why this is not savings</h2>
+
+      <p>Everything that makes a SATSCARD good at handing bitcoin to someone in a pub makes it bad at holding bitcoin for a decade.</p>
+
+      ${checklist([
+        "<strong>There is no backup.</strong> No words, no file, no recovery. A lost card is lost coins, precisely as a dropped banknote is.",
+        "<strong>There is no PIN.</strong> Whoever picks it up can unseal it. There is nothing to stop them and nothing to prove it was yours.",
+        "<strong>It cannot sign.</strong> A SATSCARD is not a wallet and cannot participate in a transaction &mdash; it can only be funded, carried, and eventually opened.",
+        "<strong>The design assumes a short life.</strong> Load, hand over, unseal, sweep. Every month it spends sitting in a drawer is a month of unnecessary risk."
+      ])}
+
+      <p>If you want a card-shaped device to hold a key for the long term, that is what a <a href='tapsigner-setup.html'>TAPSIGNER</a> is for. If you want to hand somebody bitcoin across a table, this is the better object by a distance.</p>
+
+      <h2>The short version</h2>
+
+      <p>Ten slots, one sealed at a time, funded like any address. Handing over the card hands over the coins with no transaction at all. Unsealing releases the key permanently, so sweep the whole balance immediately and never touch that address again. Treat the card as cash, in amounts you would carry as cash.</p>
+
+      ${callout("If you take one thing from this page", `A sealed SATSCARD is a banknote with no serial number and no bank behind it. That is exactly what makes it useful for a physical handoff, and exactly why it should never hold more than you would be willing to lose in a coat pocket.`)}`
   },
   {
     slug: "air-gapped-psbt-workflow",
-    category: "devices",
+    category: "advanced",
     products: [],
     title: "The air-gapped PSBT workflow",
-    summary: "Moving an unsigned transaction to an offline signer and the signature back, by microSD or QR, without ever connecting the device.",
+    summary: "How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.",
     level: "intermediate",
     minutes: 25,
-    goals: ["harden", "learn"],
+    goals: ["harden", "learn", "multisig"],
     tags: ["PSBT", "Air-gapped"],
-    icon: "bi-shuffle",
-    status: "idea"
+    icon: "bi-arrow-repeat",
+    updated: "2026-08-18",
+    status: "published",
+    related: ["multisig-2of3", "seedsigner-setup", "sparrow-first-wallet"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Every air-gapped signer works the same way underneath. A wallet on your computer builds a transaction it cannot sign, that transaction crosses to a device holding keys but no network connection, the device signs, and the signature comes back. The gap is never bridged by a cable, and the private key never crosses it in either direction.</p>
+
+      <p>The thing making the round trip is a <strong>PSBT</strong> &mdash; a partially signed bitcoin transaction. Four guides on this site mention it in passing; this one explains what is actually in it, because the contents are what determine whether your device can protect you or is merely signing whatever it is handed.</p>
+
+      <p>There is also one output in every transaction that almost nobody thinks to check, and it is the one an attacker would use to rob you.</p>
+
+      <h2><span class="sc-article-num">1</span>Two halves of a wallet</h2>
+
+      <p>An air-gapped setup splits the job of "a wallet" into two pieces that never touch.</p>
+
+      ${checklist([
+        "<strong>The coordinator</strong> runs on your computer or phone &mdash; Sparrow, Nunchuk, Electrum, and the rest. It talks to the network, watches your balance, knows your addresses, chooses which coins to spend, and builds transactions. It holds no private keys and cannot sign anything.",
+        "<strong>The signer</strong> is the offline device &mdash; a COLDCARD, SeedSigner, Krux, or similar. It holds the keys and can sign, but knows nothing about the blockchain, cannot see your balance, and has no idea what has happened since you last used it."
+      ])}
+
+      <p>Neither half can spend your bitcoin alone, and that is the entire architecture. The PSBT is how they cooperate without ever being connected.</p>
+
+      <h2><span class="sc-article-num">2</span>What is actually in the file</h2>
+
+      <p>A PSBT is not just an unsigned transaction. If it were, your signer would be helpless &mdash; it would see addresses and amounts it could not verify and would have to take them on faith.</p>
+
+      <p>So the coordinator packs in everything the offline device needs to check the work itself:</p>
+
+      ${checklist([
+        "<strong>The transaction being proposed</strong> &mdash; which coins are being spent, and to which addresses, in what amounts.",
+        "<strong>The full details of every input being spent.</strong> This is the part that matters most, and section 3 explains why.",
+        "<strong>Derivation paths</strong>, so the device knows which of its keys apply to which input, and which outputs belong to your own wallet.",
+        "<strong>Any signatures already collected</strong>, which is what makes multisig possible &mdash; each signer adds theirs and passes it along."
+      ])}
+
+      <p>The device reads all of that, works out the truth for itself, shows you the result on its own screen, and only then signs.</p>
+
+      <h2><span class="sc-article-num">3</span>Why the input details matter</h2>
+
+      <p>Here is a subtlety worth understanding, because it explains a design decision that otherwise looks like bloat.</p>
+
+      <p>Your offline signer cannot look up the blockchain. If the PSBT told it only "you are spending these coins" without saying how much each one was worth, the device would have no way to calculate the fee &mdash; and the fee is simply whatever is left over after the outputs are paid.</p>
+
+      <p>A dishonest coordinator could exploit exactly that. It tells the device the inputs are small, the device computes a modest fee and displays it, you approve, and the real transaction burns an enormous amount to the miner. You signed something whose true cost you were never shown.</p>
+
+      ${callout("This is why a PSBT carries the value of every input", "Given the amounts, the device does its own arithmetic: total in, minus total out, equals fee. It is no longer repeating a number the computer told it &mdash; it is computing one and showing you the answer. Believe the number on the signer's screen, not the one on your monitor.")}
+
+      <h2><span class="sc-article-num">4</span>Getting it across the gap</h2>
+
+      <p>The PSBT has to physically travel. Four routes are in common use, and the choice is mostly about which device you own.</p>
+
+      <div class="sc-psbt-routes-panel" aria-label="Transport options and what each costs you">
+        <div class="sc-psbt-routes-heading">
+          <span class="sc-psbt-routes-mark" aria-hidden="true"><i></i></span>
+          <div><span>Transport layer</span><h3>Four ways across the gap</h3></div>
+          <strong>QR + microSD preserve the air gap</strong>
+        </div>
+        <div class="sc-psbt-routes-grid">
+          <article class="is-microsd">
+            <div class="sc-psbt-route-title"><span>microSD</span><strong>Physical shuttle</strong></div>
+            <div class="sc-psbt-route-track" aria-hidden="true"><span>Wallet</span><i>&rarr;</i><b>Card</b><i>&rarr;</i><span>Signer</span></div>
+            <p>Coordinator writes a file; you carry the card to the signer and back.</p>
+            <aside>Simple and reliable. The card has touched both machines, so dedicate one to this job.</aside>
+          </article>
+          <article class="is-qr">
+            <div class="sc-psbt-route-title"><span>QR codes</span><strong>Optical only</strong></div>
+            <div class="sc-psbt-route-track" aria-hidden="true"><span>Screen</span><i>&rarr;</i><b>Light</b><i>&rarr;</i><span>Camera</span></div>
+            <p>Screens and cameras move larger transactions across several animated frames.</p>
+            <aside>Nothing physical crosses. Complex transactions and poor screens can slow scanning down.</aside>
+          </article>
+          <article class="is-nfc">
+            <div class="sc-psbt-route-title"><span>NFC</span><strong>Radio contact</strong></div>
+            <div class="sc-psbt-route-track" aria-hidden="true"><span>Phone</span><i>&rarr;</i><b>Tap</b><i>&rarr;</i><span>Signer</span></div>
+            <p>Tap the signing device against a compatible phone.</p>
+            <aside>Fast and pleasant. Radio contact is still contact, so some people disable it on principle.</aside>
+          </article>
+          <article class="is-usb">
+            <div class="sc-psbt-route-title"><span>USB</span><strong>Direct connection</strong></div>
+            <div class="sc-psbt-route-track" aria-hidden="true"><span>Computer</span><i>&rarr;</i><b>Cable</b><i>&rarr;</i><span>Signer</span></div>
+            <p>Connect the signing device directly to the computer.</p>
+            <aside>Convenient, but not air-gapped. The signer is talking to a machine that may be compromised.</aside>
+          </article>
+        </div>
+      </div>
+
+      <p>Only the first two involve no electrical or radio connection whatsoever. If the reason you bought an air-gapped signer was to avoid that connection, using it over USB gives most of that back.</p>
+
+      <h2><span class="sc-article-num">5</span>The output nobody checks</h2>
+
+      <p>This is the section to read twice.</p>
+
+      <p>A typical payment has two outputs, not one. There is the amount going to the person you are paying, and there is the <strong>change</strong> coming back to you &mdash; because coins are spent whole, and the remainder has to go somewhere.</p>
+
+      <p>Everyone verifies the recipient address. Almost nobody looks at the change output, because it is "just my own money coming back". And that is precisely the gap.</p>
+
+      ${pullQuote("A compromised coordinator does not need to alter the address you are watching. It only needs to alter the one you are not.")}
+
+      <p>If malicious software sets the change address to one it controls, you would see a correct payment to your intended recipient, approve it, and unknowingly send the entire remainder of the coin to an attacker. The transaction looks perfect on the half of it you inspected.</p>
+
+      <p>The defence is built into the PSBT, and it only works if your device is in a position to use it:</p>
+
+      ${checklist([
+        "<strong>The device verifies the change output derives from your own wallet.</strong> It has your keys, so it can check whether it could produce that address. If it cannot, the address is not yours.",
+        "<strong>For single-sig, this works out of the box</strong>, because the device knows its own key and can derive its own addresses.",
+        "<strong>For multisig, the device must know the whole wallet</strong> &mdash; every co-signer's public key. A change address in a 2-of-3 is derived from all three, and a device that has only seen its own key cannot tell a legitimate change address from a hostile one.",
+        "<strong>So register the wallet on each signer</strong> before you fund a multisig. This is the step that makes change verification possible, and <a href='multisig-2of3.html'>the multisig guide</a> covers why that configuration matters for recovery too."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>The round trip, start to finish</h2>
+
+      ${checklist([
+        "<strong>Build.</strong> The coordinator selects coins, sets the fee, and produces the PSBT.",
+        "<strong>Transfer.</strong> The file goes across by card, camera, or tap.",
+        "<strong>Verify on the signer.</strong> Amount, recipient, fee, and &mdash; where the device supports it &mdash; confirmation that the change is coming home. Read these on the signer's screen, which is the whole reason it has one.",
+        "<strong>Sign.</strong> The device adds its signature into the PSBT. The key does not move.",
+        "<strong>Transfer back</strong> the same way it came.",
+        "<strong>Finalise and broadcast.</strong> The coordinator assembles the finished transaction and sends it to the network.",
+        "<strong>For multisig, repeat</strong> steps two to five with each signer until enough signatures are collected."
+      ])}
+
+      <h2><span class="sc-article-num">7</span>When it goes wrong</h2>
+
+      <p>Air-gapped signing fails in a small number of recognisable ways, and none of them put your coins at risk &mdash; an unsigned or unbroadcast transaction has changed nothing.</p>
+
+      ${checklist([
+        "<strong>The signer cannot find the file.</strong> Usually a card formatted the wrong way, or the file written to a folder the device does not look in.",
+        "<strong>The animated QR will not scan.</strong> Raise the screen brightness, slow the animation if the coordinator allows it, and clean the camera lens. Transactions with many inputs make long animations.",
+        "<strong>The device will not show a change address as its own.</strong> On multisig this almost always means the wallet was never registered on that device.",
+        "<strong>The fee on the device does not match the computer.</strong> Stop. The device is doing arithmetic on real values; something is wrong on the other side.",
+        "<strong>A signature is rejected as invalid.</strong> Typically the wrong device for the wallet, or a derivation path mismatch."
+      ])}
+
+      <h2><span class="sc-article-num">8</span>What the air gap does not do</h2>
+
+      <p>Worth stating plainly, because "air-gapped" is often heard as a broader claim than it is.</p>
+
+      ${cautions([
+        "<strong>It does not make you private.</strong> The coordinator still talks to the network and still knows every address you own.",
+        "<strong>It does not protect a bad backup.</strong> Losing your recovery words loses the wallet regardless of how the signing was done.",
+        "<strong>It does not verify the recipient for you.</strong> If you pasted an address from a compromised source, the device faithfully signs a payment to the attacker &mdash; correctly, exactly as instructed.",
+        "<strong>It does not help if you approve without reading.</strong> The screen is the protection. Skipping it removes the entire benefit of the arrangement."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>A PSBT carries the proposed transaction plus everything an offline device needs to check it independently &mdash; including the value of every input, so the device computes the fee rather than believing one. It crosses the gap by card, camera, or tap, gets signed, and comes back to be broadcast. Verify on the signer's screen, and register multisig wallets on every device so change addresses can be verified too.</p>
+
+      ${callout("If you take one thing from this page", `Check the change output, not just the recipient. Every other verification habit is widely taught; this is the one that gets skipped, and it is the one a compromised computer is counting on you skipping.`)}`
   },
 
   /* ----------------------------------------------------------------- software */
@@ -2311,7 +3392,7 @@ const guides = [
     updated: "2026-08-17",
     productGuide: true,
     status: "published",
-    related: ["coldcard-q-setup", "exchange-withdrawal", "sparrow-coin-control"],
+    related: ["coldcard-setup", "exchange-withdrawal", "sparrow-coin-control"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">A hardware wallet on its own cannot tell you what you own. It holds keys and signs things; it has no idea what is on the blockchain. Sparrow is the other half &mdash; the part that watches the network, builds transactions, and hands them to your device to be signed.</p>
@@ -2413,7 +3494,7 @@ const guides = [
     summary: "Your balance is not a number, it is a pile of separate chunks — and which ones you spend together tells anyone watching that they belong to the same person.",
     level: "intermediate",
     minutes: 25,
-    goals: ["harden", "learn"],
+    goals: ["harden", "learn", "privacy"],
     tags: ["UTXO", "Privacy", "Labels"],
     icon: "bi-pie-chart",
     updated: "2026-08-17",
@@ -2556,7 +3637,7 @@ const guides = [
     summary: "A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.",
     level: "beginner",
     minutes: 30,
-    goals: ["setup"],
+    goals: ["setup", "multisig"],
     tags: ["Mobile", "Multisig", "Shared access"],
     icon: "bi-phone",
     updated: "2026-08-17",
@@ -2677,13 +3758,136 @@ const guides = [
     category: "software",
     products: ["cove"],
     title: "Cove: mobile wallet setup",
-    summary: "Creating or importing a wallet, and using hardware signers over QR and NFC from a phone.",
+    summary: "A Bitcoin-only phone wallet that can hold a little money itself or drive a hardware signer over QR and NFC. Setting up both, and being clear about which screen you are actually trusting.",
     level: "beginner",
     minutes: 20,
     goals: ["setup"],
     tags: ["Mobile", "Bitcoin-only"],
     icon: "bi-phone",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["air-gapped-psbt-workflow", "tapsigner-setup", "choosing-your-first-setup"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Cove is an open-source, Bitcoin-only wallet for iOS and Android. It will happily hold a small amount of bitcoin itself, and it will also act as the coordinator for a hardware signer &mdash; building transactions, passing them to a COLDCARD or a TAPSIGNER over QR or NFC, and broadcasting what comes back.</p>
+
+      <p>That second job is the interesting one. Most people assume driving a hardware wallet means sitting at a desktop with Sparrow or Electrum. Cove puts that whole workflow on a phone, which for a lot of people is the difference between using their hardware wallet and leaving it in a drawer.</p>
+
+      <p>It also means being honest about which screen you are trusting, and that depends entirely on which signer you pair with. This page sets up both modes and then makes that distinction explicit.</p>
+
+      ${figureSlot({
+        shot: "A phone running Cove displaying a QR code, propped beside a hardware signer that is scanning it, on a plain desk with no computer in sight.",
+        caption: "The whole coordinator, in a pocket. No desktop involved anywhere in this loop.",
+        ratio: "16 / 9",
+        icon: "bi-phone"
+      })}
+
+      ${prerequisites([
+        "<strong>A phone</strong>, iOS or Android. NFC if you want to tap-sign with a card.",
+        "<strong>Optionally, a hardware signer.</strong> Cove works with COLDCARD, TAPSIGNER, Krux, SeedSigner, Blockstream Jade, and Foundation Passport.",
+        "<strong>Somewhere to write recovery words</strong>, if you are creating a wallet on the phone itself.",
+        "No bitcoin yet. Fund nothing until the check at the end passes."
+      ])}
+
+      <h2><span class="sc-article-num">1</span>Three ways to use it</h2>
+
+      <p>Decide which of these you are doing before you start, because the security properties are completely different.</p>
+
+      ${checklist([
+        "<strong>A hot wallet.</strong> Cove generates and holds the keys on your phone. Convenient, genuinely useful, and appropriate for spending money rather than savings.",
+        "<strong>A watch-only wallet.</strong> Import an xpub or a descriptor and Cove shows balances and builds transactions, but holds no keys and can sign nothing.",
+        "<strong>A coordinator for a hardware signer.</strong> The keys stay on the hardware; Cove does everything else. This is the setup worth aiming for if you hold a meaningful amount."
+      ])}
+
+      <p>The first and third are not rivals. <a href='choosing-your-first-setup.html'>A spending wallet and a savings wallet</a> is the shape most people should end up with, and Cove can be either.</p>
+
+      <h2><span class="sc-article-num">2</span>Creating a hot wallet</h2>
+
+      <p>If you want a phone wallet for everyday amounts, this takes two minutes.</p>
+
+      ${checklist([
+        "<strong>Install Cove</strong> from the App Store or Google Play and choose to create a new wallet.",
+        "<strong>Write the recovery words down on paper or metal</strong>, in order, before going any further. These are ordinary BIP39 words and they restore into any wallet, so this backup is genuinely portable.",
+        "<strong>Set the app lock</strong> &mdash; a PIN or biometrics. This protects the app on an unlocked phone; it is not what protects the coins.",
+        "<strong>Decide about cloud backup.</strong> Cove offers an end-to-end encrypted cloud backup protected by passkeys. It is a real convenience and it is not a substitute for the written words."
+      ])}
+
+      ${cautions([
+        "A hot wallet's keys live on a phone that browses the internet, installs apps, and gets left on tables. Keep the balance to what you would carry in a physical wallet.",
+        "The encrypted cloud backup depends on your cloud account and your passkeys. Words on metal depend on nothing."
+      ])}
+
+      <h2><span class="sc-article-num">3</span>Pairing a hardware signer</h2>
+
+      <p>This is where Cove earns its place. Import the signer's public keys and Cove becomes the coordinator while the private keys never leave the device.</p>
+
+      ${checklist([
+        "<strong>Choose to import a hardware wallet</strong> and pick the transfer method your device supports.",
+        "<strong>By QR</strong> &mdash; hold the phone up to the device's screen. Cove reads both BBQr and UR, the two formats used to split large payloads across animated codes.",
+        "<strong>By NFC</strong> &mdash; tap the device or card against the phone.",
+        "<strong>By file</strong> &mdash; import the export your device wrote to a microSD card.",
+        "<strong>Confirm the fingerprint matches</strong> what the device shows. This is the check that proves Cove is watching the wallet your device will actually sign for."
+      ])}
+
+      <h2><span class="sc-article-num">4</span>Signing from a phone</h2>
+
+      <p>The round trip is the standard <a href='air-gapped-psbt-workflow.html'>air-gapped PSBT workflow</a>, with the phone playing the part the desktop usually plays.</p>
+
+      ${checklist([
+        "Build the payment in Cove. It selects coins, sets a fee, and produces a PSBT.",
+        "Pass it to the signer &mdash; show a QR code for the device's camera, tap over NFC, or write a file.",
+        "<strong>Verify on the signer, then approve.</strong> More on this in the next section.",
+        "Bring the signature back the same way.",
+        "Cove finalises the transaction and broadcasts it."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>Which screen are you trusting?</h2>
+
+      <p>This is the part that decides how much this setup is really worth, and it depends on the signer rather than on Cove.</p>
+
+      <p>The point of a hardware wallet with a display is that a compromised coordinator cannot lie to you about a payment: the device shows the amount and destination from the data it is signing, on hardware the attacker does not control.</p>
+
+      ${checklist([
+        "<strong>With a COLDCARD, Krux, SeedSigner, Jade, or Passport</strong>, that protection is intact. Read the amount, the address, and the fee on the device's own screen. The phone is just the thing that built the transaction.",
+        "<strong>With a TAPSIGNER</strong>, there is no screen. The card signs what it is handed and cannot tell you what that is, so the phone display is the only thing you have. That is a reasonable trade for an everyday key and a poor one for savings &mdash; the <a href='tapsigner-setup.html'>TAPSIGNER guide</a> goes into it properly."
+      ])}
+
+      ${pullQuote("A hardware signer with a screen protects you from your coordinator. A signer without one asks you to trust it.")}
+
+      <h2><span class="sc-article-num">6</span>The app-lock features, and their cost</h2>
+
+      <p>Cove offers more than a PIN: there are trick PINs that wipe the app's data or open a decoy wallet, in the same spirit as the ones on a <a href='coldcard-advanced-features.html'>COLDCARD</a>.</p>
+
+      <p>They carry the same trade, and it is worth stating in the same terms. Each one is a defence against somebody holding your phone, purchased with a new way to destroy your own access.</p>
+
+      ${cautions([
+        "<strong>A wipe is only survivable because of your written words.</strong> If the recovery words are not on paper or metal and tested, a wipe is a permanent loss rather than a clever defence.",
+        "<strong>A decoy wallet you never funded is not convincing</strong>, and one you did fund is money you may hand over.",
+        "<strong>Write down what you enabled</strong>, and keep that note with your backup. A trick PIN you have forgotten configuring is a trap you set for yourself."
+      ])}
+
+      <h2><span class="sc-article-num">7</span>Point it at your own server</h2>
+
+      <p>By default a wallet app asks somebody else's server for your balance, which means telling that server every address you own. Cove lets you connect to your own Electrum or Esplora node instead.</p>
+
+      <p>If you already run a node, this is a five-minute settings change that closes a real privacy leak. If you do not, it is the strongest argument for eventually running one &mdash; and nothing else in this guide depends on it.</p>
+
+      <h2><span class="sc-article-num">8</span>Before you fund it</h2>
+
+      ${checklist([
+        "Confirm the recovery words are written down and stored offline, for a hot wallet.",
+        "For a hardware setup, confirm the fingerprint in Cove matches the one on the device.",
+        "Generate a receive address and <strong>verify it on the hardware device's screen</strong> before sending anything to it.",
+        "Send a small test amount, confirm it arrives, then sign a transaction sending it back out.",
+        "Only then move a balance you would mind losing."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Cove is a Bitcoin-only, open-source phone wallet that works as a hot wallet for spending money or as a coordinator for a hardware signer over QR, NFC, or file. Everything about how much that protects you comes down to whether the signer has a screen you can read the transaction on.</p>
+
+      ${callout("If you take one thing from this page", `Putting the coordinator on your phone is a genuine convenience win and costs you nothing in security &mdash; as long as the device you pair with has its own display and you actually read it. Pair with something screenless and the phone becomes the thing you are trusting, which is the arrangement a hardware wallet exists to avoid.`)}`
   },
   {
     slug: "electrum-setup",
@@ -2850,52 +4054,498 @@ const guides = [
     category: "software",
     products: ["bluewallet"],
     title: "BlueWallet: watch your cold storage from a phone",
-    summary: "Importing a public key to monitor a hardware wallet without exposing any signing capability.",
+    summary: "Import a public key and your phone can see the balance but never spend it. What that genuinely costs you, and the one thing you should not use the phone for — which is the thing it makes most tempting.",
     level: "beginner",
     minutes: 15,
-    goals: ["setup"],
+    goals: ["setup", "privacy"],
     tags: ["Mobile", "Watch-only"],
     icon: "bi-phone",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["sparrow-first-wallet", "how-wallets-find-coins", "bitcoin-privacy"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Your hardware wallet is in a safe. Your coordinator software is on a desktop at home. And you are standing somewhere else, wondering whether that payment arrived.</p>
+
+      <p>A watch-only wallet solves exactly that. You give BlueWallet a public key, and the phone can see every address, every balance, and every transaction &mdash; while being completely unable to spend any of it. Lose the phone and you lose a phone.</p>
+
+      <p>It is a genuinely good idea with one cost that is worth understanding before you do it, and one temptation you should refuse.</p>
+
+      ${figureSlot({
+        shot: "A phone showing a bitcoin balance, held in one hand outdoors, with no hardware wallet or computer anywhere nearby.",
+        caption: "The whole point: the keys are somewhere else entirely, and it does not matter.",
+        ratio: "16 / 9",
+        icon: "bi-phone"
+      })}
+
+      ${prerequisites([
+        "<strong>An existing wallet you already set up properly</strong>, with its keys on a hardware device. This guide adds a window onto it, not a new wallet.",
+        "<strong>BlueWallet</strong> on iOS or Android.",
+        "<strong>Your account's extended public key</strong> &mdash; the xpub, zpub, or output descriptor. Your hardware wallet or coordinator can export it, usually as a QR code."
+      ])}
+
+      <h2><span class="sc-article-num">1</span>What a watch-only wallet can and cannot do</h2>
+
+      <p>An extended public key lets anyone derive every address in the account, but no private keys. That asymmetry is the whole feature.</p>
+
+      ${checklist([
+        "<strong>It can</strong> show your balance, your full transaction history, and every address you have used or will use.",
+        "<strong>It can</strong> generate receive addresses and build unsigned transactions.",
+        "<strong>It cannot</strong> sign anything, and therefore cannot move a single satoshi. There is no PIN to defeat and no setting to change &mdash; the capability is simply absent."
+      ])}
+
+      <p>So a stolen phone is a stolen phone. Whoever takes it gets a view of your finances and no ability to touch them.</p>
+
+      <h2><span class="sc-article-num">2</span>The cost: a view is not nothing</h2>
+
+      <p>That safety is real, and it makes people describe watch-only as risk-free. It is not &mdash; it is <em>theft</em>-free. The privacy cost is genuine and permanent.</p>
+
+      <p>An xpub reveals every address in the account, past and future, so anyone holding it can see your complete balance and history forever, and you cannot revoke it. <a href='how-wallets-find-coins.html'>How wallets find coins</a> explains the mechanics properly; the practical consequence is what matters here.</p>
+
+      ${cautions([
+        "<strong>The phone itself is a copy of that xpub</strong>, sitting in the most frequently lost, stolen, and inspected device you own.",
+        "<strong>By default your wallet asks somebody else's server</strong> for those balances, which tells that server every address you hold. See step 5.",
+        "<strong>Border crossings and casual snooping</strong> reveal your total holdings to anyone who opens the app. Consider whether that is a picture you want available on your person."
+      ])}
+
+      <p>None of that means do not do it. It means do it deliberately, and consider watching only the account you actually need to watch rather than importing everything you own.</p>
+
+      <h2><span class="sc-article-num">3</span>Importing the key</h2>
+
+      ${checklist([
+        "<strong>Export the extended public key</strong> from your hardware wallet or coordinator. Most devices will show it as a QR code; Sparrow, Electrum, and the rest can export one too.",
+        "<strong>In BlueWallet, add a wallet and choose the watch-only type.</strong>",
+        "<strong>Scan the QR code</strong>, or paste the key if you must. Scanning avoids retyping a long string incorrectly.",
+        "<strong>Check the balance and the last few transactions match</strong> what your desktop coordinator shows. If they do not, you have imported a different account &mdash; often the wrong script type or derivation path.",
+        "<strong>Name it clearly</strong>, something that tells you which physical device holds the keys. Future you will have forgotten."
+      ])}
+
+      <h2><span class="sc-article-num">4</span>The temptation to refuse</h2>
+
+      <p>This is the section that justifies the page, so it is worth being blunt.</p>
+
+      <p>A watch-only wallet can generate receive addresses. It is right there, on your phone, when somebody asks where to send you bitcoin. And the entire reason the phone is useful is that your hardware wallet is somewhere else &mdash; which means you cannot verify that address on the device screen.</p>
+
+      ${pullQuote("The situation that makes the phone convenient is exactly the situation in which you cannot check its work.")}
+
+      <p>Verifying receive addresses on the hardware device's own screen is the standard defence against malware substituting an address, and it is covered in <a href='sparrow-first-wallet.html'>the Sparrow guide</a>. On a phone away from your device, that check is unavailable.</p>
+
+      ${checklist([
+        "<strong>For small amounts</strong>, taking an address from the phone is a reasonable everyday risk, the same judgement you make with any hot wallet.",
+        "<strong>For anything significant</strong>, wait. Go home, generate the address in your coordinator, and verify it on the hardware device before handing it over.",
+        "<strong>Never use a phone-generated address for an exchange withdrawal of real size.</strong> That is precisely the transaction worth attacking, and precisely the one where you skipped the check."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>Choose what it talks to</h2>
+
+      <p>By default, BlueWallet asks a public Electrum server for your balances, which hands that server your addresses and links them to your IP address.</p>
+
+      <p>BlueWallet can connect to your own node instead. If you run one, change this in settings &mdash; it closes the leak described in step 2 in a single step, and <a href='bitcoin-privacy.html'>the privacy guide</a> explains why it matters more than most other measures.</p>
+
+      <h2><span class="sc-article-num">6</span>Two things worth knowing about the app</h2>
+
+      ${checklist([
+        "<strong>It can graduate to signing.</strong> BlueWallet works with COLDCARD, Passport, Jade, Keystone, and other PSBT-compatible devices, so the same app can later run the full sign-and-broadcast loop if you want it to. Watch-only is simply the safest place to start.",
+        "<strong>Lightning is a separate thing in the same app.</strong> A Lightning balance is not your cold storage and does not live behind your hardware wallet. Keep the two mentally separate, and do not let a Lightning setup blur what your watch-only wallet is for."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Import an extended public key and your phone becomes a window onto cold storage that cannot spend anything. The price is that the phone now carries a permanent, unrevocable view of your finances, so point it at your own node if you can. And do not take receive addresses from it for amounts that matter, because the device that could verify them is exactly the device you left at home.</p>
+
+      ${callout("If you take one thing from this page", `Watch-only protects you from theft, not from being watched. Treat the phone as a read-only dashboard: excellent for answering "did it arrive?", and the wrong tool for answering "where should they send it?"`)}`
   },
   {
     slug: "wasabi-coinjoin-basics",
     category: "software",
     products: ["wasabi"],
     title: "Wasabi: what CoinJoin does and costs",
-    summary: "The privacy model, the fee and timing trade-offs, and what it does not protect against.",
+    summary: "How a collaborative transaction breaks the link between your coins and your history, what it cannot undo, and why the piece that makes it work is also the piece that has already collapsed once.",
     level: "advanced",
     minutes: 30,
-    goals: ["harden", "learn"],
+    goals: ["harden", "learn", "privacy"],
     tags: ["Privacy", "CoinJoin"],
     icon: "bi-shuffle",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["bitcoin-privacy", "sparrow-coin-control", "how-fees-work"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">The bitcoin ledger is public, and the default assumption an analyst makes about it is simple: if several coins are spent together in one transaction, one person owned all of them. That heuristic is right often enough to build an industry on, and it is how a chain of ordinary payments turns into a map of your finances.</p>
+
+      <p>A CoinJoin is a transaction constructed specifically to make that assumption wrong. Many people contribute coins to a single transaction that pays out many identical amounts, and an observer looking at the result cannot say which output belongs to which contributor.</p>
+
+      <p>It works. It is also the most misunderstood tool in bitcoin, it costs more than money, and the infrastructure it depends on has already failed once in a way worth understanding before you rely on it.</p>
+
+      <h2><span class="sc-article-num">1</span>What the transaction actually does</h2>
+
+      <p>Several participants each contribute inputs. The transaction pays out a large number of outputs in identical denominations, one or more of them yours.</p>
+
+      <p>Afterwards, an observer sees that a coin left your address and entered the CoinJoin, and sees a set of equal outputs come out. What they cannot do is say which of those outputs is yours &mdash; every one of them is an equally plausible candidate. That set of candidates is your <strong>anonymity set</strong>, and its size is roughly the strength of what you bought.</p>
+
+      <p>Wasabi implements this through the WabiSabi protocol, which matters for one specific reason: the coordinator organising the round cannot itself link your inputs to your outputs. It is arranging a transaction it cannot fully see.</p>
+
+      ${callout("What the coordinator can never do", "It cannot take your coins. At no point does anyone else hold them &mdash; you sign an input to a transaction that only becomes valid once every participant has signed. A dishonest or vanished coordinator can waste your time and leak information; it cannot steal.")}
+
+      <h2><span class="sc-article-num">2</span>What it does not do</h2>
+
+      <p>This is the section that matters most, because almost every disappointed CoinJoin user misunderstood one of these.</p>
+
+      ${cautions([
+        "<strong>It does not erase your history.</strong> The transaction that put those coins in your wallet is still on the chain forever. CoinJoin breaks the link going forward; it does not rewrite what came before.",
+        "<strong>It does not hide that you used it.</strong> CoinJoins are conspicuous. Anyone watching sees you entering one &mdash; they simply cannot follow you out.",
+        "<strong>It does not protect you from your own consolidation.</strong> Spending several mixed outputs together in one later transaction tells the world they share an owner, undoing precisely what you paid for.",
+        "<strong>It does not break a KYC link at the exit.</strong> Send mixed coins to an exchange account in your name and you have re-attached your identity to them yourself.",
+        "<strong>It does not fix a leaky wallet.</strong> If your software is querying a public server about every address you own, that leak continues regardless."
+      ])}
+
+      <p>Every item on that list is a way the user, not the protocol, gives the privacy back. <a href='sparrow-coin-control.html'>Coin control</a> is the discipline that prevents most of them, and it is not optional if you intend this to mean anything.</p>
+
+      <h2><span class="sc-article-num">3</span>The coordinator problem</h2>
+
+      <p>Here is the part most guides skip, and it is the reason this page exists.</p>
+
+      <p>A CoinJoin needs someone to organise the round &mdash; to gather participants, collect the registrations, and assemble the transaction. In Wasabi that role is the coordinator, and for years it was operated by zkSNACKs, the company that built the wallet.</p>
+
+      <p><strong>In June 2024, zkSNACKs shut that service down</strong>, citing the regulatory climate. The wallet did not stop working, but its default coordinator ceased to exist, and every user had to find another one.</p>
+
+      <p>What followed is genuinely interesting. Wasabi shipped an interface for choosing any third-party coordinator, community operators appeared within days, former developers continued maintaining the open-source code, and forks emerged with their own defaults. The wallet survived by decentralising the role that had just been removed.</p>
+
+      ${pullQuote("The cryptography was never the fragile part. The company willing to run a server was.")}
+
+      <p>That leaves you making a choice the software used to make for you:</p>
+
+      ${checklist([
+        "<strong>You must select a coordinator</strong> before you can CoinJoin at all. Wasabi's own documentation now points you to third-party coordination service providers rather than shipping one of its own.",
+        "<strong>Coordinators charge what they choose.</strong> Fees are set by the operator, not by the protocol, so they vary.",
+        "<strong>A coordinator can refuse to serve you</strong>, and there is precedent &mdash; the original coordinator filtered certain transactions, which was controversial precisely because it showed the capability existed.",
+        "<strong>A coordinator can disappear</strong>, as the original one did. Assume any given one is temporary."
+      ])}
+
+      <h2><span class="sc-article-num">4</span>What it costs</h2>
+
+      <p>Three separate costs, and only one is denominated in money.</p>
+
+      ${checklist([
+        "<strong>Coordinator fees.</strong> Set by whoever runs the round.",
+        "<strong>Mining fees.</strong> CoinJoins are large transactions and you pay for your share of the space. Doing this while <a href='how-fees-work.html'>the mempool is busy</a> is expensive, and there is rarely a reason to hurry.",
+        "<strong>Time.</strong> Rounds take as long as they take, and meaningful privacy usually means remixing over days rather than a single pass. This is not a button you press before sending a payment.",
+        "<strong>Optionality.</strong> This is the cost nobody budgets for &mdash; mixed coins come with handling rules for the rest of their life. You cannot casually consolidate them, and you cannot casually deposit them somewhere that asks who you are."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>The part that is not technical</h2>
+
+      <p>Some exchanges and payment processors treat coins with CoinJoin history as suspicious. Deposits have been delayed, questioned, and in some cases frozen pending explanation. Whether that is reasonable is beside the point; it is a real operational risk you are accepting.</p>
+
+      <p>The broader regulatory climate around these tools has been turbulent, which is precisely what took the original coordinator offline. Nothing about this page is legal advice, and the rules differ by jurisdiction and change.</p>
+
+      ${cautions([
+        "Do not move a balance you cannot afford to have delayed into a mixing workflow you have never tested.",
+        "Do a small test pass first, and take those coins through the full journey you intend &mdash; including wherever they eventually need to go &mdash; before committing more.",
+        "Keep your own records. Being able to explain your own transaction history is worth more than the alternative."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>Doing it without wasting it</h2>
+
+      <p>If you have read this far and still want to, the habits that determine whether it accomplishes anything:</p>
+
+      ${checklist([
+        "<strong>Label everything, before and after.</strong> You cannot practise coin control on coins you cannot tell apart.",
+        "<strong>Never merge mixed outputs</strong> with each other or with unmixed coins. Each one should be spent alone unless you have thought hard about the alternative.",
+        "<strong>Let it remix.</strong> A single round is a smaller anonymity set than patience will buy you.",
+        "<strong>Route your wallet through your own node</strong>, or at minimum over Tor, so the address queries do not undo the work.",
+        "<strong>Decide the exit before the entrance.</strong> Know where these coins are ultimately going. If the answer is an exchange account in your name, the whole exercise was decorative."
+      ])}
+
+      <h2><span class="sc-article-num">7</span>Is it worth it?</h2>
+
+      <p>An honest answer, since the rest of this page has been about costs.</p>
+
+      <p>For most people the larger privacy wins are cheaper and duller: running your own node, never reusing addresses, labelling coins, avoiding consolidation, and not publishing addresses beside your name. <a href='bitcoin-privacy.html'>The privacy guide</a> covers those, and someone who has not done them will gain more from an afternoon of housekeeping than from mixing.</p>
+
+      <p>CoinJoin is the right tool when you have already done that work, understand exactly what you are breaking the link between, and are prepared to handle those coins carefully forever. It is a poor tool for someone hoping to undo a decision already made, and a bad one for someone who will consolidate everything into a single payment next month.</p>
+
+      <h2>The short version</h2>
+
+      <p>A CoinJoin makes it impossible to tell which output of a collaborative transaction is yours, forward from that point. It cannot erase your past, hide that you participated, or survive your own careless consolidation afterwards. It costs coordinator fees, mining fees, days of patience, and a permanent obligation to handle those coins deliberately &mdash; and the coordinator it depends on is a single point that has already gone away once.</p>
+
+      ${callout("If you take one thing from this page", `The cryptography is not the weak link and never was. The weak links are the coordinator, which is a legally exposed service run by someone else, and your own handling of the coins afterwards. Only one of those two is under your control, so it is worth being very good at it.`)}`
   },
   {
     slug: "specter-multisig-coordinator",
     category: "software",
     products: ["specter"],
     title: "Specter: coordinating a multi-brand multisig",
-    summary: "Running Specter against your own node and combining signers from different manufacturers.",
+    summary: "Specter is a face for your own Bitcoin Core node and nothing else, which matters more for multisig than for any other wallet. Building a wallet from three different manufacturers, and collecting signatures across three different transports.",
     level: "advanced",
     minutes: 45,
-    goals: ["setup", "harden"],
+    goals: ["setup", "harden", "multisig"],
     tags: ["Multisig", "Node"],
     icon: "bi-diagram-3",
-    status: "idea"
+    updated: "2026-08-18",
+    productGuide: true,
+    status: "published",
+    related: ["multisig-2of3", "air-gapped-psbt-workflow", "why-run-a-node"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Specter Desktop is not really a wallet. It is a graphical face for Bitcoin Core, built for people who already run a node and want to drive hardware signers &mdash; particularly several of them at once, from different manufacturers, in a multisig.</p>
+
+      <p>That architecture is unusual and it is the entire reason to choose it. Specter has no servers of its own. It asks your node about your coins, and there is no third party anywhere in the arrangement.</p>
+
+      <p>This page assumes you have already decided <a href='multisig-2of3.html'>what your multisig should look like</a> &mdash; how many keys, from which makers, stored where. That guide covers the choices. This one covers the mechanics of actually building it in Specter, which is the part it leaves to the coordinator.</p>
+
+      ${prerequisites([
+        "<strong>Bitcoin Core</strong>, synced. This is not optional and it is the real cost of this setup &mdash; see step 2.",
+        "<strong>Two or three hardware wallets</strong>, ideally from different makers. Specter supports COLDCARD, BitBox02, Jade, Passport, SeedSigner, Keystone, Trezor, Ledger, and its own Specter DIY signer, among others.",
+        "<strong>A microSD card and reader</strong>, if any of your devices are air-gapped.",
+        "<strong>Somewhere durable to store the wallet configuration</strong>, which matters as much as the seeds themselves.",
+        "No bitcoin. Build the whole thing, rehearse a recovery, and only then fund it."
+      ])}
+
+      <h2><span class="sc-article-num">1</span>What Specter actually is</h2>
+
+      <p>Most wallet software bundles two jobs: a user interface, and a source of blockchain data. Sparrow and Electrum both ship with public servers configured, so they work the moment you install them.</p>
+
+      <p>Specter does only the first job. It has no data source of its own and no fallback &mdash; it talks exclusively to a Bitcoin Core node you provide. Install it without one and it does nothing at all.</p>
+
+      <p>That is a deliberate design, not an omission, and it produces the property the next section is about.</p>
+
+      <h2><span class="sc-article-num">2</span>Why this matters more for multisig</h2>
+
+      <p>When a wallet asks somebody else's server for your balance, it hands over the keys to watch you. For a single-signature wallet that means one extended public key. For a multisig it is worse.</p>
+
+      <p>A multisig is described by an <strong>output descriptor</strong> &mdash; a string containing every co-signer's extended public key, the policy, and the derivation paths. It is the complete specification of your wallet. Hand it to a third-party server and that server can derive every address you will ever use across all of your devices, permanently.</p>
+
+      ${pullQuote("A multisig descriptor is a more complete description of your finances than any single xpub. It is the last thing you want sitting on somebody else's server.")}
+
+      <p>Specter's node requirement removes that question entirely. Your descriptor goes to Bitcoin Core, running on your machine, and nowhere else. <a href='why-run-a-node.html'>Why run a node</a> makes the general case; multisig is where it stops being philosophical.</p>
+
+      <h2><span class="sc-article-num">3</span>The cost, stated honestly</h2>
+
+      <p>Bitcoin Core is a serious piece of infrastructure and this is where most people abandon the plan, so it is worth being upfront.</p>
+
+      ${cautions([
+        "<strong>Disk.</strong> A full node stores the entire chain &mdash; several hundred gigabytes and growing. Pruning reduces that substantially, but complicates rescanning when you import an existing wallet with history.",
+        "<strong>Time.</strong> The initial sync verifies the chain from the beginning. Expect days on ordinary hardware, not hours.",
+        "<strong>Uptime.</strong> Specter is only useful when the node is running. A node that lives on a laptop you close is a coordinator that is frequently unavailable.",
+        "<strong>Maintenance.</strong> It is another thing to update and keep healthy, indefinitely."
+      ])}
+
+      <p>If that is more than you want, Sparrow with your own Electrum server is a lighter route to a similar privacy position, and Sparrow connected to a public server is still a perfectly reasonable multisig coordinator &mdash; it simply makes the trade this guide is trying to avoid.</p>
+
+      <h2><span class="sc-article-num">4</span>Connecting Specter to your node</h2>
+
+      ${checklist([
+        "<strong>Get Bitcoin Core running and fully synced first.</strong> Do not start Specter until the node is caught up; nothing will work properly and you will misdiagnose it.",
+        "<strong>Verify the Specter download</strong> before installing. Releases are signed, and a coordinator is exactly the kind of software worth checking.",
+        "<strong>Point Specter at the node.</strong> On the same machine it will usually detect Core automatically. Otherwise supply the host, port, and RPC credentials.",
+        "<strong>Confirm the connection and block height</strong> in Specter before going further."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>Adding the devices</h2>
+
+      <p>Each signer is added to Specter individually, as a device, before any wallet exists. What you are importing is public keys &mdash; no private key ever enters Specter.</p>
+
+      ${checklist([
+        "<strong>Add each device</strong> and choose how it connects: USB for Trezor, Ledger, BitBox02 and similar; microSD file import for COLDCARD; QR for SeedSigner, Keystone, and Passport.",
+        "<strong>Import the extended public keys</strong> by file or QR rather than typing. A single mistyped character produces a wallet nobody can spend from.",
+        "<strong>Check the fingerprint</strong> shown in Specter against the one on each device. This is how you know Specter is describing the device in front of you.",
+        "<strong>Name each device for the physical object</strong>, not the brand &mdash; <em>COLDCARD in the safe</em> beats <em>coldcard1</em> when you are recovering under stress in five years."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>Building the wallet, and registering it back</h2>
+
+      ${checklist([
+        "<strong>Create a new multisig wallet</strong> in Specter, set the policy &mdash; 2-of-3 for most people &mdash; and select the devices you added.",
+        "<strong>Choose the script type</strong> and leave it consistent across everything. Native SegWit is the sensible default.",
+        "<strong>Export the wallet configuration</strong> immediately, before doing anything else.",
+        "<strong>Register that configuration on every device that supports it.</strong> COLDCARD, Jade, BitBox02, Passport, Keystone and others accept a multisig configuration file or QR."
+      ])}
+
+      <p>That last step is the one to take seriously, and it is worth knowing precisely why rather than treating it as a formality.</p>
+
+      ${callout("What registration actually buys you", `A device that has only seen its own key cannot tell a legitimate change address from a hostile one, because a multisig change address is derived from <em>all</em> the keys. Register the wallet and the device can verify that change is coming home. Skip it and your signer loses the ability to catch the attack described in <a href='air-gapped-psbt-workflow.html'>the PSBT workflow guide</a> — which is the specific attack that empties multisig wallets.`)}
+
+      <h2><span class="sc-article-num">7</span>Signing across three brands</h2>
+
+      <p>Here is where a multi-brand multisig stops being theoretical. Each manufacturer moves transactions differently, and a single payment may involve two or three different mechanisms.</p>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>What collecting signatures actually looks like</caption>
+          <thead><tr><th scope="col">Device style</th><th scope="col">How the PSBT travels</th><th scope="col">In practice</th></tr></thead>
+          <tbody>
+            <tr><td>USB signers</td><td>Cable, over Specter's device integration</td><td>Fastest. Not air-gapped &mdash; the device talks to your computer.</td></tr>
+            <tr><td>microSD signers</td><td>File written, carried, and read back</td><td>Air-gapped and reliable. Keep a card dedicated to the job.</td></tr>
+            <tr><td>QR signers</td><td>Animated codes both directions</td><td>Air-gapped and cable-free. Large multisig transactions make long animations.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      ${checklist([
+        "Build the transaction in Specter. It produces a PSBT.",
+        "<strong>Take it to the first signer</strong> by whichever route that device uses, and verify amount, destination, fee, and change on the device screen.",
+        "Bring the partially signed result back into Specter.",
+        "<strong>Repeat with the second signer</strong> &mdash; likely a different transport entirely.",
+        "Specter combines the signatures, finalises, and broadcasts through your node."
+      ])}
+
+      <p>Collecting signatures one device at a time, in whatever order suits you, is the normal rhythm. Nothing is lost by pausing halfway; an unsigned or partially signed transaction has moved no money.</p>
+
+      <h2><span class="sc-article-num">8</span>What to back up</h2>
+
+      <p>This is where multisig wallets are actually lost, and the failure is never the cryptography.</p>
+
+      ${checklist([
+        "<strong>Every seed backup</strong>, one per device, stored apart from each other.",
+        "<strong>The wallet configuration file</strong> &mdash; the descriptor &mdash; stored <em>with every one of those seed backups</em>. Seeds alone will not rebuild a multisig.",
+        "<strong>A note naming the coordinator, the policy, and the script type</strong>, so a future you knows what they are looking at.",
+        "<strong>A rehearsal.</strong> Restore the wallet from the descriptor plus two devices on a clean machine, before it holds anything."
+      ])}
+
+      <p><a href='multisig-2of3.html'>The multisig guide</a> goes into why the configuration is the thing that kills these wallets. Specter makes exporting it easy, which removes every excuse for not having done it.</p>
+
+      <h2><span class="sc-article-num">9</span>Where Specter fits</h2>
+
+      ${checklist([
+        "<strong>Choose Specter</strong> if you run a node already, or intend to, and want a coordinator whose privacy properties require no configuration because it has no alternative.",
+        "<strong>Choose Sparrow</strong> if you want a capable multisig coordinator without a node requirement, and are willing to point it at a server &mdash; ideally your own.",
+        "<strong>Choose Nunchuk</strong> if you need shared or collaborative arrangements across people and phones."
+      ])}
+
+      <p>All three build the same wallet. A multisig created in one can be rebuilt in another from the descriptor and the devices, which is worth knowing: you are not marrying the software.</p>
+
+      <h2>The short version</h2>
+
+      <p>Specter is a front end for your own Bitcoin Core node, which means your multisig descriptor &mdash; the most complete description of your finances that exists &mdash; never leaves your machine. The price is running and maintaining a node. Add each device, build the wallet, register the configuration back onto every signer, and store that configuration with every seed backup.</p>
+
+      ${callout("If you take one thing from this page", `Register the wallet configuration on every device, and store a copy with every seed. The first makes your signers able to detect a hostile change address; the second is the difference between three seed backups and an actual recoverable wallet. Neither is optional, and Specter makes both easy enough that skipping them is a choice.`)}`
   },
   {
     slug: "own-node-connection",
-    category: "software",
+    category: "advanced",
     products: [],
     title: "Point your wallet at your own node",
-    summary: "Why a public server sees more than you think, and how to move a wallet onto infrastructure you run.",
+    summary: "Running a node and using it are two different achievements. The index layer nobody mentions, connecting each wallet to it, reaching it from outside your house, and proving your wallet is not quietly still using somebody else's server.",
     level: "advanced",
     minutes: 40,
-    goals: ["harden"],
+    goals: ["harden", "privacy"],
     tags: ["Node", "Privacy"],
     icon: "bi-cpu",
-    status: "idea"
+    updated: "2026-08-18",
+    status: "published",
+    related: ["why-run-a-node", "bitcoin-privacy", "specter-multisig-coordinator"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Plenty of people run a node and still leak everything. The node hums away in a cupboard, validating blocks, while their wallet carries on asking a stranger's server for balances &mdash; because nothing about installing Bitcoin Core changes what your wallet is configured to talk to.</p>
+
+      <p>Running a node and using a node are separate achievements. <a href='why-run-a-node.html'>Why run a node</a> makes the case for the first. This page is the second: the piece of software nobody warns you about, how each wallet connects, how to reach it when you are not at home, and how to prove it is actually working rather than assuming.</p>
+
+      <h2><span class="sc-article-num">1</span>The layer nobody mentions</h2>
+
+      <p>Here is the thing that confuses almost everybody on their first attempt.</p>
+
+      <p>Bitcoin Core does not keep an index of addresses. It is built to validate the chain and to track wallets it was told about &mdash; it is not built to answer "what is the balance of this arbitrary address?" quickly. That question, which is exactly what a wallet needs to ask, is one Core alone is poorly suited to.</p>
+
+      <p>So most wallets do not talk to Core at all. They speak the Electrum protocol, and expect an <strong>index server</strong> sitting alongside your node, reading its data and maintaining an address index for lookups.</p>
+
+      ${callout("What this means in practice", "\"I installed Bitcoin Core\" is not enough to point Sparrow at it. You need Core <em>plus</em> an index server. Node distributions like Umbrel, Start9, and RaspiBlitz bundle one already, which is most of why they exist. A manual Core install almost always needs one added.")}
+
+      <p>Specter is the notable exception, because it drives Core's own descriptor wallets directly rather than speaking Electrum &mdash; which is why <a href='specter-multisig-coordinator.html'>the Specter guide</a> requires Core and nothing else.</p>
+
+      <h2><span class="sc-article-num">2</span>Choosing the index server</h2>
+
+      <p>Three implementations are in common use, and the choice is a genuine trade rather than a matter of taste.</p>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>Electrum server implementations</caption>
+          <thead><tr><th scope="col">Server</th><th scope="col">Built in</th><th scope="col">Trade</th></tr></thead>
+          <tbody>
+            <tr><td><strong>electrs</strong></td><td>Rust</td><td>Smallest index on disk, and does not need Core's transaction index. Answers some queries by re-reading blocks, so lookups are slower.</td></tr>
+            <tr><td><strong>Fulcrum</strong></td><td>C++</td><td>Fastest queries by a wide margin &mdash; Sparrow's own benchmarks put history loading tens of times quicker than ElectrumX. Costs more disk.</td></tr>
+            <tr><td><strong>ElectrumX</strong></td><td>Python</td><td>The original and most featureful. Slowest of the three in practice.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The distributions have already picked for you: Start9 ships Fulcrum, while Umbrel and RaspiBolt default to electrs and offer Fulcrum as an alternative. If your wallet history feels sluggish to load, that setting is usually the cause and switching is usually the cure.</p>
+
+      <h2><span class="sc-article-num">3</span>Connecting, wallet by wallet</h2>
+
+      <p>Every wallet hides this in a different place, but you are always supplying the same thing: a host, a port, and whether to use SSL.</p>
+
+      ${checklist([
+        "<strong>Sparrow.</strong> Choose a private Electrum server in the server settings and enter the address. Sparrow will tell you plainly whether it connected.",
+        "<strong>Electrum.</strong> Open the network settings, turn off automatic server selection, and add yours. Automatic selection is the setting that quietly undoes this.",
+        "<strong>Specter.</strong> No index server needed &mdash; point it straight at Core's RPC interface.",
+        "<strong>BlueWallet.</strong> Network settings, then Electrum server, then your details.",
+        "<strong>Cove.</strong> Supports your own Electrum or Esplora server in settings.",
+        "<strong>Nunchuk.</strong> Accepts a custom Electrum server in its network configuration."
+      ])}
+
+      <h2><span class="sc-article-num">4</span>Reaching it from outside the house</h2>
+
+      <p>On your home network this is straightforward: the node has a local address and your laptop can see it. The problem arrives with phones, which are mostly used somewhere else.</p>
+
+      ${checklist([
+        "<strong>Tor.</strong> Every node distribution can publish your index server as a hidden service, and most wallets can connect over Tor. Nothing is exposed to the public internet, the address is unguessable, and it works from anywhere. It is slower, and it is the right default for a phone.",
+        "<strong>A VPN back to your home network.</strong> Fast and pleasant, at the cost of running a VPN. WireGuard on the router or the node itself is the usual approach.",
+        "<strong>Port forwarding.</strong> Works, and puts your server on the public internet where it can be scanned, fingerprinted, and attacked. If you do it, use SSL and treat it as a service you are now responsible for maintaining."
+      ])}
+
+      ${cautions([
+        "A phone wallet configured only for your home network will fail silently or fall back the moment you leave the house. Decide which of the three routes you are using before you rely on it while out.",
+        "Do not expose an index server to the internet without SSL. The queries it answers are your entire wallet history."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>Prove it is actually working</h2>
+
+      <p>This is the section that matters most, because the failure mode here is silent by design.</p>
+
+      <p>Wallets are built to work. When your server is unreachable &mdash; the node is updating, Tor is slow, the laptop moved networks &mdash; many will quietly fall back to a public server rather than showing you an error. You get a working balance and the privacy you thought you had bought is simply gone, with no indication.</p>
+
+      ${pullQuote("A wallet that shows you a balance is not telling you where it got it. Assume nothing you have not checked.")}
+
+      ${checklist([
+        "<strong>Look for the connection indicator.</strong> Sparrow and Electrum both name the server they are currently using. Read it rather than trusting that your setting took.",
+        "<strong>Turn the node off and watch.</strong> The honest test. Your wallet should fail to load balances. If it cheerfully carries on, it is talking to somebody else and you have found the problem.",
+        "<strong>Disable automatic server selection</strong> wherever it exists. In Electrum especially, leaving it on means your careful configuration is a preference rather than a rule.",
+        "<strong>Re-check after every update.</strong> App updates and node-distribution upgrades both reset network settings more often than they should."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>The first connection is the slow one</h2>
+
+      <p>Pointing an existing wallet at your own server for the first time means the server has to find your history, and that is not instant.</p>
+
+      ${checklist([
+        "<strong>Expect a wait.</strong> The index server scans for your addresses. On a fresh index this can take a long time, and on modest hardware a very long time.",
+        "<strong>Watch the gap limit</strong> if some transactions seem missing. A wallet with a long history of unused addresses can outrun the default lookahead; raising it and rescanning usually recovers the balance.",
+        "<strong>Pruned nodes complicate rescans.</strong> Pruning saves substantial disk, but a pruned node has discarded the old blocks a rescan wants to read. If you plan to import wallets with years of history, do not prune.",
+        "<strong>Let the index finish before judging performance.</strong> A half-built index is slow in ways a finished one is not."
+      ])}
+
+      <h2><span class="sc-article-num">7</span>What this fixes, and what it does not</h2>
+
+      ${checklist([
+        "<strong>It fixes the address leak.</strong> Nobody else learns which addresses you own, which is the single largest routine privacy leak in ordinary wallet use.",
+        "<strong>It fixes the IP correlation.</strong> Your queries are no longer tied to your home connection by a third party.",
+        "<strong>It fixes trusting their answer.</strong> Your balance is now verified against rules you enforce rather than reported by someone else."
+      ])}
+
+      ${cautions([
+        "<strong>It does not make your transactions private on-chain.</strong> The ledger is still public and still analysable. <a href='bitcoin-privacy.html'>The privacy guide</a> covers what does and does not help there.",
+        "<strong>It does not undo what you already leaked.</strong> Addresses that a public server has already seen remain in whatever records it keeps.",
+        "<strong>It does not protect a wallet that identifies you elsewhere</strong> &mdash; a KYC withdrawal ties your identity to those coins regardless of who answers your balance queries."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Bitcoin Core alone cannot answer the questions wallets ask, so you need an index server &mdash; electrs, Fulcrum, or ElectrumX &mdash; alongside it, which node distributions bundle for you. Point each wallet at it explicitly, use Tor or a VPN to reach it from a phone, and then verify by switching the node off and confirming your wallet actually breaks.</p>
+
+      ${callout("If you take one thing from this page", `Test it by turning your node off. It is the only check that cannot be fooled by a setting that did not take or a fallback you did not know about — and a wallet that keeps working when your node is down was never using it.`)}`
   },
 
   /* ---------------------------------------------------------------- exchanges */
@@ -3196,6 +4846,7 @@ const guides = [
     category: "advanced",
     products: ["coldcard", "seedsigner", "krux", "jade", "bitbox"],
     title: "Roll the dice: generating your own entropy",
+    titleMark: "sc-die-mark",
     summary: "Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.",
     level: "intermediate",
     minutes: 20,
@@ -3204,7 +4855,7 @@ const guides = [
     icon: "bi-shuffle",
     updated: "2026-08-17",
     status: "published",
-    related: ["coldcard-q-setup", "seedsigner-setup", "recovery-test-drill"],
+    related: ["coldcard-setup", "seedsigner-setup", "recovery-test-drill"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">Every bitcoin wallet is built on one enormous random number. Your twelve or twenty-four recovery words are just that number, written in a form a human can copy down. Everything else &mdash; every address, every signature, every coin you will ever hold &mdash; grows out of it.</p>
@@ -3263,7 +4914,7 @@ const guides = [
 
       <p>This is the question people worry about most, and it is the one that matters least.</p>
 
-      <p>Real dice are never perfectly even. People have actually measured this properly &mdash; studies rolling dice hundreds of thousands of times have found individual faces turning up around 1.3% to 1.4% more often than they should. Cheap moulded dice are worse than casino dice with sharp square edges.</p>
+      <p>Real dice are never perfectly even. People have actually measured this properly &mdash; a 1971 <em>Psychometrika</em> study rolling dice a few million times found even faces turning up about 1.4% more often than they should, and a 2009 automated re-run of a classic 1894 dice experiment, published in <em>CHANCE</em>, found a comparable 1.3% bias. Cheap moulded dice are worse than casino dice with sharp square edges.</p>
 
       <p>The effect on your wallet is almost nothing. Below is what happens to the randomness as the die gets progressively worse, starting from a perfect one and ending at a die so skewed you would notice it across the room.</p>
 
@@ -3291,7 +4942,7 @@ const guides = [
 
       <p>You may notice that the final word of your phrase seems fixed, or that the device has to work it out for you rather than letting you pick. That is normal and it is not the dice being ignored.</p>
 
-      <p>The last word is mostly a checksum &mdash; a small built-in error check, calculated from all the words before it. It is quietly one of the most useful things in the whole design: if you copy a word down wrong, the phrase gets rejected when you try to restore it, instead of silently opening a different, empty wallet and leaving you to work out what happened.</p>
+      <p>The last word is mostly a <a href="../glossary.html#term-checksum">checksum</a> &mdash; a small built-in error check, calculated from all the words before it. It is quietly one of the most useful things in the whole design: if you copy a word down wrong, the phrase gets rejected when you try to restore it, instead of silently opening a different, empty wallet and leaving you to work out what happened.</p>
 
       <h2>Checking that your device did what it said</h2>
 
@@ -3319,9 +4970,7 @@ const guides = [
       <p class="mt-4"><a class="sc-text-link" href="what-not-to-normalize.html">Read the habits that undo all of this <i class="bi bi-arrow-right"></i></a></p>
 
       <p class="sc-source-note">
-        Roll counts, the differences between wallets, and the dice-fairness figures charted above are drawn from
-        ${official("https://kdmukai-bot.github.io/seedsigner-ai-analysis/dice/standard.html", "an AI-assisted analysis of dice entropy across wallet implementations")}
-        published alongside SeedSigner's own dice research. Devices change between firmware releases &mdash; check the roll count and method in your own device's current documentation before creating a wallet you intend to fund.
+        Dice-bias figures above come from Iversen, Longcor, Mosteller, Gilbert &amp; Youtz, &ldquo;Bias and Runs in Dice Throwing and Recording: A Few Million Throws,&rdquo; <em>Psychometrika</em> 36(1), 1971, and Zacariah Labby, &ldquo;Weldon&rsquo;s Dice, Automated,&rdquo; <em>CHANCE</em> 22(4), 2009. Roll counts and the entropy-loss figures charted above follow from applying those measured biases to a standard 50- or 99-roll wallet. Devices change between firmware releases &mdash; check the roll count and method in your own device's current documentation before creating a wallet you intend to fund.
       </p>`
   },
   {
@@ -3332,12 +4981,12 @@ const guides = [
     summary: "Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.",
     level: "advanced",
     minutes: 60,
-    goals: ["harden", "setup"],
+    goals: ["harden", "setup", "multisig"],
     tags: ["Multisig", "Descriptor", "Recovery"],
     icon: "bi-diagram-3",
     updated: "2026-08-17",
     status: "published",
-    related: ["recovery-test-drill", "sparrow-first-wallet", "coldcard-q-setup"],
+    related: ["recovery-test-drill", "sparrow-first-wallet", "coldcard-setup"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">A 2-of-3 multisig wallet holds three keys and requires any two of them to spend. Lose one and you are fine. Have one stolen and the thief has nothing. It removes the single point of failure that every ordinary wallet has, and for larger amounts that is a genuine step up.</p>
@@ -3526,13 +5175,146 @@ const guides = [
     category: "advanced",
     products: [],
     title: "Where the keys actually live",
-    summary: "Distributing keys across locations and people without creating a set that can be collected in one afternoon.",
+    summary: "Three keys in three places is easy to say and easy to get wrong. The locations that only look independent, the window when your keys travel together, and an honest account of what a safe deposit box and a trusted friend each actually do.",
     level: "advanced",
     minutes: 30,
-    goals: ["harden"],
+    goals: ["harden", "multisig", "inherit"],
     tags: ["Multisig", "Threat model"],
     icon: "bi-people",
-    status: "idea"
+    updated: "2026-08-18",
+    status: "published",
+    related: ["multisig-2of3", "recovery-test-drill", "seed-backup-metal"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">The rule is easy to state: no single event should reach enough keys to spend. <a href='multisig-2of3.html'>The multisig guide</a> states it, and most people nod and put one key at home, one at their parents' house, and one in a safe deposit box.</p>
+
+      <p>Then they drive all three to the bank on the same Saturday, or discover their two "separate" locations sit in the same flood plain, or find that the person holding key three has moved twice and is not certain where they put it.</p>
+
+      <p>The interesting question is not where to put keys. It is which of your locations are secretly the same location &mdash; because that is the failure this whole arrangement exists to prevent, and it is invisible until it happens.</p>
+
+      ${figureSlot({
+        shot: "A map spread on a table with three pins in it, two of them close enough together that the gap between looks smaller than intended, a coffee cup weighing down one corner.",
+        caption: "Three pins on a map is the easy part. Whether they are genuinely three is the question.",
+        ratio: "16 / 9",
+        icon: "bi-people"
+      })}
+
+      <h2><span class="sc-article-num">1</span>The test to design against</h2>
+
+      <p>Here is a single criterion that does more work than any list of recommended locations:</p>
+
+      ${pullQuote("Could one person, one event, or one legal process collect enough of your keys in a single afternoon?")}
+
+      <p>If yes, the geography has failed regardless of how many pins are on the map. If no, you have built the thing you were trying to build.</p>
+
+      <p>Note that the test covers three different kinds of adversary, and they do not respect the same boundaries. A burglar is stopped by distance. A flood is stopped by elevation and watershed. A court order is stopped by neither, and is stopped instead by jurisdiction &mdash; or not at all.</p>
+
+      <h2><span class="sc-article-num">2</span>Locations that only look independent</h2>
+
+      <p>This is the section worth the price of admission. Every item below describes two locations most people would count as separate, and a reason they are not.</p>
+
+      ${cautions([
+        "<strong>Same disaster footprint.</strong> Your house and your brother's house across town share a flood plain, a wildfire corridor, an earthquake zone, or a hurricane track. Distance on a map is not distance in a hazard map.",
+        "<strong>Same institution.</strong> Two safe deposit boxes at two branches of one bank are one bank. A closure, a merger, an outage, or a legal process reaches both at once.",
+        "<strong>Same person.</strong> A friend holding one key and also holding your spare house key holds two keys. So does the sibling who has a box at the same bank as you.",
+        "<strong>Same jurisdiction.</strong> One court order, one search warrant, one authority. Keys in three houses in one city are three houses and one legal boundary.",
+        "<strong>Same credential.</strong> If every location opens with your identification and your presence, then everything that compels you reaches all of them together.",
+        "<strong>Same knowledge.</strong> Three keys perfectly distributed, and one document at home listing where they all are. The document is now the wallet.",
+        "<strong>Same routine.</strong> If you service all three locations on one annual trip, there is one day a year when the arrangement does not exist. More on that next."
+      ])}
+
+      <p>You do not need to defeat all seven. You need to know which ones you have accepted, deliberately, rather than discovering one during the event it was supposed to survive.</p>
+
+      <h2><span class="sc-article-num">3</span>The window when it all travels together</h2>
+
+      <p>Distributed storage has a recurring moment of maximum vulnerability, and almost nobody plans for it: the times the keys move.</p>
+
+      <p>Setup is the first one. You initialise three devices at your kitchen table, and for an afternoon every key you own is within arm's reach of a single event. That is unavoidable, but it should be brief and it should not be documented in photographs.</p>
+
+      <p>The recurring one is worse because it feels responsible. You decide to check your backups annually, so you collect them, verify them, and redistribute them &mdash; and for several hours two or three keys are in one car, in one bag, in one house.</p>
+
+      ${checklist([
+        "<strong>Verify in place wherever you can.</strong> Confirming a plate is legible and a device still powers on does not require bringing it home.",
+        "<strong>Stagger the schedule.</strong> Check one location in spring and another in autumn rather than all of them on one trip.",
+        "<strong>Never carry two keys in one bag,</strong> even for an hour, even locally. This is the specific mistake that turns a well-designed arrangement into a single point of failure for the duration of a drive.",
+        "<strong>Rehearse recovery with a spare wallet</strong> rather than the real one, so that <a href='recovery-test-drill.html'>the drill</a> does not require assembling the real keys at all."
+      ])}
+
+      <h2><span class="sc-article-num">4</span>Safe deposit boxes, honestly</h2>
+
+      <p>They are a good tool with specific properties, and the properties are not the ones people assume.</p>
+
+      ${checklist([
+        "<strong>Excellent against:</strong> house fires, domestic burglary, floods at your address, and casual discovery by visitors and relatives.",
+        "<strong>Poor against:</strong> anything requiring access at three in the morning, on a holiday, or during a bank closure.",
+        "<strong>Check what happens when you die.</strong> Access can be frozen pending estate process, which is precisely when your heirs need it. This is the single most common unpleasant surprise.",
+        "<strong>Check who else can be added</strong>, and what identification they will need years from now.",
+        "<strong>Do not assume insurance.</strong> Box contents are typically not covered by the bank, and a home contents policy may not extend to them either.",
+        "<strong>They are reachable by legal process.</strong> That may be irrelevant to you, or it may be the entire point &mdash; but it should be a known property rather than a discovery."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>Trusted people, honestly</h2>
+
+      <p>The risk with a trusted person is almost never that they steal from you. It is that their life carries on without reference to your arrangement.</p>
+
+      ${cautions([
+        "<strong>They move.</strong> Twice, over the decade you were planning for, and the sealed envelope is in whichever box did not get unpacked.",
+        "<strong>Their circumstances change.</strong> A divorce, a new partner, a housemate, a break-in at their home &mdash; none of it involves any bad faith towards you.",
+        "<strong>They die, or their memory does.</strong> Nobody in their household knows what the object is or that it matters.",
+        "<strong>They talk.</strong> Not maliciously. It is an interesting thing to be asked to hold, and mentioning it is human."
+      ])}
+
+      ${checklist([
+        "<strong>Give them an object, not a secret.</strong> A sealed device or plate they cannot use alone is a much smaller burden than knowledge.",
+        "<strong>Tell them it matters and that it is not urgent</strong>, so it gets stored properly rather than left in a drawer or thrown out in a move.",
+        "<strong>Write down what should happen to it</strong> if you are not around, and make sure that instruction reaches them by a route that does not depend on you.",
+        "<strong>Check in occasionally.</strong> A friendly annual question confirms it still exists, which is more than most arrangements can claim."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>What each arrangement actually defends</h2>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>Common arrangements against the events they are meant to survive</caption>
+          <thead><tr><th scope="col">Arrangement</th><th scope="col">House fire</th><th scope="col">Burglary</th><th scope="col">Regional disaster</th><th scope="col">Compelled access</th></tr></thead>
+          <tbody>
+            <tr><td>All keys at home</td><td>No</td><td>No</td><td>No</td><td>No</td></tr>
+            <tr><td>Home + a safe in the same house</td><td>Partly</td><td>Partly</td><td>No</td><td>No</td></tr>
+            <tr><td>Home + local relative + local bank</td><td>Yes</td><td>Yes</td><td>No</td><td>No</td></tr>
+            <tr><td>Home + distant relative + bank</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Partly</td></tr>
+            <tr><td>Distributed across jurisdictions</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Read that bottom row with suspicion rather than ambition. Crossing jurisdictions defends against the one thing nothing else does, and it introduces problems most people should not accept: keys you cannot reach quickly, arrangements that depend on travel remaining easy, and complexity your heirs will inherit. It is the right answer for a small number of people and an expensive affectation for everyone else.</p>
+
+      <h2><span class="sc-article-num">7</span>The cost nobody prices in</h2>
+
+      <p>Every increase in dispersion buys resilience and spends accessibility, and accessibility is not a luxury &mdash; it is what determines whether the arrangement ever gets tested.</p>
+
+      <p>A wallet requiring a weekend of travel to use is a wallet you will not verify. An unverified backup is a guess, and a guess that has sat in a box for four years is a worse guess. The most common way these setups fail is not dramatic: the owner simply never checked, and something had gone wrong quietly.</p>
+
+      ${callout("The honest calibration", "Aim for an arrangement you can fully exercise once a year without dreading it. If the plan is so elaborate that you keep postponing the rehearsal, it is not a more secure plan than the simpler one you would actually maintain — it is a less secure one wearing a costume.")}
+
+      <h2><span class="sc-article-num">8</span>The map problem</h2>
+
+      <p>Every dispersed arrangement eventually produces a document explaining it, because otherwise nobody &mdash; including future you &mdash; can use it.</p>
+
+      <p>That document is a genuine hazard. A single page saying which key is where, found in a desk drawer, converts your carefully distributed setup back into a one-afternoon collection job for anyone who reads it.</p>
+
+      ${checklist([
+        "<strong>Describe locations without addresses</strong> where you can &mdash; enough for someone who already knows your life, not enough for a stranger.",
+        "<strong>Separate the map from the keys.</strong> It should not live in any location that holds one.",
+        "<strong>Do not list what the objects are.</strong> \"The sealed envelope with Ruth\" is safer than a full explanation of what it contains and what it is worth.",
+        "<strong>Plan how it reaches the right person</strong> at the right time. That is an inheritance problem, and it is a large enough one to deserve its own treatment."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Ask whether one person, one event, or one legal process could collect enough keys in a single afternoon. Watch for locations that share a hazard, an institution, a person, a jurisdiction, or a document. Never let two keys travel together, know what a safe deposit box does when you die, and choose a level of dispersion you will actually maintain.</p>
+
+      ${callout("If you take one thing from this page", `Independence is a property of threats, not of distance. Two locations are only genuinely separate with respect to a specific event — and the arrangement that survives a house fire may fall to one court order, one bank merger, or one Saturday when everything was in the same car.`)}`
   },
   {
     slug: "passphrase-setup",
@@ -3542,7 +5324,7 @@ const guides = [
     summary: "A passphrase is not a password on your wallet. It is a switch that selects a different wallet entirely — which is why a single wrong character shows you an empty balance and no error message.",
     level: "advanced",
     minutes: 30,
-    goals: ["harden"],
+    goals: ["harden", "recover"],
     tags: ["Passphrase", "Recovery", "Threat model"],
     icon: "bi-shield-lock",
     updated: "2026-08-17",
@@ -3667,7 +5449,7 @@ const guides = [
     summary: "One seed can generate an unlimited supply of ordinary, independent wallets on demand — so you protect one backup instead of six. The catch is a bookkeeping obligation nobody warns you about, and a master seed that is now worth six times as much to a thief.",
     level: "advanced",
     minutes: 28,
-    goals: ["harden", "learn"],
+    goals: ["harden", "learn", "recover"],
     tags: ["Seed derivation", "Backups", "Threat model"],
     icon: "bi-diagram-3",
     updated: "2026-08-17",
@@ -3881,7 +5663,7 @@ const guides = [
     summary: "Paper survives everything except the events your backup exists for. What metal actually buys you, the four-letter shortcut that halves the work, and the mistakes that quietly ruin a plate.",
     level: "intermediate",
     minutes: 25,
-    goals: ["harden"],
+    goals: ["harden", "recover"],
     tags: ["Backups", "Metal", "Storage"],
     icon: "bi-box-seam",
     updated: "2026-08-17",
@@ -4020,39 +5802,418 @@ const guides = [
     category: "advanced",
     products: ["unchained", "casa"],
     title: "An inheritance plan that does not leak the secret",
-    summary: "Writing instructions someone can follow under stress, without those instructions being enough to steal with.",
+    summary: "Instructions someone can follow while grieving, that are not enough to steal with while you are alive. Why your will is the wrong place for any of it, and the failure that loses more coins than any other.",
     level: "advanced",
     minutes: 45,
-    goals: ["harden"],
+    goals: ["harden", "inherit", "multisig"],
     tags: ["Inheritance", "Estate"],
     icon: "bi-people",
-    status: "idea"
+    updated: "2026-08-18",
+    status: "published",
+    related: ["multisig-2of3", "scripts-and-miniscript", "multisig-key-geography"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">An inheritance plan has to do two things that pull in opposite directions. It must let someone reach your bitcoin after you die. And it must not let anyone reach it before &mdash; including the person you are relying on.</p>
+
+      <p>Get the first wrong and the coins are gone forever, which is the outcome most people are worried about. Get the second wrong and you have simply given your bitcoin away early, to someone who now has years of opportunity and every ordinary human pressure acting on them. That failure is quieter and nobody plans for it.</p>
+
+      <p>Almost everything difficult about this subject comes from holding both requirements at once. Nothing here is legal or tax advice, and this is a subject where a professional in your own jurisdiction earns their fee.</p>
+
+      ${figureSlot({
+        shot: "A sealed envelope on a desk beside a closed laptop and a set of keys, afternoon light, nobody in the room.",
+        caption: "The plan has to survive you. It also has to be inert while you are still here.",
+        ratio: "16 / 9",
+        icon: "bi-people"
+      })}
+
+      <h2><span class="sc-article-num">1</span>Separate three different things</h2>
+
+      <p>Most bad plans collapse because they treat this as one problem. It is three, and they have completely different security requirements.</p>
+
+      ${checklist([
+        "<strong>The knowledge that bitcoin exists.</strong> Somebody must learn this after you die. If nobody does, everything else was irrelevant. This part is not secret in any useful sense &mdash; it only needs to be reliable.",
+        "<strong>The instructions for how to reach it.</strong> What devices exist, where they are, what order to do things in, who to ask for help. Sensitive, but not sufficient to steal with if written properly.",
+        "<strong>The secrets themselves.</strong> Seed words, passphrases, PINs. These should never be assembled in one place, by anyone, until they are actually needed."
+      ])}
+
+      <p>A plan that keeps these three separate can be robust and safe at once. A plan that merges them &mdash; the classic envelope containing the words and the explanation together &mdash; is a wallet with a delayed fuse.</p>
+
+      <h2><span class="sc-article-num">2</span>Your will is the wrong place</h2>
+
+      <p>This is the most consequential mistake in the subject, and it is made by careful people acting in good faith.</p>
+
+      <p>In many jurisdictions, including much of Canada, <strong>a will submitted to probate becomes a public document.</strong> Anyone can request a copy. That means seed words in a will are seed words published, and a passphrase written into a bequest is a passphrase disclosed to whoever cares to look.</p>
+
+      ${cautions([
+        "<strong>Never put seed words, a passphrase, or a device PIN in a will.</strong> Not in the body, not in a schedule, not in an annex.",
+        "<strong>Do not put exact storage locations in it either.</strong> A published document naming the bank and the box number is a map for a stranger.",
+        "<strong>Assume anything in the will may be read by people you did not choose</strong>, at a moment when your estate is publicly known to contain valuable assets."
+      ])}
+
+      <p>What the will <em>should</em> do is establish authority and point onward: that a bitcoin estate exists, who inherits it, and that a separate letter of instruction is held by a named person or firm. That is enough to give your executor standing without disclosing anything worth stealing.</p>
+
+      ${pullQuote("The will says the treasure exists and who it belongs to. It must never say where the shovel is.")}
+
+      <h2><span class="sc-article-num">3</span>Choosing the mechanism</h2>
+
+      <p>Several arrangements solve the timing problem &mdash; access afterwards, none before. They differ mostly in how much competence they demand from your heirs and how much they cost.</p>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>Ways to make access arrive only after you are gone</caption>
+          <thead><tr><th scope="col">Approach</th><th scope="col">How it holds the line</th><th scope="col">What it demands</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Multisig with a third party</strong></td><td>Heirs hold one key; a lawyer, firm, or trusted person holds another. Neither side can act alone.</td><td>Coordination, and an heir who can complete a signing.</td></tr>
+            <tr><td><strong>Collaborative custody</strong></td><td>A service such as Unchained or Casa holds a key and runs a verified inheritance process.</td><td>Ongoing fees, and trusting a company to still exist.</td></tr>
+            <tr><td><strong>Timelocked spending paths</strong></td><td>A wallet where a smaller quorum becomes valid only after a long delay, enforced by bitcoin itself.</td><td>Real technical skill. See <a href='scripts-and-miniscript.html'>scripts and miniscript</a>.</td></tr>
+            <tr><td><strong>Product inheritance features</strong></td><td>Built-in claim processes with long notice periods, such as Bitkey's.</td><td>Committing to that product's ecosystem.</td></tr>
+            <tr><td><strong>Sealed instructions with a professional</strong></td><td>A lawyer holds a sealed envelope released only on death.</td><td>Trusting a firm and its filing over decades.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The first two are where most people should look. A <a href='multisig-2of3.html'>2-of-3 multisig</a> is already the shape of an inheritance plan &mdash; you simply have to decide who holds the third key and under what conditions it becomes available.</p>
+
+      <h2><span class="sc-article-num">4</span>The failure that loses the most coins</h2>
+
+      <p>Not theft. Not fire. <strong>An heir who cannot execute the plan.</strong></p>
+
+      <p>People design elaborate arrangements and hand them to a spouse or a child who has never owned bitcoin, has no idea what a PSBT is, and will be attempting this in the worst month of their life. The plan is technically perfect and practically inert.</p>
+
+      ${checklist([
+        "<strong>Write for a stressed beginner, not for yourself.</strong> Assume no prior knowledge, name specific software, and describe what each screen will look like.",
+        "<strong>Name a technical helper explicitly.</strong> Someone competent your heirs may call, who is not the same person holding a key. Ask them first.",
+        "<strong>Say what <em>not</em> to do</strong>, in bold, near the top. Do not type these words into a website. Do not photograph them. Do not accept help from anyone who contacts you first.",
+        "<strong>Include the boring specifics.</strong> Which wallet software, which device, what a passphrase is and that one exists, roughly what the balance should be so they know when they have found all of it."
+      ])}
+
+      ${callout("The single most useful sentence you can write", "\"Do not be rushed, and do not let anyone you did not contact first help you with this.\" Newly bereaved people holding sudden wealth and unfamiliar technology are a well-known target. Your instructions are the only place you can warn them in advance.")}
+
+      <h2><span class="sc-article-num">5</span>Making sure it is found</h2>
+
+      <p>A perfect plan nobody discovers is identical to no plan. This is the most common total loss in bitcoin inheritance, and it is entirely preventable.</p>
+
+      ${checklist([
+        "<strong>Tell at least two people that a plan exists</strong> and where the instructions live &mdash; not what they contain.",
+        "<strong>Make sure the executor knows</strong> before they are the executor. Discovering a bitcoin estate cold is a poor start.",
+        "<strong>Keep the pointer somewhere ordinary.</strong> Wherever your important documents live is where someone will look. A brilliant hiding place is a failure mode.",
+        "<strong>Do not rely on a dead man's switch alone.</strong> Automated services can fail, lapse, or shut down, and they can also fire early &mdash; which discloses everything while you are alive and well."
+      ])}
+
+      <p>There is a real tension here with <a href='multisig-key-geography.html'>key geography</a>: everyone who knows is a person who could be pressured or could talk. Two informed people is usually the right balance between discovery and exposure.</p>
+
+      <h2><span class="sc-article-num">6</span>Rehearse it with the people who will use it</h2>
+
+      <p>Every other backup on this site gets tested. This one almost never does, which is strange given it is the only one guaranteed to be used at a moment when you cannot help.</p>
+
+      ${checklist([
+        "<strong>Build a rehearsal wallet</strong> holding a trivial amount, using the same structure as the real one.",
+        "<strong>Give your heir the instructions and leave the room.</strong> Watch where they get stuck without helping. Every place they hesitate is a place your document is unclear.",
+        "<strong>Have the third-party keyholder participate</strong>, so their part is not theoretical either.",
+        "<strong>Rewrite the instructions afterwards</strong>, using the words your heir actually used rather than the ones you assumed they knew."
+      ])}
+
+      <h2><span class="sc-article-num">7</span>The Canadian tax wrinkle</h2>
+
+      <p>Worth knowing, and worth taking to a professional rather than to a forum.</p>
+
+      <p>In Canada, death generally triggers a deemed disposition of capital property at fair market value, which can create a capital gain on your final return even though nothing was sold. Bitcoin is property for these purposes. That means an estate can owe tax on coins the heirs have not yet been able to reach &mdash; which is an unhappy combination if the access plan is slow.</p>
+
+      ${checklist([
+        "<strong>Keep records of what you paid and when.</strong> An heir who cannot establish a cost basis is in a much worse position.",
+        "<strong>Consider the liquidity question.</strong> If the estate owes tax, something has to pay it.",
+        "<strong>Tell your accountant the asset exists</strong>, in general terms, while you are alive."
+      ])}
+
+      <h2><span class="sc-article-num">8</span>Plans rot</h2>
+
+      <p>An inheritance plan describes a world that keeps changing: devices get replaced, wallets get upgraded, people move, relationships change, and companies disappear.</p>
+
+      ${checklist([
+        "<strong>Review annually</strong>, at a fixed time you will not forget. Pair it with something you already do.",
+        "<strong>Re-check after any change</strong> to your wallet setup, your keyholders, or your family.",
+        "<strong>Date every version</strong> and destroy superseded copies. Two contradictory sets of instructions is worse than one imperfect set.",
+        "<strong>Confirm your third party still exists</strong> and still offers the service you are relying on."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Separate the knowledge that bitcoin exists, the instructions for reaching it, and the secrets themselves. Keep all three out of your will, which may become public &mdash; the will should only establish authority and point to a separate letter. Choose a mechanism where access arrives after you are gone and not before, write the instructions for a stressed beginner, make sure two people know the plan exists, and rehearse it with the person who will have to do it.</p>
+
+      ${callout("If you take one thing from this page", `Test it with your heirs while you are alive. Everything else on this page is guesswork until somebody who is not you tries to follow your instructions and you watch where they stop. It is an awkward afternoon that turns a document you hope works into one you know does.`)}`
   },
+  /* Rescoped from "Coin control and on-chain privacy", which duplicated
+     sparrow-coin-control almost exactly -- that guide already covers linking,
+     labelling, input selection, and consolidation. What was genuinely missing
+     was the analyst's side: the heuristics past the obvious two, and the
+     protocol-level defences (payjoin, silent payments) that are not coin
+     control at all. Sits in concepts beside bitcoin-privacy, which it extends. */
   {
-    slug: "coin-control-privacy",
-    category: "advanced",
+    slug: "chain-analysis-heuristics",
+    category: "concepts",
     products: [],
-    title: "Coin control and on-chain privacy",
-    summary: "How spending links your history together, and the habits that keep unrelated coins unrelated.",
+    title: "How chain analysis reads your wallet",
+    summary: "Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.",
     level: "advanced",
     minutes: 35,
-    goals: ["harden", "learn"],
+    goals: ["learn", "harden", "privacy"],
     tags: ["Privacy", "UTXO"],
     icon: "bi-pie-chart",
-    status: "idea"
+    updated: "2026-08-18",
+    status: "published",
+    related: ["bitcoin-privacy", "sparrow-coin-control", "wasabi-coinjoin-basics"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Chain analysis is not surveillance in the usual sense. Nobody is watching you. It is a set of assumptions applied at scale to a public ledger, and each assumption is individually unremarkable &mdash; the kind of reasoning you would do yourself if handed the data.</p>
+
+      <p>Most people who care about privacy know two of them. <a href='bitcoin-privacy.html'>The privacy guide</a> walks through both: coins spent together share an owner, and the round output is the payment while the awkward one is change. Those two do an enormous amount of work.</p>
+
+      <p>They are not the whole toolkit. This page covers the rest &mdash; the change-detection tricks past the obvious one, the way your software signs its own name on every transaction, and the two newer defences that operate at the protocol level rather than relying on you to have good habits.</p>
+
+      <h2><span class="sc-article-num">1</span>The two you have already met</h2>
+
+      <p>Briefly, so the rest has somewhere to stand.</p>
+
+      ${checklist([
+        "<strong>Common-input-ownership.</strong> If a transaction spends several coins, one entity controlled all of them. This is the single strongest signal in the field, and it is right the overwhelming majority of the time.",
+        "<strong>Change identification by roundness.</strong> Pay someone 0.05 BTC from a 0.31 BTC coin and the outputs are a round number and a remainder. Payments are round; change is whatever is left."
+      ])}
+
+      <p>An analyst who has identified your change can follow it into your next transaction, and the next, indefinitely. That is why change detection matters so much: it is what turns isolated transactions into a chain.</p>
+
+      <h2><span class="sc-article-num">2</span>The other ways change gets spotted</h2>
+
+      <p>Roundness is the famous one. When it does not apply, several others usually do.</p>
+
+      ${checklist([
+        "<strong>Script-type matching.</strong> If a transaction spends from a native SegWit address and produces one native SegWit output and one legacy output, the matching one is almost certainly change &mdash; your wallet makes change in its own format, while you pay whatever the recipient asked for.",
+        "<strong>Address reuse.</strong> If one output goes to an address that has been seen before and the other is fresh, the fresh one is the change. Reused addresses are almost never change, because wallets generate a new one every time.",
+        "<strong>The unnecessary input.</strong> If a transaction includes more inputs than the payment required, the surplus was needed to cover a larger output &mdash; which tells the analyst which output was the large one.",
+        "<strong>The self-transfer shape.</strong> A single input producing a single output, or two outputs that both look like change, is usually somebody moving their own coins rather than paying anyone."
+      ])}
+
+      ${callout("Why several weak signals beat one strong one", "No single heuristic here is reliable alone, and analysts do not use them alone. They apply all of them, score the result, and act on the aggregate. A transaction that defeats one heuristic while satisfying three others has not been made private — it has been made slightly more interesting.")}
+
+      <h2><span class="sc-article-num">3</span>Your wallet has an accent</h2>
+
+      <p>This is the layer most people have never considered, and it requires nothing from you to leak.</p>
+
+      <p>Bitcoin's rules leave several choices to whoever builds the transaction, and different wallet software makes those choices differently. The resulting pattern is consistent enough to identify which software produced a transaction &mdash; a technique usually called wallet fingerprinting.</p>
+
+      ${checklist([
+        "<strong>The locktime field.</strong> Some wallets set it to the current block height to discourage fee sniping; many leave it at zero. That choice alone splits the population.",
+        "<strong>Transaction version number.</strong> Wallets differ, and they differ consistently.",
+        "<strong>Input and output ordering.</strong> Some sort deterministically, some shuffle randomly, some preserve the order they built in.",
+        "<strong>Replace-by-fee signalling.</strong> Whether the transaction is marked replaceable is a per-wallet default more than a per-user decision.",
+        "<strong>Change output position.</strong> Always last, always first, or randomised &mdash; another consistent per-wallet habit."
+      ])}
+
+      <p>The consequence is subtle but real. If your wallet's fingerprint appears on both sides of a transaction &mdash; on the spending side and on one of the outputs &mdash; that output is probably yours. Fingerprinting is a change-detection heuristic wearing a different hat, and no amount of careful coin selection affects it.</p>
+
+      <h2><span class="sc-article-num">4</span>Amounts and timing</h2>
+
+      ${checklist([
+        "<strong>Amount correlation.</strong> A withdrawal of an unusual amount leaving an exchange and an arrival of nearly that amount elsewhere, minus a plausible fee, is a link even with no shared inputs.",
+        "<strong>Timing.</strong> Transactions that consistently appear during one part of the day describe a time zone, and eventually a routine.",
+        "<strong>Fee-rate habits.</strong> Always paying the same wallet's default at the same urgency setting is one more consistent signature."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>What coin control actually defeats</h2>
+
+      <p>Now the practical question: which of these does careful spending address?</p>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>Heuristics against the defences available to you</caption>
+          <thead><tr><th scope="col">Heuristic</th><th scope="col">Coin control helps?</th></tr></thead>
+          <tbody>
+            <tr><td>Common-input-ownership</td><td><strong>Yes</strong> &mdash; this is exactly what choosing inputs prevents</td></tr>
+            <tr><td>Change by roundness</td><td>Partly &mdash; spending a coin close to the payment amount helps</td></tr>
+            <tr><td>Script-type matching</td><td>No &mdash; a wallet setting, not a spending choice</td></tr>
+            <tr><td>Address reuse</td><td>Yes &mdash; never reuse, and this one disappears</td></tr>
+            <tr><td>Unnecessary input</td><td>Partly &mdash; fewer, better-sized inputs</td></tr>
+            <tr><td>Wallet fingerprinting</td><td><strong>No</strong> &mdash; entirely outside your spending decisions</td></tr>
+            <tr><td>Amount and timing correlation</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><a href='sparrow-coin-control.html'>Coin control</a> is genuinely the highest-value habit available, and this table is not an argument against it &mdash; it defeats the strongest heuristic in the field. But it is a habit-level defence, and several rows here are immune to habits. That is what the next two sections are for.</p>
+
+      <h2><span class="sc-article-num">6</span>Payjoin: making the strongest assumption false</h2>
+
+      <p>Every defence so far tries to avoid <em>triggering</em> common-input-ownership. Payjoin does something more interesting: it makes the assumption produce a wrong answer.</p>
+
+      <p>In a payjoin, the person receiving the payment also contributes an input to it. The finished transaction spends coins belonging to two different people, so any analyst applying the strongest heuristic in the field concludes that one entity owned both &mdash; and is simply incorrect.</p>
+
+      ${pullQuote("CoinJoin makes you one of many indistinguishable candidates. Payjoin lets an ordinary payment quietly poison the data instead.")}
+
+      <p>It also breaks amount analysis, because the visible payment amount is no longer the amount that changed hands. And unlike a CoinJoin, a payjoin looks like a completely ordinary transaction &mdash; there is nothing conspicuous about having used one.</p>
+
+      ${checklist([
+        "<strong>The original design (BIP78)</strong> required the receiver to run a server and be online at the moment of payment, which restricted it in practice to merchants and enthusiasts.",
+        "<strong>The newer variant (BIP77)</strong>, merged in 2025, removes that requirement by routing through an untrusted directory service, so the receiver no longer needs their own always-on infrastructure.",
+        "<strong>Support is arriving but not universal.</strong> Bull Bitcoin &mdash; a Canadian exchange and wallet &mdash; and Cake Wallet are among those shipping the newer version.",
+        "<strong>Both sides must support it.</strong> This is the honest limitation: a payjoin needs a willing counterparty, so its usefulness depends on adoption rather than on your own diligence."
+      ])}
+
+      <p>The wider benefit is worth noting. Every payjoin that occurs degrades the reliability of common-input-ownership for <em>everyone</em>, including people who never use it. It is one of the few privacy measures with a positive externality.</p>
+
+      <h2><span class="sc-article-num">7</span>Silent payments: a reusable address that is not reuse</h2>
+
+      <p>Address reuse is one of the clearest signals on the list, and there is a long-standing situation that forces it: publishing a donation address, putting one in a profile, or giving a static address to somebody who pays you regularly. You cannot hand out a fresh address every time if the point is to publish one.</p>
+
+      <p>Silent payments (BIP352) resolve that. You publish one static address, and each sender derives a <em>unique, unlinkable</em> on-chain output from it. Every payment lands somewhere different, nothing on the chain connects them, and there is no address reuse to detect &mdash; while you only ever published one string.</p>
+
+      ${checklist([
+        "<strong>The cost is scanning.</strong> Your wallet must check incoming blocks to find payments meant for you, which is more work than watching a list of known addresses. This is the main reason adoption has been gradual.",
+        "<strong>Support is uneven and growing.</strong> Through 2026 the underlying cryptography landed in the standard library, and wallets including Sparrow, Nunchuk, Cake Wallet, and Silentium have shipped varying degrees of support &mdash; receiving typically arriving before sending.",
+        "<strong>It solves publication, not everything.</strong> Silent payments fix the static-address problem specifically. They do not affect common-input-ownership, change detection, or fingerprinting."
+      ])}
+
+      <h2><span class="sc-article-num">8</span>What none of this fixes</h2>
+
+      ${cautions([
+        "<strong>The past is permanent.</strong> Every link already published stays published. All of this changes your future only.",
+        "<strong>Identity attaches off-chain.</strong> A verified exchange account ties your name to specific coins, and no on-chain technique reaches backwards through that.",
+        "<strong>Your wallet's server sees your queries</strong> regardless of how the transactions look. That is a <a href='own-node-connection.html'>separate problem with a separate fix</a>.",
+        "<strong>Amounts are always visible.</strong> Bitcoin's outputs are public values. Every technique here obscures ownership, not quantity."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Analysts combine roughly eight inferences, not one: shared inputs, several independent ways of spotting change, the fingerprint your wallet software leaves on every transaction, and correlations of amount and time. Coin control defeats the strongest of them and is worth doing for that reason alone, but several are immune to spending habits. Payjoin attacks the biggest heuristic directly by making it produce false answers, and silent payments remove the need to ever reuse a published address.</p>
+
+      ${callout("If you take one thing from this page", `Privacy on a public ledger is a question of how many weak signals point the same way, not whether you defeated one strong one. That is why habits, wallet choice, and protocol-level tools are complementary rather than alternatives — and why the honest goal is raising the cost of the inference rather than achieving anonymity.`)}`
   },
   {
     slug: "duress-and-coercion",
     category: "advanced",
     products: [],
     title: "Planning for coercion",
-    summary: "Decoy wallets, time delays, and an honest look at which of these help and which just add ways to lose funds.",
+    summary: "The attack that ignores your cryptography and comes for you instead. Why decoy wallets are weaker than they sound, why being genuinely unable to comply beats lying convincingly, and the arrangements that make a bad situation worse.",
     level: "advanced",
     minutes: 30,
-    goals: ["harden"],
+    goals: ["harden", "inherit"],
     tags: ["Threat model", "Duress"],
     icon: "bi-shield-exclamation",
-    status: "idea"
+    updated: "2026-08-18",
+    status: "published",
+    related: ["coldcard-advanced-features", "multisig-key-geography", "passphrase-setup"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Every other guide on this site makes the mathematics harder. Longer keys, more signers, better entropy, verified firmware. All of it assumes an attacker who has to get past the cryptography.</p>
+
+      <p>There is a well-known cartoon about this. Security people imagine an adversary building enormous machines to crack a key, when the realistic approach is to hit the owner with a cheap wrench until they hand it over. That image gave the whole problem its name: the <strong><a href='../glossary.html#term-wrench_attack'>five-dollar wrench attack</a></strong> &mdash; the attack that does not engage with your security at all, and instead engages with you.</p>
+
+      <p>No amount of key length helps here. What follows is an honest account of what does, what merely sounds like it does, and which popular measures can make a dangerous situation last longer.</p>
+
+      ${callout("Before anything else", "If this ever happens to you, your safety is worth more than every coin you own. Bitcoin is replaceable and you are not. Nothing on this page is advice to resist, delay, or refuse someone who is threatening you — the entire purpose of planning in advance is so that you never have to make that choice while frightened.")}
+
+      <h2><span class="sc-article-num">1</span>Be proportionate about this</h2>
+
+      <p>This threat is real and it is also rare, and writing about it tends to make it feel imminent. It is worth placing accurately before redesigning your life around it.</p>
+
+      ${checklist([
+        "<strong>The attack requires a belief.</strong> Somebody has to think you hold enough bitcoin to be worth the risk of a violent crime. That belief comes from somewhere, and it is nearly always something that was said.",
+        "<strong>It is concentrated among the visible.</strong> People who discuss holdings publicly, appear in media, work in the industry, or mention it socially are in a different position from people who have told nobody.",
+        "<strong>The realistic threat for most people is remote:</strong> phishing, fake support, malware, and address-substitution &mdash; not physical confrontation.",
+        "<strong>Household risk is worth naming.</strong> For some people the plausible coercion is domestic rather than a stranger, and that changes which measures make sense."
+      ])}
+
+      <h2><span class="sc-article-num">2</span>The most effective defence is not technical</h2>
+
+      <p>Because the attack depends on someone believing you are worth targeting, the highest-value measure available is not a device feature. It is discretion, and it costs nothing.</p>
+
+      ${checklist([
+        "<strong>Do not discuss what you hold.</strong> Not amounts, not roughly, not as a joke, not to family who will repeat it warmly and harmlessly to somebody else.",
+        "<strong>Do not signal it indirectly</strong> &mdash; conference lanyards, stickers, clothing, and forum handles attached to your real name all describe you to strangers.",
+        "<strong>Keep addresses away from your identity.</strong> A public address next to your name lets anybody read your balance forever. <a href='bitcoin-privacy.html'>The privacy guide</a> covers why that link is hard to undo.",
+        "<strong>Have deliveries sent somewhere sensible.</strong> A branded hardware wallet box arriving at your home tells the delivery chain, and anyone watching your porch, what you now own.",
+        "<strong>Accept that some people must know.</strong> Your <a href='inheritance-plan.html'>inheritance plan</a> requires it. Keep that number small and chosen rather than accumulated."
+      ])}
+
+      <p>None of this is glamorous, and all of it outperforms every clever feature below.</p>
+
+      <h2><span class="sc-article-num">3</span>Decoy wallets, honestly</h2>
+
+      <p>The popular answer is a decoy: a wallet holding a modest amount that you surrender while the real one stays hidden, usually behind a passphrase or a device's alternate PIN.</p>
+
+      <p><a href='passphrase-setup.html'>The passphrase guide</a> makes the core objection &mdash; it is a delay rather than a shield, because it depends on the attacker believing you and stopping. Three further problems are worth stating plainly before you rely on one.</p>
+
+      ${cautions([
+        "<strong>You have to perform, under the worst conditions of your life.</strong> A decoy is a lie that must be told convincingly to a violent person while terrified. Most planning quietly assumes a calm, competent version of you that will not be there.",
+        "<strong>The amount is an unsolvable dilemma.</strong> Too little and it is transparently a decoy. Enough to be believed is enough that losing it genuinely hurts.",
+        "<strong>Being disbelieved makes things worse.</strong> If they think you are holding back, the encounter continues &mdash; and you have spent your one deception and have nothing left to offer.",
+        "<strong>Sophisticated attackers know the technique exists.</strong> Passphrases and duress PINs are not secrets; anyone who researched enough to target you has read the same pages you have."
+      ])}
+
+      <p>Decoys are not worthless. They are a reasonable hedge against an opportunistic thief who wants a quick result. They are a poor foundation against anyone patient or informed.</p>
+
+      <h2><span class="sc-article-num">4</span>The principle that actually helps</h2>
+
+      <p>Here is the shift that reframes the whole subject.</p>
+
+      ${pullQuote("A truth you can state calmly is worth more than a lie you have to sell. Do not aim to deceive — aim to be genuinely unable to comply.")}
+
+      <p>A decoy requires acting. An arrangement that makes immediate transfer <em>impossible</em> requires only that you explain it, and the explanation is verifiable, consistent, and does not collapse under pressure &mdash; because it is true.</p>
+
+      ${checklist([
+        "<strong>Time delays.</strong> A wallet with a mandatory waiting period cannot be emptied now by anyone, including you. The <a href='coldcard-advanced-features.html'>COLDCARD login countdown</a> does this at the device level; some products build a notice period into recovery itself.",
+        "<strong>Timelocked spending paths.</strong> Bitcoin can enforce that certain coins simply are not spendable until a future date. That is a fact about the chain, not a claim about your wallet &mdash; see <a href='scripts-and-miniscript.html'>scripts and miniscript</a>.",
+        "<strong>Keys you cannot reach.</strong> A multisig whose second key is in another city, another country, or another person's hands cannot be assembled in an evening. <a href='multisig-key-geography.html'>Key geography</a> is the design work behind this.",
+        "<strong>Keys other people must approve.</strong> A collaborative custody arrangement means a third party has to participate, on their schedule, through their process."
+      ])}
+
+      <p>Each of these converts &ldquo;transfer it now&rdquo; into a request that cannot be satisfied at speed by anybody. That is a materially different position from hoping to be believed.</p>
+
+      <h2><span class="sc-article-num">5</span>The danger of over-engineering</h2>
+
+      <p>This is where an honest guide has to complicate its own advice, because the measures in the previous section carry a real risk that enthusiasts rarely mention.</p>
+
+      <p><strong>An attacker who cannot get what they want may not simply leave.</strong> A situation that could have ended in minutes with a transfer can instead continue while you explain a delay mechanism to somebody unwilling to hear it. Making yourself unable to comply is protective for your coins and is not automatically protective for you.</p>
+
+      ${cautions([
+        "<strong>Keep something available to give.</strong> A hot wallet with a realistic everyday balance is not a weakness; it is a way for an encounter to end.",
+        "<strong>Never build an arrangement you cannot explain simply.</strong> If you cannot describe the delay in one sentence a stranger will accept, it will not help you in the moment.",
+        "<strong>Do not rely on features you have not tested.</strong> A trick PIN you configured once and never rehearsed is not something you will use correctly under threat.",
+        "<strong>Avoid measures that destroy.</strong> A wipe or brick triggered during a confrontation removes the attacker's incentive to stop without giving them anything &mdash; consider carefully whether that is the situation you want to create."
+      ])}
+
+      <h2><span class="sc-article-num">6</span>Matching the measure to the risk</h2>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>What each measure is actually good for</caption>
+          <thead><tr><th scope="col">Measure</th><th scope="col">Helps against</th><th scope="col">Cost to you</th></tr></thead>
+          <tbody>
+            <tr><td>Discretion about holdings</td><td>Being selected at all</td><td>None. Do this first.</td></tr>
+            <tr><td>A funded everyday hot wallet</td><td>Opportunistic demands</td><td>The balance, occasionally</td></tr>
+            <tr><td>Decoy wallet or duress PIN</td><td>An attacker who accepts it</td><td>A performance, and a real balance</td></tr>
+            <tr><td>Login countdown or delay</td><td>Immediate transfer, credibly</td><td>Your own access is delayed too</td></tr>
+            <tr><td>Geographic multisig</td><td>Anything demanding speed</td><td>Complexity, travel, rehearsal</td></tr>
+            <tr><td>Timelocked coins</td><td>Any demand before the date</td><td>Technical skill; funds genuinely locked</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Read that top row as the recommendation. Almost everybody should do the first two and stop, and the remainder is for people with a specific, identified reason.</p>
+
+      <h2><span class="sc-article-num">7</span>If it happens</h2>
+
+      ${checklist([
+        "<strong>Comply with what you can.</strong> Give up the hot wallet, the phone, the device. None of it is worth injury.",
+        "<strong>Do not improvise a deception</strong> you have not rehearsed. Being caught in one mid-encounter is worse than never attempting it.",
+        "<strong>Get to safety first, then act.</strong> Once you are safe, move whatever remains to a new wallet with new keys, because anything they saw must be treated as compromised.",
+        "<strong>Report it.</strong> Bitcoin's finality means recovery is unlikely, but coercion is a serious crime and patterns of these offences matter beyond your own case.",
+        "<strong>Rebuild differently.</strong> Whoever did this knew something. Work out what, and change it."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>The five-dollar wrench attack bypasses your cryptography entirely, so cryptographic answers do not apply. It depends on someone believing you are worth targeting, which makes discretion the highest-value defence by a wide margin. Decoys ask you to act convincingly while terrified; delays and distributed keys let you tell the truth instead. And keep something available to hand over, because an encounter that can end quickly should.</p>
+
+      ${callout("If you take one thing from this page", `Not being identified as a holder protects you from every attack on this page at once, and costs nothing but silence. Every technical measure here is a distant second — and the ones that make you unable to comply protect your coins, which is not the same thing as protecting you.`)}`
   },
 
   /* ----------------------------------------------------------------- concepts */
@@ -4494,7 +6655,7 @@ const guides = [
 
       <h3>SegWit, and moving the signatures</h3>
 
-      <p>SegWit restructured transactions so signature data sits in a separate section, discounted when a block's size is measured. Two consequences follow: spending a SegWit output costs meaningfully less in fees, and transaction IDs stopped being malleable &mdash; a fix that Lightning depends on. Native SegWit uses bech32 encoding, which is why bc1q addresses are lowercase and slightly longer, and why they carry a checksum strong enough to catch typos rather than merely usually catching them.</p>
+      <p>SegWit restructured transactions so signature data sits in a separate section, discounted when a block's size is measured. Two consequences follow: spending a SegWit output costs meaningfully less in fees, and transaction IDs stopped being malleable &mdash; a fix that Lightning depends on. Native SegWit uses bech32 encoding, which is why bc1q addresses are lowercase and slightly longer, and why they carry a <a href="../glossary.html#term-checksum">checksum</a> strong enough to catch typos rather than merely usually catching them.</p>
 
       <h3>Taproot, and hiding the complexity</h3>
 
@@ -4567,7 +6728,7 @@ const guides = [
     icon: "bi-calculator",
     updated: "2026-08-18",
     status: "published",
-    related: ["life-of-a-transaction", "sparrow-coin-control", "address-types"],
+    related: ["stuck-transaction", "life-of-a-transaction", "sparrow-coin-control", "address-types"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">Bitcoin fees confuse people because they behave nothing like the fees everywhere else in finance. Sending a hundred thousand dollars can cost less than sending fifty. The same payment can cost four dollars on Tuesday and forty on Thursday. And the wallet's suggestion is frequently several times what you actually needed to pay.</p>
@@ -4781,7 +6942,7 @@ const guides = [
     summary: "Without one, your wallet is asking a stranger's computer what you own and believing the answer. A node is how “don't trust, verify” stops being a slogan and becomes something you actually do.",
     level: "intermediate",
     minutes: 17,
-    goals: ["learn", "harden"],
+    goals: ["learn", "harden", "privacy"],
     tags: ["Node", "Verification", "Privacy"],
     icon: "bi-cpu",
     updated: "2026-08-18",
@@ -4903,7 +7064,7 @@ const guides = [
     summary: "Bitcoin is not anonymous and never was. It is a permanent public ledger with pseudonyms attached, and most of what links those pseudonyms to you is done by ordinary arithmetic anyone can perform.",
     level: "intermediate",
     minutes: 22,
-    goals: ["learn", "harden"],
+    goals: ["learn", "harden", "privacy"],
     tags: ["Privacy", "Chain analysis", "Lightning"],
     icon: "bi-wifi",
     updated: "2026-08-18",
@@ -5313,7 +7474,8 @@ const glossaryTagIds = new Map([
   ["reproducible firmware", "reproducible_firmware"],
   ["sim swap", "sim_swap"],
   ["threat model", "threat_model"],
-  ["watch-only", "watch_only_wallet"]
+  ["watch-only", "watch_only_wallet"],
+  ["duress", "wrench_attack"]
 ]);
 
 const renderGlossaryTag = (label, base = "", extraClass = "") => {
@@ -5434,22 +7596,28 @@ const renderGuideFinder = () => {
   const finderGroups = [
     ["devices", "Hardware"],
     ["software", "Wallets"],
-    ["exchanges", "Exchanges"],
-    ["collaborative", "Collaborative custody"]
+    ["exchanges", "Canadian exchanges"]
   ];
+  /* Two vendors, so a fourth full-width group of its own read as more space
+     than the category needed -- it now rides under Wallets as a sub-group,
+     since a collaborative-custody wallet is still a wallet. */
+  const collabChips = guideProducts.filter(p => p.category === "collaborative")
+    .map(p => chip("product", p.key, p.label, "", p.image)).join("");
   const productGroups = finderGroups.map(([cat, label]) => {
     const chips = guideProducts.filter(p => p.category === cat)
       .map(p => chip("product", p.key, p.label, "", p.image)).join("");
-    return `<div class="sc-chip-group${cat === "collaborative" ? " sc-chip-group-collaborative" : ""}"><h4>${label}</h4><div class="sc-chips">${chips}</div></div>`;
+    const collab = cat === "software"
+      ? `<div class="sc-chip-divider" aria-hidden="true"></div><div class="sc-chip-subgroup"><h5>Collaborative custody</h5><div class="sc-chips">${collabChips}</div></div>`
+      : "";
+    return `<div class="sc-chip-group"><h4>${label}</h4><div class="sc-chips">${chips}</div>${collab}</div>`;
   }).join("");
 
   return `
     <section id="finder" class="sc-section sc-section-muted sc-finder-section" hidden data-guide-finder>
       <div class="container">
         <div class="sc-section-head">
-          <span class="sc-eyebrow">Guide finder</span>
-          <h2>Tell us what you are doing</h2>
-          <p>Answer one question or all three. The library below narrows as you go, and you can clear it at any point.</p>
+          <h2>Guide finder</h2>
+          <p>Tell us what you are doing. Answer one question or all three, and the library below narrows as you go — clear it at any point.</p>
         </div>
 
         <div class="sc-finder">
@@ -5468,13 +7636,22 @@ const renderGuideFinder = () => {
             <div class="sc-chips">${guideLevels.map(l => chip("level", l.key, l.label)).join("")}</div>
           </fieldset>
 
+          <div class="sc-finder-search">
+            <label class="sc-finder-search-label" for="guide-search">Or search directly</label>
+            <div class="sc-finder-search-wrap">
+              <span class="sc-finder-search-icon" aria-hidden="true"></span>
+              <input id="guide-search" class="sc-finder-search-input" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Title, device, wallet, or topic…" data-guide-search>
+              <button type="button" class="sc-finder-search-clear" data-guide-search-clear hidden>Clear</button>
+            </div>
+          </div>
+
           <div class="sc-finder-bar" data-finder-bar hidden>
             <p class="sc-finder-count" data-finder-count aria-live="polite"></p>
             <button type="button" class="sc-finder-clear" data-finder-clear><i class="bi bi-x" aria-hidden="true"></i> Clear answers</button>
           </div>
 
           <div class="sc-finder-pick" data-finder-pick hidden></div>
-          <p class="sc-guides-empty" data-guide-none hidden>Nothing matches that combination yet. Clear an answer, or <a href="contact.html">ask for the guide</a> and it moves up the queue.</p>
+          <p class="sc-guides-empty" data-guide-none hidden>Nothing matches that combination yet. Clear an answer or your search, or <a href="contact.html">ask for the guide</a> and it moves up the queue.</p>
         </div>
       </div>
     </section>`;
@@ -5564,7 +7741,9 @@ const renderGuideBody = guide => {
           <a href="../guides.html#${category.key}">${category.label}</a>
         </nav>
         <span class="sc-eyebrow">${guide.eyebrow || category.eyebrow}</span>
-        <h1>${guide.title}</h1>
+        ${guide.titleMark
+          ? `<div class="sc-guide-title-row"><span class="${guide.titleMark}" aria-hidden="true"></span><h1>${guide.title}</h1></div>`
+          : `<h1>${guide.title}</h1>`}
         <p class="sc-lead">${guide.summary}</p>
         <div class="sc-guide-meta">
           <span class="sc-level sc-level-${guide.level}">${levelLabels[guide.level]}</span>
