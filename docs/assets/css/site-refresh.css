@@ -4717,19 +4717,6 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
 
 }
 
-/* Guides only -- lays its label link and chevron button side by side as one
-   visual unit. Compare's .sc-nav-menu has no second child, so it never gets
-   this class and is untouched. No align-items here: default `stretch` makes
-   the chevron button match the label link's full height (the link's own
-   line-height makes it the taller of the two), instead of centering at its
-   own shorter natural height and leaving a gap top and bottom of the arrow
-   that the label doesn't have. .sc-nav-menu-chevron-btn's own
-   align-items: center re-centers the small chevron glyph inside that now
-   taller box. */
-.sc-nav-menu-split {
-  display: flex;
-}
-
 /* Homepage actions share one compact, control-panel treatment. */
 body.site-refresh .navbar .sc-nav-menu-toggle {
   display: flex;
@@ -4767,47 +4754,6 @@ body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-toggle {
   }
 }
 
-/* Guides' separate chevron button. Its own complete rule rather than
-   sharing .sc-nav-menu-toggle -- the 7px left padding is deliberately what
-   used to be the single button's internal `gap: 7px`, moved onto this box
-   since the label link's own padding-right is zeroed out below (see
-   .sc-nav-menu-split). Colored on hover/focus of *either* sibling, not just
-   itself -- they used to be one button sharing one color via currentColor,
-   and splitting them shouldn't make hovering the label leave the arrow
-   behind, or leave it behind once the click that opens the list is over. */
-body.site-refresh .navbar .sc-nav-menu-chevron-btn {
-  display: flex;
-  align-items: center;
-  padding: 11px 12px 11px 7px;
-  color: rgba(255, 255, 255, 0.78);
-  background: none;
-  border: 0;
-  transition: color 0.2s ease;
-}
-
-body.site-refresh .navbar .sc-nav-menu-chevron-btn:focus-visible,
-body.site-refresh .navbar .sc-nav-menu-chevron-btn.active,
-body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-chevron-btn {
-  color: var(--sc-orange);
-}
-
-/* Desktop-only for the same reason as the label above. */
-@media (min-width: 992px) {
-  body.site-refresh .navbar .sc-nav-menu-chevron-btn:hover,
-  body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-menu-chevron-btn,
-  body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-menu-chevron-btn {
-    color: var(--sc-orange);
-  }
-}
-
-/* Reproduces Compare's exact 12px outer insets + 7px inner gap across two
-   boxes instead of one: the link keeps its normal 12px on every side except
-   the right (zeroed here), and the chevron button's own 7px left padding
-   above supplies that gap, so nothing is doubled up and nothing shrinks. */
-body.site-refresh .navbar .sc-nav-menu-split > .sc-nav-menu-toggle {
-  padding-right: 0;
-}
-
 .sc-nav-menu-chevron {
   width: 7px;
   height: 7px;
@@ -4817,16 +4763,13 @@ body.site-refresh .navbar .sc-nav-menu-split > .sc-nav-menu-toggle {
   transition: transform 0.16s ease;
 }
 
-.sc-nav-menu.is-open > .sc-nav-menu-toggle .sc-nav-menu-chevron,
-.sc-nav-menu.is-open > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron {
+.sc-nav-menu.is-open > .sc-nav-menu-toggle .sc-nav-menu-chevron {
   transform: translateY(2px) rotate(225deg);
 }
 
 @media (min-width: 992px) {
   .sc-nav-menu:hover > .sc-nav-menu-toggle .sc-nav-menu-chevron,
-  .sc-nav-menu:hover > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron,
-  .sc-nav-menu:focus-within > .sc-nav-menu-toggle .sc-nav-menu-chevron,
-  .sc-nav-menu:focus-within > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron {
+  .sc-nav-menu:focus-within > .sc-nav-menu-toggle .sc-nav-menu-chevron {
     transform: translateY(2px) rotate(225deg);
   }
 }
@@ -4886,10 +4829,6 @@ body.site-refresh .navbar .sc-nav-submenu::before {
     padding-left: 9px;
     font-size: 13px;
   }
-
-  body.site-refresh .navbar .sc-nav-menu-chevron-btn {
-    padding-right: 9px;
-  }
 }
 
 body.site-refresh .navbar .sc-nav-submenu a {
@@ -4915,41 +4854,6 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
     font-size: 21px;
     font-weight: 600;
     letter-spacing: -0.01em;
-  }
-
-  /* Guides' split control reproduces the same full-width, label-left/
-     chevron-right layout as Compare's single button, just spread across
-     the .sc-nav-menu-split row instead of one button's own space-between --
-     the link no longer needs width: 100% since it's not the only child, and
-     its own right padding is zeroed so the row's gap is the only space
-     between it and the chevron button. */
-  /* No align-items -- grid's default `stretch` keeps the chevron button as
-     tall as the label row, which matters more on touch than on desktop:
-     centering it collapses the button to the glyph's own ~26px and shrinks
-     the tap target. */
-  body.site-refresh .navbar-mobile .sc-nav-menu-split {
-    display: grid;
-    grid-template-columns: 1fr auto;
-  }
-
-  /* The submenu is a third child of the split row, so in the drawer it has to
-     be told to take a line of its own -- left to itself it lands in the grid's
-     next implicit column, wedged beside the label and chevron. Grid rather
-     than a wrapped flex row because the submenu carries side margins, and a
-     flex-basis of 100% would add them on top of a full-width box and push it
-     past the drawer's edge. */
-  body.site-refresh .navbar-mobile .sc-nav-menu-split > .sc-nav-submenu {
-    grid-column: 1 / -1;
-  }
-
-  body.site-refresh .navbar-mobile .sc-nav-menu-split > .sc-nav-menu-toggle {
-    width: auto;
-    padding-right: 0;
-  }
-
-  body.site-refresh .navbar-mobile .sc-nav-menu-chevron-btn {
-    padding: 15px 22px 15px 0;
-    color: var(--sc-ink);
   }
 
   /* The arrow is drawn from two borders, so it scales by box size, not
