@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.">
+  <title>SeedSigner: build and first use | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/seedsigner-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="SeedSigner: build and first use | SelfCustody.ca">
+  <meta property="og:description" content="Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/seedsigner-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"SeedSigner: build and first use","description":"Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.","url":"https://selfcustody.ca/guides/seedsigner-setup.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/seedsigner-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#devices">Devices</a>
+        </nav>
+        <span class="sc-eyebrow">Hardware</span>
+        <h1>SeedSigner: build and first use</h1>
+        <p class="sc-lead">Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 60 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">DIY</span><span class="sc-tag">Stateless</span><span class="sc-tag">QR</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../devices.html#seedsigner">About SeedSigner <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">A SeedSigner is about fifty dollars of commodity electronics that you assemble yourself: a Raspberry Pi Zero, a small screen with a joystick, and a camera. There is no secure element, no company standing behind it, and nothing is sealed in a tamper-evident bag. It signs bitcoin transactions as capably as devices costing ten times more.</p>
+
+      <p>What makes that work is a design decision rather than a component. The device is <strong>stateless</strong>: it holds your seed only while powered on, and forgets it completely the moment you unplug it. There is nothing on the hardware to steal, which is why the hardware does not need to defend itself.</p>
+
+      <p>The trade is that you perform the security yourself &mdash; the checks a manufacturer would normally have done are now your job, and there is one in particular you must not skip. Budget an evening.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-cpu" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">The three SeedSigner components laid out unassembled on a workbench: a Raspberry Pi Zero, a Waveshare 1.3 inch LCD hat with its joystick, and a small camera module with ribbon cable.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>Three parts, no enclosure yet. The screen is the one people buy wrong.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li><strong>A Raspberry Pi Zero, ideally v1.3</strong> &mdash; the version with no wireless hardware at all. The W and 2 W models work, and so do larger Pis, but see the note in step 1.</li><li><strong>A Waveshare 1.3&Prime; LCD hat, 240&times;240 resolution.</strong> This exact resolution. Waveshare sells several boards that look nearly identical and will not work.</li><li><strong>A Pi Zero-compatible camera module.</strong> The OV5647-sensor 5MP boards are the commonly tested ones. Camera cables come in two styles, so check yours matches your enclosure.</li><li><strong>A microSD card.</strong> Capacity is irrelevant &mdash; the image is well under 100MB.</li><li>A computer to verify and flash the image, and a soldering iron if your Pi's GPIO header is not pre-attached.</li><li>No bitcoin. Nothing here needs funds, and nothing should be funded until the check at the end passes.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>What you are actually building</h2>
+
+      <p>Every other device in this section arrives finished. Someone chose the components, wrote the firmware, sealed the box, and put their name on the result. You check the seal and inherit their work.</p>
+
+      <p>Here you are the manufacturer. Nobody vetted your parts, and the tamper-evident bag does not exist. In exchange you get a device with no proprietary silicon, an image you can rebuild from source, and no supply chain to compromise except the one you ran yourself.</p>
+
+      <p>Two consequences shape the whole build:</p>
+
+      <ul class="sc-check-list"><li><strong>Verifying the image is not optional here.</strong> On a sealed device the bag is your integrity check. On this one, the signature on the software is the only one you get. Step 3 is the most important step on this page.</li><li><strong>Wireless hardware you do not use is still wireless hardware.</strong> The SeedSigner image never touches WiFi or Bluetooth, but a Pi Zero 1.3 cannot use them because the radios are not on the board. That is a stronger statement than trusting software to leave them off, and it is why the 1.3 is preferred.</li></ul>
+
+      <p><a class="sc-text-link" href="https://seedsigner.com/hardware/" target="_blank" rel="noopener">SeedSigner hardware list <i class="bi bi-arrow-up-right"></i></a> &nbsp; <a class="sc-text-link" href="https://github.com/SeedSigner/seedsigner" target="_blank" rel="noopener">SeedSigner source and releases <i class="bi bi-arrow-up-right"></i></a></p>
+
+      <ul class="sc-caution-list"><li>There are no official vendors. The project endorses nobody, so judge sellers on their own reputation rather than assuming a listing is legitimate.</li><li>Buy the 240&times;240 Waveshare screen specifically. Ordering the wrong lookalike is the single most common way a build fails, and it fails after assembly rather than before.</li></ul>
+
+      <h2><span class="sc-article-num">2</span>Assembly</h2>
+
+      <p>Mechanically this is a ten-minute job, assuming your Pi came with its GPIO header already soldered. If it did not, that is the one step needing an iron &mdash; forty pins, or a repair shop and a coffee.</p>
+
+      <ul class="sc-check-list"><li><strong>Seat the screen on the GPIO header.</strong> The hat covers the 40-pin connector, aligned from the pin-1 corner. It only goes on one way round.</li><li><strong>Connect the camera to the CSI port</strong> with its ribbon cable, contacts facing the correct side for your Pi. The connector lifts, the ribbon slides in, the connector presses back down.</li><li><strong>Leave the enclosure until it boots.</strong> Confirm the thing works before committing it to a case, because taking it apart again to reseat a ribbon is irritating.</li></ul>
+
+      <h2><span class="sc-article-num">3</span>Verify the image, then flash it</h2>
+
+      <p>This is the step that replaces the tamper-evident bag, and skipping it means running software of unknown origin on a device you are about to show your seed to.</p>
+
+      <p>Download the release image along with its <a href="../glossary.html#term-checksum">checksum</a> file and the signature of that checksum file. Then, on your computer, three commands do the work &mdash; substituting the version you actually downloaded:</p>
+
+      <ul class="sc-check-list"><li><strong>Fetch the project's signing key:</strong> <code>gpg --fetch-keys https://keybase.io/seedsigner/pgp_keys.asc</code></li><li><strong>Verify the checksum file was signed by that key:</strong> <code>gpg --verify seedsigner.0.8.7.sha256.txt.sig</code></li><li><strong>Verify the image matches the checksum:</strong> <code>shasum -a 256 --ignore-missing --check seedsigner.0.8.7.sha256.txt</code></li></ul>
+
+      <p>The first command establishes which key you are trusting. The second proves the checksum list came from that key. The third proves your download matches the list. All three have to pass; any one of them alone proves very little.</p>
+
+      <p>Once verified, write the image to the microSD card with Raspberry Pi Imager or Balena Etcher, and put the card in the Pi.</p>
+
+      <div class="sc-callout mt-4"><h3>What a signature check does and does not tell you</h3><p>It confirms the image is the one the SeedSigner project published, unmodified in transit. It does not tell you the project is trustworthy &mdash; that judgement is yours, and it is the same judgement you make about any wallet maker. What it removes is the middle ground where a tampered download slips past unnoticed.</p></div>
+
+      <h2><span class="sc-article-num">4</span>First boot, and the stateless model</h2>
+
+      <p>Power it on and it comes up in seconds with no setup wizard, no PIN, and no wallet. It is genuinely empty, and it will be empty again every time you power it on.</p>
+
+      <p>This is the part that surprises people arriving from other devices. A COLDCARD remembers its seed and defends it with a PIN and a secure element. A SeedSigner remembers nothing, so there is nothing to defend. Every session begins by loading a seed and ends, at power-off, by forgetting it.</p>
+
+      <ul class="sc-check-list"><li><strong>Nothing persists.</strong> A SeedSigner recovered from a drawer, or from a thief, holds no key material at all.</li><li><strong>You re-enter the seed each session.</strong> By typing the words, by dice, or by scanning a SeedQR &mdash; see step 6.</li><li><strong>The threat model moves.</strong> Your security no longer rests on the device resisting attack. It rests on where your words live when the device is off, and on nobody watching the screen while they are on it.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Creating a seed on the device</h2>
+
+      <p>The SeedSigner can generate a seed for you, and it offers two sources of randomness rather than asking you to trust a chip you cannot inspect.</p>
+
+      <ul class="sc-check-list"><li><strong>Dice rolls.</strong> You roll, it converts. This is the most transparent option available on any device and is covered properly in <a href='dice-entropy.html'>rolling your own entropy</a>.</li><li><strong>Image entropy.</strong> The camera photographs something unpredictable and derives randomness from the sensor data.</li></ul>
+
+      <p>Write the resulting words down immediately, on paper or metal, in order. On a stateless device this is not a backup step you can defer &mdash; if you power the thing off before recording them, the wallet is gone, and there is nothing anywhere to recover it from.</p>
+
+      <ul class="sc-caution-list"><li>The dice-to-seed method changed in 2022, so rolls recorded on older firmware will not reproduce the same wallet today. Your words are the backup; the rolls are working paper.</li><li>Decide your passphrase policy now. The device supports a BIP39 passphrase, and a passphrase you cannot reproduce is a wallet you cannot open.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>SeedQR, and the trade it asks of you</h2>
+
+      <p>Typing twenty-four words on a joystick every session gets old within a week, so the project offers <strong>SeedQR</strong>: your seed encoded as a QR code that the camera reads instantly. The device walks you through transcribing it by hand onto a blank grid, so the code is created by you rather than printed by anything.</p>
+
+      <p>It genuinely solves the usability problem. It also changes the shape of your risk, and this is worth sitting with before you make one.</p>
+
+      <blockquote class="sc-pull-quote"><p>Written words have to be read, understood, and typed. A SeedQR only has to be photographed. Convenience for you is convenience for anyone who gets a look at it.</p></blockquote>
+
+      <ul class="sc-caution-list"><li><strong>A photograph of a SeedQR is your wallet.</strong> No transcription, no reading skill, no delay &mdash; a glance from a phone camera is enough.</li><li><strong>Store it as you would the words themselves</strong>, which for most people means not in the same place as the device, and never anywhere a camera can see.</li><li><strong>It is not a substitute for the written words.</strong> Keep the plate. A damaged or unreadable QR with no word backup is a total loss.</li></ul>
+
+      <h2><span class="sc-article-num">7</span>Signing a transaction</h2>
+
+      <p>Nothing is plugged in, ever. The SeedSigner and your wallet software talk in QR codes across the air gap, and the round trip goes like this:</p>
+
+      <ul class="sc-check-list"><li>Your wallet software builds an unsigned transaction &mdash; a PSBT &mdash; and shows it as a QR code on the computer screen.</li><li>You load your seed on the SeedSigner, then point its camera at that code.</li><li><strong>The device shows you what you are signing.</strong> Amount, destination, fee. Read it here, on the device, not on the computer.</li><li>You approve, and the SeedSigner displays the signed result as a QR code.</li><li>Your wallet software reads that code with a webcam and broadcasts the transaction.</li></ul>
+
+      <p>The device supports single-sig and multisig, exports xpubs for both, and handles taproot, native segwit, nested segwit, and legacy address types &mdash; so it pairs with essentially any modern wallet software.</p>
+
+      <div class="sc-callout mt-4"><h3>The screen you read is the screen that matters</h3><p>A compromised computer can display an honest-looking transaction while asking you to sign a dishonest one. The SeedSigner's screen is driven by the device doing the signing, which is the entire reason to check the amount and address there rather than on the machine that composed it.</p></div>
+
+      <h2><span class="sc-article-num">8</span>Verify before you fund it</h2>
+
+      <p>Everything so far is an assumption until you prove it, and on a DIY device that proof matters more, not less.</p>
+
+      <ul class="sc-check-list"><li>Export the public keys to your wallet software as a watch-only wallet, and confirm the fingerprint shown on the device matches the one in the software.</li><li>Power the SeedSigner off completely, then reload your seed from your written words &mdash; not from a SeedQR &mdash; and confirm you reach the same wallet. This tests your backup and your transcription in one go.</li><li>Send a small test amount, confirm it arrives, then sign a transaction sending it back out. Only then is the whole loop proven.</li><li>Note the firmware version you used, since the dice method belongs to that version.</li></ul>
+
+      <p>If the fingerprints disagree, stop. The software is watching a different wallet from the one the device will sign for, and every address it offers you would be wrong.</p>
+
+      <h2>The short version</h2>
+
+      <p>Buy the right screen, assemble three parts, and verify the image signature before flashing it &mdash; that check is the only supply-chain protection a DIY device has. Then treat the device as disposable and the words as everything, because the SeedSigner is designed to hold nothing at all when it is switched off.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>The security here does not live in the hardware, and it was never meant to. It lives in a verified image, a written backup you have tested, and the discipline of reading each transaction on the device's own screen. Get those three right and the fifty-dollar signer is not a compromise.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="krux-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-cpu"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Krux: install and first use</h3>
+              <p>Krux is firmware, not a device. Choosing hardware to put it on, verifying and flashing the release, generating a seed from dice or a photograph, and the storage feature its own documentation tells you is not a backup.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="air-gapped-psbt-workflow.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-repeat"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The air-gapped PSBT workflow</h3>
+              <p>How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="dice-entropy.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shuffle"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Roll the dice: generating your own entropy</h3>
+              <p>Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

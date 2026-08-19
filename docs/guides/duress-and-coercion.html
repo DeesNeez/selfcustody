@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The attack that ignores your cryptography and comes for you instead. Why decoy wallets are weaker than they sound, why being genuinely unable to comply beats lying convincingly, and the arrangements that make a bad situation worse.">
+  <title>Planning for coercion | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/duress-and-coercion.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Planning for coercion | SelfCustody.ca">
+  <meta property="og:description" content="The attack that ignores your cryptography and comes for you instead. Why decoy wallets are weaker than they sound, why being genuinely unable to comply beats lying convincingly, and the arrangements that make a bad situation worse.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/duress-and-coercion.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Planning for coercion","description":"The attack that ignores your cryptography and comes for you instead. Why decoy wallets are weaker than they sound, why being genuinely unable to comply beats lying convincingly, and the arrangements that make a bad situation worse.","url":"https://selfcustody.ca/guides/duress-and-coercion.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/duress-and-coercion.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#advanced">Techniques</a>
+        </nav>
+        <span class="sc-eyebrow">Advanced techniques</span>
+        <h1>Planning for coercion</h1>
+        <p class="sc-lead">The attack that ignores your cryptography and comes for you instead. Why decoy wallets are weaker than they sound, why being genuinely unable to comply beats lying convincingly, and the arrangements that make a bad situation worse.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 30 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-threat_model">Threat model</a><a class="sc-tag sc-tag-link" href="../glossary.html#term-wrench_attack">Duress</a></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Every other guide on this site makes the mathematics harder. Longer keys, more signers, better entropy, verified firmware. All of it assumes an attacker who has to get past the cryptography.</p>
+
+      <p>There is a well-known cartoon about this. Security people imagine an adversary building enormous machines to crack a key, when the realistic approach is to hit the owner with a cheap wrench until they hand it over. That image gave the whole problem its name: the <strong><a href='../glossary.html#term-wrench_attack'>five-dollar wrench attack</a></strong> &mdash; the attack that does not engage with your security at all, and instead engages with you.</p>
+
+      <p>No amount of key length helps here. What follows is an honest account of what does, what merely sounds like it does, and which popular measures can make a dangerous situation last longer.</p>
+
+      <div class="sc-callout mt-4"><h3>Before anything else</h3><p>If this ever happens to you, your safety is worth more than every coin you own. Bitcoin is replaceable and you are not. Nothing on this page is advice to resist, delay, or refuse someone who is threatening you — the entire purpose of planning in advance is so that you never have to make that choice while frightened.</p></div>
+
+      <h2><span class="sc-article-num">1</span>Be proportionate about this</h2>
+
+      <p>This threat is real and it is also rare, and writing about it tends to make it feel imminent. It is worth placing accurately before redesigning your life around it.</p>
+
+      <ul class="sc-check-list"><li><strong>The attack requires a belief.</strong> Somebody has to think you hold enough bitcoin to be worth the risk of a violent crime. That belief comes from somewhere, and it is nearly always something that was said.</li><li><strong>It is concentrated among the visible.</strong> People who discuss holdings publicly, appear in media, work in the industry, or mention it socially are in a different position from people who have told nobody.</li><li><strong>The realistic threat for most people is remote:</strong> phishing, fake support, malware, and address-substitution &mdash; not physical confrontation.</li><li><strong>Household risk is worth naming.</strong> For some people the plausible coercion is domestic rather than a stranger, and that changes which measures make sense.</li></ul>
+
+      <h2><span class="sc-article-num">2</span>The most effective defence is not technical</h2>
+
+      <p>Because the attack depends on someone believing you are worth targeting, the highest-value measure available is not a device feature. It is discretion, and it costs nothing.</p>
+
+      <ul class="sc-check-list"><li><strong>Do not discuss what you hold.</strong> Not amounts, not roughly, not as a joke, not to family who will repeat it warmly and harmlessly to somebody else.</li><li><strong>Do not signal it indirectly</strong> &mdash; conference lanyards, stickers, clothing, and forum handles attached to your real name all describe you to strangers.</li><li><strong>Keep addresses away from your identity.</strong> A public address next to your name lets anybody read your balance forever. <a href='bitcoin-privacy.html'>The privacy guide</a> covers why that link is hard to undo.</li><li><strong>Have deliveries sent somewhere sensible.</strong> A branded hardware wallet box arriving at your home tells the delivery chain, and anyone watching your porch, what you now own.</li><li><strong>Accept that some people must know.</strong> Your <a href='inheritance-plan.html'>inheritance plan</a> requires it. Keep that number small and chosen rather than accumulated.</li></ul>
+
+      <p>None of this is glamorous, and all of it outperforms every clever feature below.</p>
+
+      <h2><span class="sc-article-num">3</span>Decoy wallets, honestly</h2>
+
+      <p>The popular answer is a decoy: a wallet holding a modest amount that you surrender while the real one stays hidden, usually behind a passphrase or a device's alternate PIN.</p>
+
+      <p><a href='passphrase-setup.html'>The passphrase guide</a> makes the core objection &mdash; it is a delay rather than a shield, because it depends on the attacker believing you and stopping. Three further problems are worth stating plainly before you rely on one.</p>
+
+      <ul class="sc-caution-list"><li><strong>You have to perform, under the worst conditions of your life.</strong> A decoy is a lie that must be told convincingly to a violent person while terrified. Most planning quietly assumes a calm, competent version of you that will not be there.</li><li><strong>The amount is an unsolvable dilemma.</strong> Too little and it is transparently a decoy. Enough to be believed is enough that losing it genuinely hurts.</li><li><strong>Being disbelieved makes things worse.</strong> If they think you are holding back, the encounter continues &mdash; and you have spent your one deception and have nothing left to offer.</li><li><strong>Sophisticated attackers know the technique exists.</strong> Passphrases and duress PINs are not secrets; anyone who researched enough to target you has read the same pages you have.</li></ul>
+
+      <p>Decoys are not worthless. They are a reasonable hedge against an opportunistic thief who wants a quick result. They are a poor foundation against anyone patient or informed.</p>
+
+      <h2><span class="sc-article-num">4</span>The principle that actually helps</h2>
+
+      <p>Here is the shift that reframes the whole subject.</p>
+
+      <blockquote class="sc-pull-quote"><p>A truth you can state calmly is worth more than a lie you have to sell. Do not aim to deceive — aim to be genuinely unable to comply.</p></blockquote>
+
+      <p>A decoy requires acting. An arrangement that makes immediate transfer <em>impossible</em> requires only that you explain it, and the explanation is verifiable, consistent, and does not collapse under pressure &mdash; because it is true.</p>
+
+      <ul class="sc-check-list"><li><strong>Time delays.</strong> A wallet with a mandatory waiting period cannot be emptied now by anyone, including you. The <a href='coldcard-advanced-features.html'>COLDCARD login countdown</a> does this at the device level; some products build a notice period into recovery itself.</li><li><strong>Timelocked spending paths.</strong> Bitcoin can enforce that certain coins simply are not spendable until a future date. That is a fact about the chain, not a claim about your wallet &mdash; see <a href='scripts-and-miniscript.html'>scripts and miniscript</a>.</li><li><strong>Keys you cannot reach.</strong> A multisig whose second key is in another city, another country, or another person's hands cannot be assembled in an evening. <a href='multisig-key-geography.html'>Key geography</a> is the design work behind this.</li><li><strong>Keys other people must approve.</strong> A collaborative custody arrangement means a third party has to participate, on their schedule, through their process.</li></ul>
+
+      <p>Each of these converts &ldquo;transfer it now&rdquo; into a request that cannot be satisfied at speed by anybody. That is a materially different position from hoping to be believed.</p>
+
+      <h2><span class="sc-article-num">5</span>The danger of over-engineering</h2>
+
+      <p>This is where an honest guide has to complicate its own advice, because the measures in the previous section carry a real risk that enthusiasts rarely mention.</p>
+
+      <p><strong>An attacker who cannot get what they want may not simply leave.</strong> A situation that could have ended in minutes with a transfer can instead continue while you explain a delay mechanism to somebody unwilling to hear it. Making yourself unable to comply is protective for your coins and is not automatically protective for you.</p>
+
+      <ul class="sc-caution-list"><li><strong>Keep something available to give.</strong> A hot wallet with a realistic everyday balance is not a weakness; it is a way for an encounter to end.</li><li><strong>Never build an arrangement you cannot explain simply.</strong> If you cannot describe the delay in one sentence a stranger will accept, it will not help you in the moment.</li><li><strong>Do not rely on features you have not tested.</strong> A trick PIN you configured once and never rehearsed is not something you will use correctly under threat.</li><li><strong>Avoid measures that destroy.</strong> A wipe or brick triggered during a confrontation removes the attacker's incentive to stop without giving them anything &mdash; consider carefully whether that is the situation you want to create.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>Matching the measure to the risk</h2>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>What each measure is actually good for</caption>
+          <thead><tr><th scope="col">Measure</th><th scope="col">Helps against</th><th scope="col">Cost to you</th></tr></thead>
+          <tbody>
+            <tr><td>Discretion about holdings</td><td>Being selected at all</td><td>None. Do this first.</td></tr>
+            <tr><td>A funded everyday hot wallet</td><td>Opportunistic demands</td><td>The balance, occasionally</td></tr>
+            <tr><td>Decoy wallet or duress PIN</td><td>An attacker who accepts it</td><td>A performance, and a real balance</td></tr>
+            <tr><td>Login countdown or delay</td><td>Immediate transfer, credibly</td><td>Your own access is delayed too</td></tr>
+            <tr><td>Geographic multisig</td><td>Anything demanding speed</td><td>Complexity, travel, rehearsal</td></tr>
+            <tr><td>Timelocked coins</td><td>Any demand before the date</td><td>Technical skill; funds genuinely locked</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Read that top row as the recommendation. Almost everybody should do the first two and stop, and the remainder is for people with a specific, identified reason.</p>
+
+      <h2><span class="sc-article-num">7</span>If it happens</h2>
+
+      <ul class="sc-check-list"><li><strong>Comply with what you can.</strong> Give up the hot wallet, the phone, the device. None of it is worth injury.</li><li><strong>Do not improvise a deception</strong> you have not rehearsed. Being caught in one mid-encounter is worse than never attempting it.</li><li><strong>Get to safety first, then act.</strong> Once you are safe, move whatever remains to a new wallet with new keys, because anything they saw must be treated as compromised.</li><li><strong>Report it.</strong> Bitcoin's finality means recovery is unlikely, but coercion is a serious crime and patterns of these offences matter beyond your own case.</li><li><strong>Rebuild differently.</strong> Whoever did this knew something. Work out what, and change it.</li></ul>
+
+      <h2>The short version</h2>
+
+      <p>The five-dollar wrench attack bypasses your cryptography entirely, so cryptographic answers do not apply. It depends on someone believing you are worth targeting, which makes discretion the highest-value defence by a wide margin. Decoys ask you to act convincingly while terrified; delays and distributed keys let you tell the truth instead. And keep something available to hand over, because an encounter that can end quickly should.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Not being identified as a holder protects you from every attack on this page at once, and costs nothing but silence. Every technical measure here is a distant second — and the ones that make you unable to comply protect your coins, which is not the same thing as protecting you.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="coldcard-advanced-features.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shield-lock"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>COLDCARD: the features worth turning on next</h3>
+              <p>Trick PINs, duress wallets, the brick-me PIN, and the login countdown. What each one actually does, and the honest accounting of which of them can cost you your own coins.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="multisig-key-geography.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-people"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Where the keys actually live</h3>
+              <p>Three keys in three places is easy to say and easy to get wrong. The locations that only look independent, the window when your keys travel together, and an honest account of what a safe deposit box and a trusted friend each actually do.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="passphrase-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shield-lock"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>BIP39 passphrases, and when not to use one</h3>
+              <p>A passphrase is not a password on your wallet. It is a switch that selects a different wallet entirely — which is why a single wrong character shows you an empty balance and no error message.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A bitcoin key in a credit card, signing by tap. Initialising it, the backup that must happen before you fund it, and the one number printed on the card that you have to copy down before it goes anywhere.">
+  <title>TAPSIGNER: setup and NFC signing | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/tapsigner-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="TAPSIGNER: setup and NFC signing | SelfCustody.ca">
+  <meta property="og:description" content="A bitcoin key in a credit card, signing by tap. Initialising it, the backup that must happen before you fund it, and the one number printed on the card that you have to copy down before it goes anywhere.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/tapsigner-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"TAPSIGNER: setup and NFC signing","description":"A bitcoin key in a credit card, signing by tap. Initialising it, the backup that must happen before you fund it, and the one number printed on the card that you have to copy down before it goes anywhere.","url":"https://selfcustody.ca/guides/tapsigner-setup.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/tapsigner-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#devices">Devices</a>
+        </nav>
+        <span class="sc-eyebrow">Hardware</span>
+        <h1>TAPSIGNER: setup and NFC signing</h1>
+        <p class="sc-lead">A bitcoin key in a credit card, signing by tap. Initialising it, the backup that must happen before you fund it, and the one number printed on the card that you have to copy down before it goes anywhere.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-beginner">Beginner</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 20 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-nfc">NFC</a><span class="sc-tag">Card</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../coinkite.html#tapsigner">About TAPSIGNER <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">A TAPSIGNER is a bitcoin key inside a credit card. There is no screen, no battery, and no buttons &mdash; you build a transaction in a wallet app on your phone, hold the card against the back of it, and the card signs. The key itself never leaves the chip.</p>
+
+      <p>It is the least intrusive hardware wallet available: it lives in a wallet next to your bank cards and costs about as much as a nice dinner. That convenience is bought with one specific compromise, which this page will not bury &mdash; and there is a number printed on the card that you must copy down before the card ever leaves your desk.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-credit-card-2-front" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A TAPSIGNER card held against the back of a phone showing a wallet app mid-signature, shot close, the card's printed back not legible.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>The entire interface. Everything you check happens on the phone, which is the trade worth understanding.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li><strong>A TAPSIGNER card</strong>, bought from Coinkite or an authorised reseller.</li><li><strong>A phone with NFC</strong> and one of the supported wallet apps &mdash; Nunchuk, Cove, Bitcoin Keeper, or Sparrow on desktop.</li><li><strong>Somewhere to store an encrypted backup file</strong> that is not only your phone.</li><li><strong>A pen.</strong> Genuinely &mdash; see step 3.</li><li>No bitcoin yet. Do not fund this card until the backup exists and the check at the end passes.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>What it is, and the one thing it cannot do</h2>
+
+      <p>The card holds a single BIP-32 master key in a secure element and signs with it on request. Your wallet app does everything else: watching balances, choosing coins, building transactions, and broadcasting them.</p>
+
+      <p>The compromise is the missing screen. Every other hardware wallet shows you the amount and the destination on its own display, precisely so that a compromised computer cannot show you one transaction while asking you to sign another. A TAPSIGNER has no display, so <strong>it signs what it is given and cannot tell you what that is.</strong></p>
+
+      <div class="sc-callout mt-4"><h3>What that actually means for you</h3><p>Your phone becomes the thing you are trusting to tell the truth about a payment. That is a real step down from a device with its own screen, and it is the reason to think of a TAPSIGNER as an excellent everyday key rather than the place to keep your life savings.</p></div>
+
+      <h2><span class="sc-article-num">2</span>Pair it with a wallet</h2>
+
+      <p>Setup happens through the wallet app rather than on the card, and takes a couple of minutes.</p>
+
+      <ul class="sc-check-list"><li><strong>Open your wallet app and add a TAPSIGNER</strong> as a new key or signer.</li><li><strong>Let it verify the factory certificate.</strong> The card proves it is genuine Coinkite hardware and not a substitute. Do not skip past a failure here.</li><li><strong>Create the key on the card.</strong> It generates its own BIP-32 master key internally; nothing is imported and nothing is typed.</li><li><strong>Find the CVC.</strong> A six-digit code is printed on the back of the card &mdash; the spend code, sometimes called the starting PIN. You will need it for every signature, and you can change it later.</li></ul>
+
+      <h2><span class="sc-article-num">3</span>The backup, and the number on the card</h2>
+
+      <p>This is the most important section on this page, and the step people skip because the card works fine without it.</p>
+
+      <p>A TAPSIGNER has no recovery words. Instead, it gives you an <strong>encrypted backup file</strong> containing your master key. That file is encrypted with a 128-bit AES key, and that key is <em>printed on the back of the card</em>.</p>
+
+      <p>Read that again, because two conclusions follow and they point in opposite directions.</p>
+
+      <ul class="sc-caution-list"><li><strong>Lose the card and you lose the decryption key with it</strong> &mdash; unless you copied it down first. The backup file alone is inert. Copy the printed key onto paper, now, before the card goes into a wallet or a drawer or a pocket.</li><li><strong>Anyone holding both the file and that printed key has your wallet.</strong> They do not need the card, and they do not need the CVC. A photograph of the back of your card plus a copy of your backup file is a complete theft.</li><li><strong>So store them apart.</strong> The printed key and the backup file in the same place is the same mistake as a seed phrase photographed next to its hardware wallet.</li></ul>
+
+      <p>There is also no restoring back onto the card. Recovery decrypts the master key so you can load it into other software &mdash; the original card is not part of the picture. That is fine, and worth knowing before the day you need it.</p>
+
+      <blockquote class="sc-pull-quote"><p>The card is the convenience. The backup file and the number printed on its back are the wallet. Treat those two the way you would treat twenty-four words.</p></blockquote>
+
+      <h2><span class="sc-article-num">4</span>Signing a transaction</h2>
+
+      <p>Day to day, this is the whole workflow and it is genuinely pleasant:</p>
+
+      <ul class="sc-check-list"><li>Build the payment in your wallet app as usual.</li><li><strong>Check the amount and the destination address on the phone screen.</strong> This is your only opportunity &mdash; the card will not show you anything.</li><li>Enter the CVC when prompted.</li><li>Hold the card flat against the back of the phone until the app confirms. Finding the NFC sweet spot takes a couple of tries the first time.</li><li>The wallet broadcasts the signed transaction.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Before you fund it</h2>
+
+      <ul class="sc-check-list"><li>Confirm the backup file exists and is stored somewhere that is not just your phone.</li><li>Confirm you have written the printed decryption key down, separately from that file.</li><li>Change the CVC from the printed default if your wallet app supports it, and record the new one.</li><li>Send a small test amount, confirm it arrives, then sign a transaction sending it back out.</li><li>Consider where this card fits: excellent as an everyday spending key, or as one key of a <a href='multisig-2of3.html'>multisig</a> where the other signers have screens.</li></ul>
+
+      <h2>The short version</h2>
+
+      <p>A TAPSIGNER is a key in a card that signs by tap and never reveals itself. It has no screen, so your phone is what you are trusting about each payment. Its backup is an encrypted file whose decryption key is printed on the card &mdash; copy that number down before the card leaves your desk, and never store the copy beside the file.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Copy the decryption key off the back of the card today. Everything else here can be fixed later; that number cannot be recovered once the card is gone, and without it the backup file is a permanently locked box.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="satscard-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-credit-card-2-front"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>SATSCARD: loading and unsealing</h3>
+              <p>Ten slots, one sealed at a time, and bitcoin that travels with the physical card. How to load one, what to check before accepting one, and why unsealing is a door that only opens once.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="nunchuk-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-phone"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Nunchuk: first wallet and shared access</h3>
+              <p>A phone app that coordinates multisig, including wallets shared with another person. What to build first, what to back up beyond the keys, and which features quietly add a dependency.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

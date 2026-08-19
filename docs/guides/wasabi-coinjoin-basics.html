@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How a collaborative transaction breaks the link between your coins and your history, what it cannot undo, and why the piece that makes it work is also the piece that has already collapsed once.">
+  <title>Wasabi: what CoinJoin does and costs | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/wasabi-coinjoin-basics.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Wasabi: what CoinJoin does and costs | SelfCustody.ca">
+  <meta property="og:description" content="How a collaborative transaction breaks the link between your coins and your history, what it cannot undo, and why the piece that makes it work is also the piece that has already collapsed once.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/wasabi-coinjoin-basics.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Wasabi: what CoinJoin does and costs","description":"How a collaborative transaction breaks the link between your coins and your history, what it cannot undo, and why the piece that makes it work is also the piece that has already collapsed once.","url":"https://selfcustody.ca/guides/wasabi-coinjoin-basics.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/wasabi-coinjoin-basics.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#software">Software</a>
+        </nav>
+        <span class="sc-eyebrow">Wallets</span>
+        <h1>Wasabi: what CoinJoin does and costs</h1>
+        <p class="sc-lead">How a collaborative transaction breaks the link between your coins and your history, what it cannot undo, and why the piece that makes it work is also the piece that has already collapsed once.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 30 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">Privacy</span><span class="sc-tag">CoinJoin</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../software.html#wasabi">About Wasabi <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">The bitcoin ledger is public, and the default assumption an analyst makes about it is simple: if several coins are spent together in one transaction, one person owned all of them. That heuristic is right often enough to build an industry on, and it is how a chain of ordinary payments turns into a map of your finances.</p>
+
+      <p>A CoinJoin is a transaction constructed specifically to make that assumption wrong. Many people contribute coins to a single transaction that pays out many identical amounts, and an observer looking at the result cannot say which output belongs to which contributor.</p>
+
+      <p>It works. It is also the most misunderstood tool in bitcoin, it costs more than money, and the infrastructure it depends on has already failed once in a way worth understanding before you rely on it.</p>
+
+      <h2><span class="sc-article-num">1</span>What the transaction actually does</h2>
+
+      <p>Several participants each contribute inputs. The transaction pays out a large number of outputs in identical denominations, one or more of them yours.</p>
+
+      <p>Afterwards, an observer sees that a coin left your address and entered the CoinJoin, and sees a set of equal outputs come out. What they cannot do is say which of those outputs is yours &mdash; every one of them is an equally plausible candidate. That set of candidates is your <strong>anonymity set</strong>, and its size is roughly the strength of what you bought.</p>
+
+      <p>Wasabi implements this through the WabiSabi protocol, which matters for one specific reason: the coordinator organising the round cannot itself link your inputs to your outputs. It is arranging a transaction it cannot fully see.</p>
+
+      <div class="sc-callout mt-4"><h3>What the coordinator can never do</h3><p>It cannot take your coins. At no point does anyone else hold them &mdash; you sign an input to a transaction that only becomes valid once every participant has signed. A dishonest or vanished coordinator can waste your time and leak information; it cannot steal.</p></div>
+
+      <h2><span class="sc-article-num">2</span>What it does not do</h2>
+
+      <p>This is the section that matters most, because almost every disappointed CoinJoin user misunderstood one of these.</p>
+
+      <ul class="sc-caution-list"><li><strong>It does not erase your history.</strong> The transaction that put those coins in your wallet is still on the chain forever. CoinJoin breaks the link going forward; it does not rewrite what came before.</li><li><strong>It does not hide that you used it.</strong> CoinJoins are conspicuous. Anyone watching sees you entering one &mdash; they simply cannot follow you out.</li><li><strong>It does not protect you from your own consolidation.</strong> Spending several mixed outputs together in one later transaction tells the world they share an owner, undoing precisely what you paid for.</li><li><strong>It does not break a KYC link at the exit.</strong> Send mixed coins to an exchange account in your name and you have re-attached your identity to them yourself.</li><li><strong>It does not fix a leaky wallet.</strong> If your software is querying a public server about every address you own, that leak continues regardless.</li></ul>
+
+      <p>Every item on that list is a way the user, not the protocol, gives the privacy back. <a href='sparrow-coin-control.html'>Coin control</a> is the discipline that prevents most of them, and it is not optional if you intend this to mean anything.</p>
+
+      <h2><span class="sc-article-num">3</span>The coordinator problem</h2>
+
+      <p>Here is the part most guides skip, and it is the reason this page exists.</p>
+
+      <p>A CoinJoin needs someone to organise the round &mdash; to gather participants, collect the registrations, and assemble the transaction. In Wasabi that role is the coordinator, and for years it was operated by zkSNACKs, the company that built the wallet.</p>
+
+      <p><strong>In June 2024, zkSNACKs shut that service down</strong>, citing the regulatory climate. The wallet did not stop working, but its default coordinator ceased to exist, and every user had to find another one.</p>
+
+      <p>What followed is genuinely interesting. Wasabi shipped an interface for choosing any third-party coordinator, community operators appeared within days, former developers continued maintaining the open-source code, and forks emerged with their own defaults. The wallet survived by decentralising the role that had just been removed.</p>
+
+      <blockquote class="sc-pull-quote"><p>The cryptography was never the fragile part. The company willing to run a server was.</p></blockquote>
+
+      <p>That leaves you making a choice the software used to make for you:</p>
+
+      <ul class="sc-check-list"><li><strong>You must select a coordinator</strong> before you can CoinJoin at all. Wasabi's own documentation now points you to third-party coordination service providers rather than shipping one of its own.</li><li><strong>Coordinators charge what they choose.</strong> Fees are set by the operator, not by the protocol, so they vary.</li><li><strong>A coordinator can refuse to serve you</strong>, and there is precedent &mdash; the original coordinator filtered certain transactions, which was controversial precisely because it showed the capability existed.</li><li><strong>A coordinator can disappear</strong>, as the original one did. Assume any given one is temporary.</li></ul>
+
+      <h2><span class="sc-article-num">4</span>What it costs</h2>
+
+      <p>Three separate costs, and only one is denominated in money.</p>
+
+      <ul class="sc-check-list"><li><strong>Coordinator fees.</strong> Set by whoever runs the round.</li><li><strong>Mining fees.</strong> CoinJoins are large transactions and you pay for your share of the space. Doing this while <a href='how-fees-work.html'>the mempool is busy</a> is expensive, and there is rarely a reason to hurry.</li><li><strong>Time.</strong> Rounds take as long as they take, and meaningful privacy usually means remixing over days rather than a single pass. This is not a button you press before sending a payment.</li><li><strong>Optionality.</strong> This is the cost nobody budgets for &mdash; mixed coins come with handling rules for the rest of their life. You cannot casually consolidate them, and you cannot casually deposit them somewhere that asks who you are.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>The part that is not technical</h2>
+
+      <p>Some exchanges and payment processors treat coins with CoinJoin history as suspicious. Deposits have been delayed, questioned, and in some cases frozen pending explanation. Whether that is reasonable is beside the point; it is a real operational risk you are accepting.</p>
+
+      <p>The broader regulatory climate around these tools has been turbulent, which is precisely what took the original coordinator offline. Nothing about this page is legal advice, and the rules differ by jurisdiction and change.</p>
+
+      <ul class="sc-caution-list"><li>Do not move a balance you cannot afford to have delayed into a mixing workflow you have never tested.</li><li>Do a small test pass first, and take those coins through the full journey you intend &mdash; including wherever they eventually need to go &mdash; before committing more.</li><li>Keep your own records. Being able to explain your own transaction history is worth more than the alternative.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>Doing it without wasting it</h2>
+
+      <p>If you have read this far and still want to, the habits that determine whether it accomplishes anything:</p>
+
+      <ul class="sc-check-list"><li><strong>Label everything, before and after.</strong> You cannot practise coin control on coins you cannot tell apart.</li><li><strong>Never merge mixed outputs</strong> with each other or with unmixed coins. Each one should be spent alone unless you have thought hard about the alternative.</li><li><strong>Let it remix.</strong> A single round is a smaller anonymity set than patience will buy you.</li><li><strong>Route your wallet through your own node</strong>, or at minimum over Tor, so the address queries do not undo the work.</li><li><strong>Decide the exit before the entrance.</strong> Know where these coins are ultimately going. If the answer is an exchange account in your name, the whole exercise was decorative.</li></ul>
+
+      <h2><span class="sc-article-num">7</span>Is it worth it?</h2>
+
+      <p>An honest answer, since the rest of this page has been about costs.</p>
+
+      <p>For most people the larger privacy wins are cheaper and duller: running your own node, never reusing addresses, labelling coins, avoiding consolidation, and not publishing addresses beside your name. <a href='bitcoin-privacy.html'>The privacy guide</a> covers those, and someone who has not done them will gain more from an afternoon of housekeeping than from mixing.</p>
+
+      <p>CoinJoin is the right tool when you have already done that work, understand exactly what you are breaking the link between, and are prepared to handle those coins carefully forever. It is a poor tool for someone hoping to undo a decision already made, and a bad one for someone who will consolidate everything into a single payment next month.</p>
+
+      <h2>The short version</h2>
+
+      <p>A CoinJoin makes it impossible to tell which output of a collaborative transaction is yours, forward from that point. It cannot erase your past, hide that you participated, or survive your own careless consolidation afterwards. It costs coordinator fees, mining fees, days of patience, and a permanent obligation to handle those coins deliberately &mdash; and the coordinator it depends on is a single point that has already gone away once.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>The cryptography is not the weak link and never was. The weak links are the coordinator, which is a legally exposed service run by someone else, and your own handling of the coins afterwards. Only one of those two is under your control, so it is worth being very good at it.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="bitcoin-privacy.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-wifi"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The privacy you actually have</h3>
+              <p>Bitcoin is not anonymous and never was. It is a permanent public ledger with pseudonyms attached, and most of what links those pseudonyms to you is done by ordinary arithmetic anyone can perform.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="sparrow-coin-control.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-pie-chart"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Sparrow: coin control and labelling</h3>
+              <p>Your balance is not a number, it is a pile of separate chunks — and which ones you spend together tells anyone watching that they belong to the same person.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="how-fees-work.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-calculator"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>What a fee actually buys</h3>
+              <p>You are not paying for the amount you send. You are bidding for physical room in the next block, priced by the size of your transaction — which is why a payment of ten dollars can cost more to send than one of ten thousand.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

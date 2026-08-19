@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Krux is firmware, not a device. Choosing hardware to put it on, verifying and flashing the release, generating a seed from dice or a photograph, and the storage feature its own documentation tells you is not a backup.">
+  <title>Krux: install and first use | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/krux-setup.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Krux: install and first use | SelfCustody.ca">
+  <meta property="og:description" content="Krux is firmware, not a device. Choosing hardware to put it on, verifying and flashing the release, generating a seed from dice or a photograph, and the storage feature its own documentation tells you is not a backup.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/krux-setup.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Krux: install and first use","description":"Krux is firmware, not a device. Choosing hardware to put it on, verifying and flashing the release, generating a seed from dice or a photograph, and the storage feature its own documentation tells you is not a backup.","url":"https://selfcustody.ca/guides/krux-setup.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/krux-setup.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#devices">Devices</a>
+        </nav>
+        <span class="sc-eyebrow">Hardware</span>
+        <h1>Krux: install and first use</h1>
+        <p class="sc-lead">Krux is firmware, not a device. Choosing hardware to put it on, verifying and flashing the release, generating a seed from dice or a photograph, and the storage feature its own documentation tells you is not a backup.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 60 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><span class="sc-tag">DIY</span><span class="sc-tag">QR</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../devices.html#krux">About Krux <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Krux is not a product you buy. It is open-source firmware that turns an off-the-shelf Kendryte K210 board &mdash; a class of cheap Chinese microcontroller device sold for machine-vision experiments &mdash; into an air-gapped bitcoin signer.</p>
+
+      <p>That distinction shapes everything. There is no Krux hardware, no Krux company, and no Krux packaging to inspect. You choose a supported device, put verified firmware on it, and what you end up with is as trustworthy as those two decisions were.</p>
+
+      <p>In exchange you get a signer for well under a hundred dollars, often with a colour touchscreen, and a feature set that is frankly broader than devices costing five times more. Budget an evening for the first run.</p>
+
+      
+  <figure class="sc-figure sc-figure-slot">
+    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
+      <i class="bi bi-cpu" aria-hidden="true"></i>
+      <p class="sc-figure-slot-shot">A Krux-running K210 touchscreen device on a dark desk showing a QR code, beside a D20 die and a handwritten column of numbers.</p>
+      <p class="sc-figure-slot-note">Image to come</p>
+    </div>
+    <figcaption>Ordinary machine-vision hardware, doing something its manufacturer never intended.</figcaption>
+  </figure>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li><strong>A supported K210 device.</strong> Maix Amigo, M5StickV, Yahboom, WonderMV, TZT, and Embed Fire are all supported. Some arrive ready to use with large touchscreens; others are development kits for people who enjoy that.</li><li><strong>A computer to flash it from</strong>, with a USB cable that carries data rather than power alone.</li><li><strong>A microSD card</strong> &mdash; optional for signing, but the route to air-gapped updates later.</li><li><strong>A die, if you want to supply your own randomness.</strong> Krux takes a D6 or a D20.</li><li>Paper or metal for the recovery words, and somewhere private to work.</li><li>No bitcoin. Nothing here needs funds, and nothing should be funded until the check at the end passes.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>Choosing what to run it on</h2>
+
+      <p>The supported devices differ more than the firmware does. Krux behaves the same on all of them; what changes is how pleasant the experience is and how much assembly you are signing up for.</p>
+
+      <ul class="sc-check-list"><li><strong>Ready-to-use touchscreen devices</strong> arrive assembled in a case with a battery. You unbox, flash, and use. For most people this is the correct choice and the reason to prefer Krux over a build-it-yourself signer.</li><li><strong>Development board kits</strong> are cheaper and more open, at the cost of assembling and enclosing them yourself.</li><li><strong>Screen size is not cosmetic here.</strong> You will be reading transaction details and scanning QR codes on this screen, repeatedly. A larger display is a security feature as much as a comfort one.</li></ul>
+
+      <p>This is the main practical difference from <a href='seedsigner-setup.html'>SeedSigner</a>, which is otherwise a close cousin: SeedSigner is three parts you assemble and possibly solder, while Krux is firmware for a device that may already be finished when it arrives.</p>
+
+      <p><a class="sc-text-link" href="https://selfcustody.github.io/krux/" target="_blank" rel="noopener">Krux documentation <i class="bi bi-arrow-up-right"></i></a> &nbsp; <a class="sc-text-link" href="https://github.com/selfcustody/krux" target="_blank" rel="noopener">Krux source and releases <i class="bi bi-arrow-up-right"></i></a></p>
+
+      <h2><span class="sc-article-num">2</span>Install the firmware, and verify it first</h2>
+
+      <p>There is no tamper-evident bag in this story either, so the signature on the firmware is the only integrity check available. It is not optional.</p>
+
+      <p>Krux offers four installation routes: the Krux Installer GUI application, a pre-built official release, a pre-built test release, and building from source.</p>
+
+      <ul class="sc-check-list"><li><strong>The Krux Installer GUI is the sensible default.</strong> It downloads the release, verifies it, and flashes your device, which removes most of the ways this goes wrong by hand.</li><li><strong>Take the official release, not the test one.</strong> Beta builds exist for people testing Krux, not for people securing savings.</li><li><strong>Verify the signature before flashing</strong> if you are installing manually. This is the step that distinguishes running Krux from running something that says it is Krux.</li><li><strong>After the first install you can update by microSD</strong>, which means every subsequent firmware update can happen without the device ever touching a computer again.</li></ul>
+
+      <div class="sc-callout mt-4"><h3>The first install is the only one that needs a cable</h3><p>That microSD update path is worth planning around. Connect the device to a computer once, to put verified firmware on it, and from that point forward the air gap is never broken &mdash; not for updates, not for signing, not for anything.</p></div>
+
+      <h2><span class="sc-article-num">3</span>Generating a seed</h2>
+
+      <p>Krux will not silently produce a seed from a chip you cannot inspect. It asks where the randomness should come from, and it shows its working.</p>
+
+      <p>The dice options are unusually generous, and Krux is one of the few signers that takes a twenty-sided die:</p>
+
+      <div class="sc-krux-dice-panel" aria-label="Minimum dice rolls Krux requires">
+        <div class="sc-krux-dice-heading">
+          <span class="sc-krux-dice-mark" aria-hidden="true">D6<span>D20</span></span>
+          <div><span>Entropy input</span><h3>More sides, fewer rolls</h3></div>
+          <strong>Both routes reach the same target</strong>
+        </div>
+        <div class="sc-krux-dice-grid">
+          <article class="is-d6">
+            <div class="sc-krux-die-title"><span>D6</span><div><h3>Ordinary die</h3><p>Six-sided</p></div></div>
+            <dl>
+              <div><dt>Bits per roll</dt><dd>2.585</dd></div>
+              <div><dt>12 words</dt><dd>50 <small>rolls</small></dd></div>
+              <div><dt>24 words</dt><dd>99 <small>rolls</small></dd></div>
+            </dl>
+          </article>
+          <article class="is-d20">
+            <div class="sc-krux-die-title"><span>D20</span><div><h3>Twenty-sided die</h3><p>Higher entropy per throw</p></div></div>
+            <dl>
+              <div><dt>Bits per roll</dt><dd>4.322</dd></div>
+              <div><dt>12 words</dt><dd>30 <small>rolls</small></dd></div>
+              <div><dt>24 words</dt><dd>60 <small>rolls</small></dd></div>
+            </dl>
+          </article>
+        </div>
+      </div>
+
+      <p>A D20 cuts a 24-word seed from ninety-nine rolls to sixty, which is a meaningful saving when you are doing it by hand. The rules from <a href='dice-entropy.html'>rolling your own entropy</a> apply unchanged: record every roll, never re-roll a result you dislike, and remember the rolls are working paper rather than a backup.</p>
+
+      <p>The alternative is <strong>image entropy</strong>: photograph something chaotic and Krux derives the seed from a hash of the image's raw sensor bytes. Krux displays live quality indicators while you frame the shot &mdash; and its own documentation is careful to say these are approximations meant to guide your choice of image, not absolute measurements of cryptographic entropy. Treat them as a nudge away from photographing a blank wall, not as a score to optimise.</p>
+
+      <p>Whichever source you pick, Krux hashes it with SHA256, shows you the hash, and converts it deterministically into BIP39 words. That displayed hash is the device showing its work, and you can check the conversion independently later if you want to.</p>
+
+      <h2><span class="sc-article-num">4</span>The stored-mnemonic feature, and what it is not</h2>
+
+      <p>Here is where Krux departs from its stateless cousins, and it is the part of the device most worth understanding properly.</p>
+
+      <p>Krux can store your mnemonic, encrypted, either in the device's own flash memory or on a microSD card. You choose a key, and the mnemonic comes back when you supply that key again. It is a real convenience: no re-typing twenty-four words at the start of every session.</p>
+
+      <p>The encryption is not decorative. Krux uses AES, and your key is not used directly &mdash; it is stretched through many rounds of PBKDF2 first, specifically so that guessing at it is slow.</p>
+
+      <blockquote class="sc-pull-quote"><p>Krux's own documentation says it plainly: stored mnemonics are for convenience only and should not be considered a form of backup.</p></blockquote>
+
+      <p>That warning deserves repeating in the project's own terms, because the feature is genuinely easy to mistake for a backup. Encrypted storage lives on a device that can be lost, dropped, wiped by a firmware update, or simply fail. It protects the mnemonic <em>while the device works</em>. It does nothing at all once the device does not.</p>
+
+      <ul class="sc-caution-list"><li><strong>Make a physical backup regardless</strong> &mdash; words on paper or metal, independent of any electronics.</li><li><strong>Test recovering from that physical backup before you send funds</strong>, exactly as you would with any other wallet.</li><li><strong>A forgotten encryption key is a lost mnemonic.</strong> The PBKDF2 stretching that protects you from an attacker protects the device from you too.</li><li><strong>Storing on the device concentrates risk.</strong> An encrypted mnemonic on the same device you carry through an airport is a different proposition from one on a card in a drawer.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Signing a transaction</h2>
+
+      <p>The signing loop is the familiar air-gapped round trip, with Krux offering two ways across the gap rather than one.</p>
+
+      <ul class="sc-check-list"><li>Your coordinator wallet builds an unsigned transaction &mdash; a PSBT &mdash; and displays it as a QR code, or writes it to a microSD card.</li><li>You load your mnemonic on the Krux device and either scan the code with its camera or read the file from the card.</li><li><strong>Check the amount, destination, and fee on the Krux screen.</strong> This is the whole reason the device has a display.</li><li>Approve, and Krux returns the signed transaction the same way it came in &mdash; as a QR code, or back onto the card.</li><li>Your coordinator reads the signature and broadcasts it.</li></ul>
+
+      <p>Krux works with the mainstream coordinator wallets and supports multisig, so it slots into an existing setup rather than demanding its own.</p>
+
+      <h2><span class="sc-article-num">6</span>The unusual extras</h2>
+
+      <p>Krux carries several features you will not find on most signers. None of them are required, and a first-time user should ignore all of them, but they are worth knowing exist:</p>
+
+      <ul class="sc-check-list"><li><strong>Printing and CNC engraving.</strong> Krux can drive a thermal printer, or output files for a CNC machine, to produce physical backups of a mnemonic or a QR code.</li><li><strong>Tamper detection.</strong> An experimental check intended to reveal whether the device has been interfered with between sessions.</li><li><strong>Mnemonic XOR.</strong> Splitting a mnemonic into parts that are individually useless and only reconstruct the original when combined.</li><li><strong>QR transcription tools.</strong> Guided help for copying a QR code onto a physical medium by hand.</li></ul>
+
+      <p>Each of these adds a way to lose access if you misunderstand it. Get a plain wallet working and verified first; the extras will still be there next month.</p>
+
+      <h2><span class="sc-article-num">7</span>Verify before you fund it</h2>
+
+      <p>On firmware you flashed yourself, running on hardware nobody certified, this stage is the one that converts hope into knowledge.</p>
+
+      <ul class="sc-check-list"><li>Export the public keys to your coordinator wallet as a watch-only wallet, and confirm the fingerprint on the device matches the one in the software.</li><li>Power the device off, then reload the mnemonic from your <em>written words</em> &mdash; not from encrypted storage &mdash; and confirm you reach the same wallet. This tests the backup you will actually need.</li><li>Send a small test amount, confirm it arrives, then sign a transaction sending it back out.</li><li>Note the firmware version and the device model, since both belong to the wallet you just made.</li></ul>
+
+      <p>If the fingerprints disagree, stop and find out why before going any further. The software would be watching a different wallet from the one the device signs for, and every address it showed you would be wrong.</p>
+
+      <h2>The short version</h2>
+
+      <p>Krux is firmware, so the device is your choice and the verification is your job. Flash a verified official release, generate a seed from dice or a photograph, write the words down on something physical, and treat the encrypted-storage feature as the convenience its authors say it is.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>The stored mnemonic is not your backup. Krux says so itself, in its own documentation, and it is the single most likely misunderstanding to cost somebody their coins on this device. The words on paper or metal are the wallet. Everything on the device is a copy that happens to be convenient.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="seedsigner-setup.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-cpu"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>SeedSigner: build and first use</h3>
+              <p>Assembling the hardware, verifying and flashing the image, and the stateless signing model that deliberately keeps nothing on the device. Including the part that is genuinely yours to get right, because nobody sealed this one in a bag.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="air-gapped-psbt-workflow.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-repeat"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The air-gapped PSBT workflow</h3>
+              <p>How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="dice-entropy.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shuffle"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Roll the dice: generating your own entropy</h3>
+              <p>Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

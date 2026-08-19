@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Specter is a face for your own Bitcoin Core node and nothing else, which matters more for multisig than for any other wallet. Building a wallet from three different manufacturers, and collecting signatures across three different transports.">
+  <title>Specter: coordinating a multi-brand multisig | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/specter-multisig-coordinator.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Specter: coordinating a multi-brand multisig | SelfCustody.ca">
+  <meta property="og:description" content="Specter is a face for your own Bitcoin Core node and nothing else, which matters more for multisig than for any other wallet. Building a wallet from three different manufacturers, and collecting signatures across three different transports.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/specter-multisig-coordinator.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260818-946" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260818-946" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Specter: coordinating a multi-brand multisig","description":"Specter is a face for your own Bitcoin Core node and nothing else, which matters more for multisig than for any other wallet. Building a wallet from three different manufacturers, and collecting signatures across three different transports.","url":"https://selfcustody.ca/guides/specter-multisig-coordinator.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/specter-multisig-coordinator.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu sc-nav-menu-split">
+          <a class="sc-nav-menu-toggle active" href="../guides.html">
+            <span>Guides</span>
+          </a>
+          <button class="sc-nav-menu-chevron-btn active" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
+            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html#fundamentals">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" " href="../merch.html"><span>Merch</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#software">Software</a>
+        </nav>
+        <span class="sc-eyebrow">Wallets</span>
+        <h1>Specter: coordinating a multi-brand multisig</h1>
+        <p class="sc-lead">Specter is a face for your own Bitcoin Core node and nothing else, which matters more for multisig than for any other wallet. Building a wallet from three different manufacturers, and collecting signatures across three different transports.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-advanced">Advanced</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 45 minutes</span>
+          <span>Updated Aug 18, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-multisig">Multisig</a><span class="sc-tag">Node</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../software.html#specter">About Specter <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Specter Desktop is not really a wallet. It is a graphical face for Bitcoin Core, built for people who already run a node and want to drive hardware signers &mdash; particularly several of them at once, from different manufacturers, in a multisig.</p>
+
+      <p>That architecture is unusual and it is the entire reason to choose it. Specter has no servers of its own. It asks your node about your coins, and there is no third party anywhere in the arrangement.</p>
+
+      <p>This page assumes you have already decided <a href='multisig-2of3.html'>what your multisig should look like</a> &mdash; how many keys, from which makers, stored where. That guide covers the choices. This one covers the mechanics of actually building it in Specter, which is the part it leaves to the coordinator.</p>
+
+      
+  <div class="sc-guide-prereq">
+    <h2>Before you start</h2>
+    <ul class="sc-check-list"><li><strong>Bitcoin Core</strong>, synced. This is not optional and it is the real cost of this setup &mdash; see step 2.</li><li><strong>Two or three hardware wallets</strong>, ideally from different makers. Specter supports COLDCARD, BitBox02, Jade, Passport, SeedSigner, Keystone, Trezor, Ledger, and its own Specter DIY signer, among others.</li><li><strong>A microSD card and reader</strong>, if any of your devices are air-gapped.</li><li><strong>Somewhere durable to store the wallet configuration</strong>, which matters as much as the seeds themselves.</li><li>No bitcoin. Build the whole thing, rehearse a recovery, and only then fund it.</li></ul>
+  </div>
+
+      <h2><span class="sc-article-num">1</span>What Specter actually is</h2>
+
+      <p>Most wallet software bundles two jobs: a user interface, and a source of blockchain data. Sparrow and Electrum both ship with public servers configured, so they work the moment you install them.</p>
+
+      <p>Specter does only the first job. It has no data source of its own and no fallback &mdash; it talks exclusively to a Bitcoin Core node you provide. Install it without one and it does nothing at all.</p>
+
+      <p>That is a deliberate design, not an omission, and it produces the property the next section is about.</p>
+
+      <h2><span class="sc-article-num">2</span>Why this matters more for multisig</h2>
+
+      <p>When a wallet asks somebody else's server for your balance, it hands over the keys to watch you. For a single-signature wallet that means one extended public key. For a multisig it is worse.</p>
+
+      <p>A multisig is described by an <strong>output descriptor</strong> &mdash; a string containing every co-signer's extended public key, the policy, and the derivation paths. It is the complete specification of your wallet. Hand it to a third-party server and that server can derive every address you will ever use across all of your devices, permanently.</p>
+
+      <blockquote class="sc-pull-quote"><p>A multisig descriptor is a more complete description of your finances than any single xpub. It is the last thing you want sitting on somebody else's server.</p></blockquote>
+
+      <p>Specter's node requirement removes that question entirely. Your descriptor goes to Bitcoin Core, running on your machine, and nowhere else. <a href='why-run-a-node.html'>Why run a node</a> makes the general case; multisig is where it stops being philosophical.</p>
+
+      <h2><span class="sc-article-num">3</span>The cost, stated honestly</h2>
+
+      <p>Bitcoin Core is a serious piece of infrastructure and this is where most people abandon the plan, so it is worth being upfront.</p>
+
+      <ul class="sc-caution-list"><li><strong>Disk.</strong> A full node stores the entire chain &mdash; several hundred gigabytes and growing. Pruning reduces that substantially, but complicates rescanning when you import an existing wallet with history.</li><li><strong>Time.</strong> The initial sync verifies the chain from the beginning. Expect days on ordinary hardware, not hours.</li><li><strong>Uptime.</strong> Specter is only useful when the node is running. A node that lives on a laptop you close is a coordinator that is frequently unavailable.</li><li><strong>Maintenance.</strong> It is another thing to update and keep healthy, indefinitely.</li></ul>
+
+      <p>If that is more than you want, Sparrow with your own Electrum server is a lighter route to a similar privacy position, and Sparrow connected to a public server is still a perfectly reasonable multisig coordinator &mdash; it simply makes the trade this guide is trying to avoid.</p>
+
+      <h2><span class="sc-article-num">4</span>Connecting Specter to your node</h2>
+
+      <ul class="sc-check-list"><li><strong>Get Bitcoin Core running and fully synced first.</strong> Do not start Specter until the node is caught up; nothing will work properly and you will misdiagnose it.</li><li><strong>Verify the Specter download</strong> before installing. Releases are signed, and a coordinator is exactly the kind of software worth checking.</li><li><strong>Point Specter at the node.</strong> On the same machine it will usually detect Core automatically. Otherwise supply the host, port, and RPC credentials.</li><li><strong>Confirm the connection and block height</strong> in Specter before going further.</li></ul>
+
+      <h2><span class="sc-article-num">5</span>Adding the devices</h2>
+
+      <p>Each signer is added to Specter individually, as a device, before any wallet exists. What you are importing is public keys &mdash; no private key ever enters Specter.</p>
+
+      <ul class="sc-check-list"><li><strong>Add each device</strong> and choose how it connects: USB for Trezor, Ledger, BitBox02 and similar; microSD file import for COLDCARD; QR for SeedSigner, Keystone, and Passport.</li><li><strong>Import the extended public keys</strong> by file or QR rather than typing. A single mistyped character produces a wallet nobody can spend from.</li><li><strong>Check the fingerprint</strong> shown in Specter against the one on each device. This is how you know Specter is describing the device in front of you.</li><li><strong>Name each device for the physical object</strong>, not the brand &mdash; <em>COLDCARD in the safe</em> beats <em>coldcard1</em> when you are recovering under stress in five years.</li></ul>
+
+      <h2><span class="sc-article-num">6</span>Building the wallet, and registering it back</h2>
+
+      <ul class="sc-check-list"><li><strong>Create a new multisig wallet</strong> in Specter, set the policy &mdash; 2-of-3 for most people &mdash; and select the devices you added.</li><li><strong>Choose the script type</strong> and leave it consistent across everything. Native SegWit is the sensible default.</li><li><strong>Export the wallet configuration</strong> immediately, before doing anything else.</li><li><strong>Register that configuration on every device that supports it.</strong> COLDCARD, Jade, BitBox02, Passport, Keystone and others accept a multisig configuration file or QR.</li></ul>
+
+      <p>That last step is the one to take seriously, and it is worth knowing precisely why rather than treating it as a formality.</p>
+
+      <div class="sc-callout mt-4"><h3>What registration actually buys you</h3><p>A device that has only seen its own key cannot tell a legitimate change address from a hostile one, because a multisig change address is derived from <em>all</em> the keys. Register the wallet and the device can verify that change is coming home. Skip it and your signer loses the ability to catch the attack described in <a href='air-gapped-psbt-workflow.html'>the PSBT workflow guide</a> — which is the specific attack that empties multisig wallets.</p></div>
+
+      <h2><span class="sc-article-num">7</span>Signing across three brands</h2>
+
+      <p>Here is where a multi-brand multisig stops being theoretical. Each manufacturer moves transactions differently, and a single payment may involve two or three different mechanisms.</p>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>What collecting signatures actually looks like</caption>
+          <thead><tr><th scope="col">Device style</th><th scope="col">How the PSBT travels</th><th scope="col">In practice</th></tr></thead>
+          <tbody>
+            <tr><td>USB signers</td><td>Cable, over Specter's device integration</td><td>Fastest. Not air-gapped &mdash; the device talks to your computer.</td></tr>
+            <tr><td>microSD signers</td><td>File written, carried, and read back</td><td>Air-gapped and reliable. Keep a card dedicated to the job.</td></tr>
+            <tr><td>QR signers</td><td>Animated codes both directions</td><td>Air-gapped and cable-free. Large multisig transactions make long animations.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="sc-check-list"><li>Build the transaction in Specter. It produces a PSBT.</li><li><strong>Take it to the first signer</strong> by whichever route that device uses, and verify amount, destination, fee, and change on the device screen.</li><li>Bring the partially signed result back into Specter.</li><li><strong>Repeat with the second signer</strong> &mdash; likely a different transport entirely.</li><li>Specter combines the signatures, finalises, and broadcasts through your node.</li></ul>
+
+      <p>Collecting signatures one device at a time, in whatever order suits you, is the normal rhythm. Nothing is lost by pausing halfway; an unsigned or partially signed transaction has moved no money.</p>
+
+      <h2><span class="sc-article-num">8</span>What to back up</h2>
+
+      <p>This is where multisig wallets are actually lost, and the failure is never the cryptography.</p>
+
+      <ul class="sc-check-list"><li><strong>Every seed backup</strong>, one per device, stored apart from each other.</li><li><strong>The wallet configuration file</strong> &mdash; the descriptor &mdash; stored <em>with every one of those seed backups</em>. Seeds alone will not rebuild a multisig.</li><li><strong>A note naming the coordinator, the policy, and the script type</strong>, so a future you knows what they are looking at.</li><li><strong>A rehearsal.</strong> Restore the wallet from the descriptor plus two devices on a clean machine, before it holds anything.</li></ul>
+
+      <p><a href='multisig-2of3.html'>The multisig guide</a> goes into why the configuration is the thing that kills these wallets. Specter makes exporting it easy, which removes every excuse for not having done it.</p>
+
+      <h2><span class="sc-article-num">9</span>Where Specter fits</h2>
+
+      <ul class="sc-check-list"><li><strong>Choose Specter</strong> if you run a node already, or intend to, and want a coordinator whose privacy properties require no configuration because it has no alternative.</li><li><strong>Choose Sparrow</strong> if you want a capable multisig coordinator without a node requirement, and are willing to point it at a server &mdash; ideally your own.</li><li><strong>Choose Nunchuk</strong> if you need shared or collaborative arrangements across people and phones.</li></ul>
+
+      <p>All three build the same wallet. A multisig created in one can be rebuilt in another from the descriptor and the devices, which is worth knowing: you are not marrying the software.</p>
+
+      <h2>The short version</h2>
+
+      <p>Specter is a front end for your own Bitcoin Core node, which means your multisig descriptor &mdash; the most complete description of your finances that exists &mdash; never leaves your machine. The price is running and maintaining a node. Add each device, build the wallet, register the configuration back onto every signer, and store that configuration with every seed backup.</p>
+
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>Register the wallet configuration on every device, and store a copy with every seed. The first makes your signers able to detect a hostile change address; the second is the difference between three seed backups and an actual recoverable wallet. Neither is optional, and Specter makes both easy enough that skipping them is a choice.</p></div></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="multisig-2of3.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-diagram-3"></i></div>
+                <span class="sc-level sc-level-advanced">Advanced</span>
+              </div>
+              <h3>Build a 2-of-3 multisig</h3>
+              <p>Three keys, any two can spend. The real work is not the setup — it is the wallet configuration everybody forgets to back up, and the rehearsal that proves the whole thing works.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="air-gapped-psbt-workflow.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-repeat"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>The air-gapped PSBT workflow</h3>
+              <p>How an unsigned transaction reaches an offline signer and a signature comes back, by microSD, QR, or NFC. What the file actually contains, why your device can be lied to, and the one output people never think to check.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="why-run-a-node.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-cpu"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Why run a node</h3>
+              <p>Without one, your wallet is asking a stranger's computer what you own and believing the answer. A node is how “don't trust, verify” stops being a slogan and becomes something you actually do.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../merch.html">Merch</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../merch.html">Merch</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260818-946"></script>
+</body>
+</html>

@@ -11,6 +11,10 @@ docs/assets/img/cash-vortex/*
 docs/assets/img/money-coins.jpeg
 docs/assets/img/services-notebook.jpeg
 
+# Superseded social preview (the @HodlDee portrait), replaced by the vault
+# banner. Kept on disk for reference, but no longer tracked.
+docs/assets/img/social-preview-hodldee.jpg
+
 # Scratch space for image sources and re-exports, never served.
 work/
 
