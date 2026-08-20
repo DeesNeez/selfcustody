@@ -634,6 +634,12 @@ body[data-page="software"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .
      button row read as their own group rather than crowding the title. */
   body[data-page="software"] .sc-hero.has-background-media .sc-lead {
     margin-top: 3.5rem;
+    /* The column is 48% to let the nowrap headline through at full size,
+       but the lead has no such need and running to that edge put its
+       longest line over the glass. Capped to the headline's own measured
+       width instead -- ~7.2x a font-size of min(5vw, 70px) -- so the two
+       blocks wrap against the same right edge at every width. */
+    max-width: min(504px, 36vw);
   }
 
   body[data-page="software"] .sc-hero.has-background-media .sc-hero-actions {
