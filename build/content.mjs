@@ -824,7 +824,7 @@ const currentYear = new Date().getFullYear();
         ${hero(
           "Wallet software",
           "Always visible.<br><em>Safely secured.</em>",
-          "The software shows balances, generates receive addresses, constructs transactions, and broadcasts them. Paired with a hardware signer, the keys stay offline.",
+          "Show balances, generate receive addresses, construct transactions and broadcast them. Pair it with a hardware signer so the keys remain offline.",
           `<a class="sc-btn sc-btn-primary" href="#software-compare">Compare wallets</a>
            <a class="sc-btn sc-btn-ghost" href="devices.html">Pair with hardware</a>`,
           {
