@@ -349,13 +349,24 @@ body[data-page="guides"] .sc-hero-background-media img {
 
 /* Legibility scrim: heavy at the left edge where the copy sits, fully clear
    before the centre so the book is never dimmed, plus a bottom fade into the
-   page surface so the photograph does not end on a hard line. */
+   page surface so the photograph does not end on a hard line.
+
+   There used to be a top scrim on the vertical gradient too -- 0.72 opaque at
+   the very top, still 0.12 a quarter of the way down. Over a photograph whose
+   top half is a sunlit vaulted ceiling that reads as haze, not shade, and it
+   cost more in clarity than it bought in contrast. The copy is held by the
+   left gradient and its own text-shadow without it.
+
+   The bottom fade stays, unlike the glossary hero's: this photograph ends on
+   pale stone floor rather than dark wood, so without it a bright edge would
+   meet the dark nav bar below on a hard line. It starts at 74% now rather
+   than 55%, so it only dresses the edge instead of dimming the lower half. */
 body[data-page="guides"] .sc-hero-background-media::after {
   position: absolute;
   inset: 0;
   background:
     linear-gradient(90deg, rgba(26, 25, 24, 0.95) 0%, rgba(26, 25, 24, 0.88) 20%, rgba(26, 25, 24, 0.55) 30%, rgba(26, 25, 24, 0.14) 38%, transparent 46%),
-    linear-gradient(180deg, rgba(26, 25, 24, 0.72) 0%, rgba(26, 25, 24, 0.12) 26%, transparent 55%, rgba(26, 25, 24, 0.85) 92%, var(--sc-paper) 100%);
+    linear-gradient(180deg, transparent 74%, rgba(26, 25, 24, 0.5) 88%, var(--sc-paper) 100%);
   content: "";
   pointer-events: none;
 }
@@ -424,6 +435,96 @@ body[data-page="guides"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .sc
   }
 
   body[data-page="guides"] .sc-hero.has-background-media .sc-hero-copy {
+    max-width: none;
+  }
+}
+
+/* Glossary: same full-bleed photograph treatment as the guides library hero.
+   Taller than the photo strictly needs -- the hero itself reads as a bigger,
+   more immersive banner rather than a thin strip. */
+body[data-page="glossary"] .sc-hero.has-background-media {
+  display: flex;
+  align-items: flex-start;
+  /* Grown to pay for the bottom fade below. The crop is top-anchored, so the
+     extra height reveals more desk at the foot of the photo -- which is
+     exactly the band the fade then covers, leaving the framing above it
+     untouched. */
+  min-height: clamp(600px, 54vw, 750px);
+  padding: 118px 0 70px;
+  isolation: isolate;
+  background: var(--sc-paper);
+}
+
+/* Top pinned to the header's own height rather than 0 -- the header is an
+   opaque bar at this width, so the strip of photo behind it would never be
+   seen. Starting the image at the header's bottom edge instead means the
+   full box is visible, and the crop loses the same amount off the bottom of
+   the photo instead. */
+body[data-page="glossary"] .sc-hero-background-media {
+  position: absolute;
+  z-index: -2;
+  top: 78px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+}
+
+body[data-page="glossary"] .sc-hero-background-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0%;
+}
+
+body[data-page="glossary"] .sc-hero-background-media::after {
+  position: absolute;
+  inset: 0;
+  /* Left-side darkening so the copy stays legible over the photo, plus a
+     short fade on the bottom edge into the page surface. Nothing at the top:
+     the earlier scrim there cost more clarity than it bought. The bottom fade
+     is shorter than the guides hero's -- this photograph already ends on dark
+     desk, so it only needs to settle the edge, not carry a bright floor down
+     to the section colour. The box is sized to absorb it: see the min-height
+     above, which was grown by roughly what this ramp consumes so the fade
+     lands on newly revealed desk rather than on the composition. */
+  background:
+    linear-gradient(90deg, rgba(26, 25, 24, 0.95) 0%, rgba(26, 25, 24, 0.88) 20%, rgba(26, 25, 24, 0.55) 30%, rgba(26, 25, 24, 0.14) 38%, transparent 46%),
+    linear-gradient(180deg, transparent 85%, rgba(26, 25, 24, 0.42) 94%, var(--sc-paper) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+body[data-page="glossary"] .sc-hero.has-background-media .sc-hero-copy {
+  max-width: min(470px, 38%);
+}
+
+body[data-page="glossary"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .sc-lead, .sc-eyebrow) {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    0 2px 14px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 991px) {
+  body[data-page="glossary"] .sc-hero.has-background-media {
+    display: block;
+    min-height: 0;
+    padding: 70px 0 44px;
+  }
+
+  body[data-page="glossary"] .sc-hero-background-media {
+    position: relative;
+    inset: auto;
+    height: clamp(180px, 34vw, 260px);
+    margin-bottom: 30px;
+  }
+
+  body[data-page="glossary"] .sc-hero-background-media::after {
+    background: linear-gradient(180deg, rgba(26, 25, 24, 0.55) 0%, transparent 34%, transparent 62%, rgba(26, 25, 24, 0.9) 94%, var(--sc-paper) 100%);
+  }
+
+  body[data-page="glossary"] .sc-hero.has-background-media .sc-hero-copy {
     max-width: none;
   }
 }
@@ -4717,19 +4818,6 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
 
 }
 
-/* Guides only -- lays its label link and chevron button side by side as one
-   visual unit. Compare's .sc-nav-menu has no second child, so it never gets
-   this class and is untouched. No align-items here: default `stretch` makes
-   the chevron button match the label link's full height (the link's own
-   line-height makes it the taller of the two), instead of centering at its
-   own shorter natural height and leaving a gap top and bottom of the arrow
-   that the label doesn't have. .sc-nav-menu-chevron-btn's own
-   align-items: center re-centers the small chevron glyph inside that now
-   taller box. */
-.sc-nav-menu-split {
-  display: flex;
-}
-
 /* Homepage actions share one compact, control-panel treatment. */
 body.site-refresh .navbar .sc-nav-menu-toggle {
   display: flex;
@@ -4767,47 +4855,6 @@ body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-toggle {
   }
 }
 
-/* Guides' separate chevron button. Its own complete rule rather than
-   sharing .sc-nav-menu-toggle -- the 7px left padding is deliberately what
-   used to be the single button's internal `gap: 7px`, moved onto this box
-   since the label link's own padding-right is zeroed out below (see
-   .sc-nav-menu-split). Colored on hover/focus of *either* sibling, not just
-   itself -- they used to be one button sharing one color via currentColor,
-   and splitting them shouldn't make hovering the label leave the arrow
-   behind, or leave it behind once the click that opens the list is over. */
-body.site-refresh .navbar .sc-nav-menu-chevron-btn {
-  display: flex;
-  align-items: center;
-  padding: 11px 12px 11px 7px;
-  color: rgba(255, 255, 255, 0.78);
-  background: none;
-  border: 0;
-  transition: color 0.2s ease;
-}
-
-body.site-refresh .navbar .sc-nav-menu-chevron-btn:focus-visible,
-body.site-refresh .navbar .sc-nav-menu-chevron-btn.active,
-body.site-refresh .navbar .sc-nav-menu.is-open > .sc-nav-menu-chevron-btn {
-  color: var(--sc-orange);
-}
-
-/* Desktop-only for the same reason as the label above. */
-@media (min-width: 992px) {
-  body.site-refresh .navbar .sc-nav-menu-chevron-btn:hover,
-  body.site-refresh .navbar .sc-nav-menu:hover > .sc-nav-menu-chevron-btn,
-  body.site-refresh .navbar .sc-nav-menu:focus-within > .sc-nav-menu-chevron-btn {
-    color: var(--sc-orange);
-  }
-}
-
-/* Reproduces Compare's exact 12px outer insets + 7px inner gap across two
-   boxes instead of one: the link keeps its normal 12px on every side except
-   the right (zeroed here), and the chevron button's own 7px left padding
-   above supplies that gap, so nothing is doubled up and nothing shrinks. */
-body.site-refresh .navbar .sc-nav-menu-split > .sc-nav-menu-toggle {
-  padding-right: 0;
-}
-
 .sc-nav-menu-chevron {
   width: 7px;
   height: 7px;
@@ -4817,16 +4864,13 @@ body.site-refresh .navbar .sc-nav-menu-split > .sc-nav-menu-toggle {
   transition: transform 0.16s ease;
 }
 
-.sc-nav-menu.is-open > .sc-nav-menu-toggle .sc-nav-menu-chevron,
-.sc-nav-menu.is-open > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron {
+.sc-nav-menu.is-open > .sc-nav-menu-toggle .sc-nav-menu-chevron {
   transform: translateY(2px) rotate(225deg);
 }
 
 @media (min-width: 992px) {
   .sc-nav-menu:hover > .sc-nav-menu-toggle .sc-nav-menu-chevron,
-  .sc-nav-menu:hover > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron,
-  .sc-nav-menu:focus-within > .sc-nav-menu-toggle .sc-nav-menu-chevron,
-  .sc-nav-menu:focus-within > .sc-nav-menu-chevron-btn .sc-nav-menu-chevron {
+  .sc-nav-menu:focus-within > .sc-nav-menu-toggle .sc-nav-menu-chevron {
     transform: translateY(2px) rotate(225deg);
   }
 }
@@ -4886,10 +4930,6 @@ body.site-refresh .navbar .sc-nav-submenu::before {
     padding-left: 9px;
     font-size: 13px;
   }
-
-  body.site-refresh .navbar .sc-nav-menu-chevron-btn {
-    padding-right: 9px;
-  }
 }
 
 body.site-refresh .navbar .sc-nav-submenu a {
@@ -4915,41 +4955,6 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
     font-size: 21px;
     font-weight: 600;
     letter-spacing: -0.01em;
-  }
-
-  /* Guides' split control reproduces the same full-width, label-left/
-     chevron-right layout as Compare's single button, just spread across
-     the .sc-nav-menu-split row instead of one button's own space-between --
-     the link no longer needs width: 100% since it's not the only child, and
-     its own right padding is zeroed so the row's gap is the only space
-     between it and the chevron button. */
-  /* No align-items -- grid's default `stretch` keeps the chevron button as
-     tall as the label row, which matters more on touch than on desktop:
-     centering it collapses the button to the glyph's own ~26px and shrinks
-     the tap target. */
-  body.site-refresh .navbar-mobile .sc-nav-menu-split {
-    display: grid;
-    grid-template-columns: 1fr auto;
-  }
-
-  /* The submenu is a third child of the split row, so in the drawer it has to
-     be told to take a line of its own -- left to itself it lands in the grid's
-     next implicit column, wedged beside the label and chevron. Grid rather
-     than a wrapped flex row because the submenu carries side margins, and a
-     flex-basis of 100% would add them on top of a full-width box and push it
-     past the drawer's edge. */
-  body.site-refresh .navbar-mobile .sc-nav-menu-split > .sc-nav-submenu {
-    grid-column: 1 / -1;
-  }
-
-  body.site-refresh .navbar-mobile .sc-nav-menu-split > .sc-nav-menu-toggle {
-    width: auto;
-    padding-right: 0;
-  }
-
-  body.site-refresh .navbar-mobile .sc-nav-menu-chevron-btn {
-    padding: 15px 22px 15px 0;
-    color: var(--sc-ink);
   }
 
   /* The arrow is drawn from two borders, so it scales by box size, not
@@ -7574,15 +7579,16 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     padding: 9px 7px;
     border-radius: 8px;
   }
-  /* Same fill as desktop, but phone screens run brighter/more saturated by
-     default, so the same 0.085/0.025 highlight over #0d0f11 reads as light
-     grey instead of near-black. Cutting the highlight opacity and dropping
-     the border alpha keeps the card visibly darker without touching the
-     desktop rule. */
+  /* Same fill as desktop, but real phone hardware (Safari on iOS in
+     particular -- True Tone/auto-brightness shifts near-black warmer and
+     lighter) renders the desktop's 0.085/0.025 highlight over #0d0f11 as
+     light grey rather than near-black, worse than desktop's own mobile-width
+     emulation shows. Cut the highlight almost to nothing and darken the
+     border further so it still reads dark once the display shifts it. */
   .sc-block-confirmed {
-    border-color: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.08);
     background:
-      linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0)),
       #0d0f11;
   }
   /* 17px, not 8. The dissolve is what makes this read as a chain continuing
@@ -9741,12 +9747,16 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
 
 /* ---- searchable glossary ---------------------------------------------- */
 
+/* Flat paper, no radial glow. The glow used to start at full strength at this
+   section's top edge, which is exactly where the hero above it ends -- a step
+   change in tint right on the seam, reading as a line under the photo. */
 .sc-glossary {
   min-height: 70vh;
-  padding-top: 54px;
-  background:
-    radial-gradient(circle at 50% 0, rgba(242, 138, 0, 0.08), transparent 34rem),
-    var(--sc-paper);
+  /* Tight to the hero above: the photograph now ends on the foot of the book,
+     so the search panel reads as sitting on the desk rather than floating in
+     a band of empty page. */
+  padding-top: 10px;
+  background: var(--sc-paper);
 }
 
 .sc-glossary-tools {
