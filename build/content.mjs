@@ -823,15 +823,16 @@ const currentYear = new Date().getFullYear();
       content: `
         ${hero(
           "Wallet software",
-          "The app builds the transaction.<br><em>The key authorizes it.</em>",
-          "Wallet software shows balances, generates receive addresses, chooses coins and fees, and broadcasts transactions. A hardware signer can keep the private key outside that app.",
+          "Always visible.<br><em>Safely secured.</em>",
+          "The software shows balances, generates receive addresses, constructs transactions, and broadcasts them. Paired with a hardware signer, the keys stay offline.",
           `<a class="sc-btn sc-btn-primary" href="#software-compare">Compare wallets</a>
            <a class="sc-btn sc-btn-ghost" href="devices.html">Pair with hardware</a>`,
           {
-            src: "assets/img/software-code-screen.jpeg",
-            alt: "Blurred keyboard in the foreground with syntax-highlighted code on a laptop screen",
-            width: 1600,
-            height: 1067
+            src: "assets/img/software-hero.jpg",
+            alt: "",
+            width: 1586,
+            height: 672,
+            background: true
           }
         )}
 
