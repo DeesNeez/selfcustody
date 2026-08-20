@@ -349,13 +349,24 @@ body[data-page="guides"] .sc-hero-background-media img {
 
 /* Legibility scrim: heavy at the left edge where the copy sits, fully clear
    before the centre so the book is never dimmed, plus a bottom fade into the
-   page surface so the photograph does not end on a hard line. */
+   page surface so the photograph does not end on a hard line.
+
+   There used to be a top scrim on the vertical gradient too -- 0.72 opaque at
+   the very top, still 0.12 a quarter of the way down. Over a photograph whose
+   top half is a sunlit vaulted ceiling that reads as haze, not shade, and it
+   cost more in clarity than it bought in contrast. The copy is held by the
+   left gradient and its own text-shadow without it.
+
+   The bottom fade stays, unlike the glossary hero's: this photograph ends on
+   pale stone floor rather than dark wood, so without it a bright edge would
+   meet the dark nav bar below on a hard line. It starts at 74% now rather
+   than 55%, so it only dresses the edge instead of dimming the lower half. */
 body[data-page="guides"] .sc-hero-background-media::after {
   position: absolute;
   inset: 0;
   background:
     linear-gradient(90deg, rgba(26, 25, 24, 0.95) 0%, rgba(26, 25, 24, 0.88) 20%, rgba(26, 25, 24, 0.55) 30%, rgba(26, 25, 24, 0.14) 38%, transparent 46%),
-    linear-gradient(180deg, rgba(26, 25, 24, 0.72) 0%, rgba(26, 25, 24, 0.12) 26%, transparent 55%, rgba(26, 25, 24, 0.85) 92%, var(--sc-paper) 100%);
+    linear-gradient(180deg, transparent 74%, rgba(26, 25, 24, 0.5) 88%, var(--sc-paper) 100%);
   content: "";
   pointer-events: none;
 }
@@ -424,6 +435,96 @@ body[data-page="guides"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .sc
   }
 
   body[data-page="guides"] .sc-hero.has-background-media .sc-hero-copy {
+    max-width: none;
+  }
+}
+
+/* Glossary: same full-bleed photograph treatment as the guides library hero.
+   Taller than the photo strictly needs -- the hero itself reads as a bigger,
+   more immersive banner rather than a thin strip. */
+body[data-page="glossary"] .sc-hero.has-background-media {
+  display: flex;
+  align-items: flex-start;
+  /* Grown to pay for the bottom fade below. The crop is top-anchored, so the
+     extra height reveals more desk at the foot of the photo -- which is
+     exactly the band the fade then covers, leaving the framing above it
+     untouched. */
+  min-height: clamp(600px, 54vw, 750px);
+  padding: 118px 0 70px;
+  isolation: isolate;
+  background: var(--sc-paper);
+}
+
+/* Top pinned to the header's own height rather than 0 -- the header is an
+   opaque bar at this width, so the strip of photo behind it would never be
+   seen. Starting the image at the header's bottom edge instead means the
+   full box is visible, and the crop loses the same amount off the bottom of
+   the photo instead. */
+body[data-page="glossary"] .sc-hero-background-media {
+  position: absolute;
+  z-index: -2;
+  top: 78px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+}
+
+body[data-page="glossary"] .sc-hero-background-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0%;
+}
+
+body[data-page="glossary"] .sc-hero-background-media::after {
+  position: absolute;
+  inset: 0;
+  /* Left-side darkening so the copy stays legible over the photo, plus a
+     short fade on the bottom edge into the page surface. Nothing at the top:
+     the earlier scrim there cost more clarity than it bought. The bottom fade
+     is shorter than the guides hero's -- this photograph already ends on dark
+     desk, so it only needs to settle the edge, not carry a bright floor down
+     to the section colour. The box is sized to absorb it: see the min-height
+     above, which was grown by roughly what this ramp consumes so the fade
+     lands on newly revealed desk rather than on the composition. */
+  background:
+    linear-gradient(90deg, rgba(26, 25, 24, 0.95) 0%, rgba(26, 25, 24, 0.88) 20%, rgba(26, 25, 24, 0.55) 30%, rgba(26, 25, 24, 0.14) 38%, transparent 46%),
+    linear-gradient(180deg, transparent 85%, rgba(26, 25, 24, 0.42) 94%, var(--sc-paper) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+body[data-page="glossary"] .sc-hero.has-background-media .sc-hero-copy {
+  max-width: min(470px, 38%);
+}
+
+body[data-page="glossary"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .sc-lead, .sc-eyebrow) {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    0 2px 14px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 991px) {
+  body[data-page="glossary"] .sc-hero.has-background-media {
+    display: block;
+    min-height: 0;
+    padding: 70px 0 44px;
+  }
+
+  body[data-page="glossary"] .sc-hero-background-media {
+    position: relative;
+    inset: auto;
+    height: clamp(180px, 34vw, 260px);
+    margin-bottom: 30px;
+  }
+
+  body[data-page="glossary"] .sc-hero-background-media::after {
+    background: linear-gradient(180deg, rgba(26, 25, 24, 0.55) 0%, transparent 34%, transparent 62%, rgba(26, 25, 24, 0.9) 94%, var(--sc-paper) 100%);
+  }
+
+  body[data-page="glossary"] .sc-hero.has-background-media .sc-hero-copy {
     max-width: none;
   }
 }
@@ -9646,12 +9747,16 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
 
 /* ---- searchable glossary ---------------------------------------------- */
 
+/* Flat paper, no radial glow. The glow used to start at full strength at this
+   section's top edge, which is exactly where the hero above it ends -- a step
+   change in tint right on the seam, reading as a line under the photo. */
 .sc-glossary {
   min-height: 70vh;
-  padding-top: 54px;
-  background:
-    radial-gradient(circle at 50% 0, rgba(242, 138, 0, 0.08), transparent 34rem),
-    var(--sc-paper);
+  /* Tight to the hero above: the photograph now ends on the foot of the book,
+     so the search panel reads as sitting on the desk rather than floating in
+     a band of empty page. */
+  padding-top: 10px;
+  background: var(--sc-paper);
 }
 
 .sc-glossary-tools {
