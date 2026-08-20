@@ -3955,6 +3955,149 @@ p.sc-price {
 .sc-psbt-routes-grid article > p { margin: 0 0 14px; color: var(--sc-ink-soft); font-size: 0.76rem; line-height: 1.55; }
 .sc-psbt-routes-grid aside { margin: auto -16px -16px; padding: 14px 16px; color: var(--sc-muted); background: var(--route-glow); border-top: 1px solid rgba(255, 255, 255, 0.075); font-size: 0.7rem; line-height: 1.5; }
 
+.sc-specter-signing-panel {
+  position: relative;
+  overflow: hidden;
+  margin: 2em 0;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 0 0, rgba(242, 138, 0, 0.12), transparent 34%),
+    radial-gradient(circle at 100% 0, rgba(53, 180, 138, 0.1), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(217, 194, 143, 0.27);
+  border-radius: var(--sc-radius);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.19), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sc-specter-signing-panel::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d65e40, var(--sc-orange) 34%, #d9c28f 66%, #35b48a);
+  content: "";
+}
+
+.sc-specter-signing-heading {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.sc-specter-signing-mark {
+  position: relative;
+  display: block;
+  width: 46px;
+  height: 46px;
+  background: rgba(242, 138, 0, 0.09);
+  border: 1px solid rgba(242, 138, 0, 0.3);
+  border-radius: 12px;
+}
+
+.sc-specter-signing-mark::before {
+  position: absolute;
+  top: 18px;
+  left: 7px;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  background: #ff9d8a;
+  border-radius: 50%;
+  box-shadow: 12px 0 var(--sc-orange), 24px 0 #7fe0c0;
+  content: "";
+}
+
+.sc-specter-signing-mark i {
+  position: absolute;
+  top: 21px;
+  left: 11px;
+  width: 25px;
+  height: 2px;
+  background: rgba(217, 194, 143, 0.45);
+}
+
+.sc-specter-signing-heading > div > span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--sc-orange);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sc-specter-signing-heading h3 { margin: 0; color: #fff; font-size: 1.22rem; line-height: 1.25; }
+.sc-specter-signing-heading > strong {
+  padding: 7px 10px;
+  color: #e8d7ad;
+  background: rgba(217, 194, 143, 0.08);
+  border: 1px solid rgba(217, 194, 143, 0.27);
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.sc-specter-signing-grid {
+  overflow: hidden;
+  background: rgba(18, 18, 17, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 13px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.sc-specter-signing-head,
+.sc-specter-signing-row {
+  display: grid;
+  grid-template-columns: 0.9fr 1.25fr 1.55fr;
+  align-items: stretch;
+}
+
+.sc-specter-signing-head {
+  color: var(--sc-muted);
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sc-specter-signing-head span,
+.sc-specter-signing-row > * { padding: 14px 15px; }
+.sc-specter-signing-head span + span,
+.sc-specter-signing-row > * + * { border-left: 1px solid rgba(255, 255, 255, 0.075); }
+.sc-specter-signing-row { --signing-accent: #e8d7ad; --signing-glow: rgba(217, 194, 143, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.075); }
+.sc-specter-signing-row.is-usb { --signing-accent: #ff9d8a; --signing-glow: rgba(214, 94, 64, 0.09); }
+.sc-specter-signing-row.is-qr { --signing-accent: #7fe0c0; --signing-glow: rgba(53, 180, 138, 0.08); }
+.sc-specter-signing-row:nth-child(even) { background: rgba(255, 255, 255, 0.014); }
+
+.sc-specter-signing-row > div:first-child { display: flex; align-items: center; gap: 10px; }
+.sc-specter-signing-row > div:first-child > span {
+  display: grid;
+  width: 36px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--signing-accent);
+  background: var(--signing-glow);
+  border: 1px solid currentColor;
+  border-radius: 7px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.sc-specter-signing-row > div:first-child > strong { color: var(--sc-ink-soft); font-size: 0.79rem; line-height: 1.35; }
+.sc-specter-signing-track { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(42px, auto) auto minmax(0, 1fr); align-items: center; gap: 4px; background: var(--signing-glow); }
+.sc-specter-signing-track span,
+.sc-specter-signing-track b { padding: 7px 4px; color: var(--sc-muted); background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.075); border-radius: 5px; font-size: 0.55rem; font-weight: 800; text-align: center; }
+.sc-specter-signing-track b { color: var(--signing-accent); border-color: currentColor; }
+.sc-specter-signing-track i { color: var(--signing-accent); font-size: 0.66rem; font-style: normal; }
+.sc-specter-signing-row > p { display: flex; align-items: center; margin: 0; color: var(--sc-muted); font-size: 0.75rem; line-height: 1.5; }
+
 @media (max-width: 991.98px) {
   .sc-psbt-routes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sc-psbt-routes-grid article { min-height: 280px; }
@@ -4025,6 +4168,19 @@ p.sc-price {
   .sc-psbt-routes-grid { grid-template-columns: 1fr; }
   .sc-psbt-routes-grid article { min-height: 0; }
   .sc-psbt-route-title { min-height: 50px; }
+  .sc-specter-signing-panel { padding: 15px; }
+  .sc-specter-signing-heading { grid-template-columns: 42px minmax(0, 1fr); gap: 11px; margin-bottom: 16px; }
+  .sc-specter-signing-mark { width: 42px; height: 42px; }
+  .sc-specter-signing-mark::before { top: 16px; left: 5px; }
+  .sc-specter-signing-mark i { top: 19px; left: 9px; }
+  .sc-specter-signing-heading h3 { font-size: 1.06rem; }
+  .sc-specter-signing-heading > strong { grid-column: 2; justify-self: start; }
+  .sc-specter-signing-head { display: none; }
+  .sc-specter-signing-row { grid-template-columns: 1fr; }
+  .sc-specter-signing-row > * + * { border-top: 1px solid rgba(255, 255, 255, 0.075); border-left: 0; }
+  .sc-specter-signing-row > div:first-child { padding: 12px 13px; background: rgba(255, 255, 255, 0.035); }
+  .sc-specter-signing-track { padding: 12px 13px; }
+  .sc-specter-signing-row > p { padding: 13px; }
 }
 
 .sc-step {
