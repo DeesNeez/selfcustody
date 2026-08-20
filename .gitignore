@@ -24,3 +24,6 @@ node_modules/
 
 # Local-only preview of the real contact page (see build/preview-contact.mjs).
 docs/_contact-preview.html
+
+# macOS Finder metadata, at any level.
+.DS_Store

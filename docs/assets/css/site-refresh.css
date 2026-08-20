@@ -529,6 +529,155 @@ body[data-page="glossary"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .
   }
 }
 
+/* Software: glass-vault photograph, composed with the subject weighted to
+   the right so the copy sits over open floor/wall on the left. Shorter box
+   than the glossary hero -- kept close to the photo's native ~2.36:1 aspect
+   so the crop trims top/bottom rather than the left/right edges, keeping
+   more of the room visible on both sides. */
+body[data-page="software"] .sc-hero.has-background-media {
+  display: flex;
+  align-items: flex-start;
+  /* Taller than the guides hero on purpose -- this photo needs more height
+     for the vault to read clearly. The copy column stays capped (see
+     .sc-hero-copy below), so growing this doesn't push text into the glass
+     on the right regardless of how tall it gets. Top padding clears the
+     fixed 78px header and then leaves a breath above the eyebrow. */
+  min-height: clamp(560px, 56vw, 780px);
+  padding: 124px 0 70px;
+  isolation: isolate;
+  background: var(--sc-paper);
+}
+
+/* The header is fixed (not in normal flow), so the hero section actually
+   starts at the true top of the page and the header floats over it --
+   pinning this figure to inset:0 put its first 78px directly behind the
+   opaque header bar, invisible. Starting at the header's own height instead
+   means the full figure box is visible, right up against its bottom edge. */
+body[data-page="software"] .sc-hero-background-media {
+  position: absolute;
+  z-index: -2;
+  top: 78px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Cover rather than contain -- at this box height, contain locks the photo's
+   rendered height to whatever fits full-width (leaving empty letterbox below
+   it) instead of actually growing the picture.
+
+   object-position X is counter-intuitive here: it moves the *viewing window*
+   through the source image, so a higher percentage slides the window right
+   and therefore drags the subject LEFT on screen. The vault needs to sit as
+   far right as possible, so this anchors at 0% -- the window sits at the
+   photo's left edge, keeping the full run of dark floor on the left and
+   letting the crop fall off the vault's right edge instead.
+
+   The mask fade is kept short and tight to the true bottom edge -- the box
+   is sized to end close to where the photo ends, so there's no dead
+   flat-colour strip inside the hero before the next section picks up. */
+body[data-page="software"] .sc-hero-background-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 0% 0%;
+  /* 0% is already the end of object-position's travel, so the last nudge
+     right comes from translating the element itself. The strip it uncovers
+     on the left sits under the ~0.97 end of the scrim below, which is the
+     page background colour -- and the photo's own far-left is near-black
+     floor under that same scrim, so the seam is not visible. Horizontal
+     only: a scale would drag the bottom mask fade out of the figure's
+     overflow and clip it into a hard edge. */
+  transform: translateX(4%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 92%, transparent 100%);
+}
+
+body[data-page="software"] .sc-hero-background-media::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(26, 25, 24, 0.97) 0%, rgba(26, 25, 24, 0.93) 24%, rgba(26, 25, 24, 0.72) 38%, rgba(26, 25, 24, 0.32) 50%, transparent 60%);
+  content: "";
+  pointer-events: none;
+}
+
+/* Wide enough to carry the full-size headline on one line in every container
+   band (the narrowest, 992-1199px, is the binding case), while still ending
+   ~40px clear of the curved glass edge, which sits around 52% of the
+   viewport once the photo's right-shift is applied. */
+body[data-page="software"] .sc-hero.has-background-media .sc-hero-copy {
+  max-width: min(620px, 48%);
+}
+
+body[data-page="software"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .sc-lead, .sc-eyebrow) {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    0 2px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* One sentence per line, with the <br> in the markup placing the break.
+   nowrap needs the column to be able to hold the longest line at full size:
+   "Safely secured." measures ~7.2x its own font-size, so at the 5vw cap of
+   70px it needs ~503px, which the 48% column clears in every container band.
+   Checked at 992, 1199, 1200, 1399, 1400 and 1600. */
+@media (min-width: 992px) {
+  body[data-page="software"] .sc-hero.has-background-media h1 {
+    font-size: min(5vw, 4.375rem);
+    white-space: nowrap;
+  }
+
+  /* Separates the headline from the supporting block, so the lead and the
+     button row read as their own group rather than crowding the title. */
+  body[data-page="software"] .sc-hero.has-background-media .sc-lead {
+    margin-top: 3.5rem;
+    /* The column is 48% to let the nowrap headline through at full size,
+       but the lead has no such need and running to that edge put its
+       longest line over the glass. Capped to the headline's own measured
+       width instead -- ~7.2x a font-size of min(5vw, 70px) -- so the two
+       blocks wrap against the same right edge at every width. */
+    max-width: min(504px, 36vw);
+  }
+
+  body[data-page="software"] .sc-hero.has-background-media .sc-hero-actions {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 991px) {
+  body[data-page="software"] .sc-hero.has-background-media {
+    display: block;
+    min-height: 0;
+    padding: 70px 0 44px;
+  }
+
+  body[data-page="software"] .sc-hero-background-media {
+    position: relative;
+    inset: auto;
+    height: clamp(180px, 34vw, 260px);
+    margin-bottom: 30px;
+  }
+
+  /* No left-side scrim at this width -- the scrim below is a vertical fade --
+     so the strip the desktop nudge uncovers would read as a bare edge on the
+     photo band rather than disappearing into the darkening. The image is a
+     full-width banner here and needs no horizontal bias anyway. */
+  body[data-page="software"] .sc-hero-background-media img {
+    transform: none;
+  }
+
+  body[data-page="software"] .sc-hero-background-media::after {
+    background: linear-gradient(180deg, rgba(26, 25, 24, 0.55) 0%, transparent 34%, transparent 62%, rgba(26, 25, 24, 0.9) 94%, var(--sc-paper) 100%);
+  }
+
+  body[data-page="software"] .sc-hero.has-background-media .sc-hero-copy {
+    max-width: none;
+  }
+}
+
 /* The homepage uses the animated cash vortex as its hero environment. */
 body[data-page="home"] .sc-hero.has-background-media {
   min-height: clamp(980px, calc(66.667vw + 193px), 1115px);
