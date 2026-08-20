@@ -4383,16 +4383,32 @@ const guides = [
 
       <p>Here is where a multi-brand multisig stops being theoretical. Each manufacturer moves transactions differently, and a single payment may involve two or three different mechanisms.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>What collecting signatures actually looks like</caption>
-          <thead><tr><th scope="col">Device style</th><th scope="col">How the PSBT travels</th><th scope="col">In practice</th></tr></thead>
-          <tbody>
-            <tr><td>USB signers</td><td>Cable, over Specter's device integration</td><td>Fastest. Not air-gapped &mdash; the device talks to your computer.</td></tr>
-            <tr><td>microSD signers</td><td>File written, carried, and read back</td><td>Air-gapped and reliable. Keep a card dedicated to the job.</td></tr>
-            <tr><td>QR signers</td><td>Animated codes both directions</td><td>Air-gapped and cable-free. Large multisig transactions make long animations.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-specter-signing-panel" aria-label="What collecting signatures across three device styles looks like">
+        <div class="sc-specter-signing-heading">
+          <span class="sc-specter-signing-mark" aria-hidden="true"><i></i></span>
+          <div><span>Signature lanes</span><h3>One wallet, three transport languages</h3></div>
+          <strong>The signing order does not matter</strong>
+        </div>
+        <div class="sc-specter-signing-grid" role="table">
+          <div class="sc-specter-signing-head" role="row"><span role="columnheader">Device style</span><span role="columnheader">Route into Specter</span><span role="columnheader">In practice</span></div>
+          <div role="rowgroup">
+            <div class="sc-specter-signing-row is-usb" role="row">
+              <div role="rowheader"><span>USB</span><strong>Connected signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Device</span><i>&rarr;</i><b>Cable</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Fastest, but not air-gapped &mdash; the device talks directly to your computer.</p>
+            </div>
+            <div class="sc-specter-signing-row is-sd" role="row">
+              <div role="rowheader"><span>SD</span><strong>microSD signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Signer</span><i>&rarr;</i><b>Card</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Air-gapped and reliable. Keep one card dedicated to carrying PSBTs.</p>
+            </div>
+            <div class="sc-specter-signing-row is-qr" role="row">
+              <div role="rowheader"><span>QR</span><strong>Camera signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Signer</span><i>&rarr;</i><b>Frames</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Air-gapped and cable-free. Large multisig transactions create longer animations.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       ${checklist([
@@ -5953,6 +5969,186 @@ const guides = [
 
       ${callout("If you take one thing from this page", `Test it with your heirs while you are alive. Everything else on this page is guesswork until somebody who is not you tries to follow your instructions and you watch where they stop. It is an awkward afternoon that turns a document you hope works into one you know does.`)}`
   },
+  /* The door into the concepts section, and the one page here that assumes no
+     bitcoin knowledge at all -- hence beginner, and hence first. Written
+     because twenty-one-million takes for granted that a reader already knows
+     why a fixed supply is worth anything; this is the page that earns that
+     assumption. The two case studies are load-bearing rather than decorative:
+     beads and rai both failed the *same* way, which is the entire argument. */
+  {
+    slug: "what-is-money",
+    category: "concepts",
+    products: [],
+    title: "What is money?",
+    summary: "Cattle, salt, glass beads, limestone discs the size of a small car — plenty of things have done the job, and nearly all of them stopped. They stopped for the same reason every time, and it is the reason a hard cap exists.",
+    level: "beginner",
+    minutes: 18,
+    goals: ["learn"],
+    tags: ["Sound money", "Hard cap", "Scarcity"],
+    icon: "bi-bank",
+    updated: "2026-08-20",
+    status: "published",
+    related: ["twenty-one-million", "who-decides-the-rules", "owning-your-bitcoin"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Ask what money is and most answers point at examples &mdash; notes, coins, the balance in a banking app. That is a list of things currently doing the job, not a description of the job itself. The job is the interesting part, because the list keeps changing.</p>
+
+      <p>Money is not a substance. It is a role, and an odd assortment of things have been hired into it: cattle, salt, cowrie shells, tobacco leaf, cigarettes, silver, gold, glass beads, and limestone discs weighing several tonnes. Nearly all of them were eventually fired. <strong>The manner of firing is the same story every time</strong>, and once you have seen it twice you will recognise it everywhere.</p>
+
+      <h2><span class="sc-article-num">1</span>The job description</h2>
+
+      <p>Something is money when it does three jobs at once.</p>
+
+      ${checklist([
+        "<strong>A medium of exchange.</strong> Something you accept not because you want it but because you know the next person will. This is what removes the need for a coincidence of wants — the baker who needs shoes finding a cobbler who happens to want bread that day.",
+        "<strong>A store of value.</strong> Somewhere to keep effort you have already spent until you need it back. Work the harvest in September, eat in February. A money that leaks is a bucket with a hole in it: usable, but not for saving.",
+        "<strong>A unit of account.</strong> A shared ruler. Wages, prices, debts and contracts all have to be quoted in something, and that something has to hold still enough to be worth quoting in."
+      ])}
+
+      <p>Most candidates fail at least one. Fresh fish is a fine medium of exchange for about a day and a hopeless store of value. A house stores value well and is useless for buying coffee. Doing all three at once is rare, and the ruler is usually the last job earned &mdash; nobody writes a five-year contract in something they expect to move.</p>
+
+      <p>Notice that nothing on that list requires a government. <a href="../glossary.html#term-legal_tender">Legal tender</a> laws can compel a merchant to accept something, but they cannot make a population save in it, and history is full of people keeping accounts in one thing while paying taxes in another. Money is closer to a language than a law. It works because everyone else is using it, and it stops working when they stop.</p>
+
+      <h2><span class="sc-article-num">2</span>Glass beads, and the cost of making more</h2>
+
+      <p>For centuries, glass beads circulated as money across much of West Africa. The story is often told as one about gullibility &mdash; gold traded away for trinkets &mdash; and that telling is both unkind and wrong.</p>
+
+      <p>The beads were a sensible money for the conditions. Glassmaking was a specialist craft, the beads arrived along long and dangerous trade routes, and producing one locally took real skill and real time. They were durable, portable, countable, hard to fake convincingly, and <strong>genuinely difficult to obtain</strong>. Every property you would want was present.</p>
+
+      <p>Then the conditions changed. European glassworks &mdash; Venice above all &mdash; industrialised bead production. What had cost weeks of skilled labour came off a bench by the thousand for a fraction of a penny. Traders arriving on the coast were carrying something that was still money to the people they met and very nearly free to the people making it.</p>
+
+      <p>What followed was not a trick played on fools. It was a large, sustained transfer of wealth conducted in the open, at prices both sides agreed to, using a money that only one side could manufacture. When enough beads had arrived they stopped being money at all &mdash; not because anyone banned them, but because everyone could see there were now far too many.</p>
+
+      ${figure({
+        src: "../assets/img/what-is-money-trade-beads.jpg",
+        alt: "A handful of Venetian millefiori trade beads spilled across dark wood under a low side light, close enough that the machine-made regularity of the patterns is unmistakable",
+        caption: "The beads never changed. The cost of making another one did.",
+        width: 1300,
+        height: 726
+      })}
+
+      <h2><span class="sc-article-num">3</span>Rai stones, and a ledger nobody wrote down</h2>
+
+      <p>On the island of Yap, in the western Pacific, money was limestone. Not small pieces of it: carved discs up to twelve feet across with a hole through the middle, weighing several tonnes.</p>
+
+      <p>Yap has no limestone. Every stone was quarried on Palau, some four hundred kilometres away, cut with shell tools, and floated home on rafts lashed to canoes. The voyages took months and men died on them. <strong>The worth of a stone was, quite literally, what it had cost to bring there</strong> &mdash; a stone whose journey had cost lives was worth more than a larger one that came home easily.</p>
+
+      <p>The part that surprises people is what happened next. The stones did not move.</p>
+
+      <p>Shifting several tonnes of limestone across a village to settle a debt is absurd, so the Yapese did not bother. Ownership changed by announcement: the transfer was made publicly, witnessed, and thereafter simply remembered. The stone stayed where it was. Anyone could tell you who owned which one and roughly how it had been acquired, because everybody had heard the same history.</p>
+
+      <p>One famous stone sank in a storm on the way home. The crew reported the loss &mdash; the size, the quality, the fact that it was down there somewhere. The island accepted the account, and the stone was traded for generations afterwards without a single person ever laying eyes on it. Its owner was whoever the community agreed its owner was.</p>
+
+      <p>That is a public ledger maintained by consensus, holding title to an asset nobody can pick up. It is not a bad description of a blockchain, and it is a very much older idea than the internet.</p>
+
+      ${figure({
+        src: "../assets/img/what-is-money-rai-stone.jpg",
+        alt: "A rai stone standing in a village clearing on Yap: a limestone disc taller than the thatched houses behind it, the central hole framing the greenery, shot slightly from below so the scale reads immediately",
+        caption: "A rai stone. Ownership moved by announcement; the stone stayed put.",
+        width: 1300,
+        height: 726
+      })}
+
+      <p>Rai money died the same death as the beads. In the 1870s an Irish-American trader named David O'Keefe worked out that with iron tools and a sailing ship he could produce rai stones faster and far more safely than any Yapese expedition. He did, and spent them on copra and labour.</p>
+
+      <p>The Yapese were not fooled either. They could see the new stones were easy stones and discounted them accordingly, and older stones with hard histories kept their premium. But the supply kept arriving, and a money somebody else can produce cheaply does not stay money for long. Within a couple of generations rai was ceremonial.</p>
+
+      ${pullQuote("Two societies, an ocean apart, with entirely different money. Both lost it the moment somebody found a cheaper way to make another one.")}
+
+      <h2><span class="sc-article-num">4</span>What a money actually needs</h2>
+
+      <p>Pull those two failures apart and a checklist falls out. It is roughly the same list everyone who has written seriously on the subject arrives at, and it has been stable for a very long time.</p>
+
+      <div class="sc-table-wrap">
+        <table class="sc-table">
+          <caption>The six properties, and how some historical monies scored</caption>
+          <thead><tr><th scope="col">Property</th><th scope="col">Rai stones</th><th scope="col">Glass beads</th><th scope="col">Gold</th><th scope="col">Fiat</th><th scope="col">Bitcoin</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Durable</strong><br>survives time</td><td>Excellent</td><td>Good</td><td>Excellent</td><td>Fair</td><td>Excellent</td></tr>
+            <tr><td><strong>Portable</strong><br>moves easily</td><td>Very poor</td><td>Good</td><td>Poor in bulk</td><td>Good</td><td>Excellent</td></tr>
+            <tr><td><strong>Divisible</strong><br>pays small sums</td><td>No</td><td>Yes</td><td>Awkward</td><td>Yes</td><td>8 decimals</td></tr>
+            <tr><td><strong>Fungible</strong><br>units are alike</td><td>No</td><td>Roughly</td><td>Yes</td><td>Yes</td><td>Mostly</td></tr>
+            <tr><td><strong>Verifiable</strong><br>you can check it</td><td>By memory</td><td>Poor</td><td>Needs assay</td><td>Fair</td><td>Any node</td></tr>
+            <tr><td><strong>Scarce</strong><br>nobody can make more</td><td>Failed</td><td>Failed</td><td>Strong</td><td>None</td><td>Fixed</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The bottom row is where the two case studies landed, and they landed there for the same reason &mdash; iron tools for rai, industrial glass for beads. Gold reads "strong" rather than absolute because a higher price still funds deeper mines. Fiat has no constraint of that kind at all, only institutional restraint, which is a different sort of promise.</p>
+
+      <p>Bitcoin gets "mostly" on fungibility rather than "yes" because the ledger is public: coins carry a visible history, and that history can be read. <a href="chain-analysis-heuristics.html">How chain analysis reads your wallet</a> covers what is genuinely inferable and what it costs you.</p>
+
+      <p>Five of those six are engineering problems, and most candidates do reasonably well at them. The sixth is a different kind of thing entirely. Durability, portability, divisibility, <a href="../glossary.html#term-fungibility">fungibility</a> and verifiability are properties of the object. <strong><a href="../glossary.html#term-scarcity">Scarcity</a> is a property of everyone else's incentives</strong> &mdash; and it is the only one on the list that has ever actually killed a money.</p>
+
+      <h2><span class="sc-article-num">5</span>Sound money</h2>
+
+      <p><a href="../glossary.html#term-sound_money">Sound money</a> is the name for a money that keeps hold of that sixth property under pressure. The short definition: a money whose supply cannot be expanded by whoever stands to gain from expanding it.</p>
+
+      <p>The useful way to think about it is a ratio &mdash; how much already exists, set against how much can be produced in a year. High ratio, hard money. Low ratio, easy money.</p>
+
+      ${checklist([
+        "<strong>Gold has run hard for millennia.</strong> All the gold ever mined would fit inside a large house, and a year of global mining adds something like one and a half per cent to it. A gold rush does not double the supply; it strains the mines slightly.",
+        "<strong>Silver ran softer</strong>, which is a large part of why the world drifted onto a <a href='../glossary.html#term-gold_standard'>gold standard</a> rather than a silver one. New deposits and better smelting moved the number too much.",
+        "<strong>Beads and rai ran hard right up until the tooling changed.</strong> Neither had a fixed supply — they had an <em>expensive</em> supply. Expense is a fact about the current state of technology, and technology improves."
+      ])}
+
+      <p>That is the trap, and it has no exceptions worth the name. Anything valuable enough to be used as money eventually becomes valuable enough to manufacture, and the moment manufacturing it costs less than earning it, somebody will. Not through malice &mdash; through arithmetic. The reward is simply sitting there.</p>
+
+      <p>Modern <a href="../glossary.html#term-fiat">fiat</a> currency removes the manufacturing step altogether. There is no ore, no glassworks, no voyage. Supply is a decision, and the constraint on it is institutional restraint rather than physics or cost. Restraint can hold for a long time and frequently has. It is simply a different kind of guarantee from an expensive one, and it is worth being clear about which kind you are relying on.</p>
+
+      ${figure({
+        src: "../assets/img/what-is-money-hyperinflation-notes.jpg",
+        alt: "A fan of Zimbabwean hyperinflation banknotes on a dark slate surface, the top note reading one hundred trillion dollars",
+        caption: "Every note here was legal tender. None of them failed a technical test.",
+        width: 1300,
+        height: 726
+      })}
+
+      <h2><span class="sc-article-num">6</span>Why a hard cap is the whole argument</h2>
+
+      <p>Bitcoin's answer to the sixth property is not "difficult to produce". It is <a href="../glossary.html#term-hard_cap">a hard cap</a>: <a href="../glossary.html#term-21_million">21 million</a> units, no more, ever &mdash; regardless of price, demand, effort, or how much equipment anyone points at the problem.</p>
+
+      <p>It is worth being precise about why that differs from gold rather than merely doing the same trick better.</p>
+
+      ${checklist([
+        "<strong>Gold's supply responds to price.</strong> A higher price funds deeper mines and poorer ore, so more gets produced. The response is slow and weak, which is exactly why gold held the role for so long — but the feedback loop is there.",
+        "<strong>Bitcoin's supply responds to nothing.</strong> Doubling the world's mining hardware overnight produces no extra coins: the <a href='../glossary.html#term-difficulty_adjustment'>difficulty adjustment</a> makes the puzzle harder and issuance carries on to schedule. Effort decides who receives new coins, never how many exist.",
+        "<strong>The cap is not a target somebody set.</strong> Issuance <a href='../glossary.html#term-halving'>halves</a> roughly every four years, and 21 million is what that series adds up to — the derivation is in <a href='twenty-one-million.html'>where 21 million comes from</a>."
+      ])}
+
+      <p>Now the part that reaches you personally. <a href="../glossary.html#term-inflation">Inflation</a> is usually described as prices going up, which makes it sound like something that happens to shops. The more useful framing is dilution: your holding stays the same size while the total grows, so your share of it shrinks. Rising prices are the symptom you happen to notice.</p>
+
+      <p>Two consequences follow, and the second is the one that gets missed.</p>
+
+      ${checklist([
+        "<strong>Saving stops being a neutral act.</strong> In a diluting money, holding cash is a slow loss, so saving has to be done in something else — property, equities, whatever is currently rising. That is a real cost, and it falls hardest on the people with least access to those markets.",
+        "<strong>New money does not arrive everywhere at once.</strong> It enters at particular points and spreads outward. Whoever receives it early spends it at yesterday's prices; whoever receives it last spends it at today's. Nobody signs for that transfer, and it only runs one way."
+      ])}
+
+      <p>A hard cap does not fix an economy, and pretending otherwise is where a great deal of bitcoin writing goes off the rails. What it does is narrower and, if it holds, significant: <strong>it removes dilution as an option.</strong> Your share of the total changes when you buy more or sell some, and not otherwise. Nobody else can move it.</p>
+
+      <p>And "if it holds" is the entire question, because a supply limit written down is worth nothing &mdash; every currency that ever inflated had rules against it. Bitcoin's cap is not a promise anybody made. It is an arithmetic check performed independently by every <a href="../glossary.html#term-full_node">full node</a> on every block, and a block claiming more than the schedule allows is discarded rather than debated. That distinction is the only reason the number carries any weight, and it is why <a href="why-run-a-node.html">running a node</a> is a live question rather than a hobby.</p>
+
+      ${callout("The cap is a check, not a clause", "Nobody can raise the limit by agreement, because there is no forum in which such an agreement would bind anyone. Changing it means persuading every node operator to run software that accepts larger rewards — and the last time hashpower tried to force a rule change through, it lost. <a href='who-decides-the-rules.html'>Who decides the rules</a> is the story of how that actually plays out.")}
+
+      <h2><span class="sc-article-num">7</span>The objections worth taking seriously</h2>
+
+      <p>Sound money is an argument, not a settled fact, and an honest version of this page includes the case against.</p>
+
+      ${cautions([
+        "<strong>A money that appreciates may discourage spending.</strong> If your units buy more next year, the argument runs, purchases get deferred and demand stalls. The counter is that people bought computers and phones for decades while prices fell, and that <a href='../glossary.html#term-low_time_preference'>deferring consumption</a> is not self-evidently a defect. Both sides have a point; neither has a clean proof.",
+        "<strong>Debt behaves badly under deflation.</strong> Loans get repaid in units worth more than the ones borrowed, which is hard on borrowers and on any economy built around credit. That is a genuine structural problem, and a hard cap does not answer it.",
+        "<strong>Bitcoin is not yet a unit of account.</strong> Almost nobody quotes prices in it, because it moves too much. It has a strong claim as a <a href='../glossary.html#term-store_of_value'>store of value</a> and a workable one as a medium of exchange, and by its own three-part test it is currently short of the third job.",
+        "<strong>Nobody knows how mining gets paid for afterwards.</strong> The block subsidy halves toward nothing and fees must eventually carry the whole security budget. Whether that transition is comfortable is genuinely open, and anyone certain in either direction is overselling.",
+        "<strong>The cap is enforced, not guaranteed.</strong> It holds because people run software that rejects violations. That is a far stronger arrangement than a promise, but it is a social fact rather than a law of nature, and it depends on enough people continuing to check."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Money is three jobs rather than a thing: a medium of exchange, a store of value, and a unit of account. A remarkable range of objects have done all three, glass beads and multi-tonne limestone discs among them, and the ones that stopped almost always stopped the same way &mdash; somebody found a cheaper method of producing more. Sound money is the name for resisting that. A hard cap is the strongest form of the idea available, because it swaps "expensive to produce" for "impossible to produce", and it holds not because anyone promised it but because every node checks every block.</p>
+
+      ${callout("If you take one thing from this page", "Every money in this article was scarce until the cost of making another one fell. That is the failure mode, it is the only one that has ever really mattered, and a fixed cap is the first serious attempt to make it structurally impossible rather than merely expensive. Which is also why the cap is only yours if you <a href='owning-your-bitcoin.html'>hold your own keys</a> — a balance somebody else controls is a promise again, whatever it happens to be denominated in.")}`
+  },
   /* Rescoped from "Coin control and on-chain privacy", which duplicated
      sparrow-coin-control almost exactly -- that guide already covers linking,
      labelling, input selection, and consolidation. What was genuinely missing
@@ -7486,7 +7682,10 @@ const glossaryTagIds = new Map([
   ["sim swap", "sim_swap"],
   ["threat model", "threat_model"],
   ["watch-only", "watch_only_wallet"],
-  ["duress", "wrench_attack"]
+  ["duress", "wrench_attack"],
+  ["sound money", "sound_money"],
+  ["hard cap", "hard_cap"],
+  ["scarcity", "scarcity"]
 ]);
 
 const renderGlossaryTag = (label, base = "", extraClass = "") => {

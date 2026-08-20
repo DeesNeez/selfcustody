@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260819-2320" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260819-2320" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260819-2320" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260820-1054" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260820-1054" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260820-1054" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Specter: coordinating a multi-brand multisig","description":"Specter is a face for your own Bitcoin Core node and nothing else, which matters more for multisig than for any other wallet. Building a wallet from three different manufacturers, and collecting signatures across three different transports.","url":"https://selfcustody.ca/guides/specter-multisig-coordinator.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/specter-multisig-coordinator.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -154,16 +154,32 @@
 
       <p>Here is where a multi-brand multisig stops being theoretical. Each manufacturer moves transactions differently, and a single payment may involve two or three different mechanisms.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>What collecting signatures actually looks like</caption>
-          <thead><tr><th scope="col">Device style</th><th scope="col">How the PSBT travels</th><th scope="col">In practice</th></tr></thead>
-          <tbody>
-            <tr><td>USB signers</td><td>Cable, over Specter's device integration</td><td>Fastest. Not air-gapped &mdash; the device talks to your computer.</td></tr>
-            <tr><td>microSD signers</td><td>File written, carried, and read back</td><td>Air-gapped and reliable. Keep a card dedicated to the job.</td></tr>
-            <tr><td>QR signers</td><td>Animated codes both directions</td><td>Air-gapped and cable-free. Large multisig transactions make long animations.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-specter-signing-panel" aria-label="What collecting signatures across three device styles looks like">
+        <div class="sc-specter-signing-heading">
+          <span class="sc-specter-signing-mark" aria-hidden="true"><i></i></span>
+          <div><span>Signature lanes</span><h3>One wallet, three transport languages</h3></div>
+          <strong>The signing order does not matter</strong>
+        </div>
+        <div class="sc-specter-signing-grid" role="table">
+          <div class="sc-specter-signing-head" role="row"><span role="columnheader">Device style</span><span role="columnheader">Route into Specter</span><span role="columnheader">In practice</span></div>
+          <div role="rowgroup">
+            <div class="sc-specter-signing-row is-usb" role="row">
+              <div role="rowheader"><span>USB</span><strong>Connected signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Device</span><i>&rarr;</i><b>Cable</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Fastest, but not air-gapped &mdash; the device talks directly to your computer.</p>
+            </div>
+            <div class="sc-specter-signing-row is-sd" role="row">
+              <div role="rowheader"><span>SD</span><strong>microSD signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Signer</span><i>&rarr;</i><b>Card</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Air-gapped and reliable. Keep one card dedicated to carrying PSBTs.</p>
+            </div>
+            <div class="sc-specter-signing-row is-qr" role="row">
+              <div role="rowheader"><span>QR</span><strong>Camera signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Signer</span><i>&rarr;</i><b>Frames</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Air-gapped and cable-free. Large multisig transactions create longer animations.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <ul class="sc-check-list"><li>Build the transaction in Specter. It produces a PSBT.</li><li><strong>Take it to the first signer</strong> by whichever route that device uses, and verify amount, destination, fee, and change on the device screen.</li><li>Bring the partially signed result back into Specter.</li><li><strong>Repeat with the second signer</strong> &mdash; likely a different transport entirely.</li><li>Specter combines the signatures, finalises, and broadcasts through your node.</li></ul>
@@ -281,6 +297,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260819-2320"></script>
+  <script src="../assets/js/site-refresh.js?v=20260820-1054"></script>
 </body>
 </html>
