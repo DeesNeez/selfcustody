@@ -1667,8 +1667,16 @@ const currentYear = new Date().getFullYear();
     content: `
       ${hero(
         "Bitcoin reference",
-        "The Bitcoin glossary.",
-        "Search the language of Bitcoin, from addresses and air gaps to xpubs and zero-knowledge proofs."
+        "The <em>Bitcoin</em> Glossary.",
+        "Search the language of Bitcoin, from addresses and air gaps to xpubs and zero-knowledge proofs.",
+        "",
+        {
+          src: "assets/img/glossary-hero.jpg",
+          alt: "",
+          width: 1570,
+          height: 656,
+          background: true
+        }
       )}
 
       <section class="sc-section sc-glossary" data-glossary>
