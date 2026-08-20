@@ -123,12 +123,10 @@
   const toggle = document.querySelector(".mobile-nav-toggle");
   const navMenus = [...(nav?.querySelectorAll(".sc-nav-menu") || [])];
 
-  /* The control that opens a submenu isn't always the same element: "Compare"
-     has no page of its own, so its whole .sc-nav-menu-toggle is a button that
-     only ever opens the list. "Guides" is a real destination, so its label is
-     a plain link and a separate .sc-nav-menu-chevron-btn is the thing that
-     opens the list -- that one wins here when both exist. */
-  const menuOpener = menu => menu?.querySelector(".sc-nav-menu-chevron-btn") || menu?.querySelector(".sc-nav-menu-toggle");
+  /* Both menus open the same way: neither Guides nor Compare is a page of
+     its own, so the whole .sc-nav-menu-toggle is a button that only ever
+     opens the list. Their destinations live in the list itself. */
+  const menuOpener = menu => menu?.querySelector(".sc-nav-menu-toggle");
 
   const setNavMenu = (menu, open) => {
     const menuToggle = menuOpener(menu);

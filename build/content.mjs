@@ -1667,8 +1667,16 @@ const currentYear = new Date().getFullYear();
     content: `
       ${hero(
         "Bitcoin reference",
-        "The Bitcoin glossary.",
-        "Search the language of Bitcoin, from addresses and air gaps to xpubs and zero-knowledge proofs."
+        "The <em>Bitcoin</em> Glossary.",
+        "Search the language of Bitcoin, from addresses and air gaps to xpubs and zero-knowledge proofs.",
+        "",
+        {
+          src: "assets/img/glossary-hero.jpg",
+          alt: "",
+          width: 1570,
+          height: 656,
+          background: true
+        }
       )}
 
       <section class="sc-section sc-glossary" data-glossary>
@@ -1761,17 +1769,12 @@ const currentYear = new Date().getFullYear();
             return `<li><a href="${target}">${cat.label}</a></li>`;
           })
           .join("\n            ");
-        /* Unlike Compare, "Guides" is itself a real destination, so the
-           label is a plain link and a separate chevron button opens the
-           submenu -- .sc-nav-menu-split gives the two of them Compare's
-           exact spacing (12px outer insets, 7px between label and chevron)
-           split across two boxes instead of one, see site-refresh.css. */
-        return `<li class="sc-nav-menu sc-nav-menu-split">
-          <a class="sc-nav-menu-toggle ${menuActive}" href="${base}guides.html">
-            <span>Guides</span>
-          </a>
-          <button class="sc-nav-menu-chevron-btn ${menuActive}" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Guide sections">
-            <span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+        /* Same shape as Compare: the label only opens the list. The hub
+           itself is still one click away as "Start here", the first item
+           in the list, so nothing needs the label to be a link too. */
+        return `<li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle ${menuActive}" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
           </button>
           <ul class="sc-nav-submenu">
             ${items}
