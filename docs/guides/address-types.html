@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260819-2320" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260819-2320" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260819-2320" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260821-0322" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260821-0322" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260821-0322" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Why addresses look different","description":"Some start with 1, some with 3, some with bc1q and some with bc1p. They are not cosmetic variants — they commit to different spending rules, cost different amounts to use, and are not equally supported.","url":"https://selfcustody.ca/guides/address-types.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/address-types.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -102,17 +102,18 @@
 
       <p>Bitcoin has added address formats over time, always without removing the old ones. All four remain valid and spendable today.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Address formats in current use</caption>
-          <thead><tr><th scope="col">Starts with</th><th scope="col">Name</th><th scope="col">Arrived</th><th scope="col">Notes</th></tr></thead>
-          <tbody>
-            <tr><td><strong>1</strong></td><td>Legacy (P2PKH)</td><td>2009</td><td>Universally accepted, and the most expensive to spend.</td></tr>
-            <tr><td><strong>3</strong></td><td>Script hash (P2SH)</td><td>2012</td><td>Multisig, and SegWit wrapped for compatibility.</td></tr>
-            <tr><td><strong>bc1q</strong></td><td>SegWit (bech32)</td><td>2017</td><td>The common default. Cheaper to spend, error-detecting.</td></tr>
-            <tr><td><strong>bc1p</strong></td><td>Taproot (bech32m)</td><td>2021</td><td>Cheapest for simple spends, and hides complex conditions.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-address-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">bc1</span>
+          <div><span>Address evolution</span><h3>Four generations, all still valid</h3></div>
+          <strong>2009 &rarr; 2021</strong>
+        </div>
+        <div class="sc-address-timeline">
+          <article class="is-red"><div><strong>1</strong><span>2009</span></div><h3>Legacy <small>P2PKH</small></h3><p>Universally accepted, and the most expensive to spend.</p></article>
+          <article class="is-cream"><div><strong>3</strong><span>2012</span></div><h3>Script hash <small>P2SH</small></h3><p>Multisig, and SegWit wrapped for compatibility.</p></article>
+          <article class="is-orange"><div><strong>bc1q</strong><span>2017</span></div><h3>SegWit <small>bech32</small></h3><p>The common default. Cheaper to spend and error-detecting.</p></article>
+          <article class="is-green"><div><strong>bc1p</strong><span>2021</span></div><h3>Taproot <small>bech32m</small></h3><p>Cheapest for simple spends, and hides complex conditions.</p></article>
+        </div>
       </div>
 
       <p>A wallet that hands you a bc1q address is not a different kind of wallet from one handing you a 1 address. Very often it is the same seed, on the same device, walking a different branch of the same tree &mdash; which is precisely the mechanism described in <a href='how-wallets-find-coins.html'>how a wallet finds your coins</a>.</p>
@@ -266,6 +267,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260819-2320"></script>
+  <script src="../assets/js/site-refresh.js?v=20260821-0322"></script>
 </body>
 </html>

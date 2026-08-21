@@ -536,7 +536,9 @@ body[data-page="glossary"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .
    more of the room visible on both sides. */
 body[data-page="software"] .sc-hero.has-background-media {
   display: flex;
-  align-items: flex-start;
+  /* Centred to match devices and exchanges -- the three photo-backed
+     compare heroes now share height, padding, bottom fade and this. */
+  align-items: center;
   /* Taller than the guides hero on purpose -- this photo needs more height
      for the vault to read clearly. The copy column stays capped (see
      .sc-hero-copy below), so growing this doesn't push text into the glass
@@ -562,6 +564,10 @@ body[data-page="software"] .sc-hero-background-media {
   left: 0;
   margin: 0;
   overflow: hidden;
+  /* On the figure rather than the <img> so the ::after scrim fades out with
+     the photograph -- see the matching note on the devices/exchanges rule. */
+  mask-image: linear-gradient(to bottom, #000 0%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 92%, transparent 100%);
 }
 
 /* Cover rather than contain -- at this box height, contain locks the photo's
@@ -592,8 +598,6 @@ body[data-page="software"] .sc-hero-background-media img {
      only: a scale would drag the bottom mask fade out of the figure's
      overflow and clip it into a hard edge. */
   transform: translateX(4%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 92%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 92%, transparent 100%);
 }
 
 body[data-page="software"] .sc-hero-background-media::after {
@@ -1028,57 +1032,459 @@ body[data-page="home"] .sc-sequence-section {
   }
 }
 
-/* Exchanges hero: the graded key-in-lock photo, held to the right half so
-   it never sits under the left-aligned copy. Native colour was already warm
-   (hue ~22, close to the brand's 30) so the grade is a light push, not a full
-   rehue: nudge hue, add contrast, darken to the same luminance target used by
-   the other hero variants tried here (measured ~64 off the original iceberg
-   hero).
-
-   The photo lives on ::before rather than as a background layer on the hero
-   itself. A fade painted as a percentage of the *hero* only lines up with the
-   photo's left edge at one viewport width -- the edge moves as the container
-   aspect changes, so a hard seam reappears at other sizes. Masking ::before
-   keeps the gradient relative to the photo panel, so the dissolve stays
-   glued to its edge at every width.
-
-   Both this background and ::before also carry a matching bottom-edge fade
-   to var(--sc-paper) -- the next section's actual background -- so the hero
-   dissolves into the section below instead of ending on a hard line. It has
-   to be duplicated on both layers: ::before (the photo) paints on top of
-   this element's own background, so a fade added only here wouldn't show
-   through the photo, and one added only to ::before wouldn't cover the
-   plain dark area to its left. Same stop positions on both keeps the seam
-   between them invisible. var(--sc-paper) rather than a fixed colour keeps
-   it correct in both themes (see the theme toggle) -- but in light theme
-   that colour is white, and the ghost button's text is a hardcoded white
-   (see .sc-btn-ghost) with nothing behind it but this gradient. A
-   percentage-based stop went fully opaque well above the button row on
-   shorter heroes, washing white text out against a now-white background.
-   calc(100% - 130px) instead pins the fade to a fixed distance from the
-   bottom edge -- comfortably past .sc-hero's 86px/70px padding-bottom plus
-   the ~48px button row -- so it only ever fades space *below* the buttons,
-   regardless of how tall the hero ends up at a given breakpoint. */
-body[data-page="exchanges"] .sc-hero {
-  background:
-    linear-gradient(180deg, transparent calc(100% - 130px), var(--sc-paper) 100%),
-    radial-gradient(circle at 86% 20%, rgba(255, 138, 0, 0.2), transparent 32%),
-    linear-gradient(135deg, #1a1a1a, #242424);
+/* Devices and exchanges: same full-bleed background-photo treatment as the
+   guides library hero. Both source photos are already framed with the
+   subject on the right and a dark, empty left third, so the copy needs no
+   extra left-edge scrim to stay legible -- the fade below is only there for
+   the seam into the next section, not for text contrast. */
+/* Height, padding and bottom fade are all deliberately identical to the
+   software hero, so the three photo-backed compare pages read as one set.
+   Any change here should be made there too, or the set breaks. */
+body[data-page="devices"] .sc-hero.has-background-media,
+body[data-page="exchanges"] .sc-hero.has-background-media {
+  display: flex;
+  align-items: center;
+  min-height: clamp(560px, 56vw, 780px);
+  padding: 124px 0 70px;
+  isolation: isolate;
+  background: var(--sc-paper);
 }
 
-body[data-page="exchanges"] .sc-hero::before {
-  content: "";
+/* Starts at the header's own height, not inset:0 -- the header is fixed and
+   so out of flow, meaning the hero begins at the true top of the page and
+   the opaque header bar would otherwise cover the figure's first 78px. */
+body[data-page="devices"] .sc-hero-background-media,
+body[data-page="exchanges"] .sc-hero-background-media {
   position: absolute;
-  top: 0;
+  z-index: -2;
+  top: 78px;
   right: 0;
   bottom: 0;
-  width: 58%;
+  left: 0;
+  margin: 0;
+  overflow: hidden;
+  /* Masked on the figure, not the <img>, so the ::after scrim fades out
+     with the photograph. Masking only the image left the scrim painting its
+     dark wedge all the way to the bottom edge after the picture had already
+     dissolved -- barely visible on software, whose scrim is light and gone
+     by 60%, but obvious on exchanges, whose scrim is held at 0.86 out to
+     40% for the FIAT/BITCOIN words and so left a hard dark band. */
+  mask-image: linear-gradient(to bottom, #000 0%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 92%, transparent 100%);
+}
+
+body[data-page="devices"] .sc-hero-background-media img,
+body[data-page="exchanges"] .sc-hero-background-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+body[data-page="devices"] .sc-hero-background-media::after,
+body[data-page="exchanges"] .sc-hero-background-media::after {
+  position: absolute;
+  inset: 0;
   background:
-    linear-gradient(180deg, transparent calc(100% - 130px), var(--sc-paper) 100%),
-    url("../img/hero-keylock.webp") center 42% / cover no-repeat;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.35) 30%, rgba(0, 0, 0, 0.85) 55%, #000 78%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.35) 30%, rgba(0, 0, 0, 0.85) 55%, #000 78%);
+    linear-gradient(90deg, rgba(26, 25, 24, 0.85) 0%, rgba(26, 25, 24, 0.6) 20%, rgba(26, 25, 24, 0.2) 32%, transparent 42%);
+  content: "";
   pointer-events: none;
+}
+
+/* The exchange photograph has a natural pool of darkness on the left. Extend
+   it into a soft, angled scrim so the copy feels embedded in the room instead
+   of sitting over a hard-edged overlay. The warm bloom keeps the counter and
+   coins alive while the lower fade joins the next section. */
+body[data-page="exchanges"] .sc-hero-background-media img {
+  object-position: center;
+  filter: saturate(1.035) contrast(1.02);
+}
+
+/* The photograph's bottom mask dissolves it to nothing over the hero's last
+   ~7%, revealing whatever the hero itself is painted. Left as flat paper
+   that meant the picture faded into #1a1918 and then stepped to #121211 at
+   the section boundary -- a visible line right where the fade was supposed
+   to disappear. Landing the hero's own bottom on the Two models colour
+   instead means the photograph dissolves straight into that band. The stop
+   starts at 90%, just above the mask's 92%, so the two overlap rather than
+   meet. Everything above is untouched paper grey. */
+body[data-page="exchanges"] .sc-hero.has-background-media {
+  background:
+    linear-gradient(180deg, transparent 90%, #121211 100%),
+    var(--sc-paper);
+}
+
+/* Between the page grey (--sc-paper, #1a1918) and the near-black tried
+   earlier (--sc-dash-black, #0b0a09) -- roughly their midpoint by
+   luminance, 18 against 25 and 10. It is deliberately the same #121211 the
+   hero scrim's dense end already uses, so this band reads as a continuation
+   of the hero's shadowed side rather than a new tone. Scoped to exchanges;
+   the guides page's own .sc-section-dark is untouched. */
+body[data-page="exchanges"] .sc-section-dark {
+  background:
+    radial-gradient(ellipse at 50% 52%, rgba(242, 138, 0, 0.065), transparent 58%),
+    /* Flat at the top -- the hero's own bottom already fades to this exact
+       value, so that join is seamless and a second fade would undo it. Only
+       the bottom edge needs dissolving, into the paper section below. */
+    linear-gradient(180deg, #121211 0, #121211 calc(100% - 58px), var(--sc-paper) 100%);
+}
+
+body[data-page="exchanges"] .sc-hero-background-media::after {
+  background:
+    radial-gradient(circle at 76% 61%, rgba(255, 138, 0, 0.08) 0%, rgba(255, 138, 0, 0.02) 21%, transparent 37%),
+    /* Held near-opaque out to 44% rather than falling to 0.52 by 39%: the
+       headline's FIAT/BITCOIN words are outlined glyphs whose interiors are
+       a pale bill texture and an orange gradient, and those only read
+       against the near-black the homepage hero gives them. BITCOIN's right
+       edge reaches ~42% of the viewport, so the scrim has to still be dark
+       there or the words look hollow. Everything past 52% is unchanged, so
+       the counter, coins and warm bloom keep their original clarity. */
+    linear-gradient(106deg, rgba(18, 18, 17, 0.94) 0%, rgba(18, 18, 17, 0.9) 24%, rgba(18, 18, 17, 0.86) 40%, rgba(18, 18, 17, 0.52) 50%, rgba(18, 18, 17, 0.2) 60%, rgba(18, 18, 17, 0.04) 67%, transparent 74%),
+    /* Top darkening only. The bottom fade this layer used to carry is now
+       the image's own mask, shared with software -- keeping both stacked a
+       scrim fade on top of a masked photo, which read as a heavier, earlier
+       edge than the other two pages. */
+    linear-gradient(180deg, rgba(12, 12, 11, 0.08) 0%, transparent 30%);
+}
+
+body[data-page="exchanges"] .sc-hero.has-background-media .sc-hero-copy {
+  max-width: min(620px, 50%);
+}
+
+body[data-page="exchanges"] .sc-hero-copy h1 {
+  max-width: 620px;
+  font-size: clamp(3.2rem, 5vw, 4.8rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+
+body[data-page="exchanges"] .sc-hero-copy h1 em {
+  display: inline-block;
+  margin-top: 0.08em;
+}
+
+body[data-page="exchanges"] .sc-hero-copy .sc-lead {
+  max-width: 570px;
+}
+
+/* Exchange pricing changes too quickly for a normal evergreen callout. This
+   reads more like a compact live-data status panel than an article card. */
+.sc-exchange-live-note {
+  position: relative;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 8% 50%, rgba(255, 138, 0, 0.11), transparent 25%),
+    linear-gradient(135deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  box-shadow: 0 20px 45px rgba(0,0,0,.2);
+}
+
+.sc-exchange-live-note::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, #d65e40, #d9c28f, #35b48a, var(--sc-orange));
+  opacity: .65;
+}
+
+.sc-exchange-live-signal {
+  display: grid;
+  min-height: 100%;
+  padding: 24px 18px;
+  place-content: center;
+  justify-items: center;
+  color: var(--sc-orange);
+  background: rgba(4,5,6,.28);
+  border-right: 1px solid rgba(255,255,255,.08);
+  text-align: center;
+}
+
+.sc-exchange-live-signal i {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 11px;
+  place-items: center;
+  background: rgba(255,138,0,.1);
+  border: 1px solid rgba(255,138,0,.28);
+  border-radius: 50%;
+  font-size: 1.25rem;
+}
+
+.sc-exchange-live-signal span,
+.sc-exchange-live-signal small,
+.sc-exchange-live-eyebrow,
+.sc-exchange-live-markers span {
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.sc-exchange-live-signal small {
+  margin-top: 3px;
+  color: rgba(255,255,255,.38);
+  font-size: .56rem;
+}
+
+.sc-exchange-live-copy { padding: clamp(24px, 3vw, 34px); }
+
+.sc-exchange-live-eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: #d9c28f;
+}
+
+.sc-exchange-live-copy h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.3rem, 2.3vw, 1.8rem);
+  line-height: 1.15;
+}
+
+.sc-exchange-live-copy p {
+  max-width: 80ch;
+  margin: 12px 0 0;
+  color: rgba(255,255,255,.66);
+  line-height: 1.65;
+}
+
+.sc-exchange-live-markers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 17px;
+}
+
+.sc-exchange-live-markers span {
+  --marker-color: #d9c28f;
+  padding: 5px 8px;
+  color: var(--marker-color);
+  background: color-mix(in srgb, var(--marker-color) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--marker-color) 24%, transparent);
+  border-radius: 6px;
+  font-size: .58rem;
+  letter-spacing: .06em;
+}
+
+.sc-exchange-live-markers .is-orange { --marker-color: var(--sc-orange); }
+.sc-exchange-live-markers .is-green { --marker-color: #7fe0c0; }
+.sc-exchange-live-markers .is-red { --marker-color: #e4897a; }
+
+/* Deliberately plain: this is a two-link signpost at the end of a long
+   comparison page, not a feature panel. It previously carried two radial
+   gradients, a three-colour bar across the top, and a 55px drop shadow,
+   which made it read as more important than the comparison table it
+   follows. A flat tint and a hairline border are enough to separate it. */
+.sc-exchange-next-step {
+  position: relative;
+  margin-top: clamp(28px, 4vw, 48px);
+  padding: clamp(20px, 2.6vw, 28px);
+  /* Darker than the band it sits in, not a lift off it. The platforms band
+     is plain --sc-paper (#1a1918), so this recesses to #121211 -- the same
+     7-point luminance drop the panel had back when it was paper on the
+     muted wash, and the same value the Two models band uses. */
+  background: #121211;
+  /* The shared card edge (see .sc-card), not a neutral white -- this panel
+     sits directly under the exchange card grid, and a cool grey edge next to
+     their cream one read as a different material rather than the same one. */
+  border: 1px solid rgba(255, 237, 184, 0.38);
+  border-radius: 14px;
+}
+
+/* Single column, not the old two-column grid: this block is now just an
+   eyebrow and a short heading over the two guide links, so the second
+   column had nothing left to hold. The heading is also dialled well down
+   from 2.45rem -- it labels a pair of links rather than opening a section,
+   and at the old size it competed with the real section headings above. */
+/* Copy left, one button right, tax note spanning underneath. The panel used
+   to run a bespoke type scale -- .58rem uppercase micro-labels, .83rem
+   bold titles, tabular numerals -- none of which appears anywhere else on
+   the page. It now borrows the page's own: .sc-eyebrow untouched, a heading
+   at the section-head size, and body copy at .sc-lead's measure. */
+.sc-exchange-next-step {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px 34px;
+  align-items: center;
+}
+
+.sc-exchange-next-copy .sc-eyebrow { margin: 0; }
+
+/* Two classes deep on purpose: `.sc-section h2` (clamp 2rem-3rem) matches
+   this heading too and is declared later in the file, so at equal
+   specificity it would win and blow the panel heading up to 48px. */
+.sc-exchange-next-step .sc-exchange-next-copy h2 {
+  margin: 4px 0 0;
+  color: #fff;
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  line-height: 1.25;
+}
+
+.sc-exchange-next-copy p {
+  max-width: 56ch;
+  margin: 10px 0 0;
+  color: var(--sc-ink-soft);
+  line-height: 1.65;
+}
+
+/* Wrapped in .sc-hero-actions, the same container the hero's own buttons
+   sit in. The polished primary treatment -- gradient fill, inset highlight,
+   tightened tracking -- lives on `body.site-refresh .sc-hero-actions
+   .sc-btn-primary`, not on .sc-btn-primary itself, so a bare anchor with
+   those classes renders as the plainer flat-orange variant instead. The
+   wrapper's default 32px top margin is dropped since the panel grid already
+   spaces this column. */
+/* Three classes deep so this beats `body.site-refresh .sc-hero-actions`,
+   which is declared later and adds a 32px top margin plus 6px of padding
+   intended for the hero's own button row. The panel grid handles spacing
+   here, and that padding was also shrinking the mobile full-width button. */
+body.site-refresh .sc-exchange-next-step .sc-exchange-next-cta {
+  margin: 0;
+  padding: 0;
+}
+
+.sc-exchange-next-cta .sc-btn {
+  gap: 9px;
+  white-space: nowrap;
+}
+
+.sc-exchange-tax-note {
+  /* Spans both columns of the panel grid so the rule above it runs the full
+     width rather than stopping under the copy column. */
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0;
+  padding-top: 18px;
+  color: rgba(255,255,255,.46);
+  border-top: 1px solid rgba(255,255,255,.07);
+  font-size: .73rem;
+  line-height: 1.55;
+}
+
+.sc-exchange-tax-icon { display:grid; flex:0 0 auto; width:18px; height:18px; margin-top:1px; place-items:center; color:#171819; background:#d9c28f; border-radius:50%; font-size:.66rem; font-weight:900; font-style:normal; }
+
+@media (max-width: 575.98px) {
+  .sc-exchange-live-note { grid-template-columns: 1fr; }
+  .sc-exchange-live-signal {
+    grid-template-columns: auto auto 1fr;
+    min-height: 0;
+    padding: 14px 16px;
+    place-content: initial;
+    justify-items: start;
+    align-items: center;
+    gap: 9px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    text-align: left;
+  }
+  .sc-exchange-live-signal i { width: 34px; height: 34px; margin: 0; font-size: .95rem; }
+  .sc-exchange-live-signal small { justify-self: end; margin: 0; }
+  .sc-exchange-live-copy { padding: 21px 17px 23px; }
+  /* Copy over button rather than beside it, and the button goes full width
+     so it stays a comfortable tap target. */
+  .sc-exchange-next-step { grid-template-columns: 1fr; }
+  /* flex-grow rather than width:100% -- the shared hero-actions rules put
+     their own width on .sc-btn, which won this at equal specificity and
+     left the button 14px short of its row. */
+  .sc-exchange-next-cta .sc-btn { flex: 1 1 auto; justify-content: center; }
+}
+
+body[data-page="devices"] .sc-hero.has-background-media .sc-hero-copy {
+  max-width: min(470px, 38%);
+}
+
+/* "The many paths" holds one line and the rotating phrase holds the next --
+   the <br> makes the break, and nowrap stops either half wrapping again
+   inside itself. At the clamp's full size the static half measures 7.25x
+   its font-size (459px at 63px) against a 424px column, so without this it
+   broke to "The many / paths". Only the h1 leaves the column; the lead and
+   eyebrow keep the narrow measure. nowrap still breaks at <br>, so this
+   forces one line per half rather than one line overall. */
+@media (min-width: 992px) {
+  body[data-page="devices"] .sc-hero-copy h1 {
+    max-width: none;
+    white-space: nowrap;
+  }
+}
+
+/* The rotating phrase is an inline-grid and
+   so an unbreakable unit -- "to financial freedom." needs 9.63x its own
+   font-size, which at the clamp's 2.55rem floor is 390px against 351px of
+   column at 375px wide, and the tail was being clipped by the hero's
+   overflow. The vw term keeps the widest phrase inside the column on small
+   screens; the rem cap restores the normal size once there is room. */
+@media (max-width: 991px) {
+  body[data-page="devices"] .sc-hero-copy h1 {
+    font-size: min(9.3vw, 2.55rem);
+  }
+}
+
+body[data-page="devices"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .sc-lead, .sc-eyebrow),
+body[data-page="exchanges"] .sc-hero.has-background-media .sc-hero-copy :is(h1, .sc-lead, .sc-eyebrow) {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    0 2px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* ...but that shadow must not reach the outlined words. .sc-word-fill is
+   -webkit-text-fill-color: transparent so the gradient (BITCOIN) or bill
+   texture (FIAT) can clip to the glyphs -- an inherited text-shadow paints
+   straight through those hollow letters as a dark smudge and buries the
+   fill, which is the same trap the note above .sc-hero-command-destination
+   describes. The words carry their own contrast already: the cream outline
+   on ::before and the glow/stroke on ::after, both of which declare their
+   own text-shadow and so are unaffected by this reset. */
+body[data-page="devices"] .sc-hero-copy .sc-outlined-word,
+body[data-page="exchanges"] .sc-hero-copy .sc-outlined-word,
+body[data-page="devices"] .sc-hero-copy .sc-outlined-word .sc-word-fill,
+body[data-page="exchanges"] .sc-hero-copy .sc-outlined-word .sc-word-fill {
+  text-shadow: none;
+}
+
+@media (max-width: 991px) {
+  body[data-page="devices"] .sc-hero.has-background-media,
+  body[data-page="exchanges"] .sc-hero.has-background-media {
+    display: block;
+    min-height: 0;
+    padding: 70px 0 44px;
+  }
+
+  body[data-page="devices"] .sc-hero-background-media,
+  body[data-page="exchanges"] .sc-hero-background-media {
+    position: relative;
+    inset: auto;
+    height: clamp(180px, 34vw, 260px);
+    margin-bottom: 30px;
+  }
+
+  body[data-page="devices"] .sc-hero-background-media::after,
+  body[data-page="exchanges"] .sc-hero-background-media::after {
+    background: linear-gradient(180deg, rgba(26, 25, 24, 0.55) 0%, transparent 34%, transparent 62%, rgba(26, 25, 24, 0.9) 94%, var(--sc-paper) 100%);
+  }
+
+  body[data-page="exchanges"] .sc-hero-background-media::after {
+    background:
+      radial-gradient(circle at 72% 58%, rgba(255, 138, 0, 0.1), transparent 38%),
+      linear-gradient(180deg, rgba(26, 25, 24, 0.48) 0%, transparent 32%, transparent 58%, rgba(26, 25, 24, 0.88) 92%, var(--sc-paper) 100%);
+  }
+
+  body[data-page="exchanges"] .sc-hero-copy h1 {
+    max-width: 680px;
+    font-size: clamp(2.75rem, 8vw, 4.2rem);
+  }
+
+  body[data-page="devices"] .sc-hero.has-background-media .sc-hero-copy,
+  body[data-page="exchanges"] .sc-hero.has-background-media .sc-hero-copy {
+    max-width: none;
+  }
 }
 
 .sc-hero .container {
@@ -1471,6 +1877,27 @@ body[data-page="contact"] .sc-hero-flip {
   margin-top: -16px;
 }
 
+/* Same cause on devices ("The many paths" over the rotating phrase): the
+   flip's 1.4 line-height makes its line box 0.36em taller than the h1's own
+   1.04, so the title read looser than the software hero, whose second line
+   is ordinary text.
+
+   Both margins, and each exactly half the excess -- that is not arbitrary.
+   The extra leading is split evenly above and below the text, so a negative
+   top margin alone can only reach the half above: it bottoms out at 2.25em
+   against software's 2.08em no matter how large it gets (measured -0.36em
+   through -0.75em, all identical). Taking 0.18em off each side removes both
+   halves and leaves the phrase optically centred where a 1.04 line would
+   put it. In em so it tracks the font size across the whole clamp.
+
+   line-height stays 1.4 for the descender reason above ("sovereignty",
+   "cold storage"), and since the padding box is unchanged the overflow clip
+   that drives the slide transition behaves exactly as before. */
+body[data-page="devices"] .sc-hero-flip {
+  margin-top: -0.18em;
+  margin-bottom: -0.18em;
+}
+
 .sc-hero-flip-item {
   grid-area: 1 / 1;
   white-space: nowrap;
@@ -1617,6 +2044,78 @@ body.site-refresh .sc-hero-actions .sc-btn-primary:hover {
 
 .sc-section {
   padding: 86px 0;
+}
+
+/* The three compare pages run a tighter rhythm than the site default. They
+   are long, dense reference pages -- a matrix, a card grid and a detail
+   stack each -- so 86px between bands read as drift rather than pacing. */
+body[data-page="devices"] .sc-section,
+body[data-page="exchanges"] .sc-section,
+body[data-page="software"] .sc-section,
+body[data-page="guides"] .sc-section {
+  padding: 44px 0;
+}
+
+/* Guides puts a <nav> between the hero and the first section, so the
+   adjacent selector below never reaches it. The first section after that
+   nav is the guide finder, which ships [hidden] and is revealed by JS --
+   hence both selectors: the finder gets the spacing when it is shown, and
+   the section after it does when it is not. */
+body[data-page="guides"] .sc-guide-nav + .sc-section,
+body[data-page="guides"] .sc-guide-nav + .sc-section[hidden] + .sc-section {
+  padding-top: 62px;
+}
+
+/* The first band after the hero is the exception: the hero already ends on
+   ~100px of empty space below its copy, and the photograph fades out across
+   that same stretch, so pulling this section up would crowd the fade rather
+   than tighten the page. It also sets where the first eyebrow lands, which
+   is matched across the three pages. */
+body[data-page="devices"] .sc-hero + .sc-section,
+body[data-page="exchanges"] .sc-hero + .sc-section,
+body[data-page="software"] .sc-hero + .sc-section {
+  padding-top: 62px;
+}
+
+/* Tinted bands dissolve into the paper sections above and below instead of
+   butting against them on a hard line. The fade is painted into the band's
+   own background rather than added as a pseudo-element, so it costs no
+   extra box and cannot end up on the wrong side of the section's contents.
+   Both neighbours of these bands are plain paper (the details sections
+   carry no background of their own), so var(--sc-paper) is the correct
+   colour to resolve to at each end. */
+/* #121211 rather than --sc-wash, so all three compare pages run the same
+   two tones: paper for the ordinary bands, #121211 for the tinted one.
+   Exchanges is the reference -- its Two models band uses that value, and
+   the wash (#211f1c) went the other way, sitting *lighter* than paper. */
+body[data-page="devices"] .sc-section-muted,
+body[data-page="software"] .sc-section-muted,
+body[data-page="guides"] .sc-section-muted {
+  background: linear-gradient(
+    180deg,
+    var(--sc-paper) 0,
+    #121211 58px,
+    #121211 calc(100% - 58px),
+    var(--sc-paper) 100%
+  );
+}
+
+/* Guides closes on a .sc-section-dark band directly below a tinted one.
+   Left on the shared .sc-section-dark rule it would paint flat paper and
+   meet the band above -- which now fades to paper at its bottom -- with a
+   step back up to #121211. Giving it the same both-ends fade keeps every
+   tinted band on the page behaving identically, and the radial glow is
+   carried over from that rule so the band does not go flat. */
+body[data-page="guides"] .sc-section-dark {
+  background:
+    radial-gradient(ellipse at 50% 52%, rgba(242, 138, 0, 0.065), transparent 58%),
+    linear-gradient(
+      180deg,
+      var(--sc-paper) 0,
+      #121211 58px,
+      #121211 calc(100% - 58px),
+      var(--sc-paper) 100%
+    );
 }
 
 .sc-section-muted {
@@ -3955,6 +4454,149 @@ p.sc-price {
 .sc-psbt-routes-grid article > p { margin: 0 0 14px; color: var(--sc-ink-soft); font-size: 0.76rem; line-height: 1.55; }
 .sc-psbt-routes-grid aside { margin: auto -16px -16px; padding: 14px 16px; color: var(--sc-muted); background: var(--route-glow); border-top: 1px solid rgba(255, 255, 255, 0.075); font-size: 0.7rem; line-height: 1.5; }
 
+.sc-specter-signing-panel {
+  position: relative;
+  overflow: hidden;
+  margin: 2em 0;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 0 0, rgba(242, 138, 0, 0.12), transparent 34%),
+    radial-gradient(circle at 100% 0, rgba(53, 180, 138, 0.1), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(217, 194, 143, 0.27);
+  border-radius: var(--sc-radius);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.19), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sc-specter-signing-panel::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d65e40, var(--sc-orange) 34%, #d9c28f 66%, #35b48a);
+  content: "";
+}
+
+.sc-specter-signing-heading {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.sc-specter-signing-mark {
+  position: relative;
+  display: block;
+  width: 46px;
+  height: 46px;
+  background: rgba(242, 138, 0, 0.09);
+  border: 1px solid rgba(242, 138, 0, 0.3);
+  border-radius: 12px;
+}
+
+.sc-specter-signing-mark::before {
+  position: absolute;
+  top: 18px;
+  left: 7px;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  background: #ff9d8a;
+  border-radius: 50%;
+  box-shadow: 12px 0 var(--sc-orange), 24px 0 #7fe0c0;
+  content: "";
+}
+
+.sc-specter-signing-mark i {
+  position: absolute;
+  top: 21px;
+  left: 11px;
+  width: 25px;
+  height: 2px;
+  background: rgba(217, 194, 143, 0.45);
+}
+
+.sc-specter-signing-heading > div > span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--sc-orange);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sc-specter-signing-heading h3 { margin: 0; color: #fff; font-size: 1.22rem; line-height: 1.25; }
+.sc-specter-signing-heading > strong {
+  padding: 7px 10px;
+  color: #e8d7ad;
+  background: rgba(217, 194, 143, 0.08);
+  border: 1px solid rgba(217, 194, 143, 0.27);
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.sc-specter-signing-grid {
+  overflow: hidden;
+  background: rgba(18, 18, 17, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 13px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.sc-specter-signing-head,
+.sc-specter-signing-row {
+  display: grid;
+  grid-template-columns: 0.9fr 1.25fr 1.55fr;
+  align-items: stretch;
+}
+
+.sc-specter-signing-head {
+  color: var(--sc-muted);
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sc-specter-signing-head span,
+.sc-specter-signing-row > * { padding: 14px 15px; }
+.sc-specter-signing-head span + span,
+.sc-specter-signing-row > * + * { border-left: 1px solid rgba(255, 255, 255, 0.075); }
+.sc-specter-signing-row { --signing-accent: #e8d7ad; --signing-glow: rgba(217, 194, 143, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.075); }
+.sc-specter-signing-row.is-usb { --signing-accent: #ff9d8a; --signing-glow: rgba(214, 94, 64, 0.09); }
+.sc-specter-signing-row.is-qr { --signing-accent: #7fe0c0; --signing-glow: rgba(53, 180, 138, 0.08); }
+.sc-specter-signing-row:nth-child(even) { background: rgba(255, 255, 255, 0.014); }
+
+.sc-specter-signing-row > div:first-child { display: flex; align-items: center; gap: 10px; }
+.sc-specter-signing-row > div:first-child > span {
+  display: grid;
+  width: 36px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--signing-accent);
+  background: var(--signing-glow);
+  border: 1px solid currentColor;
+  border-radius: 7px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.sc-specter-signing-row > div:first-child > strong { color: var(--sc-ink-soft); font-size: 0.79rem; line-height: 1.35; }
+.sc-specter-signing-track { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(42px, auto) auto minmax(0, 1fr); align-items: center; gap: 4px; background: var(--signing-glow); }
+.sc-specter-signing-track span,
+.sc-specter-signing-track b { padding: 7px 4px; color: var(--sc-muted); background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.075); border-radius: 5px; font-size: 0.55rem; font-weight: 800; text-align: center; }
+.sc-specter-signing-track b { color: var(--signing-accent); border-color: currentColor; }
+.sc-specter-signing-track i { color: var(--signing-accent); font-size: 0.66rem; font-style: normal; }
+.sc-specter-signing-row > p { display: flex; align-items: center; margin: 0; color: var(--sc-muted); font-size: 0.75rem; line-height: 1.5; }
+
 @media (max-width: 991.98px) {
   .sc-psbt-routes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sc-psbt-routes-grid article { min-height: 280px; }
@@ -4025,6 +4667,19 @@ p.sc-price {
   .sc-psbt-routes-grid { grid-template-columns: 1fr; }
   .sc-psbt-routes-grid article { min-height: 0; }
   .sc-psbt-route-title { min-height: 50px; }
+  .sc-specter-signing-panel { padding: 15px; }
+  .sc-specter-signing-heading { grid-template-columns: 42px minmax(0, 1fr); gap: 11px; margin-bottom: 16px; }
+  .sc-specter-signing-mark { width: 42px; height: 42px; }
+  .sc-specter-signing-mark::before { top: 16px; left: 5px; }
+  .sc-specter-signing-mark i { top: 19px; left: 9px; }
+  .sc-specter-signing-heading h3 { font-size: 1.06rem; }
+  .sc-specter-signing-heading > strong { grid-column: 2; justify-self: start; }
+  .sc-specter-signing-head { display: none; }
+  .sc-specter-signing-row { grid-template-columns: 1fr; }
+  .sc-specter-signing-row > * + * { border-top: 1px solid rgba(255, 255, 255, 0.075); border-left: 0; }
+  .sc-specter-signing-row > div:first-child { padding: 12px 13px; background: rgba(255, 255, 255, 0.035); }
+  .sc-specter-signing-track { padding: 12px 13px; }
+  .sc-specter-signing-row > p { padding: 13px; }
 }
 
 .sc-step {
@@ -4758,17 +5413,6 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
     min-height: 240px;
   }
 
-  /* The homepage hero's photo panel is a hard-edged crop confined to the
-     right 58% -- fine at desktop widths where the h1 has room to wrap
-     within the left ~42% "text-safe" zone, but h1's max-width (850px) does
-     nothing to constrain wrapping on a 375px screen: longer rotating
-     phrases wrap to a third line and run straight across the photo, past
-     where the mask has faded it dark enough to stay readable. Simplest fix
-     is the one already used elsewhere on this breakpoint -- drop the photo,
-     keep the plain gradient + glow, which needs no text-safe zone at all. */
-  body[data-page="exchanges"] .sc-hero::before {
-    content: none;
-  }
 }
 
 /* Mobile nav open/close animation.
@@ -8478,17 +9122,22 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* Sits on the bottom border rather than breaking the top one: no bottom edge
    of its own, so the card's own border continues straight through it. */
+/* Centred on the TOP edge. The bottom edge now ends with "Read guide" pinned
+   right, and the top row -- icon left, level badge right -- has its middle
+   free, so the tab hangs there without displacing anything. It also stops the
+   featured card needing 46px of dead space at the bottom to clear a tab. */
 .sc-guide-card-featured {
   position: absolute;
   z-index: 2;
-  right: 22px;
-  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -1px;
   padding: 6px 10px 7px;
   color: #ffb04a;
   background: #33220f;
   border: 1px solid rgba(242, 138, 0, 0.38);
-  border-bottom: 0;
-  border-radius: 7px 7px 0 0;
+  border-top: 0;
+  border-radius: 0 0 7px 7px;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -8496,7 +9145,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   text-transform: uppercase;
 }
 
-.sc-guide-card.is-featured .sc-card-body { padding-bottom: 46px; }
+/* No padding reservation in either direction. The tab hangs in the horizontal
+   middle of the top row, which is empty -- icon left, level badge right -- so
+   it overlays dead space instead of displacing content. That keeps the
+   featured card's title and copy on the same baselines as every other card in
+   its row, which reserving space at either end did not.
+
+   `.sc-card` clips its overflow, so the tab cannot hang off the edge -- it has
+   to sit wholly inside. At its natural size that puts its bottom edge exactly
+   on the level badge's top edge with nothing between them, so the badge alone
+   drops out of the way below. The icon opposite is 52px against the badge's
+   30px, so the row is still as tall as the icon and nothing else moves. */
+.sc-guide-card.is-featured .sc-guide-card-badges { margin-top: 12px; }
 
 .sc-guide-card.is-featured {
   position: relative;
@@ -8538,11 +9198,31 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   padding-top: 14px;
 }
 
+/* Reading time and "Read guide" share one row, the link pinned right. With
+   the review date moved up to the section heading there is nothing else
+   competing for the line, and the card loses the row it used to spend on it.
+   `baseline` rather than `center` so the link's arrow sits on the same optical
+   line as the clock icon opposite it. */
+.sc-guide-card-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+/* Long enough titles can wrap the link; keep it from being squeezed into a
+   two-line column while the minutes sit on one. */
+.sc-guide-card-foot .sc-text-link,
+.sc-guide-card-foot .sc-guide-card-soon {
+  flex: none;
+}
+
 .sc-guide-card-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin: 12px 0 14px;
+  margin: 0;
   color: var(--sc-muted);
   font-size: 0.85rem;
   font-weight: 600;
@@ -8628,6 +9308,30 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 }
 
 .sc-section-head-aside { margin: 14px 0 0; }
+
+/* The review dates the guide cards used to carry, stated once per section.
+   Deliberately quiet -- it is provenance, not a selling point -- so it sits at
+   badge size in the muted colour rather than reading as another line of the
+   section blurb. */
+/* Qualified with the heading, because `.sc-section-head p` sets 1.05rem at
+   the same specificity as a bare class and would otherwise hand this line the
+   section blurb's size. */
+.sc-section-head p.sc-section-reviewed {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 20px 0 0;
+  color: var(--sc-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  opacity: 0.82;
+}
+
+.sc-section-reviewed i {
+  font-size: 0.95em;
+  opacity: 0.8;
+}
 
 /* ---- guide pages -------------------------------------------------------- */
 
@@ -10186,4 +10890,236 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   font-size: 0.92em;
   font-weight: 700;
   letter-spacing: 0.03em;
+}
+
+/* Guide data visuals: one visual language, with a layout chosen for the data. */
+.sc-guide-data-panel {
+  position: relative;
+  isolation: isolate;
+  margin: 30px 0 38px;
+  padding: clamp(20px, 3vw, 30px);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 92% 0, rgba(255, 138, 0, 0.1), transparent 28%),
+    linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  box-shadow: 0 24px 55px rgba(0,0,0,.22);
+}
+
+.sc-guide-data-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, #d65e40, #d9c28f 34%, #35b48a 67%, var(--sc-orange));
+}
+
+.sc-guide-data-heading {
+  display: grid;
+  grid-template-columns: 48px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.sc-guide-data-mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  color: #0d0e10;
+  background: #d9c28f;
+  border-radius: 11px;
+  box-shadow: 0 9px 22px rgba(0,0,0,.22);
+  font-family: var(--sc-heading-font, "Jost", sans-serif);
+  font-size: .8rem;
+  font-weight: 900;
+  letter-spacing: .03em;
+}
+
+.sc-guide-data-heading > div > span,
+.sc-guide-data-heading > strong {
+  color: rgba(255,255,255,.52);
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.sc-guide-data-heading h3 {
+  margin: 2px 0 0;
+  color: #fff;
+  font-size: clamp(1.08rem, 2vw, 1.35rem);
+}
+
+.sc-guide-data-heading > strong {
+  padding: 7px 10px;
+  color: #d9c28f;
+  background: rgba(217,194,143,.08);
+  border: 1px solid rgba(217,194,143,.22);
+  border-radius: 7px;
+  letter-spacing: .06em;
+}
+
+.sc-server-grid,
+.sc-inheritance-grid,
+.sc-heuristics-grid,
+.sc-address-timeline { display: grid; gap: 12px; }
+
+.sc-server-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.sc-server-grid article,
+.sc-inheritance-grid article {
+  --data-accent: #d9c28f;
+  padding: 17px;
+  background: rgba(4,5,6,.35);
+  border: 1px solid rgba(255,255,255,.08);
+  border-top: 2px solid var(--data-accent);
+  border-radius: 12px;
+}
+.sc-server-grid article.is-green,
+.sc-inheritance-grid article.is-green { --data-accent:#35b48a; }
+.sc-server-grid article.is-orange,
+.sc-inheritance-grid article.is-orange { --data-accent:var(--sc-orange); }
+.sc-inheritance-grid article.is-red { --data-accent:#d65e40; }
+.sc-server-grid header { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.sc-server-grid h3,
+.sc-inheritance-grid h3 { margin:0; color:#fff; font-size:1.03rem; }
+.sc-server-grid header span { padding:4px 7px; color:var(--data-accent); background:color-mix(in srgb, var(--data-accent) 10%, transparent); border:1px solid color-mix(in srgb, var(--data-accent) 28%, transparent); border-radius:6px; font-size:.65rem; font-weight:900; }
+.sc-server-grid article > strong { display:block; margin-top:18px; color:var(--data-accent); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; }
+.sc-server-grid p,
+.sc-inheritance-grid p { margin:7px 0 0; color:rgba(255,255,255,.68); font-size:.84rem; line-height:1.55; }
+
+.sc-geo-head,
+.sc-geo-row { display:grid; grid-template-columns:minmax(190px,1.6fr) repeat(4,minmax(85px,.7fr)); gap:8px; align-items:stretch; }
+.sc-geo-head { margin-bottom:8px; color:rgba(255,255,255,.48); font-size:.62rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; }
+.sc-geo-head span { padding:0 9px; text-align:center; }
+.sc-geo-head span:first-child { text-align:left; }
+.sc-geo-row + .sc-geo-row { margin-top:7px; }
+.sc-geo-row > strong,
+.sc-geo-row > span { display:grid; min-height:46px; padding:9px; place-items:center; border-radius:8px; }
+.sc-geo-row > strong { place-items:center start; color:#fff; background:rgba(255,255,255,.04); font-size:.78rem; }
+.sc-geo-row > span { font-size:.72rem; font-weight:900; }
+.sc-geo-row > span::before { content:""; width:6px; height:6px; margin-bottom:3px; background:currentColor; border-radius:50%; box-shadow:0 0 10px currentColor; }
+.sc-geo-row > span.is-yes { color:#7fe0c0; background:rgba(53,180,138,.11); border:1px solid rgba(53,180,138,.22); }
+.sc-geo-row > span.is-partly { color:#efdcae; background:rgba(217,194,143,.1); border:1px solid rgba(217,194,143,.22); }
+.sc-geo-row > span.is-no { color:#e4897a; background:rgba(214,94,64,.1); border:1px solid rgba(214,94,64,.22); }
+
+.sc-bip85-columns { display:grid; grid-template-columns:1.55fr 1fr; gap:12px; }
+.sc-bip85-columns section,
+.sc-heuristics-grid section { padding:16px; background:rgba(4,5,6,.32); border:1px solid rgba(255,255,255,.08); border-radius:12px; }
+.sc-bip85-columns h3,
+.sc-heuristics-grid h3 { display:flex; align-items:center; gap:9px; margin:0 0 12px; color:#fff; font-size:.9rem; }
+.sc-bip85-columns h3 span,
+.sc-heuristics-grid h3 span { padding:4px 7px; border-radius:6px; font-size:.65rem; text-transform:uppercase; }
+.sc-bip85-columns .is-supported h3 span,
+.sc-heuristics-grid .is-yes h3 span { color:#7fe0c0; background:rgba(53,180,138,.12); border:1px solid rgba(53,180,138,.25); }
+.sc-bip85-columns .is-unsupported h3 span,
+.sc-heuristics-grid .is-no h3 span { color:#e4897a; background:rgba(214,94,64,.12); border:1px solid rgba(214,94,64,.25); }
+.sc-bip85-columns article,
+.sc-heuristics-grid article { display:grid; grid-template-columns:minmax(120px,.55fr) 1fr; gap:10px; padding:10px 0; border-top:1px solid rgba(255,255,255,.07); }
+.sc-bip85-columns article strong,
+.sc-heuristics-grid article strong { color:#fff; font-size:.78rem; }
+.sc-bip85-columns article p,
+.sc-heuristics-grid article p { margin:0; color:rgba(255,255,255,.62); font-size:.76rem; line-height:1.45; }
+
+.sc-inheritance-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.sc-inheritance-grid article:last-child { grid-column:1/-1; }
+.sc-inheritance-grid p { padding-top:9px; border-top:1px solid rgba(255,255,255,.06); }
+.sc-inheritance-grid p span { display:block; margin-bottom:3px; color:var(--data-accent); font-size:.62rem; font-weight:900; letter-spacing:.09em; text-transform:uppercase; }
+.sc-inheritance-grid a { color:#fff; text-decoration-color:var(--data-accent); }
+
+.sc-money-head,
+.sc-money-row { display:grid; grid-template-columns:minmax(120px,1.1fr) repeat(5,minmax(75px,1fr)); gap:7px; }
+.sc-money-head { margin-bottom:8px; color:rgba(255,255,255,.48); font-size:.61rem; font-weight:800; text-transform:uppercase; }
+.sc-money-head span { padding:0 7px; text-align:center; }
+.sc-money-head span:first-child { text-align:left; }
+.sc-money-head span:last-child { color:#7fe0c0; }
+.sc-money-row + .sc-money-row { margin-top:7px; }
+.sc-money-row > strong,
+.sc-money-row > span { display:grid; min-height:47px; padding:8px; place-items:center; border-radius:8px; }
+.sc-money-row > strong { place-items:center start; color:#fff; background:rgba(255,255,255,.04); font-size:.78rem; }
+.sc-money-row > strong small { display:block; color:rgba(255,255,255,.43); font-size:.62rem; font-weight:600; }
+.sc-money-row > span { color:rgba(255,255,255,.73); background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.055); font-size:.68rem; font-weight:800; text-align:center; }
+.sc-money-row > span.is-strong { color:#7fe0c0; background:rgba(53,180,138,.09); }
+.sc-money-row > span.is-mid { color:#efdcae; background:rgba(217,194,143,.08); }
+.sc-money-row > span.is-weak { color:#e4897a; background:rgba(214,94,64,.08); }
+.sc-money-row > span.is-bitcoin { border-color:rgba(53,180,138,.28); box-shadow:inset 0 0 0 1px rgba(53,180,138,.04); }
+
+.sc-heuristics-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.sc-heuristics-grid .is-partly h3 span { color:#efdcae; background:rgba(217,194,143,.1); border:1px solid rgba(217,194,143,.24); }
+.sc-heuristics-grid article { display:block; }
+.sc-heuristics-grid article p { margin-top:4px; }
+
+.sc-duress-ladder { display:grid; gap:8px; }
+.sc-duress-ladder article { --data-accent:#d9c28f; display:grid; grid-template-columns:38px minmax(160px,1.1fr) 1fr 1fr; gap:12px; align-items:center; padding:11px 13px; background:rgba(4,5,6,.32); border:1px solid rgba(255,255,255,.07); border-left:3px solid var(--data-accent); border-radius:9px; }
+.sc-duress-ladder article.is-green { --data-accent:#35b48a; }
+.sc-duress-ladder article.is-orange { --data-accent:var(--sc-orange); }
+.sc-duress-ladder article.is-red { --data-accent:#d65e40; }
+.sc-duress-rank { color:var(--data-accent); font-size:.66rem; font-weight:900; }
+.sc-duress-ladder h3 { margin:0; color:#fff; font-size:.8rem; }
+.sc-duress-ladder p { margin:0; color:rgba(255,255,255,.66); font-size:.73rem; line-height:1.4; }
+.sc-duress-ladder p span { display:block; color:var(--data-accent); font-size:.58rem; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+
+.sc-address-timeline { position:relative; grid-template-columns:repeat(4,minmax(0,1fr)); }
+.sc-address-timeline::before { content:""; position:absolute; top:27px; right:8%; left:8%; z-index:-1; height:2px; background:linear-gradient(90deg,#d65e40,#d9c28f,var(--sc-orange),#35b48a); }
+.sc-address-timeline article { --data-accent:#d9c28f; min-width:0; padding:14px; background:#151719; border:1px solid rgba(255,255,255,.08); border-radius:11px; }
+.sc-address-timeline article.is-red { --data-accent:#d65e40; }
+.sc-address-timeline article.is-orange { --data-accent:var(--sc-orange); }
+.sc-address-timeline article.is-green { --data-accent:#35b48a; }
+.sc-address-timeline article > div { display:flex; align-items:center; justify-content:space-between; gap:7px; }
+.sc-address-timeline article > div strong { display:grid; min-width:46px; height:30px; padding:0 8px; place-items:center; color:#0b0c0d; background:var(--data-accent); border-radius:6px; font-size:.76rem; }
+.sc-address-timeline article > div span { color:var(--data-accent); font-size:.65rem; font-weight:900; }
+.sc-address-timeline h3 { margin:18px 0 0; color:#fff; font-size:.87rem; }
+.sc-address-timeline h3 small { display:block; margin-top:2px; color:rgba(255,255,255,.45); font-size:.65rem; }
+.sc-address-timeline p { margin:8px 0 0; color:rgba(255,255,255,.63); font-size:.74rem; line-height:1.5; }
+
+.sc-halving-chart { display:grid; gap:8px; }
+.sc-halving-chart article { display:grid; grid-template-columns:104px minmax(190px,1fr) 105px; gap:12px; align-items:center; min-height:45px; padding:7px 11px; background:rgba(4,5,6,.3); border:1px solid rgba(255,255,255,.06); border-radius:8px; }
+.sc-halving-chart article > span { color:rgba(255,255,255,.55); font-size:.7rem; font-weight:800; }
+.sc-halving-chart article > div { position:relative; display:flex; align-items:center; min-height:29px; overflow:hidden; background:rgba(255,255,255,.035); border-radius:6px; }
+.sc-halving-chart article i { position:absolute; inset:0 auto 0 0; width:max(7px,calc(100% * var(--halving-scale))); background:linear-gradient(90deg,#d65e40,var(--sc-orange)); border-radius:6px; opacity:.78; }
+.sc-halving-chart article strong { position:relative; z-index:1; padding-left:9px; color:#fff; font-size:.74rem; }
+.sc-halving-chart article p { margin:0; color:#d9c28f; font-size:.71rem; font-weight:800; text-align:right; }
+.sc-halving-chart article p small { display:block; color:rgba(255,255,255,.38); font-size:.55rem; letter-spacing:.08em; text-transform:uppercase; }
+.sc-halving-chart article.is-future { border-style:dashed; }
+.sc-halving-chart article.is-future i { width:100%; background:repeating-linear-gradient(90deg,rgba(217,194,143,.16) 0 8px,transparent 8px 15px); }
+
+@media (max-width: 767.98px) {
+  .sc-guide-data-panel { margin-right:-4px; margin-left:-4px; padding:18px 14px; }
+  .sc-guide-data-heading { grid-template-columns:42px 1fr; gap:11px; }
+  .sc-guide-data-mark { width:42px; height:42px; }
+  .sc-guide-data-heading > strong { grid-column:1/-1; justify-self:start; }
+  .sc-server-grid,
+  .sc-bip85-columns,
+  .sc-inheritance-grid,
+  .sc-heuristics-grid,
+  .sc-address-timeline { grid-template-columns:1fr; }
+  .sc-inheritance-grid article:last-child { grid-column:auto; }
+  .sc-bip85-columns article { grid-template-columns:1fr; gap:4px; }
+
+  .sc-geo-head,
+  .sc-money-head { display:none; }
+  .sc-geo-row,
+  .sc-money-row { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; padding:10px; background:rgba(4,5,6,.28); border:1px solid rgba(255,255,255,.06); border-radius:10px; }
+  .sc-geo-row + .sc-geo-row,
+  .sc-money-row + .sc-money-row { margin-top:9px; }
+  .sc-geo-row > strong,
+  .sc-money-row > strong { grid-column:1/-1; min-height:0; padding:2px 1px 7px; background:transparent; }
+  .sc-geo-row > span,
+  .sc-money-row > span { position:relative; min-height:54px; padding-top:20px; }
+  .sc-geo-row > span::after,
+  .sc-money-row > span::before { content:attr(data-label); position:absolute; top:5px; left:7px; color:rgba(255,255,255,.4); font-size:.53rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+  .sc-geo-row > span::before { position:static; }
+
+  .sc-duress-ladder article { grid-template-columns:32px 1fr; align-items:start; }
+  .sc-duress-ladder h3 { align-self:center; }
+  .sc-duress-ladder p { grid-column:2; padding-top:7px; border-top:1px solid rgba(255,255,255,.06); }
+
+  .sc-address-timeline::before { top:8%; bottom:8%; left:29px; width:2px; height:auto; background:linear-gradient(#d65e40,#d9c28f,var(--sc-orange),#35b48a); }
+  .sc-address-timeline article { margin-left:4px; }
+
+  .sc-halving-chart article { grid-template-columns:82px 1fr; gap:7px; padding:8px; }
+  .sc-halving-chart article p { grid-column:2; text-align:left; }
+  .sc-halving-chart article p small { display:inline; margin-right:5px; }
 }
