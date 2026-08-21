@@ -280,12 +280,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://selfcustody.ca/guides/chain-analysis-heuristics.html</loc>
-    <lastmod>2026-08-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://selfcustody.ca/guides/duress-and-coercion.html</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
@@ -335,6 +329,12 @@
   </url>
   <url>
     <loc>https://selfcustody.ca/guides/bitcoin-privacy.html</loc>
+    <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/chain-analysis-heuristics.html</loc>
     <lastmod>2026-08-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

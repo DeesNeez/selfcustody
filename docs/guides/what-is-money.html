@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260820-1054" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260820-1054" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260820-1054" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260821-0132" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260821-0132" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260821-0132" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"What is money?","description":"Cattle, salt, glass beads, limestone discs the size of a small car — plenty of things have done the job, and nearly all of them stopped. They stopped for the same reason every time, and it is the reason a hard cap exists.","url":"https://selfcustody.ca/guides/what-is-money.html","datePublished":"2026-08-20","dateModified":"2026-08-20","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/what-is-money.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -154,19 +154,21 @@
 
       <p>Pull those two failures apart and a checklist falls out. It is roughly the same list everyone who has written seriously on the subject arrives at, and it has been stable for a very long time.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>The six properties, and how some historical monies scored</caption>
-          <thead><tr><th scope="col">Property</th><th scope="col">Rai stones</th><th scope="col">Glass beads</th><th scope="col">Gold</th><th scope="col">Fiat</th><th scope="col">Bitcoin</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Durable</strong><br>survives time</td><td>Excellent</td><td>Good</td><td>Excellent</td><td>Fair</td><td>Excellent</td></tr>
-            <tr><td><strong>Portable</strong><br>moves easily</td><td>Very poor</td><td>Good</td><td>Poor in bulk</td><td>Good</td><td>Excellent</td></tr>
-            <tr><td><strong>Divisible</strong><br>pays small sums</td><td>No</td><td>Yes</td><td>Awkward</td><td>Yes</td><td>8 decimals</td></tr>
-            <tr><td><strong>Fungible</strong><br>units are alike</td><td>No</td><td>Roughly</td><td>Yes</td><td>Yes</td><td>Mostly</td></tr>
-            <tr><td><strong>Verifiable</strong><br>you can check it</td><td>By memory</td><td>Poor</td><td>Needs assay</td><td>Fair</td><td>Any node</td></tr>
-            <tr><td><strong>Scarce</strong><br>nobody can make more</td><td>Failed</td><td>Failed</td><td>Strong</td><td>None</td><td>Fixed</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-money-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">$</span>
+          <div><span>Monetary properties</span><h3>Six tests across five monies</h3></div>
+          <strong>Strength is multidimensional</strong>
+        </div>
+        <div class="sc-money-matrix" role="table" aria-label="The six properties and how historical monies scored">
+          <div class="sc-money-head" role="row"><span>Property</span><span>Rai stones</span><span>Glass beads</span><span>Gold</span><span>Fiat</span><span>Bitcoin</span></div>
+          <div class="sc-money-row" role="row"><strong>Durable<small>survives time</small></strong><span class="is-strong" data-label="Rai stones">Excellent</span><span class="is-mid" data-label="Glass beads">Good</span><span class="is-strong" data-label="Gold">Excellent</span><span class="is-mid" data-label="Fiat">Fair</span><span class="is-strong is-bitcoin" data-label="Bitcoin">Excellent</span></div>
+          <div class="sc-money-row" role="row"><strong>Portable<small>moves easily</small></strong><span class="is-weak" data-label="Rai stones">Very poor</span><span class="is-mid" data-label="Glass beads">Good</span><span class="is-weak" data-label="Gold">Poor in bulk</span><span class="is-mid" data-label="Fiat">Good</span><span class="is-strong is-bitcoin" data-label="Bitcoin">Excellent</span></div>
+          <div class="sc-money-row" role="row"><strong>Divisible<small>pays small sums</small></strong><span class="is-weak" data-label="Rai stones">No</span><span class="is-strong" data-label="Glass beads">Yes</span><span class="is-mid" data-label="Gold">Awkward</span><span class="is-strong" data-label="Fiat">Yes</span><span class="is-strong is-bitcoin" data-label="Bitcoin">8 decimals</span></div>
+          <div class="sc-money-row" role="row"><strong>Fungible<small>units are alike</small></strong><span class="is-weak" data-label="Rai stones">No</span><span class="is-mid" data-label="Glass beads">Roughly</span><span class="is-strong" data-label="Gold">Yes</span><span class="is-strong" data-label="Fiat">Yes</span><span class="is-mid is-bitcoin" data-label="Bitcoin">Mostly</span></div>
+          <div class="sc-money-row" role="row"><strong>Verifiable<small>you can check it</small></strong><span class="is-mid" data-label="Rai stones">By memory</span><span class="is-weak" data-label="Glass beads">Poor</span><span class="is-mid" data-label="Gold">Needs assay</span><span class="is-mid" data-label="Fiat">Fair</span><span class="is-strong is-bitcoin" data-label="Bitcoin">Any node</span></div>
+          <div class="sc-money-row" role="row"><strong>Scarce<small>nobody can make more</small></strong><span class="is-weak" data-label="Rai stones">Failed</span><span class="is-weak" data-label="Glass beads">Failed</span><span class="is-strong" data-label="Gold">Strong</span><span class="is-weak" data-label="Fiat">None</span><span class="is-strong is-bitcoin" data-label="Bitcoin">Fixed</span></div>
+        </div>
       </div>
 
       <p>The bottom row is where the two case studies landed, and they landed there for the same reason &mdash; iron tools for rai, industrial glass for beads. Gold reads "strong" rather than absolute because a higher price still funds deeper mines. Fiat has no constraint of that kind at all, only institutional restraint, which is a different sort of promise.</p>
@@ -199,7 +201,7 @@
 
       <p>It is worth being precise about why that differs from gold rather than merely doing the same trick better.</p>
 
-      <ul class="sc-check-list"><li><strong>Gold's supply responds to price.</strong> A higher price funds deeper mines and poorer ore, so more gets produced. The response is slow and weak, which is exactly why gold held the role for so long — but the feedback loop is there.</li><li><strong>Bitcoin's supply responds to nothing.</strong> Doubling the world's mining hardware overnight produces no extra coins: the <a href='../glossary.html#term-difficulty_adjustment'>difficulty adjustment</a> makes the puzzle harder and issuance carries on to schedule. Effort decides who receives new coins, never how many exist.</li><li><strong>The cap is not a target somebody set.</strong> Issuance <a href='../glossary.html#term-halving'>halves</a> roughly every four years, and 21 million is what that series adds up to — the derivation is in <a href='twenty-one-million.html'>where 21 million comes from</a>.</li></ul>
+      <ul class="sc-check-list"><li><strong>Gold's supply responds to price.</strong> A higher price funds deeper mines and poorer ore, so more gets produced. The response is slow and weak, which is exactly why gold held the role for so long — but the feedback loop is there.</li><li><strong>Bitcoin's supply responds to nothing.</strong> Doubling the world's mining hardware overnight produces no extra coins: the <a href='../glossary.html#term-difficulty_adjustment'>difficulty adjustment</a> makes the puzzle harder and issuance carries on to schedule. Effort decides who receives new coins, never how many exist.</li><li><strong>The cap is not a target somebody set.</strong> Issuance <a href='../glossary.html#term-halving'>halves</a> roughly every four years, and 21 million is what that series adds up to — the derivation is in <a href='twenty-one-million.html'>the 21 million hard cap</a>.</li></ul>
 
       <p>Now the part that reaches you personally. <a href="../glossary.html#term-inflation">Inflation</a> is usually described as prices going up, which makes it sound like something that happens to shops. The more useful framing is dilution: your holding stays the same size while the total grows, so your share of it shrinks. Rising prices are the symptom you happen to notice.</p>
 
@@ -256,7 +258,7 @@
                 <div class="sc-icon"><i class="bi bi-graph-down-arrow"></i></div>
                 <span class="sc-level sc-level-intermediate">Intermediate</span>
               </div>
-              <h3>Where 21 million comes from</h3>
+              <h3>The 21 million hard cap</h3>
               <p>The number is not a policy anyone chose to announce and cannot be raised by agreement. It falls out of a halving schedule, and it holds because every node independently refuses to accept a block that breaks it.</p>
               <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
             </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="who-decides-the-rules.html">
@@ -316,6 +318,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260820-1054"></script>
+  <script src="../assets/js/site-refresh.js?v=20260821-0132"></script>
 </body>
 </html>

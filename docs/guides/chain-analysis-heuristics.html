@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260820-1054" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260820-1054" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260820-1054" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260821-0132" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260821-0132" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260821-0132" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How chain analysis reads your wallet","description":"Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.","url":"https://selfcustody.ca/guides/chain-analysis-heuristics.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/chain-analysis-heuristics.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -134,20 +134,17 @@
 
       <p>Now the practical question: which of these does careful spending address?</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Heuristics against the defences available to you</caption>
-          <thead><tr><th scope="col">Heuristic</th><th scope="col">Coin control helps?</th></tr></thead>
-          <tbody>
-            <tr><td>Common-input-ownership</td><td><strong>Yes</strong> &mdash; this is exactly what choosing inputs prevents</td></tr>
-            <tr><td>Change by roundness</td><td>Partly &mdash; spending a coin close to the payment amount helps</td></tr>
-            <tr><td>Script-type matching</td><td>No &mdash; a wallet setting, not a spending choice</td></tr>
-            <tr><td>Address reuse</td><td>Yes &mdash; never reuse, and this one disappears</td></tr>
-            <tr><td>Unnecessary input</td><td>Partly &mdash; fewer, better-sized inputs</td></tr>
-            <tr><td>Wallet fingerprinting</td><td><strong>No</strong> &mdash; entirely outside your spending decisions</td></tr>
-            <tr><td>Amount and timing correlation</td><td>No</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-heuristics-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">CC</span>
+          <div><span>Coin-control coverage</span><h3>What input choice can actually fix</h3></div>
+          <strong>Two yes, two partly, three no</strong>
+        </div>
+        <div class="sc-heuristics-grid">
+          <section class="is-yes"><h3><span>Yes</span> Directly helps</h3><article><strong>Common-input-ownership</strong><p>This is exactly what choosing inputs prevents.</p></article><article><strong>Address reuse</strong><p>Never reuse, and this one disappears.</p></article></section>
+          <section class="is-partly"><h3><span>Partly</span> Reduces the signal</h3><article><strong>Change by roundness</strong><p>Spend a coin close to the payment amount.</p></article><article><strong>Unnecessary input</strong><p>Use fewer, better-sized inputs.</p></article></section>
+          <section class="is-no"><h3><span>No</span> Needs another defence</h3><article><strong>Script-type matching</strong><p>A wallet setting, not a spending choice.</p></article><article><strong>Wallet fingerprinting</strong><p>Entirely outside your spending decisions.</p></article><article><strong>Amount and timing correlation</strong><p>Input choice does not remove it.</p></article></section>
+        </div>
       </div>
 
       <p><a href='sparrow-coin-control.html'>Coin control</a> is genuinely the highest-value habit available, and this table is not an argument against it &mdash; it defeats the strongest heuristic in the field. But it is a habit-level defence, and several rows here are immune to habits. That is what the next two sections are for.</p>
@@ -275,6 +272,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260820-1054"></script>
+  <script src="../assets/js/site-refresh.js?v=20260821-0132"></script>
 </body>
 </html>

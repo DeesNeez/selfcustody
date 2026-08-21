@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Running a node and using it are two different achievements. The index layer nobody mentions, connecting each wallet to it, reaching it from outside your house, and proving your wallet is not quietly still using somebody else's server.">
-  <title>Point your wallet at your own node | SelfCustody.ca</title>
+  <title>Connecting wallets to your node | SelfCustody.ca</title>
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://selfcustody.ca/guides/own-node-connection.html">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="en_CA">
   <meta property="og:site_name" content="SelfCustody.ca">
-  <meta property="og:title" content="Point your wallet at your own node | SelfCustody.ca">
+  <meta property="og:title" content="Connecting wallets to your node | SelfCustody.ca">
   <meta property="og:description" content="Running a node and using it are two different achievements. The index layer nobody mentions, connecting each wallet to it, reaching it from outside your house, and proving your wallet is not quietly still using somebody else's server.">
   <meta property="og:url" content="https://selfcustody.ca/guides/own-node-connection.html">
   <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
@@ -28,10 +28,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260820-1054" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260820-1054" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260820-1054" rel="stylesheet">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Point your wallet at your own node","description":"Running a node and using it are two different achievements. The index layer nobody mentions, connecting each wallet to it, reaching it from outside your house, and proving your wallet is not quietly still using somebody else's server.","url":"https://selfcustody.ca/guides/own-node-connection.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/own-node-connection.html"}}</script>
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260821-0132" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260821-0132" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260821-0132" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Connecting wallets to your node","description":"Running a node and using it are two different achievements. The index layer nobody mentions, connecting each wallet to it, reaching it from outside your house, and proving your wallet is not quietly still using somebody else's server.","url":"https://selfcustody.ca/guides/own-node-connection.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/own-node-connection.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
   <div id="site-header">
@@ -79,7 +79,7 @@
           <a href="../guides.html#advanced">Techniques</a>
         </nav>
         <span class="sc-eyebrow">Advanced techniques</span>
-        <h1>Point your wallet at your own node</h1>
+        <h1>Connecting wallets to your node</h1>
         <p class="sc-lead">Running a node and using it are two different achievements. The index layer nobody mentions, connecting each wallet to it, reaching it from outside your house, and proving your wallet is not quietly still using somebody else's server.</p>
         <div class="sc-guide-meta">
           <span class="sc-level sc-level-advanced">Advanced</span>
@@ -114,16 +114,17 @@
 
       <p>Three implementations are in common use, and the choice is a genuine trade rather than a matter of taste.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Electrum server implementations</caption>
-          <thead><tr><th scope="col">Server</th><th scope="col">Built in</th><th scope="col">Trade</th></tr></thead>
-          <tbody>
-            <tr><td><strong>electrs</strong></td><td>Rust</td><td>Smallest index on disk, and does not need Core's transaction index. Answers some queries by re-reading blocks, so lookups are slower.</td></tr>
-            <tr><td><strong>Fulcrum</strong></td><td>C++</td><td>Fastest queries by a wide margin &mdash; Sparrow's own benchmarks put history loading tens of times quicker than ElectrumX. Costs more disk.</td></tr>
-            <tr><td><strong>ElectrumX</strong></td><td>Python</td><td>The original and most featureful. Slowest of the three in practice.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-server-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">RPC</span>
+          <div><span>Core needs an index</span><h3>Three servers, three different trades</h3></div>
+          <strong>Disk vs speed</strong>
+        </div>
+        <div class="sc-server-grid">
+          <article class="is-cream"><header><h3>electrs</h3><span>Rust</span></header><strong>Smallest index</strong><p>Does not need Core's transaction index. Some queries re-read blocks, so lookups are slower.</p></article>
+          <article class="is-green"><header><h3>Fulcrum</h3><span>C++</span></header><strong>Fastest queries</strong><p>Sparrow's benchmarks put history loading tens of times quicker than ElectrumX, at the cost of more disk.</p></article>
+          <article class="is-orange"><header><h3>ElectrumX</h3><span>Python</span></header><strong>Most featureful</strong><p>The original implementation and the slowest of the three in practice.</p></article>
+        </div>
       </div>
 
       <p>The distributions have already picked for you: Start9 ships Fulcrum, while Umbrel and RaspiBolt default to electrs and offer Fulcrum as an alternative. If your wallet history feels sluggish to load, that setting is usually the cause and switching is usually the cure.</p>
@@ -261,6 +262,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260820-1054"></script>
+  <script src="../assets/js/site-refresh.js?v=20260821-0132"></script>
 </body>
 </html>

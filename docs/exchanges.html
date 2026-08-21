@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260820-1054" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260820-1054" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260820-1054" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260821-0132" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260821-0132" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260821-0132" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="exchanges">
   <div id="site-header">
@@ -71,21 +71,24 @@
       </header></div>
     <main id="main-content">
         
-      <section class="sc-hero">
+      <section class="sc-hero has-background-media">
         
+          <figure class="sc-hero-background-media" aria-hidden="true">
+            <img src="assets/img/exchanges-hero.jpg" alt="" width="1584" height="672" fetchpriority="high">
+          </figure>
         <div class="container">
           
-      <span class="sc-eyebrow">Canadian purchase routes</span>
-      <h1>Buying is one step.<br><em>Withdrawing is the custody decision.</em></h1>
-      <p class="sc-lead">Compare brokers and exchanges by what happens after the purchase: where bitcoin sits, how it reaches your wallet, what the full cost includes, and which records you need to keep.</p>
-      <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#exchange-compare">Compare platforms</a>
-           <a class="sc-btn sc-btn-ghost" href="guides/exchange-withdrawal.html">Withdrawal guide</a></div>
+            <div class="sc-hero-copy">
+      <span class="sc-eyebrow">Canadian exchanges</span>
+      <h1>From <span class="sc-outlined-word sc-hero-fiat" data-text="FIAT"><span class="sc-word-fill">FIAT</span></span> IOUs<br><em>to true <span class="sc-outlined-word sc-hero-command-destination" data-text="BITCOIN"><span class="sc-word-fill">BITCOIN</span></span> ownership.</em></h1>
+      <p class="sc-lead">Compare Canadian exchanges by rates, spreads, fees, custody models, and withdrawal options before taking control of your money.</p>
+      <div class="sc-hero-actions"><a class="sc-btn sc-btn-primary" href="#exchange-compare">Compare exchanges</a>
+           <a class="sc-btn sc-btn-ghost" href="guides/exchange-withdrawal.html">Withdrawal guide</a></div></div>
         </div>
       </section>
 
-        <section class="sc-section">
+        <section class="sc-section sc-section-dark">
           <div class="container">
-            <div class="sc-callout mb-5"><h2>Prices and fees are intentionally not ranked here</h2><p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p></div>
             <div class="sc-section-head"><span class="sc-eyebrow">Two models</span><h2>Direct-to-wallet versus custodial platform</h2></div>
             <div class="row g-4 sc-path-options sc-exchange-models">
               <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-arrow-right-circle"></i></div><h3>Direct-to-wallet broker</h3><p>You provide a wallet address and purchased bitcoin settles to that address. This reduces time held by the service but requires you to have a tested wallet first.</p><p><strong>Examples:</strong> Bull Bitcoin and Bitcoin Well describe direct self-custody purchase flows.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
@@ -94,7 +97,7 @@
           </div>
         </section>
 
-        <section id="exchange-compare" class="sc-section sc-section-muted">
+        <section id="exchange-compare" class="sc-section">
           <div class="container">
             <div class="sc-section-head"><span class="sc-eyebrow">Comparison</span><h2>Choose based on the workflow you need</h2></div>
             <div class="sc-matrix-legend" aria-label="Comparison legend">
@@ -205,10 +208,21 @@
                 </tbody>
               </table>
             </div>
-            <div class="sc-callout mt-5">
-              <h3>Once you choose a platform</h3>
-              <p>Secure the account before funding it, then move purchased bitcoin to a wallet you control. Start with <a href="guides/exchange-account-security.html">locking down the exchange account</a>, followed by the <a href="guides/exchange-withdrawal.html">step-by-step withdrawal guide</a>.</p>
-            </div>
+            <aside class="sc-exchange-live-note mt-5" aria-labelledby="exchange-live-note-title">
+              <div class="sc-exchange-live-signal" aria-hidden="true">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>Live variables</span>
+                <small>Changes often</small>
+              </div>
+              <div class="sc-exchange-live-copy">
+                <span class="sc-exchange-live-eyebrow">A fair comparison needs current numbers</span>
+                <h2 id="exchange-live-note-title">Prices and fees are intentionally not ranked here</h2>
+                <p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p>
+                <div class="sc-exchange-live-markers" aria-hidden="true">
+                  <span class="is-orange">Spreads</span><span class="is-cream">Fees</span><span class="is-green">Limits</span><span class="is-red">Availability</span>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
 
@@ -228,13 +242,23 @@
               <div class="col-lg-6"><article id="bitbuy" class="sc-detail is-custodial h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitbuy.png" alt="" width="48" height="48" loading="lazy"><h2>Bitbuy</h2></div><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul><a class="sc-text-link" href="https://bitbuy.ca/en-ca/fees" target="_blank" rel="noopener">Official site <i class="bi bi-arrow-up-right"></i></a></article></div>
             </div>
 
-            <div class="sc-callout mt-5"><h3>Canadian recordkeeping</h3><p>Keep trade confirmations, CAD funding records, withdrawal transaction IDs, wallet labels, and the CAD value at acquisition and disposal. This site does not provide tax advice; use CRA guidance or a qualified Canadian tax professional for your situation.</p></div>
             
     <p class="sc-source-note">
       Product details checked against <a href="https://www.bullbitcoin.com/buy" target="_blank" rel="noopener">Bull Bitcoin</a>, <a href="https://bitcoinwell.com/about" target="_blank" rel="noopener">Bitcoin Well</a>, <a href="https://shakepay.com/bitcoin" target="_blank" rel="noopener">Shakepay</a>, <a href="https://ndax.io/en/fees" target="_blank" rel="noopener">Ndax</a>, <a href="https://www.kraken.com/ca/lp/kraken-in-canada" target="_blank" rel="noopener">Kraken Canada</a>, <a href="https://bitbuy.ca/en-ca/fees" target="_blank" rel="noopener">Bitbuy</a>.
       Features, availability, and pricing can change.
       <span class="sc-source-note-date">Links checked August 6, 2026.</span>
     </p>
+            <aside class="sc-exchange-next-step" aria-labelledby="exchange-next-step-title">
+              <div class="sc-exchange-next-copy">
+                <span class="sc-eyebrow">Next step</span>
+                <h2 id="exchange-next-step-title">It isn't yours until you move it.</h2>
+                <p>Bitcoin left on a platform is another IOU. The withdrawal guide walks the transfer, address check, and test send, step by step.</p>
+              </div>
+              <div class="sc-hero-actions sc-exchange-next-cta">
+                <a class="sc-btn sc-btn-primary" href="guides/exchange-withdrawal.html">Take custody <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+              </div>
+              <p class="sc-exchange-tax-note"><span class="sc-exchange-tax-icon" aria-hidden="true">i</span><span>This site does not provide tax advice; use CRA guidance or a qualified Canadian tax professional for your situation.</span></p>
+            </aside>
           </div>
         </section></main>
     <div id="site-footer">
@@ -273,6 +297,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260820-1054"></script>
+  <script src="assets/js/site-refresh.js?v=20260821-0132"></script>
 </body>
 </html>
