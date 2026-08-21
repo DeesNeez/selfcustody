@@ -838,7 +838,7 @@ const currentYear = new Date().getFullYear();
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-section-head"><span class="sc-eyebrow">Seven featured wallets</span><h2>Match software to the job</h2><p>Shortlisted for strong hardware-wallet support—each one pairs with most signing devices, not just one brand. Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
+            <div class="sc-section-head"><span class="sc-eyebrow">Featured wallets</span><h2>Match software to the job</h2><p>Shortlisted for strong hardware-wallet support—each one pairs with most signing devices, not just one brand. Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
             <div class="row g-4 sc-path-options sc-software-card-grid">
               ${softwareCard("assets/img/software/sparrow.png", "Sparrow Wallet", "Desktop Bitcoin wallet with excellent PSBT, hardware, multisig, coin control, labeling, Tor, and personal-node support.", "#sparrow", "Read notes")}
               ${softwareCard("assets/img/software/nunchuk.png", "Nunchuk", "Mobile and desktop wallet focused on multisig, shared wallets, hardware keys, recovery planning, and optional inheritance services.", "#nunchuk", "Read notes")}

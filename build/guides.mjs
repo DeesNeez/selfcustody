@@ -7745,6 +7745,24 @@ const formatUpdated = iso => {
   return `${month} ${d}, ${y}`;
 };
 
+/* Collapses a set of review dates into one phrase for a section heading.
+   Same day reads as a single date; a spread inside one month keeps the month
+   once ("Aug 17-18, 2026"); anything wider spells both ends out. Published
+   guides only -- a planned one has nothing to review yet. */
+const formatUpdatedRange = guides => {
+  const dates = guides.map(g => g.updated).filter(Boolean).sort();
+  if (!dates.length) return "";
+  const [lo, hi] = [dates[0], dates[dates.length - 1]];
+  if (lo === hi) return formatUpdated(lo);
+  const [loY, loM, loD] = lo.split("-").map(Number);
+  const [hiY, hiM] = hi.split("-").map(Number);
+  if (loY === hiY && loM === hiM) {
+    const month = formatUpdated(lo).split(" ")[0];
+    return `${month} ${loD}&ndash;${hi.split("-").map(Number)[2]}, ${loY}`;
+  }
+  return `${formatUpdated(lo)} &ndash; ${formatUpdated(hi)}`;
+};
+
 /* ---- hub rendering ------------------------------------------------------ */
 
 const guideCard = guide => {
@@ -7753,10 +7771,11 @@ const guideCard = guide => {
   const cardTitle = guide.category === "devices"
     ? guide.title.replace(/:\s*first-time setup$/i, "")
     : guide.title;
-  const meta = [
-    `<span><i class="bi bi-hourglass-split" aria-hidden="true"></i> ${guide.minutes} min</span>`,
-    planned ? "" : `<span>Updated ${formatUpdated(guide.updated)}</span>`
-  ].filter(Boolean).join("");
+  /* Just the reading time. The review date used to sit here too, which forced
+     "Read guide" onto a line of its own underneath and made every card taller
+     for a per-guide fact the guide's own header already carries -- the hub
+     states the range once per section instead. */
+  const meta = `<span><i class="bi bi-hourglass-split" aria-hidden="true"></i> ${guide.minutes} min</span>`;
   const cardProduct = ["devices", "software"].includes(guide.category)
     ? guide.products.map(key => productByKey.get(key)).find(product => product?.image)
     : null;
@@ -7776,10 +7795,12 @@ const guideCard = guide => {
       <h3>${cardTitle}</h3>
       <p>${guide.summary}</p>
       <div class="sc-tags">${guide.tags.map(t => renderGlossaryTag(t)).join("")}</div>
-      <p class="sc-guide-card-meta">${meta}</p>
-      ${planned
-        ? `<span class="sc-guide-card-soon">Being written</span>`
-        : `<span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>`}
+      <div class="sc-guide-card-foot">
+        <p class="sc-guide-card-meta">${meta}</p>
+        ${planned
+          ? `<span class="sc-guide-card-soon">Being written</span>`
+          : `<span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>`}
+      </div>
     </div>`;
 
   /* data-* attributes are the entire filter contract with site-refresh.js.
@@ -7879,11 +7900,20 @@ const renderGuideFinder = () => {
 };
 
 const renderGuideSections = () => guideCategories.map((cat, index) => {
-  const cards = listed
-    .filter(g => g.category === cat.key)
+  const inCategory = listed.filter(g => g.category === cat.key);
+  const cards = inCategory
+    .slice()
     .sort((a, b) => (a.hubOrder ?? 0) - (b.hubOrder ?? 0))
     .map(guideCard)
     .join("");
+  /* Stated once for the whole section rather than on every card. The filter
+     hides cards without touching this line, so it describes the section as
+     published, not whatever subset is on screen -- hence "these guides" and a
+     range, not a count. */
+  const reviewed = formatUpdatedRange(inCategory.filter(g => g.status === "published"));
+  const reviewedNote = reviewed
+    ? `<p class="sc-section-reviewed"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> These guides were last reviewed ${reviewed}</p>`
+    : "";
   const compare = cat.compare
     ? `<p class="sc-section-head-aside"><a class="sc-text-link" href="${cat.compare[1]}">${cat.compare[0]} <i class="bi bi-arrow-right"></i></a></p>`
     : "";
@@ -7895,6 +7925,7 @@ const renderGuideSections = () => guideCategories.map((cat, index) => {
           <span class="sc-eyebrow">${cat.eyebrow}</span>
           <h2>${cat.heading}</h2>
           <p>${cat.blurb}</p>
+          ${reviewedNote}
           ${compare}
         </div>
         <div class="row g-4">${cards}</div>
