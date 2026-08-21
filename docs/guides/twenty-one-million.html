@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="The number is not a policy anyone chose to announce and cannot be raised by agreement. It falls out of a halving schedule, and it holds because every node independently refuses to accept a block that breaks it.">
-  <title>Where 21 million comes from | SelfCustody.ca</title>
+  <title>The 21 million hard cap | SelfCustody.ca</title>
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://selfcustody.ca/guides/twenty-one-million.html">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="en_CA">
   <meta property="og:site_name" content="SelfCustody.ca">
-  <meta property="og:title" content="Where 21 million comes from | SelfCustody.ca">
+  <meta property="og:title" content="The 21 million hard cap | SelfCustody.ca">
   <meta property="og:description" content="The number is not a policy anyone chose to announce and cannot be raised by agreement. It falls out of a halving schedule, and it holds because every node independently refuses to accept a block that breaks it.">
   <meta property="og:url" content="https://selfcustody.ca/guides/twenty-one-million.html">
   <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
@@ -28,10 +28,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260820-1054" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260820-1054" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260820-1054" rel="stylesheet">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Where 21 million comes from","description":"The number is not a policy anyone chose to announce and cannot be raised by agreement. It falls out of a halving schedule, and it holds because every node independently refuses to accept a block that breaks it.","url":"https://selfcustody.ca/guides/twenty-one-million.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/twenty-one-million.html"}}</script>
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260821-0132" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260821-0132" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260821-0132" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"The 21 million hard cap","description":"The number is not a policy anyone chose to announce and cannot be raised by agreement. It falls out of a halving schedule, and it holds because every node independently refuses to accept a block that breaks it.","url":"https://selfcustody.ca/guides/twenty-one-million.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/twenty-one-million.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
   <div id="site-header">
@@ -79,7 +79,7 @@
           <a href="../guides.html#concepts">Concepts</a>
         </nav>
         <span class="sc-eyebrow">How it works</span>
-        <h1>Where 21 million comes from</h1>
+        <h1>The 21 million hard cap</h1>
         <p class="sc-lead">The number is not a policy anyone chose to announce and cannot be raised by agreement. It falls out of a halving schedule, and it holds because every node independently refuses to accept a block that breaks it.</p>
         <div class="sc-guide-meta">
           <span class="sc-level sc-level-intermediate">Intermediate</span>
@@ -104,19 +104,20 @@
 
       <p>The amount is not fixed. It began at 50 bitcoin per block and <strong>halves every 210,000 blocks</strong>, which at ten minutes a block works out to roughly every four years. Everything else follows from those two numbers.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>The issuance schedule so far</caption>
-          <thead><tr><th scope="col">Era</th><th scope="col">Per block</th><th scope="col">Created in the era</th></tr></thead>
-          <tbody>
-            <tr><td>2009&ndash;2012</td><td>50 BTC</td><td>10,500,000</td></tr>
-            <tr><td>2012&ndash;2016</td><td>25 BTC</td><td>5,250,000</td></tr>
-            <tr><td>2016&ndash;2020</td><td>12.5 BTC</td><td>2,625,000</td></tr>
-            <tr><td>2020&ndash;2024</td><td>6.25 BTC</td><td>1,312,500</td></tr>
-            <tr><td>2024&ndash;2028</td><td>3.125 BTC</td><td>656,250</td></tr>
-            <tr><td>&hellip;and so on</td><td>halving each era</td><td>halving each era</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-halving-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">&frac12;</span>
+          <div><span>Issuance schedule</span><h3>The reward staircase toward zero</h3></div>
+          <strong>Every 210,000 blocks</strong>
+        </div>
+        <div class="sc-halving-chart" role="img" aria-label="Bitcoin block reward halves in each four-year era">
+          <article style="--halving-scale:1"><span>2009&ndash;2012</span><div><i></i><strong>50 BTC</strong></div><p><small>Created</small>10,500,000</p></article>
+          <article style="--halving-scale:.5"><span>2012&ndash;2016</span><div><i></i><strong>25 BTC</strong></div><p><small>Created</small>5,250,000</p></article>
+          <article style="--halving-scale:.25"><span>2016&ndash;2020</span><div><i></i><strong>12.5 BTC</strong></div><p><small>Created</small>2,625,000</p></article>
+          <article style="--halving-scale:.125"><span>2020&ndash;2024</span><div><i></i><strong>6.25 BTC</strong></div><p><small>Created</small>1,312,500</p></article>
+          <article style="--halving-scale:.0625"><span>2024&ndash;2028</span><div><i></i><strong>3.125 BTC</strong></div><p><small>Created</small>656,250</p></article>
+          <article class="is-future"><span>&hellip;and so on</span><div><i></i><strong>Halving each era</strong></div><p><small>Created</small>Halving each era</p></article>
+        </div>
       </div>
 
       <h2><span class="sc-article-num">2</span>Where the number falls out</h2>
@@ -280,6 +281,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260820-1054"></script>
+  <script src="../assets/js/site-refresh.js?v=20260821-0132"></script>
 </body>
 </html>
