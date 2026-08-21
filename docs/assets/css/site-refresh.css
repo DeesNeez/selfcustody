@@ -9122,17 +9122,22 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 
 /* Sits on the bottom border rather than breaking the top one: no bottom edge
    of its own, so the card's own border continues straight through it. */
+/* Centred on the TOP edge. The bottom edge now ends with "Read guide" pinned
+   right, and the top row -- icon left, level badge right -- has its middle
+   free, so the tab hangs there without displacing anything. It also stops the
+   featured card needing 46px of dead space at the bottom to clear a tab. */
 .sc-guide-card-featured {
   position: absolute;
   z-index: 2;
-  right: 22px;
-  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -1px;
   padding: 6px 10px 7px;
   color: #ffb04a;
   background: #33220f;
   border: 1px solid rgba(242, 138, 0, 0.38);
-  border-bottom: 0;
-  border-radius: 7px 7px 0 0;
+  border-top: 0;
+  border-radius: 0 0 7px 7px;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -9140,7 +9145,18 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   text-transform: uppercase;
 }
 
-.sc-guide-card.is-featured .sc-card-body { padding-bottom: 46px; }
+/* No padding reservation in either direction. The tab hangs in the horizontal
+   middle of the top row, which is empty -- icon left, level badge right -- so
+   it overlays dead space instead of displacing content. That keeps the
+   featured card's title and copy on the same baselines as every other card in
+   its row, which reserving space at either end did not.
+
+   `.sc-card` clips its overflow, so the tab cannot hang off the edge -- it has
+   to sit wholly inside. At its natural size that puts its bottom edge exactly
+   on the level badge's top edge with nothing between them, so the badge alone
+   drops out of the way below. The icon opposite is 52px against the badge's
+   30px, so the row is still as tall as the icon and nothing else moves. */
+.sc-guide-card.is-featured .sc-guide-card-badges { margin-top: 12px; }
 
 .sc-guide-card.is-featured {
   position: relative;
@@ -9182,11 +9198,31 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   padding-top: 14px;
 }
 
+/* Reading time and "Read guide" share one row, the link pinned right. With
+   the review date moved up to the section heading there is nothing else
+   competing for the line, and the card loses the row it used to spend on it.
+   `baseline` rather than `center` so the link's arrow sits on the same optical
+   line as the clock icon opposite it. */
+.sc-guide-card-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+/* Long enough titles can wrap the link; keep it from being squeezed into a
+   two-line column while the minutes sit on one. */
+.sc-guide-card-foot .sc-text-link,
+.sc-guide-card-foot .sc-guide-card-soon {
+  flex: none;
+}
+
 .sc-guide-card-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin: 12px 0 14px;
+  margin: 0;
   color: var(--sc-muted);
   font-size: 0.85rem;
   font-weight: 600;
@@ -9272,6 +9308,30 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 }
 
 .sc-section-head-aside { margin: 14px 0 0; }
+
+/* The review dates the guide cards used to carry, stated once per section.
+   Deliberately quiet -- it is provenance, not a selling point -- so it sits at
+   badge size in the muted colour rather than reading as another line of the
+   section blurb. */
+/* Qualified with the heading, because `.sc-section-head p` sets 1.05rem at
+   the same specificity as a bare class and would otherwise hand this line the
+   section blurb's size. */
+.sc-section-head p.sc-section-reviewed {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 20px 0 0;
+  color: var(--sc-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  opacity: 0.82;
+}
+
+.sc-section-reviewed i {
+  font-size: 0.95em;
+  opacity: 0.8;
+}
 
 /* ---- guide pages -------------------------------------------------------- */
 
