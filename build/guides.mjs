@@ -1697,7 +1697,7 @@ const guides = [
     slug: "coldcard-advanced-features",
     category: "devices",
     products: ["coldcard"],
-    title: "COLDCARD: the features worth turning on next",
+    title: "COLDCARD advanced features",
     summary: "Trick PINs, duress wallets, the brick-me PIN, and the login countdown. What each one actually does, and the honest accounting of which of them can cost you your own coins.",
     level: "advanced",
     minutes: 30,
@@ -4383,16 +4383,32 @@ const guides = [
 
       <p>Here is where a multi-brand multisig stops being theoretical. Each manufacturer moves transactions differently, and a single payment may involve two or three different mechanisms.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>What collecting signatures actually looks like</caption>
-          <thead><tr><th scope="col">Device style</th><th scope="col">How the PSBT travels</th><th scope="col">In practice</th></tr></thead>
-          <tbody>
-            <tr><td>USB signers</td><td>Cable, over Specter's device integration</td><td>Fastest. Not air-gapped &mdash; the device talks to your computer.</td></tr>
-            <tr><td>microSD signers</td><td>File written, carried, and read back</td><td>Air-gapped and reliable. Keep a card dedicated to the job.</td></tr>
-            <tr><td>QR signers</td><td>Animated codes both directions</td><td>Air-gapped and cable-free. Large multisig transactions make long animations.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-specter-signing-panel" aria-label="What collecting signatures across three device styles looks like">
+        <div class="sc-specter-signing-heading">
+          <span class="sc-specter-signing-mark" aria-hidden="true"><i></i></span>
+          <div><span>Signature lanes</span><h3>One wallet, three transport languages</h3></div>
+          <strong>The signing order does not matter</strong>
+        </div>
+        <div class="sc-specter-signing-grid" role="table">
+          <div class="sc-specter-signing-head" role="row"><span role="columnheader">Device style</span><span role="columnheader">Route into Specter</span><span role="columnheader">In practice</span></div>
+          <div role="rowgroup">
+            <div class="sc-specter-signing-row is-usb" role="row">
+              <div role="rowheader"><span>USB</span><strong>Connected signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Device</span><i>&rarr;</i><b>Cable</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Fastest, but not air-gapped &mdash; the device talks directly to your computer.</p>
+            </div>
+            <div class="sc-specter-signing-row is-sd" role="row">
+              <div role="rowheader"><span>SD</span><strong>microSD signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Signer</span><i>&rarr;</i><b>Card</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Air-gapped and reliable. Keep one card dedicated to carrying PSBTs.</p>
+            </div>
+            <div class="sc-specter-signing-row is-qr" role="row">
+              <div role="rowheader"><span>QR</span><strong>Camera signer</strong></div>
+              <div class="sc-specter-signing-track" role="cell"><span>Signer</span><i>&rarr;</i><b>Frames</b><i>&rarr;</i><span>Specter</span></div>
+              <p role="cell">Air-gapped and cable-free. Large multisig transactions create longer animations.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       ${checklist([
@@ -4438,7 +4454,7 @@ const guides = [
     slug: "own-node-connection",
     category: "advanced",
     products: [],
-    title: "Point your wallet at your own node",
+    title: "Connecting wallets to your node",
     summary: "Running a node and using it are two different achievements. The index layer nobody mentions, connecting each wallet to it, reaching it from outside your house, and proving your wallet is not quietly still using somebody else's server.",
     level: "advanced",
     minutes: 40,
@@ -4470,16 +4486,17 @@ const guides = [
 
       <p>Three implementations are in common use, and the choice is a genuine trade rather than a matter of taste.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Electrum server implementations</caption>
-          <thead><tr><th scope="col">Server</th><th scope="col">Built in</th><th scope="col">Trade</th></tr></thead>
-          <tbody>
-            <tr><td><strong>electrs</strong></td><td>Rust</td><td>Smallest index on disk, and does not need Core's transaction index. Answers some queries by re-reading blocks, so lookups are slower.</td></tr>
-            <tr><td><strong>Fulcrum</strong></td><td>C++</td><td>Fastest queries by a wide margin &mdash; Sparrow's own benchmarks put history loading tens of times quicker than ElectrumX. Costs more disk.</td></tr>
-            <tr><td><strong>ElectrumX</strong></td><td>Python</td><td>The original and most featureful. Slowest of the three in practice.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-server-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">RPC</span>
+          <div><span>Core needs an index</span><h3>Three servers, three different trades</h3></div>
+          <strong>Disk vs speed</strong>
+        </div>
+        <div class="sc-server-grid">
+          <article class="is-cream"><header><h3>electrs</h3><span>Rust</span></header><strong>Smallest index</strong><p>Does not need Core's transaction index. Some queries re-read blocks, so lookups are slower.</p></article>
+          <article class="is-green"><header><h3>Fulcrum</h3><span>C++</span></header><strong>Fastest queries</strong><p>Sparrow's benchmarks put history loading tens of times quicker than ElectrumX, at the cost of more disk.</p></article>
+          <article class="is-orange"><header><h3>ElectrumX</h3><span>Python</span></header><strong>Most featureful</strong><p>The original implementation and the slowest of the three in practice.</p></article>
+        </div>
       </div>
 
       <p>The distributions have already picked for you: Start9 ships Fulcrum, while Umbrel and RaspiBolt default to electrs and offer Fulcrum as an alternative. If your wallet history feels sluggish to load, that setting is usually the cause and switching is usually the cure.</p>
@@ -5284,18 +5301,20 @@ const guides = [
 
       <h2><span class="sc-article-num">6</span>What each arrangement actually defends</h2>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Common arrangements against the events they are meant to survive</caption>
-          <thead><tr><th scope="col">Arrangement</th><th scope="col">House fire</th><th scope="col">Burglary</th><th scope="col">Regional disaster</th><th scope="col">Compelled access</th></tr></thead>
-          <tbody>
-            <tr><td>All keys at home</td><td>No</td><td>No</td><td>No</td><td>No</td></tr>
-            <tr><td>Home + a safe in the same house</td><td>Partly</td><td>Partly</td><td>No</td><td>No</td></tr>
-            <tr><td>Home + local relative + local bank</td><td>Yes</td><td>Yes</td><td>No</td><td>No</td></tr>
-            <tr><td>Home + distant relative + bank</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Partly</td></tr>
-            <tr><td>Distributed across jurisdictions</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-geo-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">3/5</span>
+          <div><span>Geographic resilience</span><h3>What each arrangement survives</h3></div>
+          <strong>More distance, more coverage</strong>
+        </div>
+        <div class="sc-geo-matrix" role="table" aria-label="Common arrangements against the events they are meant to survive">
+          <div class="sc-geo-head" role="row"><span>Arrangement</span><span>House fire</span><span>Burglary</span><span>Regional disaster</span><span>Compelled access</span></div>
+          <div class="sc-geo-row" role="row"><strong>All keys at home</strong><span class="is-no" data-label="House fire">No</span><span class="is-no" data-label="Burglary">No</span><span class="is-no" data-label="Regional disaster">No</span><span class="is-no" data-label="Compelled access">No</span></div>
+          <div class="sc-geo-row" role="row"><strong>Home + a safe in the same house</strong><span class="is-partly" data-label="House fire">Partly</span><span class="is-partly" data-label="Burglary">Partly</span><span class="is-no" data-label="Regional disaster">No</span><span class="is-no" data-label="Compelled access">No</span></div>
+          <div class="sc-geo-row" role="row"><strong>Home + local relative + local bank</strong><span class="is-yes" data-label="House fire">Yes</span><span class="is-yes" data-label="Burglary">Yes</span><span class="is-no" data-label="Regional disaster">No</span><span class="is-no" data-label="Compelled access">No</span></div>
+          <div class="sc-geo-row" role="row"><strong>Home + distant relative + bank</strong><span class="is-yes" data-label="House fire">Yes</span><span class="is-yes" data-label="Burglary">Yes</span><span class="is-yes" data-label="Regional disaster">Yes</span><span class="is-partly" data-label="Compelled access">Partly</span></div>
+          <div class="sc-geo-row" role="row"><strong>Distributed across jurisdictions</strong><span class="is-yes" data-label="House fire">Yes</span><span class="is-yes" data-label="Burglary">Yes</span><span class="is-yes" data-label="Regional disaster">Yes</span><span class="is-yes" data-label="Compelled access">Yes</span></div>
+        </div>
       </div>
 
       <p>Read that bottom row with suspicion rather than ambition. Crossing jurisdictions defends against the one thing nothing else does, and it introduces problems most people should not accept: keys you cannot reach quickly, arrangements that depend on travel remaining easy, and complexity your heirs will inherit. It is the right answer for a small number of people and an expensive affectation for everyone else.</p>
@@ -5611,20 +5630,25 @@ const guides = [
 
       <p>Deriving a child requires a tool that implements BIP85. The resulting seed then works anywhere, but the derivation step does not.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>On-device BIP85 support, checked against each maker's own documentation</caption>
-          <thead><tr><th scope="col">Device</th><th scope="col">BIP85</th><th scope="col">Notes</th></tr></thead>
-          <tbody>
-            <tr><td><strong>COLDCARD</strong></td><td>Yes</td><td>Under Advanced/Tools. The most thoroughly documented implementation, and it can output words, XPRV, hex, or passwords.</td></tr>
-            <tr><td><strong>Blockstream Jade</strong></td><td>Yes</td><td>Options &rarr; Wallet &rarr; BIP85. Choose 12 or 24 words and an index.</td></tr>
-            <tr><td><strong>Foundation Passport</strong></td><td>Yes</td><td>Through the Key Manager extension, with SeedQR export of the child.</td></tr>
-            <tr><td><strong>SeedSigner</strong></td><td>Yes</td><td>Listed as child seed generation; fits a device that stores nothing anyway.</td></tr>
-            <tr><td><strong>Krux</strong></td><td>Yes</td><td>Derives a child BIP39 mnemonic on the device.</td></tr>
-            <tr><td><strong>Trezor</strong></td><td>No</td><td>Requested since 2021 and still not implemented. Shamir backup solves a different problem.</td></tr>
-            <tr><td><strong>Ledger</strong></td><td>No</td><td>Not in Ledger Live. Its Seed Tool app lists BIP85 as planned rather than available.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-bip85-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">85</span>
+          <div><span>On-device support</span><h3>Where child-seed derivation works</h3></div>
+          <strong>Checked with makers</strong>
+        </div>
+        <div class="sc-bip85-columns">
+          <section class="is-supported"><h3><span>Yes</span> Available on-device</h3>
+            <article><strong>COLDCARD</strong><p>Advanced/Tools; outputs words, XPRV, hex, or passwords.</p></article>
+            <article><strong>Blockstream Jade</strong><p>Options &rarr; Wallet &rarr; BIP85; choose 12 or 24 words and an index.</p></article>
+            <article><strong>Foundation Passport</strong><p>Key Manager extension, with SeedQR export of the child.</p></article>
+            <article><strong>SeedSigner</strong><p>Child-seed generation on a device that stores nothing.</p></article>
+            <article><strong>Krux</strong><p>Derives a child BIP39 mnemonic on-device.</p></article>
+          </section>
+          <section class="is-unsupported"><h3><span>No</span> Not currently supported</h3>
+            <article><strong>Trezor</strong><p>Requested since 2021 and still not implemented. Shamir backup solves a different problem.</p></article>
+            <article><strong>Ledger</strong><p>Not in Ledger Live. Its Seed Tool app lists BIP85 as planned rather than available.</p></article>
+          </section>
+        </div>
       </div>
 
       <p>Notice what that list does <em>not</em> divide along. It is not air-gapped against connected, and not standalone against companion-app &mdash; Jade and Passport both ship companion apps and both support it. The two without it are the large multi-asset incumbents, which is a different distinction entirely.</p>
@@ -5869,18 +5893,19 @@ const guides = [
 
       <p>Several arrangements solve the timing problem &mdash; access afterwards, none before. They differ mostly in how much competence they demand from your heirs and how much they cost.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Ways to make access arrive only after you are gone</caption>
-          <thead><tr><th scope="col">Approach</th><th scope="col">How it holds the line</th><th scope="col">What it demands</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Multisig with a third party</strong></td><td>Heirs hold one key; a lawyer, firm, or trusted person holds another. Neither side can act alone.</td><td>Coordination, and an heir who can complete a signing.</td></tr>
-            <tr><td><strong>Collaborative custody</strong></td><td>A service such as Unchained or Casa holds a key and runs a verified inheritance process.</td><td>Ongoing fees, and trusting a company to still exist.</td></tr>
-            <tr><td><strong>Timelocked spending paths</strong></td><td>A wallet where a smaller quorum becomes valid only after a long delay, enforced by bitcoin itself.</td><td>Real technical skill. See <a href='scripts-and-miniscript.html'>scripts and miniscript</a>.</td></tr>
-            <tr><td><strong>Product inheritance features</strong></td><td>Built-in claim processes with long notice periods, such as Bitkey's.</td><td>Committing to that product's ecosystem.</td></tr>
-            <tr><td><strong>Sealed instructions with a professional</strong></td><td>A lawyer holds a sealed envelope released only on death.</td><td>Trusting a firm and its filing over decades.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-inheritance-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">&rarr;</span>
+          <div><span>Access after death</span><h3>Five ways to hold the line</h3></div>
+          <strong>Capability arrives later</strong>
+        </div>
+        <div class="sc-inheritance-grid">
+          <article class="is-green"><h3>Multisig with a third party</h3><p><span>How it works</span>Heirs hold one key; a lawyer, firm, or trusted person holds another. Neither side can act alone.</p><p><span>It demands</span>Coordination, and an heir who can complete a signing.</p></article>
+          <article class="is-orange"><h3>Collaborative custody</h3><p><span>How it works</span>Unchained or Casa holds a key and runs a verified inheritance process.</p><p><span>It demands</span>Ongoing fees, and trusting a company to still exist.</p></article>
+          <article class="is-cream"><h3>Timelocked spending paths</h3><p><span>How it works</span>A smaller quorum becomes valid only after a long delay, enforced by bitcoin itself.</p><p><span>It demands</span>Real technical skill. See <a href='scripts-and-miniscript.html'>scripts and miniscript</a>.</p></article>
+          <article class="is-red"><h3>Product inheritance features</h3><p><span>How it works</span>Built-in claim processes with long notice periods, such as Bitkey's.</p><p><span>It demands</span>Committing to that product's ecosystem.</p></article>
+          <article class="is-orange"><h3>Sealed instructions with a professional</h3><p><span>How it works</span>A lawyer holds a sealed envelope released only on death.</p><p><span>It demands</span>Trusting a firm and its filing over decades.</p></article>
+        </div>
       </div>
 
       <p>The first two are where most people should look. A <a href='multisig-2of3.html'>2-of-3 multisig</a> is already the shape of an inheritance plan &mdash; you simply have to decide who holds the third key and under what conditions it becomes available.</p>
@@ -5953,149 +5978,187 @@ const guides = [
 
       ${callout("If you take one thing from this page", `Test it with your heirs while you are alive. Everything else on this page is guesswork until somebody who is not you tries to follow your instructions and you watch where they stop. It is an awkward afternoon that turns a document you hope works into one you know does.`)}`
   },
-  /* Rescoped from "Coin control and on-chain privacy", which duplicated
-     sparrow-coin-control almost exactly -- that guide already covers linking,
-     labelling, input selection, and consolidation. What was genuinely missing
-     was the analyst's side: the heuristics past the obvious two, and the
-     protocol-level defences (payjoin, silent payments) that are not coin
-     control at all. Sits in concepts beside bitcoin-privacy, which it extends. */
+  /* The door into the concepts section, and the one page here that assumes no
+     bitcoin knowledge at all -- hence beginner, and hence first. Written
+     because twenty-one-million takes for granted that a reader already knows
+     why a fixed supply is worth anything; this is the page that earns that
+     assumption. The two case studies are load-bearing rather than decorative:
+     beads and rai both failed the *same* way, which is the entire argument. */
   {
-    slug: "chain-analysis-heuristics",
+    slug: "what-is-money",
     category: "concepts",
     products: [],
-    title: "How chain analysis reads your wallet",
-    summary: "Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.",
-    level: "advanced",
-    minutes: 35,
-    goals: ["learn", "harden", "privacy"],
-    tags: ["Privacy", "UTXO"],
-    icon: "bi-pie-chart",
-    updated: "2026-08-18",
+    title: "What is money?",
+    summary: "Cattle, salt, glass beads, limestone discs the size of a small car — plenty of things have done the job, and nearly all of them stopped. They stopped for the same reason every time, and it is the reason a hard cap exists.",
+    level: "beginner",
+    minutes: 18,
+    goals: ["learn"],
+    tags: ["Sound money", "Hard cap", "Scarcity"],
+    icon: "bi-bank",
+    updated: "2026-08-20",
     status: "published",
-    related: ["bitcoin-privacy", "sparrow-coin-control", "wasabi-coinjoin-basics"],
+    related: ["twenty-one-million", "who-decides-the-rules", "owning-your-bitcoin"],
     layout: "article",
     body: `
-      <p class="sc-guide-intro">Chain analysis is not surveillance in the usual sense. Nobody is watching you. It is a set of assumptions applied at scale to a public ledger, and each assumption is individually unremarkable &mdash; the kind of reasoning you would do yourself if handed the data.</p>
+      <p class="sc-guide-intro">Ask what money is and most answers point at examples &mdash; notes, coins, the balance in a banking app. That is a list of things currently doing the job, not a description of the job itself. The job is the interesting part, because the list keeps changing.</p>
 
-      <p>Most people who care about privacy know two of them. <a href='bitcoin-privacy.html'>The privacy guide</a> walks through both: coins spent together share an owner, and the round output is the payment while the awkward one is change. Those two do an enormous amount of work.</p>
+      <p>Money is not a substance. It is a role, and an odd assortment of things have been hired into it: cattle, salt, cowrie shells, tobacco leaf, cigarettes, silver, gold, glass beads, and limestone discs weighing several tonnes. Nearly all of them were eventually fired. <strong>The manner of firing is the same story every time</strong>, and once you have seen it twice you will recognise it everywhere.</p>
 
-      <p>They are not the whole toolkit. This page covers the rest &mdash; the change-detection tricks past the obvious one, the way your software signs its own name on every transaction, and the two newer defences that operate at the protocol level rather than relying on you to have good habits.</p>
+      <h2><span class="sc-article-num">1</span>The job description</h2>
 
-      <h2><span class="sc-article-num">1</span>The two you have already met</h2>
-
-      <p>Briefly, so the rest has somewhere to stand.</p>
+      <p>Something is money when it does three jobs at once.</p>
 
       ${checklist([
-        "<strong>Common-input-ownership.</strong> If a transaction spends several coins, one entity controlled all of them. This is the single strongest signal in the field, and it is right the overwhelming majority of the time.",
-        "<strong>Change identification by roundness.</strong> Pay someone 0.05 BTC from a 0.31 BTC coin and the outputs are a round number and a remainder. Payments are round; change is whatever is left."
+        "<strong>A medium of exchange.</strong> Something you accept not because you want it but because you know the next person will. This is what removes the need for a coincidence of wants — the baker who needs shoes finding a cobbler who happens to want bread that day.",
+        "<strong>A store of value.</strong> Somewhere to keep effort you have already spent until you need it back. Work the harvest in September, eat in February. A money that leaks is a bucket with a hole in it: usable, but not for saving.",
+        "<strong>A unit of account.</strong> A shared ruler. Wages, prices, debts and contracts all have to be quoted in something, and that something has to hold still enough to be worth quoting in."
       ])}
 
-      <p>An analyst who has identified your change can follow it into your next transaction, and the next, indefinitely. That is why change detection matters so much: it is what turns isolated transactions into a chain.</p>
+      <p>Most candidates fail at least one. Fresh fish is a fine medium of exchange for about a day and a hopeless store of value. A house stores value well and is useless for buying coffee. Doing all three at once is rare, and the ruler is usually the last job earned &mdash; nobody writes a five-year contract in something they expect to move.</p>
 
-      <h2><span class="sc-article-num">2</span>The other ways change gets spotted</h2>
+      <p>Notice that nothing on that list requires a government. <a href="../glossary.html#term-legal_tender">Legal tender</a> laws can compel a merchant to accept something, but they cannot make a population save in it, and history is full of people keeping accounts in one thing while paying taxes in another. Money is closer to a language than a law. It works because everyone else is using it, and it stops working when they stop.</p>
 
-      <p>Roundness is the famous one. When it does not apply, several others usually do.</p>
+      <h2><span class="sc-article-num">2</span>Glass beads, and the cost of making more</h2>
 
-      ${checklist([
-        "<strong>Script-type matching.</strong> If a transaction spends from a native SegWit address and produces one native SegWit output and one legacy output, the matching one is almost certainly change &mdash; your wallet makes change in its own format, while you pay whatever the recipient asked for.",
-        "<strong>Address reuse.</strong> If one output goes to an address that has been seen before and the other is fresh, the fresh one is the change. Reused addresses are almost never change, because wallets generate a new one every time.",
-        "<strong>The unnecessary input.</strong> If a transaction includes more inputs than the payment required, the surplus was needed to cover a larger output &mdash; which tells the analyst which output was the large one.",
-        "<strong>The self-transfer shape.</strong> A single input producing a single output, or two outputs that both look like change, is usually somebody moving their own coins rather than paying anyone."
-      ])}
+      <p>For centuries, glass beads circulated as money across much of West Africa. The story is often told as one about gullibility &mdash; gold traded away for trinkets &mdash; and that telling is both unkind and wrong.</p>
 
-      ${callout("Why several weak signals beat one strong one", "No single heuristic here is reliable alone, and analysts do not use them alone. They apply all of them, score the result, and act on the aggregate. A transaction that defeats one heuristic while satisfying three others has not been made private — it has been made slightly more interesting.")}
+      <p>The beads were a sensible money for the conditions. Glassmaking was a specialist craft, the beads arrived along long and dangerous trade routes, and producing one locally took real skill and real time. They were durable, portable, countable, hard to fake convincingly, and <strong>genuinely difficult to obtain</strong>. Every property you would want was present.</p>
 
-      <h2><span class="sc-article-num">3</span>Your wallet has an accent</h2>
+      <p>Then the conditions changed. European glassworks &mdash; Venice above all &mdash; industrialised bead production. What had cost weeks of skilled labour came off a bench by the thousand for a fraction of a penny. Traders arriving on the coast were carrying something that was still money to the people they met and very nearly free to the people making it.</p>
 
-      <p>This is the layer most people have never considered, and it requires nothing from you to leak.</p>
+      <p>What followed was not a trick played on fools. It was a large, sustained transfer of wealth conducted in the open, at prices both sides agreed to, using a money that only one side could manufacture. When enough beads had arrived they stopped being money at all &mdash; not because anyone banned them, but because everyone could see there were now far too many.</p>
 
-      <p>Bitcoin's rules leave several choices to whoever builds the transaction, and different wallet software makes those choices differently. The resulting pattern is consistent enough to identify which software produced a transaction &mdash; a technique usually called wallet fingerprinting.</p>
+      ${figure({
+        src: "../assets/img/what-is-money-trade-beads.jpg",
+        alt: "A handful of Venetian millefiori trade beads spilled across dark wood under a low side light, close enough that the machine-made regularity of the patterns is unmistakable",
+        caption: "The beads never changed. The cost of making another one did.",
+        width: 1300,
+        height: 726
+      })}
 
-      ${checklist([
-        "<strong>The locktime field.</strong> Some wallets set it to the current block height to discourage fee sniping; many leave it at zero. That choice alone splits the population.",
-        "<strong>Transaction version number.</strong> Wallets differ, and they differ consistently.",
-        "<strong>Input and output ordering.</strong> Some sort deterministically, some shuffle randomly, some preserve the order they built in.",
-        "<strong>Replace-by-fee signalling.</strong> Whether the transaction is marked replaceable is a per-wallet default more than a per-user decision.",
-        "<strong>Change output position.</strong> Always last, always first, or randomised &mdash; another consistent per-wallet habit."
-      ])}
+      <h2><span class="sc-article-num">3</span>Rai stones, and a ledger nobody wrote down</h2>
 
-      <p>The consequence is subtle but real. If your wallet's fingerprint appears on both sides of a transaction &mdash; on the spending side and on one of the outputs &mdash; that output is probably yours. Fingerprinting is a change-detection heuristic wearing a different hat, and no amount of careful coin selection affects it.</p>
+      <p>On the island of Yap, in the western Pacific, money was limestone. Not small pieces of it: carved discs up to twelve feet across with a hole through the middle, weighing several tonnes.</p>
 
-      <h2><span class="sc-article-num">4</span>Amounts and timing</h2>
+      <p>Yap has no limestone. Every stone was quarried on Palau, some four hundred kilometres away, cut with shell tools, and floated home on rafts lashed to canoes. The voyages took months and men died on them. <strong>The worth of a stone was, quite literally, what it had cost to bring there</strong> &mdash; a stone whose journey had cost lives was worth more than a larger one that came home easily.</p>
 
-      ${checklist([
-        "<strong>Amount correlation.</strong> A withdrawal of an unusual amount leaving an exchange and an arrival of nearly that amount elsewhere, minus a plausible fee, is a link even with no shared inputs.",
-        "<strong>Timing.</strong> Transactions that consistently appear during one part of the day describe a time zone, and eventually a routine.",
-        "<strong>Fee-rate habits.</strong> Always paying the same wallet's default at the same urgency setting is one more consistent signature."
-      ])}
+      <p>The part that surprises people is what happened next. The stones did not move.</p>
 
-      <h2><span class="sc-article-num">5</span>What coin control actually defeats</h2>
+      <p>Shifting several tonnes of limestone across a village to settle a debt is absurd, so the Yapese did not bother. Ownership changed by announcement: the transfer was made publicly, witnessed, and thereafter simply remembered. The stone stayed where it was. Anyone could tell you who owned which one and roughly how it had been acquired, because everybody had heard the same history.</p>
 
-      <p>Now the practical question: which of these does careful spending address?</p>
+      <p>One famous stone sank in a storm on the way home. The crew reported the loss &mdash; the size, the quality, the fact that it was down there somewhere. The island accepted the account, and the stone was traded for generations afterwards without a single person ever laying eyes on it. Its owner was whoever the community agreed its owner was.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Heuristics against the defences available to you</caption>
-          <thead><tr><th scope="col">Heuristic</th><th scope="col">Coin control helps?</th></tr></thead>
-          <tbody>
-            <tr><td>Common-input-ownership</td><td><strong>Yes</strong> &mdash; this is exactly what choosing inputs prevents</td></tr>
-            <tr><td>Change by roundness</td><td>Partly &mdash; spending a coin close to the payment amount helps</td></tr>
-            <tr><td>Script-type matching</td><td>No &mdash; a wallet setting, not a spending choice</td></tr>
-            <tr><td>Address reuse</td><td>Yes &mdash; never reuse, and this one disappears</td></tr>
-            <tr><td>Unnecessary input</td><td>Partly &mdash; fewer, better-sized inputs</td></tr>
-            <tr><td>Wallet fingerprinting</td><td><strong>No</strong> &mdash; entirely outside your spending decisions</td></tr>
-            <tr><td>Amount and timing correlation</td><td>No</td></tr>
-          </tbody>
-        </table>
+      <p>That is a public ledger maintained by consensus, holding title to an asset nobody can pick up. It is not a bad description of a blockchain, and it is a very much older idea than the internet.</p>
+
+      ${figure({
+        src: "../assets/img/what-is-money-rai-stone.jpg",
+        alt: "A rai stone standing in a village clearing on Yap: a limestone disc taller than the thatched houses behind it, the central hole framing the greenery, shot slightly from below so the scale reads immediately",
+        caption: "A rai stone. Ownership moved by announcement; the stone stayed put.",
+        width: 1300,
+        height: 726
+      })}
+
+      <p>Rai money died the same death as the beads. In the 1870s an Irish-American trader named David O'Keefe worked out that with iron tools and a sailing ship he could produce rai stones faster and far more safely than any Yapese expedition. He did, and spent them on copra and labour.</p>
+
+      <p>The Yapese were not fooled either. They could see the new stones were easy stones and discounted them accordingly, and older stones with hard histories kept their premium. But the supply kept arriving, and a money somebody else can produce cheaply does not stay money for long. Within a couple of generations rai was ceremonial.</p>
+
+      ${pullQuote("Two societies, an ocean apart, with entirely different money. Both lost it the moment somebody found a cheaper way to make another one.")}
+
+      <h2><span class="sc-article-num">4</span>What a money actually needs</h2>
+
+      <p>Pull those two failures apart and a checklist falls out. It is roughly the same list everyone who has written seriously on the subject arrives at, and it has been stable for a very long time.</p>
+
+      <div class="sc-guide-data-panel sc-money-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">$</span>
+          <div><span>Monetary properties</span><h3>Six tests across five monies</h3></div>
+          <strong>Strength is multidimensional</strong>
+        </div>
+        <div class="sc-money-matrix" role="table" aria-label="The six properties and how historical monies scored">
+          <div class="sc-money-head" role="row"><span>Property</span><span>Rai stones</span><span>Glass beads</span><span>Gold</span><span>Fiat</span><span>Bitcoin</span></div>
+          <div class="sc-money-row" role="row"><strong>Durable<small>survives time</small></strong><span class="is-strong" data-label="Rai stones">Excellent</span><span class="is-mid" data-label="Glass beads">Good</span><span class="is-strong" data-label="Gold">Excellent</span><span class="is-mid" data-label="Fiat">Fair</span><span class="is-strong is-bitcoin" data-label="Bitcoin">Excellent</span></div>
+          <div class="sc-money-row" role="row"><strong>Portable<small>moves easily</small></strong><span class="is-weak" data-label="Rai stones">Very poor</span><span class="is-mid" data-label="Glass beads">Good</span><span class="is-weak" data-label="Gold">Poor in bulk</span><span class="is-mid" data-label="Fiat">Good</span><span class="is-strong is-bitcoin" data-label="Bitcoin">Excellent</span></div>
+          <div class="sc-money-row" role="row"><strong>Divisible<small>pays small sums</small></strong><span class="is-weak" data-label="Rai stones">No</span><span class="is-strong" data-label="Glass beads">Yes</span><span class="is-mid" data-label="Gold">Awkward</span><span class="is-strong" data-label="Fiat">Yes</span><span class="is-strong is-bitcoin" data-label="Bitcoin">8 decimals</span></div>
+          <div class="sc-money-row" role="row"><strong>Fungible<small>units are alike</small></strong><span class="is-weak" data-label="Rai stones">No</span><span class="is-mid" data-label="Glass beads">Roughly</span><span class="is-strong" data-label="Gold">Yes</span><span class="is-strong" data-label="Fiat">Yes</span><span class="is-mid is-bitcoin" data-label="Bitcoin">Mostly</span></div>
+          <div class="sc-money-row" role="row"><strong>Verifiable<small>you can check it</small></strong><span class="is-mid" data-label="Rai stones">By memory</span><span class="is-weak" data-label="Glass beads">Poor</span><span class="is-mid" data-label="Gold">Needs assay</span><span class="is-mid" data-label="Fiat">Fair</span><span class="is-strong is-bitcoin" data-label="Bitcoin">Any node</span></div>
+          <div class="sc-money-row" role="row"><strong>Scarce<small>nobody can make more</small></strong><span class="is-weak" data-label="Rai stones">Failed</span><span class="is-weak" data-label="Glass beads">Failed</span><span class="is-strong" data-label="Gold">Strong</span><span class="is-weak" data-label="Fiat">None</span><span class="is-strong is-bitcoin" data-label="Bitcoin">Fixed</span></div>
+        </div>
       </div>
 
-      <p><a href='sparrow-coin-control.html'>Coin control</a> is genuinely the highest-value habit available, and this table is not an argument against it &mdash; it defeats the strongest heuristic in the field. But it is a habit-level defence, and several rows here are immune to habits. That is what the next two sections are for.</p>
+      <p>The bottom row is where the two case studies landed, and they landed there for the same reason &mdash; iron tools for rai, industrial glass for beads. Gold reads "strong" rather than absolute because a higher price still funds deeper mines. Fiat has no constraint of that kind at all, only institutional restraint, which is a different sort of promise.</p>
 
-      <h2><span class="sc-article-num">6</span>Payjoin: making the strongest assumption false</h2>
+      <p>Bitcoin gets "mostly" on fungibility rather than "yes" because the ledger is public: coins carry a visible history, and that history can be read. <a href="chain-analysis-heuristics.html">How chain analysis reads your wallet</a> covers what is genuinely inferable and what it costs you.</p>
 
-      <p>Every defence so far tries to avoid <em>triggering</em> common-input-ownership. Payjoin does something more interesting: it makes the assumption produce a wrong answer.</p>
+      <p>Five of those six are engineering problems, and most candidates do reasonably well at them. The sixth is a different kind of thing entirely. Durability, portability, divisibility, <a href="../glossary.html#term-fungibility">fungibility</a> and verifiability are properties of the object. <strong><a href="../glossary.html#term-scarcity">Scarcity</a> is a property of everyone else's incentives</strong> &mdash; and it is the only one on the list that has ever actually killed a money.</p>
 
-      <p>In a payjoin, the person receiving the payment also contributes an input to it. The finished transaction spends coins belonging to two different people, so any analyst applying the strongest heuristic in the field concludes that one entity owned both &mdash; and is simply incorrect.</p>
+      <h2><span class="sc-article-num">5</span>Sound money</h2>
 
-      ${pullQuote("CoinJoin makes you one of many indistinguishable candidates. Payjoin lets an ordinary payment quietly poison the data instead.")}
+      <p><a href="../glossary.html#term-sound_money">Sound money</a> is the name for a money that keeps hold of that sixth property under pressure. The short definition: a money whose supply cannot be expanded by whoever stands to gain from expanding it.</p>
 
-      <p>It also breaks amount analysis, because the visible payment amount is no longer the amount that changed hands. And unlike a CoinJoin, a payjoin looks like a completely ordinary transaction &mdash; there is nothing conspicuous about having used one.</p>
-
-      ${checklist([
-        "<strong>The original design (BIP78)</strong> required the receiver to run a server and be online at the moment of payment, which restricted it in practice to merchants and enthusiasts.",
-        "<strong>The newer variant (BIP77)</strong>, merged in 2025, removes that requirement by routing through an untrusted directory service, so the receiver no longer needs their own always-on infrastructure.",
-        "<strong>Support is arriving but not universal.</strong> Bull Bitcoin &mdash; a Canadian exchange and wallet &mdash; and Cake Wallet are among those shipping the newer version.",
-        "<strong>Both sides must support it.</strong> This is the honest limitation: a payjoin needs a willing counterparty, so its usefulness depends on adoption rather than on your own diligence."
-      ])}
-
-      <p>The wider benefit is worth noting. Every payjoin that occurs degrades the reliability of common-input-ownership for <em>everyone</em>, including people who never use it. It is one of the few privacy measures with a positive externality.</p>
-
-      <h2><span class="sc-article-num">7</span>Silent payments: a reusable address that is not reuse</h2>
-
-      <p>Address reuse is one of the clearest signals on the list, and there is a long-standing situation that forces it: publishing a donation address, putting one in a profile, or giving a static address to somebody who pays you regularly. You cannot hand out a fresh address every time if the point is to publish one.</p>
-
-      <p>Silent payments (BIP352) resolve that. You publish one static address, and each sender derives a <em>unique, unlinkable</em> on-chain output from it. Every payment lands somewhere different, nothing on the chain connects them, and there is no address reuse to detect &mdash; while you only ever published one string.</p>
+      <p>The useful way to think about it is a ratio &mdash; how much already exists, set against how much can be produced in a year. High ratio, hard money. Low ratio, easy money.</p>
 
       ${checklist([
-        "<strong>The cost is scanning.</strong> Your wallet must check incoming blocks to find payments meant for you, which is more work than watching a list of known addresses. This is the main reason adoption has been gradual.",
-        "<strong>Support is uneven and growing.</strong> Through 2026 the underlying cryptography landed in the standard library, and wallets including Sparrow, Nunchuk, Cake Wallet, and Silentium have shipped varying degrees of support &mdash; receiving typically arriving before sending.",
-        "<strong>It solves publication, not everything.</strong> Silent payments fix the static-address problem specifically. They do not affect common-input-ownership, change detection, or fingerprinting."
+        "<strong>Gold has run hard for millennia.</strong> All the gold ever mined would fit inside a large house, and a year of global mining adds something like one and a half per cent to it. A gold rush does not double the supply; it strains the mines slightly.",
+        "<strong>Silver ran softer</strong>, which is a large part of why the world drifted onto a <a href='../glossary.html#term-gold_standard'>gold standard</a> rather than a silver one. New deposits and better smelting moved the number too much.",
+        "<strong>Beads and rai ran hard right up until the tooling changed.</strong> Neither had a fixed supply — they had an <em>expensive</em> supply. Expense is a fact about the current state of technology, and technology improves."
       ])}
 
-      <h2><span class="sc-article-num">8</span>What none of this fixes</h2>
+      <p>That is the trap, and it has no exceptions worth the name. Anything valuable enough to be used as money eventually becomes valuable enough to manufacture, and the moment manufacturing it costs less than earning it, somebody will. Not through malice &mdash; through arithmetic. The reward is simply sitting there.</p>
+
+      <p>Modern <a href="../glossary.html#term-fiat">fiat</a> currency removes the manufacturing step altogether. There is no ore, no glassworks, no voyage. Supply is a decision, and the constraint on it is institutional restraint rather than physics or cost. Restraint can hold for a long time and frequently has. It is simply a different kind of guarantee from an expensive one, and it is worth being clear about which kind you are relying on.</p>
+
+      ${figure({
+        src: "../assets/img/what-is-money-hyperinflation-notes.jpg",
+        alt: "A fan of Zimbabwean hyperinflation banknotes on a dark slate surface, the top note reading one hundred trillion dollars",
+        caption: "Every note here was legal tender. None of them failed a technical test.",
+        width: 1300,
+        height: 726
+      })}
+
+      <h2><span class="sc-article-num">6</span>Why a hard cap is the whole argument</h2>
+
+      <p>Bitcoin's answer to the sixth property is not "difficult to produce". It is <a href="../glossary.html#term-hard_cap">a hard cap</a>: <a href="../glossary.html#term-21_million">21 million</a> units, no more, ever &mdash; regardless of price, demand, effort, or how much equipment anyone points at the problem.</p>
+
+      <p>It is worth being precise about why that differs from gold rather than merely doing the same trick better.</p>
+
+      ${checklist([
+        "<strong>Gold's supply responds to price.</strong> A higher price funds deeper mines and poorer ore, so more gets produced. The response is slow and weak, which is exactly why gold held the role for so long — but the feedback loop is there.",
+        "<strong>Bitcoin's supply responds to nothing.</strong> Doubling the world's mining hardware overnight produces no extra coins: the <a href='../glossary.html#term-difficulty_adjustment'>difficulty adjustment</a> makes the puzzle harder and issuance carries on to schedule. Effort decides who receives new coins, never how many exist.",
+        "<strong>The cap is not a target somebody set.</strong> Issuance <a href='../glossary.html#term-halving'>halves</a> roughly every four years, and 21 million is what that series adds up to — the derivation is in <a href='twenty-one-million.html'>the 21 million hard cap</a>."
+      ])}
+
+      <p>Now the part that reaches you personally. <a href="../glossary.html#term-inflation">Inflation</a> is usually described as prices going up, which makes it sound like something that happens to shops. The more useful framing is dilution: your holding stays the same size while the total grows, so your share of it shrinks. Rising prices are the symptom you happen to notice.</p>
+
+      <p>Two consequences follow, and the second is the one that gets missed.</p>
+
+      ${checklist([
+        "<strong>Saving stops being a neutral act.</strong> In a diluting money, holding cash is a slow loss, so saving has to be done in something else — property, equities, whatever is currently rising. That is a real cost, and it falls hardest on the people with least access to those markets.",
+        "<strong>New money does not arrive everywhere at once.</strong> It enters at particular points and spreads outward. Whoever receives it early spends it at yesterday's prices; whoever receives it last spends it at today's. Nobody signs for that transfer, and it only runs one way."
+      ])}
+
+      <p>A hard cap does not fix an economy, and pretending otherwise is where a great deal of bitcoin writing goes off the rails. What it does is narrower and, if it holds, significant: <strong>it removes dilution as an option.</strong> Your share of the total changes when you buy more or sell some, and not otherwise. Nobody else can move it.</p>
+
+      <p>And "if it holds" is the entire question, because a supply limit written down is worth nothing &mdash; every currency that ever inflated had rules against it. Bitcoin's cap is not a promise anybody made. It is an arithmetic check performed independently by every <a href="../glossary.html#term-full_node">full node</a> on every block, and a block claiming more than the schedule allows is discarded rather than debated. That distinction is the only reason the number carries any weight, and it is why <a href="why-run-a-node.html">running a node</a> is a live question rather than a hobby.</p>
+
+      ${callout("The cap is a check, not a clause", "Nobody can raise the limit by agreement, because there is no forum in which such an agreement would bind anyone. Changing it means persuading every node operator to run software that accepts larger rewards — and the last time hashpower tried to force a rule change through, it lost. <a href='who-decides-the-rules.html'>Who decides the rules</a> is the story of how that actually plays out.")}
+
+      <h2><span class="sc-article-num">7</span>The objections worth taking seriously</h2>
+
+      <p>Sound money is an argument, not a settled fact, and an honest version of this page includes the case against.</p>
 
       ${cautions([
-        "<strong>The past is permanent.</strong> Every link already published stays published. All of this changes your future only.",
-        "<strong>Identity attaches off-chain.</strong> A verified exchange account ties your name to specific coins, and no on-chain technique reaches backwards through that.",
-        "<strong>Your wallet's server sees your queries</strong> regardless of how the transactions look. That is a <a href='own-node-connection.html'>separate problem with a separate fix</a>.",
-        "<strong>Amounts are always visible.</strong> Bitcoin's outputs are public values. Every technique here obscures ownership, not quantity."
+        "<strong>A money that appreciates may discourage spending.</strong> If your units buy more next year, the argument runs, purchases get deferred and demand stalls. The counter is that people bought computers and phones for decades while prices fell, and that <a href='../glossary.html#term-low_time_preference'>deferring consumption</a> is not self-evidently a defect. Both sides have a point; neither has a clean proof.",
+        "<strong>Debt behaves badly under deflation.</strong> Loans get repaid in units worth more than the ones borrowed, which is hard on borrowers and on any economy built around credit. That is a genuine structural problem, and a hard cap does not answer it.",
+        "<strong>Bitcoin is not yet a unit of account.</strong> Almost nobody quotes prices in it, because it moves too much. It has a strong claim as a <a href='../glossary.html#term-store_of_value'>store of value</a> and a workable one as a medium of exchange, and by its own three-part test it is currently short of the third job.",
+        "<strong>Nobody knows how mining gets paid for afterwards.</strong> The block subsidy halves toward nothing and fees must eventually carry the whole security budget. Whether that transition is comfortable is genuinely open, and anyone certain in either direction is overselling.",
+        "<strong>The cap is enforced, not guaranteed.</strong> It holds because people run software that rejects violations. That is a far stronger arrangement than a promise, but it is a social fact rather than a law of nature, and it depends on enough people continuing to check."
       ])}
 
       <h2>The short version</h2>
 
-      <p>Analysts combine roughly eight inferences, not one: shared inputs, several independent ways of spotting change, the fingerprint your wallet software leaves on every transaction, and correlations of amount and time. Coin control defeats the strongest of them and is worth doing for that reason alone, but several are immune to spending habits. Payjoin attacks the biggest heuristic directly by making it produce false answers, and silent payments remove the need to ever reuse a published address.</p>
+      <p>Money is three jobs rather than a thing: a medium of exchange, a store of value, and a unit of account. A remarkable range of objects have done all three, glass beads and multi-tonne limestone discs among them, and the ones that stopped almost always stopped the same way &mdash; somebody found a cheaper method of producing more. Sound money is the name for resisting that. A hard cap is the strongest form of the idea available, because it swaps "expensive to produce" for "impossible to produce", and it holds not because anyone promised it but because every node checks every block.</p>
 
-      ${callout("If you take one thing from this page", `Privacy on a public ledger is a question of how many weak signals point the same way, not whether you defeated one strong one. That is why habits, wallet choice, and protocol-level tools are complementary rather than alternatives — and why the honest goal is raising the cost of the inference rather than achieving anonymity.`)}`
+      ${callout("If you take one thing from this page", "Every money in this article was scarce until the cost of making another one fell. That is the failure mode, it is the only one that has ever really mattered, and a fixed cap is the first serious attempt to make it structurally impossible rather than merely expensive. Which is also why the cap is only yours if you <a href='owning-your-bitcoin.html'>hold your own keys</a> — a balance somebody else controls is a promise again, whatever it happens to be denominated in.")}`
   },
   {
     slug: "duress-and-coercion",
@@ -6193,19 +6256,20 @@ const guides = [
 
       <h2><span class="sc-article-num">6</span>Matching the measure to the risk</h2>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>What each measure is actually good for</caption>
-          <thead><tr><th scope="col">Measure</th><th scope="col">Helps against</th><th scope="col">Cost to you</th></tr></thead>
-          <tbody>
-            <tr><td>Discretion about holdings</td><td>Being selected at all</td><td>None. Do this first.</td></tr>
-            <tr><td>A funded everyday hot wallet</td><td>Opportunistic demands</td><td>The balance, occasionally</td></tr>
-            <tr><td>Decoy wallet or duress PIN</td><td>An attacker who accepts it</td><td>A performance, and a real balance</td></tr>
-            <tr><td>Login countdown or delay</td><td>Immediate transfer, credibly</td><td>Your own access is delayed too</td></tr>
-            <tr><td>Geographic multisig</td><td>Anything demanding speed</td><td>Complexity, travel, rehearsal</td></tr>
-            <tr><td>Timelocked coins</td><td>Any demand before the date</td><td>Technical skill; funds genuinely locked</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-duress-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">!</span>
+          <div><span>Match measure to threat</span><h3>Protection rises with personal cost</h3></div>
+          <strong>Begin with discretion</strong>
+        </div>
+        <div class="sc-duress-ladder">
+          <article class="is-green"><span class="sc-duress-rank">01</span><h3>Discretion about holdings</h3><p><span>Helps against</span>Being selected at all</p><p><span>Cost to you</span>None. Do this first.</p></article>
+          <article class="is-cream"><span class="sc-duress-rank">02</span><h3>A funded everyday hot wallet</h3><p><span>Helps against</span>Opportunistic demands</p><p><span>Cost to you</span>The balance, occasionally</p></article>
+          <article class="is-orange"><span class="sc-duress-rank">03</span><h3>Decoy wallet or duress PIN</h3><p><span>Helps against</span>An attacker who accepts it</p><p><span>Cost to you</span>A performance, and a real balance</p></article>
+          <article class="is-orange"><span class="sc-duress-rank">04</span><h3>Login countdown or delay</h3><p><span>Helps against</span>Immediate transfer, credibly</p><p><span>Cost to you</span>Your own access is delayed too</p></article>
+          <article class="is-red"><span class="sc-duress-rank">05</span><h3>Geographic multisig</h3><p><span>Helps against</span>Anything demanding speed</p><p><span>Cost to you</span>Complexity, travel, rehearsal</p></article>
+          <article class="is-red"><span class="sc-duress-rank">06</span><h3>Timelocked coins</h3><p><span>Helps against</span>Any demand before the date</p><p><span>Cost to you</span>Technical skill; funds genuinely locked</p></article>
+        </div>
       </div>
 
       <p>Read that top row as the recommendation. Almost everybody should do the first two and stop, and the remainder is for people with a specific, identified reason.</p>
@@ -6641,17 +6705,18 @@ const guides = [
 
       <p>Bitcoin has added address formats over time, always without removing the old ones. All four remain valid and spendable today.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>Address formats in current use</caption>
-          <thead><tr><th scope="col">Starts with</th><th scope="col">Name</th><th scope="col">Arrived</th><th scope="col">Notes</th></tr></thead>
-          <tbody>
-            <tr><td><strong>1</strong></td><td>Legacy (P2PKH)</td><td>2009</td><td>Universally accepted, and the most expensive to spend.</td></tr>
-            <tr><td><strong>3</strong></td><td>Script hash (P2SH)</td><td>2012</td><td>Multisig, and SegWit wrapped for compatibility.</td></tr>
-            <tr><td><strong>bc1q</strong></td><td>SegWit (bech32)</td><td>2017</td><td>The common default. Cheaper to spend, error-detecting.</td></tr>
-            <tr><td><strong>bc1p</strong></td><td>Taproot (bech32m)</td><td>2021</td><td>Cheapest for simple spends, and hides complex conditions.</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-address-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">bc1</span>
+          <div><span>Address evolution</span><h3>Four generations, all still valid</h3></div>
+          <strong>2009 &rarr; 2021</strong>
+        </div>
+        <div class="sc-address-timeline">
+          <article class="is-red"><div><strong>1</strong><span>2009</span></div><h3>Legacy <small>P2PKH</small></h3><p>Universally accepted, and the most expensive to spend.</p></article>
+          <article class="is-cream"><div><strong>3</strong><span>2012</span></div><h3>Script hash <small>P2SH</small></h3><p>Multisig, and SegWit wrapped for compatibility.</p></article>
+          <article class="is-orange"><div><strong>bc1q</strong><span>2017</span></div><h3>SegWit <small>bech32</small></h3><p>The common default. Cheaper to spend and error-detecting.</p></article>
+          <article class="is-green"><div><strong>bc1p</strong><span>2021</span></div><h3>Taproot <small>bech32m</small></h3><p>Cheapest for simple spends, and hides complex conditions.</p></article>
+        </div>
       </div>
 
       <p>A wallet that hands you a bc1q address is not a different kind of wallet from one handing you a 1 address. Very often it is the same seed, on the same device, walking a different branch of the same tree &mdash; which is precisely the mechanism described in <a href='how-wallets-find-coins.html'>how a wallet finds your coins</a>.</p>
@@ -6831,7 +6896,7 @@ const guides = [
     slug: "twenty-one-million",
     category: "concepts",
     products: [],
-    title: "Where 21 million comes from",
+    title: "The 21 million hard cap",
     summary: "The number is not a policy anyone chose to announce and cannot be raised by agreement. It falls out of a halving schedule, and it holds because every node independently refuses to accept a block that breaks it.",
     level: "intermediate",
     minutes: 15,
@@ -6853,19 +6918,20 @@ const guides = [
 
       <p>The amount is not fixed. It began at 50 bitcoin per block and <strong>halves every 210,000 blocks</strong>, which at ten minutes a block works out to roughly every four years. Everything else follows from those two numbers.</p>
 
-      <div class="sc-table-wrap">
-        <table class="sc-table">
-          <caption>The issuance schedule so far</caption>
-          <thead><tr><th scope="col">Era</th><th scope="col">Per block</th><th scope="col">Created in the era</th></tr></thead>
-          <tbody>
-            <tr><td>2009&ndash;2012</td><td>50 BTC</td><td>10,500,000</td></tr>
-            <tr><td>2012&ndash;2016</td><td>25 BTC</td><td>5,250,000</td></tr>
-            <tr><td>2016&ndash;2020</td><td>12.5 BTC</td><td>2,625,000</td></tr>
-            <tr><td>2020&ndash;2024</td><td>6.25 BTC</td><td>1,312,500</td></tr>
-            <tr><td>2024&ndash;2028</td><td>3.125 BTC</td><td>656,250</td></tr>
-            <tr><td>&hellip;and so on</td><td>halving each era</td><td>halving each era</td></tr>
-          </tbody>
-        </table>
+      <div class="sc-guide-data-panel sc-halving-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">&frac12;</span>
+          <div><span>Issuance schedule</span><h3>The reward staircase toward zero</h3></div>
+          <strong>Every 210,000 blocks</strong>
+        </div>
+        <div class="sc-halving-chart" role="img" aria-label="Bitcoin block reward halves in each four-year era">
+          <article style="--halving-scale:1"><span>2009&ndash;2012</span><div><i></i><strong>50 BTC</strong></div><p><small>Created</small>10,500,000</p></article>
+          <article style="--halving-scale:.5"><span>2012&ndash;2016</span><div><i></i><strong>25 BTC</strong></div><p><small>Created</small>5,250,000</p></article>
+          <article style="--halving-scale:.25"><span>2016&ndash;2020</span><div><i></i><strong>12.5 BTC</strong></div><p><small>Created</small>2,625,000</p></article>
+          <article style="--halving-scale:.125"><span>2020&ndash;2024</span><div><i></i><strong>6.25 BTC</strong></div><p><small>Created</small>1,312,500</p></article>
+          <article style="--halving-scale:.0625"><span>2024&ndash;2028</span><div><i></i><strong>3.125 BTC</strong></div><p><small>Created</small>656,250</p></article>
+          <article class="is-future"><span>&hellip;and so on</span><div><i></i><strong>Halving each era</strong></div><p><small>Created</small>Halving each era</p></article>
+        </div>
       </div>
 
       <h2><span class="sc-article-num">2</span>Where the number falls out</h2>
@@ -7191,6 +7257,147 @@ const guides = [
 
       ${callout("If you take one thing from this page", "You cannot make the ledger forget. Everything you do adds to a permanent public record that will be analysed with better tools than exist today. That argues for building good habits now rather than hoping to clean up later — because there is no later, and there is no cleaning up.")}`
   },
+  /* Rescoped from "Coin control and on-chain privacy", which duplicated
+     sparrow-coin-control almost exactly -- that guide already covers linking,
+     labelling, input selection, and consolidation. What was genuinely missing
+     was the analyst's side: the heuristics past the obvious two, and the
+     protocol-level defences (payjoin, silent payments) that are not coin
+     control at all. Sits in concepts beside bitcoin-privacy, which it extends. */
+  {
+    slug: "chain-analysis-heuristics",
+    category: "concepts",
+    products: [],
+    title: "How chain analysis reads your wallet",
+    summary: "Everyone knows spending two coins together links them. That is one of about eight inferences an analyst makes, and your wallet software has an accent that identifies it. Plus the two defences that work at the protocol level rather than the habit level.",
+    level: "advanced",
+    minutes: 35,
+    goals: ["learn", "harden", "privacy"],
+    tags: ["Privacy", "UTXO"],
+    icon: "bi-pie-chart",
+    updated: "2026-08-18",
+    status: "published",
+    related: ["bitcoin-privacy", "sparrow-coin-control", "wasabi-coinjoin-basics"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Chain analysis is not surveillance in the usual sense. Nobody is watching you. It is a set of assumptions applied at scale to a public ledger, and each assumption is individually unremarkable &mdash; the kind of reasoning you would do yourself if handed the data.</p>
+
+      <p>Most people who care about privacy know two of them. <a href='bitcoin-privacy.html'>The privacy guide</a> walks through both: coins spent together share an owner, and the round output is the payment while the awkward one is change. Those two do an enormous amount of work.</p>
+
+      <p>They are not the whole toolkit. This page covers the rest &mdash; the change-detection tricks past the obvious one, the way your software signs its own name on every transaction, and the two newer defences that operate at the protocol level rather than relying on you to have good habits.</p>
+
+      <h2><span class="sc-article-num">1</span>The two you have already met</h2>
+
+      <p>Briefly, so the rest has somewhere to stand.</p>
+
+      ${checklist([
+        "<strong>Common-input-ownership.</strong> If a transaction spends several coins, one entity controlled all of them. This is the single strongest signal in the field, and it is right the overwhelming majority of the time.",
+        "<strong>Change identification by roundness.</strong> Pay someone 0.05 BTC from a 0.31 BTC coin and the outputs are a round number and a remainder. Payments are round; change is whatever is left."
+      ])}
+
+      <p>An analyst who has identified your change can follow it into your next transaction, and the next, indefinitely. That is why change detection matters so much: it is what turns isolated transactions into a chain.</p>
+
+      <h2><span class="sc-article-num">2</span>The other ways change gets spotted</h2>
+
+      <p>Roundness is the famous one. When it does not apply, several others usually do.</p>
+
+      ${checklist([
+        "<strong>Script-type matching.</strong> If a transaction spends from a native SegWit address and produces one native SegWit output and one legacy output, the matching one is almost certainly change &mdash; your wallet makes change in its own format, while you pay whatever the recipient asked for.",
+        "<strong>Address reuse.</strong> If one output goes to an address that has been seen before and the other is fresh, the fresh one is the change. Reused addresses are almost never change, because wallets generate a new one every time.",
+        "<strong>The unnecessary input.</strong> If a transaction includes more inputs than the payment required, the surplus was needed to cover a larger output &mdash; which tells the analyst which output was the large one.",
+        "<strong>The self-transfer shape.</strong> A single input producing a single output, or two outputs that both look like change, is usually somebody moving their own coins rather than paying anyone."
+      ])}
+
+      ${callout("Why several weak signals beat one strong one", "No single heuristic here is reliable alone, and analysts do not use them alone. They apply all of them, score the result, and act on the aggregate. A transaction that defeats one heuristic while satisfying three others has not been made private — it has been made slightly more interesting.")}
+
+      <h2><span class="sc-article-num">3</span>Your wallet has an accent</h2>
+
+      <p>This is the layer most people have never considered, and it requires nothing from you to leak.</p>
+
+      <p>Bitcoin's rules leave several choices to whoever builds the transaction, and different wallet software makes those choices differently. The resulting pattern is consistent enough to identify which software produced a transaction &mdash; a technique usually called wallet fingerprinting.</p>
+
+      ${checklist([
+        "<strong>The locktime field.</strong> Some wallets set it to the current block height to discourage fee sniping; many leave it at zero. That choice alone splits the population.",
+        "<strong>Transaction version number.</strong> Wallets differ, and they differ consistently.",
+        "<strong>Input and output ordering.</strong> Some sort deterministically, some shuffle randomly, some preserve the order they built in.",
+        "<strong>Replace-by-fee signalling.</strong> Whether the transaction is marked replaceable is a per-wallet default more than a per-user decision.",
+        "<strong>Change output position.</strong> Always last, always first, or randomised &mdash; another consistent per-wallet habit."
+      ])}
+
+      <p>The consequence is subtle but real. If your wallet's fingerprint appears on both sides of a transaction &mdash; on the spending side and on one of the outputs &mdash; that output is probably yours. Fingerprinting is a change-detection heuristic wearing a different hat, and no amount of careful coin selection affects it.</p>
+
+      <h2><span class="sc-article-num">4</span>Amounts and timing</h2>
+
+      ${checklist([
+        "<strong>Amount correlation.</strong> A withdrawal of an unusual amount leaving an exchange and an arrival of nearly that amount elsewhere, minus a plausible fee, is a link even with no shared inputs.",
+        "<strong>Timing.</strong> Transactions that consistently appear during one part of the day describe a time zone, and eventually a routine.",
+        "<strong>Fee-rate habits.</strong> Always paying the same wallet's default at the same urgency setting is one more consistent signature."
+      ])}
+
+      <h2><span class="sc-article-num">5</span>What coin control actually defeats</h2>
+
+      <p>Now the practical question: which of these does careful spending address?</p>
+
+      <div class="sc-guide-data-panel sc-heuristics-panel">
+        <div class="sc-guide-data-heading">
+          <span class="sc-guide-data-mark">CC</span>
+          <div><span>Coin-control coverage</span><h3>What input choice can actually fix</h3></div>
+          <strong>Two yes, two partly, three no</strong>
+        </div>
+        <div class="sc-heuristics-grid">
+          <section class="is-yes"><h3><span>Yes</span> Directly helps</h3><article><strong>Common-input-ownership</strong><p>This is exactly what choosing inputs prevents.</p></article><article><strong>Address reuse</strong><p>Never reuse, and this one disappears.</p></article></section>
+          <section class="is-partly"><h3><span>Partly</span> Reduces the signal</h3><article><strong>Change by roundness</strong><p>Spend a coin close to the payment amount.</p></article><article><strong>Unnecessary input</strong><p>Use fewer, better-sized inputs.</p></article></section>
+          <section class="is-no"><h3><span>No</span> Needs another defence</h3><article><strong>Script-type matching</strong><p>A wallet setting, not a spending choice.</p></article><article><strong>Wallet fingerprinting</strong><p>Entirely outside your spending decisions.</p></article><article><strong>Amount and timing correlation</strong><p>Input choice does not remove it.</p></article></section>
+        </div>
+      </div>
+
+      <p><a href='sparrow-coin-control.html'>Coin control</a> is genuinely the highest-value habit available, and this table is not an argument against it &mdash; it defeats the strongest heuristic in the field. But it is a habit-level defence, and several rows here are immune to habits. That is what the next two sections are for.</p>
+
+      <h2><span class="sc-article-num">6</span>Payjoin: making the strongest assumption false</h2>
+
+      <p>Every defence so far tries to avoid <em>triggering</em> common-input-ownership. Payjoin does something more interesting: it makes the assumption produce a wrong answer.</p>
+
+      <p>In a payjoin, the person receiving the payment also contributes an input to it. The finished transaction spends coins belonging to two different people, so any analyst applying the strongest heuristic in the field concludes that one entity owned both &mdash; and is simply incorrect.</p>
+
+      ${pullQuote("CoinJoin makes you one of many indistinguishable candidates. Payjoin lets an ordinary payment quietly poison the data instead.")}
+
+      <p>It also breaks amount analysis, because the visible payment amount is no longer the amount that changed hands. And unlike a CoinJoin, a payjoin looks like a completely ordinary transaction &mdash; there is nothing conspicuous about having used one.</p>
+
+      ${checklist([
+        "<strong>The original design (BIP78)</strong> required the receiver to run a server and be online at the moment of payment, which restricted it in practice to merchants and enthusiasts.",
+        "<strong>The newer variant (BIP77)</strong>, merged in 2025, removes that requirement by routing through an untrusted directory service, so the receiver no longer needs their own always-on infrastructure.",
+        "<strong>Support is arriving but not universal.</strong> Bull Bitcoin &mdash; a Canadian exchange and wallet &mdash; and Cake Wallet are among those shipping the newer version.",
+        "<strong>Both sides must support it.</strong> This is the honest limitation: a payjoin needs a willing counterparty, so its usefulness depends on adoption rather than on your own diligence."
+      ])}
+
+      <p>The wider benefit is worth noting. Every payjoin that occurs degrades the reliability of common-input-ownership for <em>everyone</em>, including people who never use it. It is one of the few privacy measures with a positive externality.</p>
+
+      <h2><span class="sc-article-num">7</span>Silent payments: a reusable address that is not reuse</h2>
+
+      <p>Address reuse is one of the clearest signals on the list, and there is a long-standing situation that forces it: publishing a donation address, putting one in a profile, or giving a static address to somebody who pays you regularly. You cannot hand out a fresh address every time if the point is to publish one.</p>
+
+      <p>Silent payments (BIP352) resolve that. You publish one static address, and each sender derives a <em>unique, unlinkable</em> on-chain output from it. Every payment lands somewhere different, nothing on the chain connects them, and there is no address reuse to detect &mdash; while you only ever published one string.</p>
+
+      ${checklist([
+        "<strong>The cost is scanning.</strong> Your wallet must check incoming blocks to find payments meant for you, which is more work than watching a list of known addresses. This is the main reason adoption has been gradual.",
+        "<strong>Support is uneven and growing.</strong> Through 2026 the underlying cryptography landed in the standard library, and wallets including Sparrow, Nunchuk, Cake Wallet, and Silentium have shipped varying degrees of support &mdash; receiving typically arriving before sending.",
+        "<strong>It solves publication, not everything.</strong> Silent payments fix the static-address problem specifically. They do not affect common-input-ownership, change detection, or fingerprinting."
+      ])}
+
+      <h2><span class="sc-article-num">8</span>What none of this fixes</h2>
+
+      ${cautions([
+        "<strong>The past is permanent.</strong> Every link already published stays published. All of this changes your future only.",
+        "<strong>Identity attaches off-chain.</strong> A verified exchange account ties your name to specific coins, and no on-chain technique reaches backwards through that.",
+        "<strong>Your wallet's server sees your queries</strong> regardless of how the transactions look. That is a <a href='own-node-connection.html'>separate problem with a separate fix</a>.",
+        "<strong>Amounts are always visible.</strong> Bitcoin's outputs are public values. Every technique here obscures ownership, not quantity."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>Analysts combine roughly eight inferences, not one: shared inputs, several independent ways of spotting change, the fingerprint your wallet software leaves on every transaction, and correlations of amount and time. Coin control defeats the strongest of them and is worth doing for that reason alone, but several are immune to spending habits. Payjoin attacks the biggest heuristic directly by making it produce false answers, and silent payments remove the need to ever reuse a published address.</p>
+
+      ${callout("If you take one thing from this page", `Privacy on a public ledger is a question of how many weak signals point the same way, not whether you defeated one strong one. That is why habits, wallet choice, and protocol-level tools are complementary rather than alternatives — and why the honest goal is raising the cost of the inference rather than achieving anonymity.`)}`
+  },
   {
     slug: "scripts-and-miniscript",
     category: "concepts",
@@ -7486,7 +7693,10 @@ const glossaryTagIds = new Map([
   ["sim swap", "sim_swap"],
   ["threat model", "threat_model"],
   ["watch-only", "watch_only_wallet"],
-  ["duress", "wrench_attack"]
+  ["duress", "wrench_attack"],
+  ["sound money", "sound_money"],
+  ["hard cap", "hard_cap"],
+  ["scarcity", "scarcity"]
 ]);
 
 const renderGlossaryTag = (label, base = "", extraClass = "") => {
@@ -7535,6 +7745,24 @@ const formatUpdated = iso => {
   return `${month} ${d}, ${y}`;
 };
 
+/* Collapses a set of review dates into one phrase for a section heading.
+   Same day reads as a single date; a spread inside one month keeps the month
+   once ("Aug 17-18, 2026"); anything wider spells both ends out. Published
+   guides only -- a planned one has nothing to review yet. */
+const formatUpdatedRange = guides => {
+  const dates = guides.map(g => g.updated).filter(Boolean).sort();
+  if (!dates.length) return "";
+  const [lo, hi] = [dates[0], dates[dates.length - 1]];
+  if (lo === hi) return formatUpdated(lo);
+  const [loY, loM, loD] = lo.split("-").map(Number);
+  const [hiY, hiM] = hi.split("-").map(Number);
+  if (loY === hiY && loM === hiM) {
+    const month = formatUpdated(lo).split(" ")[0];
+    return `${month} ${loD}&ndash;${hi.split("-").map(Number)[2]}, ${loY}`;
+  }
+  return `${formatUpdated(lo)} &ndash; ${formatUpdated(hi)}`;
+};
+
 /* ---- hub rendering ------------------------------------------------------ */
 
 const guideCard = guide => {
@@ -7543,10 +7771,11 @@ const guideCard = guide => {
   const cardTitle = guide.category === "devices"
     ? guide.title.replace(/:\s*first-time setup$/i, "")
     : guide.title;
-  const meta = [
-    `<span><i class="bi bi-hourglass-split" aria-hidden="true"></i> ${guide.minutes} min</span>`,
-    planned ? "" : `<span>Updated ${formatUpdated(guide.updated)}</span>`
-  ].filter(Boolean).join("");
+  /* Just the reading time. The review date used to sit here too, which forced
+     "Read guide" onto a line of its own underneath and made every card taller
+     for a per-guide fact the guide's own header already carries -- the hub
+     states the range once per section instead. */
+  const meta = `<span><i class="bi bi-hourglass-split" aria-hidden="true"></i> ${guide.minutes} min</span>`;
   const cardProduct = ["devices", "software"].includes(guide.category)
     ? guide.products.map(key => productByKey.get(key)).find(product => product?.image)
     : null;
@@ -7566,10 +7795,12 @@ const guideCard = guide => {
       <h3>${cardTitle}</h3>
       <p>${guide.summary}</p>
       <div class="sc-tags">${guide.tags.map(t => renderGlossaryTag(t)).join("")}</div>
-      <p class="sc-guide-card-meta">${meta}</p>
-      ${planned
-        ? `<span class="sc-guide-card-soon">Being written</span>`
-        : `<span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>`}
+      <div class="sc-guide-card-foot">
+        <p class="sc-guide-card-meta">${meta}</p>
+        ${planned
+          ? `<span class="sc-guide-card-soon">Being written</span>`
+          : `<span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>`}
+      </div>
     </div>`;
 
   /* data-* attributes are the entire filter contract with site-refresh.js.
@@ -7669,11 +7900,20 @@ const renderGuideFinder = () => {
 };
 
 const renderGuideSections = () => guideCategories.map((cat, index) => {
-  const cards = listed
-    .filter(g => g.category === cat.key)
+  const inCategory = listed.filter(g => g.category === cat.key);
+  const cards = inCategory
+    .slice()
     .sort((a, b) => (a.hubOrder ?? 0) - (b.hubOrder ?? 0))
     .map(guideCard)
     .join("");
+  /* Stated once for the whole section rather than on every card. The filter
+     hides cards without touching this line, so it describes the section as
+     published, not whatever subset is on screen -- hence "these guides" and a
+     range, not a count. */
+  const reviewed = formatUpdatedRange(inCategory.filter(g => g.status === "published"));
+  const reviewedNote = reviewed
+    ? `<p class="sc-section-reviewed"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> These guides were last reviewed ${reviewed}</p>`
+    : "";
   const compare = cat.compare
     ? `<p class="sc-section-head-aside"><a class="sc-text-link" href="${cat.compare[1]}">${cat.compare[0]} <i class="bi bi-arrow-right"></i></a></p>`
     : "";
@@ -7685,6 +7925,7 @@ const renderGuideSections = () => guideCategories.map((cat, index) => {
           <span class="sc-eyebrow">${cat.eyebrow}</span>
           <h2>${cat.heading}</h2>
           <p>${cat.blurb}</p>
+          ${reviewedNote}
           ${compare}
         </div>
         <div class="row g-4">${cards}</div>

@@ -266,7 +266,7 @@ const currentYear = new Date().getFullYear();
           "A wealth of knowledge,<br><em>at your fingertips.</em>",
           "Setup walkthroughs for every device and wallet, withdrawal guides for Canadian platforms, and advanced material worth a read.",
           `<a class="sc-btn sc-btn-primary" href="#finder">Find my guide</a>
-           <a class="sc-btn sc-btn-ghost" href="guides/complete-path.html">Start here</a>`,
+           <a class="sc-btn sc-btn-ghost" href="guides/complete-path.html">Quickstart</a>`,
           {
             src: "assets/img/guides-library-hero.jpg",
             alt: "",
@@ -299,15 +299,15 @@ const currentYear = new Date().getFullYear();
       description: "Compare current Bitcoin hardware wallets and signing devices by security model, connectivity, usability, openness, and ideal use case.",
       content: `
         ${hero(
-          "Hardware wallets and signers",
-          `There's many paths<br><em><span class="sc-hero-flip" aria-live="polite" data-flip-phrases='["to sovereignty.","to self custody.","to financial freedom.","to cold storage.","to peace of mind."]'><span class="sc-hero-flip-item is-active">to sovereignty.</span></span></em>`,
+          "Hardware signers",
+          `The many paths<br><em><span class="sc-hero-flip" aria-live="polite" data-flip-phrases='["to sovereignty.","to self custody.","to financial freedom.","to cold storage.","to peace of mind."]'><span class="sc-hero-flip-item is-active">to sovereignty.</span></span></em>`,
           "Compare the security model, transaction-review experience, backup method, connectivity, and learning curve—not just a feature count.",
           `<a class="sc-btn sc-btn-primary" href="#compare">Compare devices</a>`,
           {
-            src: "assets/img/signing-device-circuit.jpeg",
-            alt: "Close-up view of components on a circuit board",
-            width: 2268,
-            height: 1500
+            src: "assets/img/devices-hero.jpg",
+            width: 1584,
+            height: 672,
+            background: true
           }
         )}
 
@@ -838,7 +838,7 @@ const currentYear = new Date().getFullYear();
 
         <section class="sc-section">
           <div class="container">
-            <div class="sc-section-head"><span class="sc-eyebrow">Seven featured wallets</span><h2>Match software to the job</h2><p>Shortlisted for strong hardware-wallet support—each one pairs with most signing devices, not just one brand. Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
+            <div class="sc-section-head"><span class="sc-eyebrow">Featured wallets</span><h2>Match software to the job</h2><p>Shortlisted for strong hardware-wallet support—each one pairs with most signing devices, not just one brand. Download only from the official project website. Verify signatures or release hashes where the project documents a verification process.</p></div>
             <div class="row g-4 sc-path-options sc-software-card-grid">
               ${softwareCard("assets/img/software/sparrow.png", "Sparrow Wallet", "Desktop Bitcoin wallet with excellent PSBT, hardware, multisig, coin control, labeling, Tor, and personal-node support.", "#sparrow", "Read notes")}
               ${softwareCard("assets/img/software/nunchuk.png", "Nunchuk", "Mobile and desktop wallet focused on multisig, shared wallets, hardware keys, recovery planning, and optional inheritance services.", "#nunchuk", "Read notes")}
@@ -1067,16 +1067,21 @@ const currentYear = new Date().getFullYear();
       description: "Compare Canadian bitcoin purchase routes by custody model, CAD funding, trading tools, withdrawal workflow, and fit for self-custody.",
       content: `
         ${hero(
-          "Canadian purchase routes",
-          "Buying is one step.<br><em>Withdrawing is the custody decision.</em>",
-          "Compare brokers and exchanges by what happens after the purchase: where bitcoin sits, how it reaches your wallet, what the full cost includes, and which records you need to keep.",
-          `<a class="sc-btn sc-btn-primary" href="#exchange-compare">Compare platforms</a>
-           <a class="sc-btn sc-btn-ghost" href="guides/exchange-withdrawal.html">Withdrawal guide</a>`
+          "Canadian exchanges",
+          `From <span class="sc-outlined-word sc-hero-fiat" data-text="FIAT"><span class="sc-word-fill">FIAT</span></span> IOUs<br><em>to true <span class="sc-outlined-word sc-hero-command-destination" data-text="BITCOIN"><span class="sc-word-fill">BITCOIN</span></span> ownership.</em>`,
+          "Compare Canadian exchanges by rates, spreads, fees, custody models, and withdrawal options before taking control of your money.",
+          `<a class="sc-btn sc-btn-primary" href="#exchange-compare">Compare exchanges</a>
+           <a class="sc-btn sc-btn-ghost" href="guides/exchange-withdrawal.html">Withdrawal guide</a>`,
+          {
+            src: "assets/img/exchanges-hero.jpg",
+            width: 1584,
+            height: 672,
+            background: true
+          }
         )}
 
-        <section class="sc-section">
+        <section class="sc-section sc-section-dark">
           <div class="container">
-            <div class="sc-callout mb-5"><h2>Prices and fees are intentionally not ranked here</h2><p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p></div>
             <div class="sc-section-head"><span class="sc-eyebrow">Two models</span><h2>Direct-to-wallet versus custodial platform</h2></div>
             <div class="row g-4 sc-path-options sc-exchange-models">
               <div class="col-lg-6"><a class="sc-card sc-path-card-link" href="#exchange-compare"><div class="sc-card-body"><div class="sc-icon"><i class="bi bi-arrow-right-circle"></i></div><h3>Direct-to-wallet broker</h3><p>You provide a wallet address and purchased bitcoin settles to that address. This reduces time held by the service but requires you to have a tested wallet first.</p><p><strong>Examples:</strong> Bull Bitcoin and Bitcoin Well describe direct self-custody purchase flows.</p><span class="sc-text-link">See comparison <i class="bi bi-arrow-right"></i></span></div></a></div>
@@ -1085,7 +1090,7 @@ const currentYear = new Date().getFullYear();
           </div>
         </section>
 
-        <section id="exchange-compare" class="sc-section sc-section-muted">
+        <section id="exchange-compare" class="sc-section">
           <div class="container">
             <div class="sc-section-head"><span class="sc-eyebrow">Comparison</span><h2>Choose based on the workflow you need</h2></div>
             <div class="sc-matrix-legend" aria-label="Comparison legend">
@@ -1196,10 +1201,21 @@ const currentYear = new Date().getFullYear();
                 </tbody>
               </table>
             </div>
-            <div class="sc-callout mt-5">
-              <h3>Once you choose a platform</h3>
-              <p>Secure the account before funding it, then move purchased bitcoin to a wallet you control. Start with <a href="guides/exchange-account-security.html">locking down the exchange account</a>, followed by the <a href="guides/exchange-withdrawal.html">step-by-step withdrawal guide</a>.</p>
-            </div>
+            <aside class="sc-exchange-live-note mt-5" aria-labelledby="exchange-live-note-title">
+              <div class="sc-exchange-live-signal" aria-hidden="true">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>Live variables</span>
+                <small>Changes often</small>
+              </div>
+              <div class="sc-exchange-live-copy">
+                <span class="sc-exchange-live-eyebrow">A fair comparison needs current numbers</span>
+                <h2 id="exchange-live-note-title">Prices and fees are intentionally not ranked here</h2>
+                <p>Spreads, trading fees, funding fees, withdrawal charges, network fees, limits, supported assets, and provincial availability change. Check the platform's current quote and fee page before transacting.</p>
+                <div class="sc-exchange-live-markers" aria-hidden="true">
+                  <span class="is-orange">Spreads</span><span class="is-cream">Fees</span><span class="is-green">Limits</span><span class="is-red">Availability</span>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
 
@@ -1219,7 +1235,6 @@ const currentYear = new Date().getFullYear();
               <div class="col-lg-6"><article id="bitbuy" class="sc-detail is-custodial h-100"><div class="sc-exchange-brand"><img src="assets/img/exchanges/bitbuy.png" alt="" width="48" height="48" loading="lazy"><h2>Bitbuy</h2></div><p>A Canadian crypto marketplace offering Express and Pro trading, Interac and bank funding, external withdrawals, and multiple assets. It operates under Coinsquare Capital Markets.</p><h3>Why people consider it</h3><ul class="sc-check-list"><li>Canadian-focused onboarding and regulation.</li><li>Choice between simple quotes and a Pro interface.</li></ul><h3>Check</h3><ul class="sc-caution-list"><li>Express quotes include spread; Pro uses maker/taker pricing.</li><li>Crypto withdrawal fees can change with the asset and network.</li></ul>${externalLink("https://bitbuy.ca/en-ca/fees")}</article></div>
             </div>
 
-            <div class="sc-callout mt-5"><h3>Canadian recordkeeping</h3><p>Keep trade confirmations, CAD funding records, withdrawal transaction IDs, wallet labels, and the CAD value at acquisition and disposal. This site does not provide tax advice; use CRA guidance or a qualified Canadian tax professional for your situation.</p></div>
             ${sourceNote([
               ["Bull Bitcoin", "https://www.bullbitcoin.com/buy"],
               ["Bitcoin Well", "https://bitcoinwell.com/about"],
@@ -1228,6 +1243,17 @@ const currentYear = new Date().getFullYear();
               ["Kraken Canada", "https://www.kraken.com/ca/lp/kraken-in-canada"],
               ["Bitbuy", "https://bitbuy.ca/en-ca/fees"]
             ])}
+            <aside class="sc-exchange-next-step" aria-labelledby="exchange-next-step-title">
+              <div class="sc-exchange-next-copy">
+                <span class="sc-eyebrow">Next step</span>
+                <h2 id="exchange-next-step-title">It isn't yours until you move it.</h2>
+                <p>Bitcoin left on a platform is another IOU. The withdrawal guide walks the transfer, address check, and test send, step by step.</p>
+              </div>
+              <div class="sc-hero-actions sc-exchange-next-cta">
+                <a class="sc-btn sc-btn-primary" href="guides/exchange-withdrawal.html">Take custody <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+              </div>
+              <p class="sc-exchange-tax-note"><span class="sc-exchange-tax-icon" aria-hidden="true">i</span><span>This site does not provide tax advice; use CRA guidance or a qualified Canadian tax professional for your situation.</span></p>
+            </aside>
           </div>
         </section>`
     },
