@@ -985,13 +985,9 @@ body[data-page="home"] .sc-sequence-section {
    moves focus off the card at all. :has(:focus-visible) still lights it for
    keyboard arrival, which is the case the affordance is actually for, and
    ignores the mouse. */
-.sc-path-options .sc-card:hover,
 .sc-path-options .sc-card:has(:focus-visible),
-.sc-card.sc-guide-card:hover,
 .sc-card.sc-guide-card:has(:focus-visible),
-.sc-dash-tile:hover,
 .sc-dash-tile:has(:focus-visible),
-.sc-block:hover,
 .sc-block:focus-visible {
   border-color: rgba(255, 237, 184, 0.88);
   box-shadow:
@@ -1002,8 +998,49 @@ body[data-page="home"] .sc-sequence-section {
     inset 0 0 20px rgba(255, 244, 211, 0.045);
   /* .sc-card:hover also offers a transform lift; without this the two stack */
   transform: none;
+  /* Lift with `translate` only -- deliberately no `scale`. A fractional scale
+     (the old 1.012) rasterizes the 1px translucent border at a non-integer
+     size on the hover's compositing layer, then repaints it when the layer is
+     released, which shows as a brief border blink. Keyboard focus builds the
+     same layer as hover, so this half has to drop it too. */
   translate: 0 -10px;
-  scale: 1.012;
+}
+
+/* The hover half of the treatment above, split out and gated. Every card here
+   is or wraps a link, and a touch browser latches :hover onto the last-tapped
+   element and holds it until you tap something else. The block cards make it
+   worst -- they open mempool.space in a new tab, so you return to a card still
+   lit and lifted with nothing on the page to release it -- but the guide,
+   path and tile grids all strand the same way after a tap that navigates.
+
+   There is nothing still running to settle: the glow and the -10px ARE the
+   resting state of a :hover that never ends, so no transition, delay or
+   animation-end rule can clear it. Only JS clearing state on touchend could,
+   and that is a patch on a state that should not exist on a device with no
+   pointer.
+
+   The :focus-visible and :has(:focus-visible) halves stay ungated above and
+   still light a card on keyboard arrival, which is the case this treatment is
+   actually for. Same declarations either side, so keep the two in step. */
+@media (hover: hover) {
+  .sc-path-options .sc-card:hover,
+  .sc-card.sc-guide-card:hover,
+  .sc-dash-tile:hover,
+  .sc-block:hover {
+    border-color: rgba(255, 237, 184, 0.88);
+    box-shadow:
+      0 22px 50px rgba(0, 0, 0, 0.38),
+      0 0 16px rgba(255, 255, 255, 0.34),
+      0 0 42px rgba(255, 231, 166, 0.38),
+      0 0 76px rgba(255, 215, 112, 0.18),
+      inset 0 0 20px rgba(255, 244, 211, 0.045);
+    transform: none;
+    /* No `scale` here either -- see the focus-visible half above. This was
+       the per-grid fix on the homepage and exchange grids; dropping it at
+       source covers the guide cards, dashboard tiles and block strip too,
+       and means new grids joining this selector inherit the fix. */
+    translate: 0 -10px;
+  }
 }
 
 @media (min-width: 992px) {
@@ -2182,10 +2219,19 @@ body[data-page="guides"] .sc-section-dark {
   transition: 0.22s ease;
 }
 
-.sc-card:hover {
-  border-color: rgba(255, 138, 0, 0.55);
-  box-shadow: var(--sc-shadow);
-  transform: translateY(-5px);
+/* Gated: this is the base lift every card on the site inherits, and on touch a
+   tap latches it exactly as it does on the block strip. Wrapping the rule
+   rather than resetting it in a (hover: none) block is deliberate -- if the
+   :hover never matches, each card's own resting border and shadow apply
+   naturally, and those differ per card type (featured guides, path cards and
+   the shortlist grid all set their own). A reset block would have to restate
+   every one of them and drift out of step the first time one changed. */
+@media (hover: hover) {
+  .sc-card:hover {
+    border-color: rgba(255, 138, 0, 0.55);
+    box-shadow: var(--sc-shadow);
+    transform: translateY(-5px);
+  }
 }
 
 .sc-card-body {
@@ -2735,7 +2781,21 @@ p.sc-price {
   background:
     radial-gradient(circle at 100% 0, color-mix(in srgb, var(--exchange-model-accent) 11%, transparent), transparent 48%),
     linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
-  border-color: color-mix(in srgb, var(--exchange-model-accent) 28%, var(--sc-line));
+  /* Clip to the padding edge, or the accent wash above paints *under* the
+     border too (background-clip defaults to border-box) and shows through
+     the 38%-transparent cream edge -- which is why these two read as an
+     orange card and a green card while computing an identical border-color.
+     Every other grid gets away with the same edge because its background is
+     opaque and neutral; these two are tinted and semi-transparent, so the
+     border has to be given a neutral backdrop instead. */
+  background-clip: padding-box;
+  /* The shared card edge, not an accent mix. Tinting the border by
+     --exchange-model-accent gave these two a muted brown and an olive edge
+     -- the only cards on the site not wearing the cream, and the green one
+     read as a different component entirely. The model distinction is still
+     carried by the corner wash above, the icon, and the accented <strong>
+     text, so it survives losing the border. */
+  border-color: rgba(255, 237, 184, 0.38);
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.16);
 }
 
@@ -3353,6 +3413,241 @@ p.sc-price {
   font-size: 0.69rem;
   line-height: 1.3;
   hyphens: auto;
+}
+
+/* ==========================================================================
+   Method trade-off table
+   dice-entropy.html -- six entropy methods against three fixed questions.
+   Shares .sc-figure and the .sc-chart-heading/.sc-chart-summary furniture with
+   the charts so the two read as one family; only the grid itself is new.
+   ========================================================================== */
+
+/* Four columns, not nine, so it fits the guide measure without the sticky
+   first column the device matrix needs. Below this width it scrolls inside
+   .sc-table-wrap like every other table on the site. */
+.sc-tradeoff {
+  min-width: 660px;
+  table-layout: fixed;
+}
+
+.sc-tradeoff thead th {
+  padding: 0 10px 12px;
+  color: var(--sc-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sc-tradeoff thead th:first-child { width: 25%; }
+
+.sc-tradeoff tbody th {
+  padding: 12px 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.sc-tradeoff tbody th small {
+  display: block;
+  margin-top: 3px;
+  color: var(--sc-muted);
+  font-family: "Roboto Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+.sc-tradeoff tbody td {
+  padding: 12px 5px;
+  vertical-align: middle;
+}
+
+/* The group label is the answer to "why is this row over here" -- the three
+   bands are what turn six unrelated methods into a spectrum from trust the
+   chip to trust nothing. Kept quieter than the device matrix's orange bar,
+   which sits on a page where the groups are the primary structure; here they
+   are a subdivision inside one argument. */
+.sc-tradeoff-group th {
+  padding: 20px 10px 7px;
+  color: var(--sc-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sc-tradeoff-group:first-child th { padding-top: 4px; }
+
+/* The cell is a block rather than a bare table cell so the tint reads as a
+   chip of a fixed height regardless of whether the phrase wraps -- two lines
+   of text in one row and one in the next otherwise produce tints of visibly
+   different weight and the band stops being scannable across the row. */
+.sc-tradeoff-cell {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 8px 12px;
+  border-radius: var(--sc-radius-xs);
+  font-size: 0.83rem;
+  line-height: 1.3;
+}
+
+/* Tier is decoration on top of a phrase that already says the same thing, so
+   these carry no meaning of their own -- the table reads correctly in mono,
+   read aloud, or to someone who cannot separate the green from the red. */
+.sc-tradeoff-cell.is-free {
+  color: #9ed4b4;
+  background: rgba(117, 189, 145, 0.13);
+}
+
+.sc-tradeoff-cell.is-minor {
+  color: #c9c3b8;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.sc-tradeoff-cell.is-cost {
+  color: #f6ae55;
+  background: rgba(246, 174, 85, 0.12);
+}
+
+.sc-tradeoff-cell.is-weak {
+  color: #e4897a;
+  background: rgba(214, 94, 64, 0.15);
+}
+
+.sc-tradeoff-legend .sc-tradeoff-key {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+}
+
+.sc-tradeoff-legend .is-free { background: rgba(117, 189, 145, 0.4); }
+.sc-tradeoff-legend .is-minor { background: rgba(255, 255, 255, 0.12); }
+.sc-tradeoff-legend .is-cost { background: rgba(246, 174, 85, 0.38); }
+.sc-tradeoff-legend .is-weak { background: rgba(214, 94, 64, 0.45); }
+
+@media (max-width: 575.98px) {
+  .sc-tradeoff { min-width: 560px; }
+  .sc-tradeoff tbody th { font-size: 0.88rem; }
+  .sc-tradeoff-cell { min-height: 42px; font-size: 0.78rem; }
+}
+
+/* The rebuilt method comparison uses the same framed visual language as the
+   bias stress test, but stacks as real cards on narrow screens instead of
+   shrinking or exposing a sideways table. */
+.sc-tradeoff-grid {
+  overflow: hidden;
+  background: rgba(15, 15, 14, 0.46);
+  border: 1px solid rgba(255,255,255,.085);
+  border-radius: 13px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.sc-tradeoff-head,
+.sc-tradeoff-row {
+  display: grid;
+  grid-template-columns: minmax(145px,1.05fr) repeat(3,minmax(115px,1fr));
+}
+
+.sc-tradeoff-head {
+  color: var(--sc-muted);
+  background: rgba(255,255,255,.04);
+  font-size: .64rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.sc-tradeoff-head span {
+  padding: 12px 13px;
+}
+
+.sc-tradeoff-head span + span { border-left: 1px solid rgba(255,255,255,.075); }
+
+.sc-tradeoff-group {
+  --tradeoff-group-accent: #d65e40;
+  display: block;
+}
+
+.sc-tradeoff-group.is-conversion { --tradeoff-group-accent: var(--sc-orange); }
+.sc-tradeoff-group.is-manual { --tradeoff-group-accent: #35b48a; }
+
+.sc-tradeoff-group h4 {
+  margin: 0;
+  padding: 10px 13px 9px;
+  color: var(--tradeoff-group-accent);
+  background: color-mix(in srgb,var(--tradeoff-group-accent) 7%,rgba(255,255,255,.014));
+  border-top: 1px solid color-mix(in srgb,var(--tradeoff-group-accent) 22%,transparent);
+  border-bottom: 1px solid rgba(255,255,255,.065);
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.sc-tradeoff-row {
+  min-height: 70px;
+  background: rgba(255,255,255,.012);
+}
+
+.sc-tradeoff-row + .sc-tradeoff-row { border-top: 1px solid rgba(255,255,255,.065); }
+.sc-tradeoff-row:nth-of-type(odd) { background: rgba(255,255,255,.024); }
+
+.sc-tradeoff-method {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 13px;
+  border-left: 3px solid var(--tradeoff-group-accent);
+}
+
+.sc-tradeoff-method strong { color:#fff; font-size:.82rem; line-height:1.25; }
+.sc-tradeoff-method small { margin-top:3px; color:var(--sc-muted); font-family:"Roboto Mono",monospace; font-size:.61rem; line-height:1.35; }
+
+.sc-tradeoff-grid .sc-tradeoff-cell {
+  display: flex;
+  min-height: 0;
+  margin: 8px 6px;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: .73rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.sc-tradeoff-grid .sc-tradeoff-cell + .sc-tradeoff-cell { margin-left: 0; }
+.sc-tradeoff-grid .sc-tradeoff-cell small { display:none; }
+.sc-tradeoff-grid .sc-tradeoff-cell.is-free { border-color:rgba(53,180,138,.2); }
+.sc-tradeoff-grid .sc-tradeoff-cell.is-minor { border-color:rgba(217,194,143,.14); }
+.sc-tradeoff-grid .sc-tradeoff-cell.is-cost { border-color:rgba(242,138,0,.2); }
+.sc-tradeoff-grid .sc-tradeoff-cell.is-weak { border-color:rgba(214,94,64,.23); }
+
+@media (max-width: 767.98px) {
+  .sc-tradeoff-head { display:none; }
+  .sc-tradeoff-group h4 { padding:11px 12px 10px; }
+  .sc-tradeoff-row { grid-template-columns:1fr; min-height:0; padding:10px; }
+  .sc-tradeoff-method { padding:4px 3px 11px 10px; }
+  .sc-tradeoff-grid .sc-tradeoff-cell {
+    display:grid;
+    grid-template-columns:minmax(92px,.78fr) minmax(0,1.22fr);
+    align-items:center;
+    gap:9px;
+    margin:0;
+    padding:9px 10px;
+  }
+  .sc-tradeoff-grid .sc-tradeoff-cell + .sc-tradeoff-cell { margin-top:6px; }
+  .sc-tradeoff-grid .sc-tradeoff-cell small {
+    display:block;
+    color:currentColor;
+    font-size:.52rem;
+    font-weight:900;
+    letter-spacing:.05em;
+    opacity:.66;
+    text-transform:uppercase;
+  }
 }
 
 .sc-matrix-legend {
@@ -5563,7 +5858,21 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
    it here, after the reveal, puts the lift back on every revealed card.
    Planned guide cards opt out again further down, which is intentional: there
    is nothing to click. */
-.sc-card.is-visible:hover { transform: translateY(-5px); }
+@media (hover: hover) {
+  .sc-card.is-visible:hover { transform: translateY(-5px); }
+
+  /* ...but not for the glow grids. Those lift with the `translate` longhand
+     and zero `transform` precisely so the two do not stack; the rule above
+     re-adds it at equal specificity from further down the file, which put
+     every revealed card in those grids on a 15px lift instead of the 10px
+     they ask for. Restated at (0,4,0) so it wins on weight rather than order.
+     Plain .sc-card -- the product and related-guide grids -- still takes the
+     rule above, because there `transform` IS the lift. */
+  .sc-path-options .sc-card.is-visible:hover,
+  .sc-card.sc-guide-card.is-visible:hover {
+    transform: none;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   /* Same specificity as the .sc-nav-animating rules above (0,0,3,0), so
@@ -7683,9 +7992,17 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    up, not the card recoloured. The lift, the scale and the drop shadow stay
    shared with every other card on the site, so the interaction still reads as
    one system; only the rim speaks the pending card's own language. */
-.sc-block-pending:hover,
 .sc-block-pending:focus-visible {
   border-color: rgb(255, 174, 54);
+}
+
+/* Gated for the same reason as .sc-block:hover far above -- this card is a
+   link too, and a latched hover would hold the rim at its brightest breath
+   permanently, out of step with the pulse it is meant to be the peak of. */
+@media (hover: hover) {
+  .sc-block-pending:hover {
+    border-color: rgb(255, 174, 54);
+  }
 }
 
 .sc-blocks.is-ready .sc-block-confirmed:not(.is-newest) { animation: none; }
@@ -7852,15 +8169,28 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
    perimeter blinked off while the wash inside went on dissolving for two full
    seconds. Now the rim cools on the same curve. The glow stays inside the card,
    where the ::after wash below handles it. */
-/* Two animations, two properties, no overlap: the edge cools the border over
-   2s, the glow finishes the outer spills the flight handed over. The 370ms one
-   firing animationend first is harmless -- the JS that strips .is-newest
-   filters on sc-new-block-edge by name, so the 2s cooldown still owns when the
-   class comes off. */
+/* Only the carry-over glow lives here. The border cooldown that used to sit
+   beside it -- sc-new-block-edge, 2s -- is now run from script, in
+   renderStrip(), and the keyframe is gone with it.
+
+   It had to leave because of the rule ~150 lines above:
+   .sc-blocks.is-confirming .sc-block-confirmed sets `animation` as a
+   shorthand, and it outranks this one (three classes to two). So the instant
+   the NEXT block begins its flight, that declaration replaces this card's
+   whole animation list -- and a border-color keyframe only halfway through is
+   not eased out, it is simply no longer applied. The border jumps to
+   .sc-block-confirmed's resting grey in one frame while the ::after wash
+   inside carries on dissolving, which is the exact blink this cooldown was
+   added to remove, just moved one block later.
+
+   Ten minutes apart it never shows: the fade is long finished before the next
+   flight starts. Fire blocks back to back -- the lab page, or a real burst --
+   and the next flight begins inside the two seconds every time. A script
+   animation is not in the CSS animation list at all, so no class swap can
+   take it away; see the note at its call site for why it is also cancelled
+   rather than left filling. */
 .sc-block-confirmed.is-newest {
-  animation:
-    sc-new-block-edge 2s ease-in-out both,
-    sc-new-block-glow 370ms linear both;
+  animation: sc-new-block-glow 370ms linear both;
 }
 
 /* The strip is rebuilt from scratch the moment the flight ends. Repainting the
@@ -7903,13 +8233,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 @keyframes sc-new-block-age {
   0%, 22% { color: #ffbd4d; }
   100% { color: var(--sc-orange); }
-}
-
-/* Picks up the rim the flight hands over and cools it on the same hold-then-
-   fade shape as the wash inside, so the two finish as one gesture. */
-@keyframes sc-new-block-edge {
-  0%, 22% { border-color: rgba(255, 189, 77, 0.94); }
-  100%    { border-color: rgba(255, 255, 255, 0.25); }
 }
 
 /* Closes the 6px the pending card is wider than a confirmed one (164 to 158) by
@@ -8372,18 +8695,6 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
     padding: 9px 7px;
     border-radius: 8px;
   }
-  /* Same fill as desktop, but real phone hardware (Safari on iOS in
-     particular -- True Tone/auto-brightness shifts near-black warmer and
-     lighter) renders the desktop's 0.085/0.025 highlight over #0d0f11 as
-     light grey rather than near-black, worse than desktop's own mobile-width
-     emulation shows. Cut the highlight almost to nothing and darken the
-     border further so it still reads dark once the display shifts it. */
-  .sc-block-confirmed {
-    border-color: rgba(255, 255, 255, 0.08);
-    background:
-      linear-gradient(145deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0)),
-      #0d0f11;
-  }
   /* 17px, not 8. The dissolve is what makes this read as a chain continuing
      off-frame rather than a solid nub parked at the gutter, and that depends
      on it being longer than the sliver is wide: desktop fades over 52px across
@@ -8462,9 +8773,12 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   .sc-blocks.is-confirming .sc-block-confirmed { animation-name: sc-block-shift-right-mobile; }
   .sc-blocks.is-confirming .sc-block-connector + .sc-block-confirmed { animation-name: sc-block-shift-right-mobile, sc-neighbour-glow-mobile; }
   .sc-blocks.is-confirming .sc-block-confirmed:last-child { animation-name: sc-block-exit-right-mobile; }
-  /* Name list only -- the 2s/370ms durations and easings come from the desktop
-     shorthand. Both names are required or the carry-over glow is dropped. */
-  .sc-block-confirmed.is-newest { animation-name: sc-new-block-edge, sc-new-block-glow-mobile; }
+  /* Name only -- the 370ms and its easing come from the desktop shorthand.
+     This list was two long while the border cooldown was a keyframe here too;
+     it is one now that the cooldown runs from script, and the swap is safe
+     because a one-name list takes the shorthand's first duration, which is
+     the 370ms this animation actually wants. */
+  .sc-block-confirmed.is-newest { animation-name: sc-new-block-glow-mobile; }
   .sc-dash-priceblock {
     display: flex;
     align-items: start;
@@ -9167,18 +9481,20 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   box-shadow: 0 18px 46px rgba(242, 138, 0, 0.075);
 }
 
-.sc-guide-card.is-featured:hover,
-.sc-guide-card.is-featured.is-visible:hover {
-  border-color: rgba(255, 166, 54, 0.9);
-  box-shadow:
-    0 22px 50px rgba(0, 0, 0, 0.38),
-    0 0 16px rgba(255, 255, 255, 0.3),
-    0 0 42px rgba(255, 186, 84, 0.42),
-    0 0 76px rgba(255, 138, 0, 0.2),
-    inset 0 0 20px rgba(255, 226, 184, 0.05);
-  transform: none;
-  translate: 0 -10px;
-  scale: 1.012;
+@media (hover: hover) {
+  .sc-guide-card.is-featured:hover,
+  .sc-guide-card.is-featured.is-visible:hover {
+    border-color: rgba(255, 166, 54, 0.9);
+    box-shadow:
+      0 22px 50px rgba(0, 0, 0, 0.38),
+      0 0 16px rgba(255, 255, 255, 0.3),
+      0 0 42px rgba(255, 186, 84, 0.42),
+      0 0 76px rgba(255, 138, 0, 0.2),
+      inset 0 0 20px rgba(255, 226, 184, 0.05);
+    transform: none;
+    /* No `scale` -- same border-blink reason as the shared card treatment. */
+    translate: 0 -10px;
+  }
 }
 
 .sc-guide-card h3 { font-size: 1.18rem; }
@@ -9249,13 +9565,19 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
   opacity: 0.72;
 }
 
-.sc-guide-card.is-planned:hover,
-.sc-guide-card.is-planned.is-visible:hover {
-  border-color: var(--sc-line);
-  box-shadow: 0 10px 30px rgba(28, 28, 28, 0.045);
-  transform: none;
-  translate: none;
-  scale: none;
+/* Gated alongside everything it is suppressing. With the lift and glow rules
+   above now desktop-only there is nothing here to cancel on touch -- and left
+   ungated this rule became the stuck state itself, swapping a tapped planned
+   card's border to --sc-line and holding it there. */
+@media (hover: hover) {
+  .sc-guide-card.is-planned:hover,
+  .sc-guide-card.is-planned.is-visible:hover {
+    border-color: var(--sc-line);
+    box-shadow: 0 10px 30px rgba(28, 28, 28, 0.045);
+    transform: none;
+    translate: none;
+    scale: none;
+  }
 }
 
 .sc-guide-card-soon {

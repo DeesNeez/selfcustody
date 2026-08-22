@@ -2336,28 +2336,86 @@
             if (rebuiltPending) rebuiltPending.style.setProperty("--sc-logo-phase", pendingPulsePhase());
             sizeBlockGhost();
             /* Safe to measure on this frame: nothing in a rebuilt strip carries
-               an entrance transform. The landed card's own animation touches
-               only border-color and the rest are held by the :not(.is-newest)
-               rule, so every getBoundingClientRect() here reads a resting
-               position. The wash still running over the newest card animates
+               an entrance transform. The landed card's border cooldown is
+               started below and touches only border-color, and the rest are
+               held by the :not(.is-newest) rule, so every
+               getBoundingClientRect() here reads a resting position. The wash still running over the newest card animates
                opacity. Neither of those moves geometry. */
             syncBlocksOverflow();
             measureBlocksFade();
 
-            /* Take the class off once the cool down has played. Its animations
-               are fill-mode:both, and a filled animation outranks every normal
-               declaration -- so while the class is on, the card's border stops
-               answering :hover and that one card lights differently from the
-               rest of the row. The strip is only rebuilt when a block lands,
-               so left alone it would stay that way until the next one, ten
-               minutes of a card that hovers wrong. */
             const landed = fresh && wrap.querySelector(".sc-block-confirmed.is-newest");
             if (landed) {
-              landed.addEventListener("animationend", function settled(e) {
-                if (e.target !== landed || e.animationName !== "sc-new-block-edge") return;
-                landed.removeEventListener("animationend", settled);
+              /* The border cooldown, run from script rather than from a CSS
+                 keyframe on the card. It used to be one, and the reason it
+                 cannot be is the flight's own rule: .sc-blocks.is-confirming
+                 .sc-block-confirmed declares `animation` as a shorthand and
+                 outranks .sc-block-confirmed.is-newest, so the moment the NEXT
+                 block starts flying, this card's animation list is replaced
+                 wholesale and a half-cooled border-color is dropped where it
+                 stands -- straight to the resting grey in one frame, while the
+                 ::after wash inside (untouched, it is a pseudo-element) keeps
+                 dissolving around it.
+
+                 Ten minutes between blocks and the fade is over long before
+                 that; back-to-back blocks and the next flight starts inside
+                 these two seconds every time, so the rim blinks off on every
+                 landing but the last. A script animation is not part of the
+                 element's CSS animation list, so no class swap can reach it.
+
+                 The easings sit on the keyframes, not in the options: CSS
+                 applies animation-timing-function per segment, the options'
+                 `easing` would apply once across the whole iteration, and only
+                 the per-keyframe form reproduces what the old
+                 hold-then-ease-out keyframe did. The hold to 22% is the card's
+                 landing motion -- see sc-new-block-cool, which shares it. */
+              let edge = null;
+              if (!reduceMotion && typeof Element !== "undefined" && Element.prototype.animate) {
+                edge = landed.animate([
+                  { borderColor: "rgba(255, 189, 77, 0.94)", easing: "ease-in-out" },
+                  { borderColor: "rgba(255, 189, 77, 0.94)", offset: 0.22, easing: "ease-in-out" },
+                  { borderColor: "rgba(255, 255, 255, 0.25)" }
+                ], { duration: 2000, fill: "forwards" });
+              }
+
+              /* Take the class off once the cool down has played, and cancel
+                 the border animation with it. Both for the same reason: a
+                 filled animation outranks every normal declaration,
+                 script-created ones included, so while either is in force the
+                 card's border stops answering :hover and that one card lights
+                 differently from the rest of the row. The strip is only
+                 rebuilt when a block lands, so left alone it would stay that
+                 way until the next one, ten minutes of a card that hovers
+                 wrong. Cancelling costs nothing on screen: the animation's end
+                 colour is .sc-block-confirmed's own border.
+
+                 Timed off sc-new-block-cool, the ::after wash. It is the same
+                 2s ease-in-out the border now runs, and being on a
+                 pseudo-element it is the one part of this cooldown the next
+                 flight cannot cut short -- so it is the honest signal for "the
+                 cooldown finished". Its animationend arrives with e.target set
+                 to the card itself, which is what separates it from the kicker
+                 and age fades bubbling up from the children. */
+              let settledOnce = false;
+              const settleLanded = () => {
+                if (settledOnce) return;
+                settledOnce = true;
                 landed.classList.remove("is-newest");
+                if (edge) { try { edge.cancel(); } catch (err) { /* already gone */ } }
+              };
+              landed.addEventListener("animationend", function settled(e) {
+                if (e.target !== landed || e.animationName !== "sc-new-block-cool") return;
+                landed.removeEventListener("animationend", settled);
+                settleLanded();
               });
+              /* Deliberately a bare setTimeout rather than one of
+                 state.blockTimers, on the same reasoning as crossfadeLines'
+                 net: this is the guarantee the class comes back off, so it has
+                 to survive every loadChain() that clears those. Covers the
+                 reduced-motion stylesheet, which sets the ::after to
+                 animation:none and would otherwise leave nothing to listen for.
+                 Padded past the 2s so it never pre-empts the real event. */
+              setTimeout(settleLanded, 2600);
             }
           };
 
