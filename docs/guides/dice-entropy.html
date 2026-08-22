@@ -28,10 +28,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260821-0322" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260821-0322" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260821-0322" rel="stylesheet">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Roll the dice: generating your own entropy","description":"Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.","url":"https://selfcustody.ca/guides/dice-entropy.html","datePublished":"2026-08-17","dateModified":"2026-08-17","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/dice-entropy.html"}}</script>
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260822-1310" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260822-1310" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260822-1310" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Roll the dice: generating your own entropy","description":"Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.","url":"https://selfcustody.ca/guides/dice-entropy.html","datePublished":"2026-08-21","dateModified":"2026-08-21","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/dice-entropy.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
   <div id="site-header">
@@ -84,7 +84,7 @@
         <div class="sc-guide-meta">
           <span class="sc-level sc-level-intermediate">Intermediate</span>
           <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 20 minutes</span>
-          <span>Updated Aug 17, 2026</span>
+          <span>Updated Aug 21, 2026</span>
         </div>
         <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-entropy">Entropy</a><span class="sc-tag">Dice</span><span class="sc-tag">Seed generation</span></div>
         <p class="sc-guide-product-links"><a class="sc-text-link" href="../devices.html#coldcard">About COLDCARD <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#seedsigner">About SeedSigner <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#krux">About Krux <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#jade">About Blockstream Jade <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#bitbox">About BitBox02 <i class="bi bi-arrow-right"></i></a></p>
@@ -103,14 +103,47 @@
       <p>It costs you about twenty minutes and a little care. Here is how it works, and &mdash; more importantly &mdash; the handful of ways people accidentally ruin it.</p>
 
       
-  <figure class="sc-figure sc-figure-slot">
-    <div class="sc-figure-slot-frame" style="aspect-ratio: 16 / 9">
-      <i class="bi bi-camera" aria-hidden="true"></i>
-      <p class="sc-figure-slot-shot">Overhead shot: a single white casino die mid-roll on a dark surface, with a notebook and pen beside it showing a column of handwritten numbers.</p>
-      <p class="sc-figure-slot-note">Image to come</p>
-    </div>
-    <figcaption>One die, rolled repeatedly, written down as you go. That is genuinely the whole apparatus.</figcaption>
+  <figure class="sc-figure">
+    <img src="../assets/img/dice-entropy.jpg" alt="Two dice mid-roll on a green felt table" width="1376" height="768" loading="lazy">
+    <figcaption>Each roll is 2.58 bits of entropy. With enough randomness, you get a secret nobody else can guess.</figcaption>
   </figure>
+
+      <h2>Why dice, and not one of the other ways</h2>
+
+      <p>Dice are not the best method available. It is worth being straight about that, because the case for them is more interesting than the usual one.</p>
+
+      <p>There are six practical ways to produce the number, and they separate along three lines: what you have to get hold of before you can begin, how much work the method itself demands, and how much of the finished result you are able to check. Every method is excellent on one of those and pays for it on another.</p>
+
+      
+    <figure class="sc-figure sc-chart-figure sc-tradeoff-figure">
+      <div class="sc-chart-heading">
+        <span class="sc-chart-mark" aria-hidden="true"></span>
+        <div>
+          <span>Six ways to make the number</span>
+          <h3>What each one costs you</h3>
+        </div>
+        <strong>No row wins outright</strong>
+      </div>
+
+      <div class="sc-chart-legend sc-tradeoff-legend"><span><i class="sc-tradeoff-key is-free" aria-hidden="true"></i>nothing to pay here</span><span><i class="sc-tradeoff-key is-minor" aria-hidden="true"></i>a small cost</span><span><i class="sc-tradeoff-key is-cost" aria-hidden="true"></i>a real cost</span><span><i class="sc-tradeoff-key is-weak" aria-hidden="true"></i>where the method gives up the most</span></div>
+
+      <div class="sc-tradeoff-grid" role="table" aria-label="Six methods of generating wallet entropy, compared by preparation, work, and verifiability">
+        <div class="sc-tradeoff-head" role="row">
+          <span role="columnheader">Method</span><span role="columnheader">Before you start</span><span role="columnheader">The work itself</span><span role="columnheader">What you can check</span>
+        </div>
+        <div class="sc-tradeoff-group is-device" role="rowgroup"><h4>The device makes the number</h4><article class="sc-tradeoff-row" role="row"><div class="sc-tradeoff-method" role="rowheader"><strong>Built-in generator</strong><small>the default almost everywhere</small></div><span class="sc-tradeoff-cell is-free" role="cell" data-label="Before you start"><small>Before you start</small>Nothing to gather</span><span class="sc-tradeoff-cell is-free" role="cell" data-label="The work itself"><small>The work itself</small>Instant, automatic</span><span class="sc-tradeoff-cell is-weak" role="cell" data-label="What you can check"><small>What you can check</small>The input, not at all</span></article><article class="sc-tradeoff-row" role="row"><div class="sc-tradeoff-method" role="rowheader"><strong>Camera noise</strong><small>SeedSigner photographs a scene</small></div><span class="sc-tradeoff-cell is-free" role="cell" data-label="Before you start"><small>Before you start</small>Nothing to gather</span><span class="sc-tradeoff-cell is-free" role="cell" data-label="The work itself"><small>The work itself</small>Point, look, accept</span><span class="sc-tradeoff-cell is-cost" role="cell" data-label="What you can check"><small>What you can check</small>Nothing outside the device</span></article></div><div class="sc-tradeoff-group is-conversion" role="rowgroup"><h4>You make the number, the device converts it</h4><article class="sc-tradeoff-row" role="row"><div class="sc-tradeoff-method" role="rowheader"><strong>Dice, device converts</strong><small>what this guide covers</small></div><span class="sc-tradeoff-cell is-minor" role="cell" data-label="Before you start"><small>Before you start</small>One die</span><span class="sc-tradeoff-cell is-minor" role="cell" data-label="The work itself"><small>The work itself</small>99 rolls, typed in</span><span class="sc-tradeoff-cell is-minor" role="cell" data-label="What you can check"><small>What you can check</small>Every word, with effort</span></article></div><div class="sc-tradeoff-group is-manual" role="rowgroup"><h4>You make the number and the words</h4><article class="sc-tradeoff-row" role="row"><div class="sc-tradeoff-method" role="rowheader"><strong>Coin flips</strong><small>11 flips per word</small></div><span class="sc-tradeoff-cell is-minor" role="cell" data-label="Before you start"><small>Before you start</small>Coins and a word list</span><span class="sc-tradeoff-cell is-cost" role="cell" data-label="The work itself"><small>The work itself</small>Binary, by hand, 253 times</span><span class="sc-tradeoff-cell is-free" role="cell" data-label="What you can check"><small>What you can check</small>Only the checksum word</span></article><article class="sc-tradeoff-row" role="row"><div class="sc-tradeoff-method" role="rowheader"><strong>Dice on a worksheet</strong><small>rolls straight to words</small></div><span class="sc-tradeoff-cell is-minor" role="cell" data-label="Before you start"><small>Before you start</small>Dice and a worksheet</span><span class="sc-tradeoff-cell is-weak" role="cell" data-label="The work itself"><small>The work itself</small>Rolls, re-rolls, lookups</span><span class="sc-tradeoff-cell is-free" role="cell" data-label="What you can check"><small>What you can check</small>Only the checksum word</span></article><article class="sc-tradeoff-row" role="row"><div class="sc-tradeoff-method" role="rowheader"><strong>Drawing paper slips</strong><small>pull words from a bag</small></div><span class="sc-tradeoff-cell is-weak" role="cell" data-label="Before you start"><small>Before you start</small>Cut out 2048 slips</span><span class="sc-tradeoff-cell is-minor" role="cell" data-label="The work itself"><small>The work itself</small>Draw, replace, type in</span><span class="sc-tradeoff-cell is-free" role="cell" data-label="What you can check"><small>What you can check</small>Only the checksum word</span></article></div>
+      </div>
+
+      <figcaption class="sc-chart-summary"><strong>What it shows</strong><span>Read down the middle row rather than across it. Dice-with-conversion is the only method carrying no green and no red &mdash; beaten on convenience by the top two and on verifiability by the bottom three, and beaten badly by none of them.</span></figcaption>
+    </figure>
+
+      <p>The top two rows ask nothing of you at all &mdash; no equipment, no procedure, nothing to get wrong. What you give up is the ability to check the input. A generator sealed in a chip produces a number you cannot observe, reproduce, or test, and a photograph of your kitchen has no external record to compare against either. If you are content to trust the manufacturer's engineering, this is the sensible choice and there is no shame in it.</p>
+
+      <p>The bottom three go the other way. You do the conversion yourself, on paper, so the device never touches your randomness &mdash; it only computes the final checksum word. That is about as little trust as this task can be reduced to. The price is either in setup or in labour: 253 coin flips converted from binary by hand, or a worksheet of rolls and re-rolls, or an evening spent cutting out two thousand and forty-eight paper slips before you have generated a single word.</p>
+
+      <p>Dice with the device doing the conversion sits in the middle and is never the winner of anything. It needs a die you probably already own, it takes twenty minutes of dull rolling, and the conversion happens somewhere you cannot see. But nothing about it is <em>bad</em>. It is the only one of the six with no expensive corner &mdash; and unlike the top two, the part you cannot see is at least checkable afterwards, which is what the section on <a href="#checking-the-conversion">verifying the conversion</a> further down is for.</p>
+
+      <p>That is the honest argument for the method in this guide: not that it beats the alternatives, but that it is the only one that never asks you for very much.</p>
 
       
   <div class="sc-guide-prereq">
@@ -248,7 +281,7 @@
 
       <p>Here is the part that catches people out, and it is worth reading twice.</p>
 
-      <p>There is no agreed standard for turning dice rolls into wallet words. Different wallets do the conversion differently &mdash; there are at least five methods in circulation &mdash; which means <strong>the same 99 rolls will produce a completely different wallet on a different device</strong>.</p>
+      <p>There is no agreed standard for turning dice rolls into wallet words. Different wallets do the conversion differently &mdash; Keith Mukai's <a class="sc-text-link" href="https://kdmukai-bot.github.io/seedsigner-ai-analysis/dice/standard.html" target="_blank" rel="noopener">survey of seventeen implementations <i class="bi bi-arrow-up-right"></i></a> finds five distinct methods in circulation, and three wallets sharing one of them still disagree with each other &mdash; which means <strong>the same 99 rolls will produce a completely different wallet on a different device</strong>.</p>
 
       <p>It is not even stable over time on one device. SeedSigner changed its method in 2022, so rolls recorded before that no longer rebuild the same wallet on current firmware.</p>
 
@@ -260,7 +293,7 @@
 
       <p>The last word is mostly a <a href="../glossary.html#term-checksum">checksum</a> &mdash; a small built-in error check, calculated from all the words before it. It is quietly one of the most useful things in the whole design: if you copy a word down wrong, the phrase gets rejected when you try to restore it, instead of silently opening a different, empty wallet and leaving you to work out what happened.</p>
 
-      <h2>Checking that your device did what it said</h2>
+      <h2 id="checking-the-conversion">Checking that your device did what it said</h2>
 
       <p>It is possible to verify that a device converts rolls the way it claims. You roll a short test set, run the same rolls through an independent tool, and see whether you get the same words out. If they match, the device is honest about its method.</p>
 
@@ -277,7 +310,9 @@
       <p class="mt-4"><a class="sc-text-link" href="what-not-to-normalize.html">Read the habits that undo all of this <i class="bi bi-arrow-right"></i></a></p>
 
       <p class="sc-source-note">
-        Dice-bias figures above come from Iversen, Longcor, Mosteller, Gilbert &amp; Youtz, &ldquo;Bias and Runs in Dice Throwing and Recording: A Few Million Throws,&rdquo; <em>Psychometrika</em> 36(1), 1971, and Zacariah Labby, &ldquo;Weldon&rsquo;s Dice, Automated,&rdquo; <em>CHANCE</em> 22(4), 2009. Roll counts and the entropy-loss figures charted above follow from applying those measured biases to a standard 50- or 99-roll wallet. Devices change between firmware releases &mdash; check the roll count and method in your own device's current documentation before creating a wallet you intend to fund.
+        Method comparison, cross-device warning, and verification steps after Keith Mukai&rsquo;s
+        <a class="sc-text-link" href="https://kdmukai-bot.github.io/seedsigner-ai-analysis/dice/standard.html" target="_blank" rel="noopener">Dice to seed <i class="bi bi-arrow-up-right"></i></a>.
+        Dice-bias figures from Iversen, Longcor, Mosteller, Gilbert &amp; Youtz, <em>Psychometrika</em> 36(1), 1971, and Labby, <em>CHANCE</em> 22(4), 2009.
       </p></div>
       </div>
     </section>
@@ -371,6 +406,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260821-0322"></script>
+  <script src="../assets/js/site-refresh.js?v=20260822-1310"></script>
 </body>
 </html>

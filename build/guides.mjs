@@ -401,6 +401,141 @@ const entropyChart = () => {
     </figure>`;
 };
 
+/* ---- how the entropy methods trade against each other --------------------
+
+   A table rather than a chart, because none of these cells is a quantity --
+   they are three fixed questions asked of six methods, and the answer to each
+   is a short phrase. Forcing that into bars would invent a scale nobody has
+   measured.
+
+   The argument the table has to carry is that no row wins. Every method is
+   excellent at something and pays for it somewhere else, and the dice-hashed
+   row -- the one this guide teaches -- is the only one that is merely fine at
+   all three. That reads off the colour band instantly and takes a paragraph
+   to say in prose, which is the test for whether a table is earning its
+   space.
+
+   Tier colour is decoration, never the message: every cell states its answer
+   in words, so the table survives being read aloud, printed in mono, or seen
+   by someone who cannot separate the green from the red. */
+const TRADEOFF_TIERS = [
+  ["is-free", "nothing to pay here"],
+  ["is-minor", "a small cost"],
+  ["is-cost", "a real cost"],
+  ["is-weak", "where the method gives up the most"]
+];
+
+const TRADEOFF_GROUPS = [
+  {
+    label: "The device makes the number",
+    rows: [
+      {
+        method: "Built-in generator",
+        note: "the default almost everywhere",
+        cells: [
+          ["is-free", "Nothing to gather"],
+          ["is-free", "Instant, automatic"],
+          ["is-weak", "The input, not at all"]
+        ]
+      },
+      {
+        method: "Camera noise",
+        note: "SeedSigner photographs a scene",
+        cells: [
+          ["is-free", "Nothing to gather"],
+          ["is-free", "Point, look, accept"],
+          ["is-cost", "Nothing outside the device"]
+        ]
+      }
+    ]
+  },
+  {
+    label: "You make the number, the device converts it",
+    rows: [
+      {
+        method: "Dice, device converts",
+        note: "what this guide covers",
+        cells: [
+          ["is-minor", "One die"],
+          ["is-minor", "99 rolls, typed in"],
+          ["is-minor", "Every word, with effort"]
+        ]
+      }
+    ]
+  },
+  {
+    label: "You make the number and the words",
+    rows: [
+      {
+        method: "Coin flips",
+        note: "11 flips per word",
+        cells: [
+          ["is-minor", "Coins and a word list"],
+          ["is-cost", "Binary, by hand, 253 times"],
+          ["is-free", "Only the checksum word"]
+        ]
+      },
+      {
+        method: "Dice on a worksheet",
+        note: "rolls straight to words",
+        cells: [
+          ["is-minor", "Dice and a worksheet"],
+          ["is-weak", "Rolls, re-rolls, lookups"],
+          ["is-free", "Only the checksum word"]
+        ]
+      },
+      {
+        method: "Drawing paper slips",
+        note: "pull words from a bag",
+        cells: [
+          ["is-weak", "Cut out 2048 slips"],
+          ["is-minor", "Draw, replace, type in"],
+          ["is-free", "Only the checksum word"]
+        ]
+      }
+    ]
+  }
+];
+
+const methodTradeoffs = () => {
+  const legend = TRADEOFF_TIERS.map(([cls, label]) =>
+    `<span><i class="sc-tradeoff-key ${cls}" aria-hidden="true"></i>${label}</span>`).join("");
+
+  const groupClasses = ["is-device", "is-conversion", "is-manual"];
+  const groups = TRADEOFF_GROUPS.map((group, index) => {
+    const rows = group.rows.map(r => {
+      const labels = ["Before you start", "The work itself", "What you can check"];
+      const cells = r.cells.map(([cls, text], cellIndex) =>
+        `<span class="sc-tradeoff-cell ${cls}" role="cell" data-label="${labels[cellIndex]}"><small>${labels[cellIndex]}</small>${text}</span>`).join("");
+      return `<article class="sc-tradeoff-row" role="row"><div class="sc-tradeoff-method" role="rowheader"><strong>${r.method}</strong><small>${r.note}</small></div>${cells}</article>`;
+    }).join("");
+    return `<div class="sc-tradeoff-group ${groupClasses[index]}" role="rowgroup"><h4>${group.label}</h4>${rows}</div>`;
+  }).join("");
+
+  return `
+    <figure class="sc-figure sc-chart-figure sc-tradeoff-figure">
+      <div class="sc-chart-heading">
+        <span class="sc-chart-mark" aria-hidden="true"></span>
+        <div>
+          <span>Six ways to make the number</span>
+          <h3>What each one costs you</h3>
+        </div>
+        <strong>No row wins outright</strong>
+      </div>
+
+      <div class="sc-chart-legend sc-tradeoff-legend">${legend}</div>
+
+      <div class="sc-tradeoff-grid" role="table" aria-label="Six methods of generating wallet entropy, compared by preparation, work, and verifiability">
+        <div class="sc-tradeoff-head" role="row">
+          <span role="columnheader">Method</span><span role="columnheader">Before you start</span><span role="columnheader">The work itself</span><span role="columnheader">What you can check</span>
+        </div>
+        ${groups}
+      </div>
+
+      <figcaption class="sc-chart-summary"><strong>What it shows</strong><span>Read down the middle row rather than across it. Dice-with-conversion is the only method carrying no green and no red &mdash; beaten on convenience by the top two and on verifiability by the bottom three, and beaten badly by none of them.</span></figcaption>
+    </figure>`;
+};
+
 /* ---- the BIP85 derivation tree ------------------------------------------
 
    One master seed fanning out into independent child seeds, each addressed by
@@ -4881,7 +5016,7 @@ const guides = [
     goals: ["setup", "harden", "learn"],
     tags: ["Entropy", "Dice", "Seed generation"],
     icon: "bi-shuffle",
-    updated: "2026-08-17",
+    updated: "2026-08-21",
     status: "published",
     related: ["coldcard-setup", "seedsigner-setup", "recovery-test-drill"],
     layout: "article",
@@ -4894,11 +5029,29 @@ const guides = [
 
       <p>It costs you about twenty minutes and a little care. Here is how it works, and &mdash; more importantly &mdash; the handful of ways people accidentally ruin it.</p>
 
-      ${figureSlot({
-        shot: "Overhead shot: a single white casino die mid-roll on a dark surface, with a notebook and pen beside it showing a column of handwritten numbers.",
-        caption: "One die, rolled repeatedly, written down as you go. That is genuinely the whole apparatus.",
-        ratio: "16 / 9"
+      ${figure({
+        src: "../assets/img/dice-entropy.jpg",
+        alt: "Two dice mid-roll on a green felt table",
+        caption: "Each roll is 2.58 bits of entropy. With enough randomness, you get a secret nobody else can guess.",
+        width: 1376,
+        height: 768
       })}
+
+      <h2>Why dice, and not one of the other ways</h2>
+
+      <p>Dice are not the best method available. It is worth being straight about that, because the case for them is more interesting than the usual one.</p>
+
+      <p>There are six practical ways to produce the number, and they separate along three lines: what you have to get hold of before you can begin, how much work the method itself demands, and how much of the finished result you are able to check. Every method is excellent on one of those and pays for it on another.</p>
+
+      ${methodTradeoffs()}
+
+      <p>The top two rows ask nothing of you at all &mdash; no equipment, no procedure, nothing to get wrong. What you give up is the ability to check the input. A generator sealed in a chip produces a number you cannot observe, reproduce, or test, and a photograph of your kitchen has no external record to compare against either. If you are content to trust the manufacturer's engineering, this is the sensible choice and there is no shame in it.</p>
+
+      <p>The bottom three go the other way. You do the conversion yourself, on paper, so the device never touches your randomness &mdash; it only computes the final checksum word. That is about as little trust as this task can be reduced to. The price is either in setup or in labour: 253 coin flips converted from binary by hand, or a worksheet of rolls and re-rolls, or an evening spent cutting out two thousand and forty-eight paper slips before you have generated a single word.</p>
+
+      <p>Dice with the device doing the conversion sits in the middle and is never the winner of anything. It needs a die you probably already own, it takes twenty minutes of dull rolling, and the conversion happens somewhere you cannot see. But nothing about it is <em>bad</em>. It is the only one of the six with no expensive corner &mdash; and unlike the top two, the part you cannot see is at least checkable afterwards, which is what the section on <a href="#checking-the-conversion">verifying the conversion</a> further down is for.</p>
+
+      <p>That is the honest argument for the method in this guide: not that it beats the alternatives, but that it is the only one that never asks you for very much.</p>
 
       ${prerequisites([
         "A wallet that offers a dice option during setup. COLDCARD, SeedSigner, Krux, Blockstream Jade, and BitBox02 all have one.",
@@ -4960,7 +5113,7 @@ const guides = [
 
       <p>Here is the part that catches people out, and it is worth reading twice.</p>
 
-      <p>There is no agreed standard for turning dice rolls into wallet words. Different wallets do the conversion differently &mdash; there are at least five methods in circulation &mdash; which means <strong>the same 99 rolls will produce a completely different wallet on a different device</strong>.</p>
+      <p>There is no agreed standard for turning dice rolls into wallet words. Different wallets do the conversion differently &mdash; Keith Mukai's ${official("https://kdmukai-bot.github.io/seedsigner-ai-analysis/dice/standard.html", "survey of seventeen implementations")} finds five distinct methods in circulation, and three wallets sharing one of them still disagree with each other &mdash; which means <strong>the same 99 rolls will produce a completely different wallet on a different device</strong>.</p>
 
       <p>It is not even stable over time on one device. SeedSigner changed its method in 2022, so rolls recorded before that no longer rebuild the same wallet on current firmware.</p>
 
@@ -4972,7 +5125,7 @@ const guides = [
 
       <p>The last word is mostly a <a href="../glossary.html#term-checksum">checksum</a> &mdash; a small built-in error check, calculated from all the words before it. It is quietly one of the most useful things in the whole design: if you copy a word down wrong, the phrase gets rejected when you try to restore it, instead of silently opening a different, empty wallet and leaving you to work out what happened.</p>
 
-      <h2>Checking that your device did what it said</h2>
+      <h2 id="checking-the-conversion">Checking that your device did what it said</h2>
 
       <p>It is possible to verify that a device converts rolls the way it claims. You roll a short test set, run the same rolls through an independent tool, and see whether you get the same words out. If they match, the device is honest about its method.</p>
 
@@ -4998,7 +5151,9 @@ const guides = [
       <p class="mt-4"><a class="sc-text-link" href="what-not-to-normalize.html">Read the habits that undo all of this <i class="bi bi-arrow-right"></i></a></p>
 
       <p class="sc-source-note">
-        Dice-bias figures above come from Iversen, Longcor, Mosteller, Gilbert &amp; Youtz, &ldquo;Bias and Runs in Dice Throwing and Recording: A Few Million Throws,&rdquo; <em>Psychometrika</em> 36(1), 1971, and Zacariah Labby, &ldquo;Weldon&rsquo;s Dice, Automated,&rdquo; <em>CHANCE</em> 22(4), 2009. Roll counts and the entropy-loss figures charted above follow from applying those measured biases to a standard 50- or 99-roll wallet. Devices change between firmware releases &mdash; check the roll count and method in your own device's current documentation before creating a wallet you intend to fund.
+        Method comparison, cross-device warning, and verification steps after Keith Mukai&rsquo;s
+        ${official("https://kdmukai-bot.github.io/seedsigner-ai-analysis/dice/standard.html", "Dice to seed")}.
+        Dice-bias figures from Iversen, Longcor, Mosteller, Gilbert &amp; Youtz, <em>Psychometrika</em> 36(1), 1971, and Labby, <em>CHANCE</em> 22(4), 2009.
       </p>`
   },
   {
