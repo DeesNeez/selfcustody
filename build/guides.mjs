@@ -1129,7 +1129,7 @@ const guides = [
 
       <p>Moving your whole balance on the first attempt removes every chance to catch a mistake while it is still cheap. A small test exercises the entire path at once: the address, the withdrawal screen, the fees, the waiting, and your own wallet correctly showing the result at the other end.</p>
 
-      <p>Send an amount you would shrug at losing. Wait for it to confirm and appear in your own wallet before sending more. Then do it again after any change &mdash; a new device, new wallet software, a different address type, a restored backup. Bitcoin transactions do not reverse, and no support desk anywhere can recall one.</p>
+      <p>Send an amount you would shrug at losing. Wait for it to confirm and appear in your own wallet before sending more &mdash; <a href="test-transaction.html">sending a test transaction</a> walks the whole loop, including what to do when it does not turn up. Then do it again after any change &mdash; a new device, new wallet software, a different address type, a restored backup. Bitcoin transactions do not reverse, and no support desk anywhere can recall one.</p>
 
       ${figureSlot({
         shot: "Split screen: a wallet's send confirmation on a laptop beside a hardware wallet screen showing the same address, with a finger pointing at the matching characters.",
@@ -1680,6 +1680,137 @@ const guides = [
       <p>For a multisig wallet the drill is larger and the failure mode is different: you must also back up the wallet configuration, and rehearse recovery using only the threshold number of keys. Keys alone will not rebuild a multisig, and discovering that during a real recovery is the worst version of this lesson.</p>
 
       ${callout("This is stage five of the path", `If you arrived here without a wallet yet, <a href="complete-path.html">Start Here</a> covers the four stages before this one. This drill is the one that turns all of them from intentions into something you have actually checked.`)}`
+  },
+
+  {
+    slug: "test-transaction",
+    category: "fundamentals",
+    products: [],
+    title: "Send a test transaction first",
+    summary: "Before you move the balance, move five dollars along exactly the same route and watch it arrive. It is the cheapest way to find out that something in the chain is wrong.",
+    level: "beginner",
+    minutes: 20,
+    goals: ["setup", "withdraw", "harden"],
+    tags: ["Test transactions", "Cold storage", "UTXO"],
+    icon: "bi-check2-circle",
+    updated: "2026-08-23",
+    status: "published",
+    related: ["exchange-withdrawal", "recovery-test-drill", "how-fees-work"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">A bitcoin transaction is final. There is no chargeback, no support desk that can reverse it, and no version of this where money sent to the wrong address comes back. A test send is how you find out whether the whole path works while a mistake still costs a few dollars instead of everything.</p>
+
+      <p>The method is unglamorous. Before moving the balance from your <a href="../glossary.html#term-hot_wallet">hot wallet</a> to <a href="../glossary.html#term-cold_storage">cold storage</a>, send a token amount along exactly the same route, and watch it arrive at the other end. Twenty minutes, most of it waiting.</p>
+
+      ${figureSlot({
+        shot: "A laptop showing a wallet's send screen beside a hardware wallet displaying the same receive address, with a finger tracing the characters in the middle of the string.",
+        caption: "Two screens, one address. The device is the one telling the truth.",
+        ratio: "16 / 9",
+        icon: "bi-arrow-left-right"
+      })}
+
+      <h2>What the test proves, and what it does not</h2>
+
+      <p>Worth being precise about this, because it is easy to run the test, watch it succeed, and draw a bigger conclusion than you earned.</p>
+
+      ${checklist([
+        "The address you copied is the address the coins actually reached.",
+        "Your cold wallet knows about those coins &mdash; the right account, the right address type, the right derivation. That is a different claim from the address merely existing.",
+        "The route works end to end: your sending wallet built it, the network accepted it, the fee was enough, it confirmed.",
+        "You have now done it once, so the transfer that matters is a repeat rather than a first attempt."
+      ])}
+
+      <p>And the things it says nothing about:</p>
+
+      ${cautions([
+        "<strong>It does not prove you can spend from cold storage.</strong> Receiving needs only a public address. Spending needs the device, the PIN, and a signature &mdash; none of which were exercised here.",
+        "<strong>It does not prove your backup works.</strong> That is a separate drill with a separate failure mode. See <a href='recovery-test-drill.html'>testing your recovery</a>.",
+        "<strong>It does not prove the next address is right.</strong> The proof attaches to this destination, on this day, from this wallet. Change any of those and you are testing something new."
+      ])}
+
+      ${prerequisites([
+        "The cold wallet already set up, with its recovery words written down and stored.",
+        "The hot wallet holding the coins, with enough to cover the test amount plus fees.",
+        "A way to see the cold wallet's balance &mdash; the wallet software paired to your signing device, or a <a href='../glossary.html#term-watch_only_wallet'>watch-only wallet</a>.",
+        "A current fee estimate. <a href='how-fees-work.html'>How fees work</a> covers reading one."
+      ])}
+
+      <h2><span class="sc-article-num">1</span>Decide what a few dollars means today</h2>
+
+      <p>The amount you send is not the cost of the test. It is your money going to your own wallet &mdash; you keep it. What the test costs is the fee to send it, and later the fee to spend it again.</p>
+
+      <p>That second fee is the one that decides how small you can sensibly go. Everything you receive arrives as a <a href="../glossary.html#term-utxo">UTXO</a>, an individual chunk your wallet must one day spend, and the fee to spend a chunk depends on its size in bytes rather than its value. Send too little and you create an output that costs more to move than it is worth &mdash; economically <a href="../glossary.html#term-dust">dust</a>, even when it sits well above the protocol's own dust threshold.</p>
+
+      <p>So: enough that spending it later during a busy <a href="../glossary.html#term-mempool">mempool</a> would still leave most of it intact. A few dollars is a reasonable floor when fees are calm, and worth raising when they are not. The upper bound is the amount you would genuinely shrug at losing, because that is the whole point of the exercise.</p>
+
+      <h2><span class="sc-article-num">2</span>Get a receive address, and verify it on the device</h2>
+
+      <p>Generate a fresh, unused receive address in the wallet software paired to your cold storage. Then display that same address on the signing device's own screen and compare the two.</p>
+
+      <p>This is the step, not a formality around it. Malware that quietly substitutes an address in the clipboard or on screen is a well-documented, actively used attack, and the device screen is the only display in the chain that is not attached to the internet. If the two disagree, the computer is lying and you have just caught it.</p>
+
+      ${checklist([
+        "Compare the whole string, not the first four and last four characters &mdash; lookalike addresses are generated to match at both ends.",
+        "Use QR transfer rather than copy and paste where both ends support it.",
+        "Never accept an address that arrived by message, email, or screenshot. Derive it yourself, on the device.",
+        "If your cold wallet has no screen of its own, you have no independent display to check against &mdash; be correspondingly more careful about the machine you are deriving it on."
+      ])}
+
+      <h2><span class="sc-article-num">3</span>Send it</h2>
+
+      <p>Back in the hot wallet, enter the address, the amount, and a fee rate. Check the address once more on the sending side before you approve &mdash; this is the last screen where a substitution can still be caught.</p>
+
+      <p>Do not pick the cheapest possible fee. You are buying information, and a test that sits unconfirmed for three days has not told you anything yet. Choose a rate that clears in the next block or two, note the transaction id, and leave it alone.</p>
+
+      <h2><span class="sc-article-num">4</span>Watch it land</h2>
+
+      <p>The transaction goes to the mempool first, unconfirmed, and then into a block. One <a href="../glossary.html#term-confirmation">confirmation</a> is plenty for a test of this size.</p>
+
+      <p>Where you watch it from matters more than people expect. Pasting your own address into a public <a href="../glossary.html#term-block_explorer">block explorer</a> tells a third party, alongside your IP address, exactly which address you are interested in &mdash; which is a fair summary of the thing you were trying not to publish. Your own wallet is the better window, and <a href="own-node-connection.html">your own node</a> is better still.</p>
+
+      <h2><span class="sc-article-num">5</span>Check the cold wallet, not the explorer</h2>
+
+      <p>The result you are looking for is your cold wallet displaying the coins. An explorer showing the address funded is a weaker claim: it says the address received money, not that the wallet you intend to rely on can see it.</p>
+
+      <p>If the explorer shows the funds and your wallet shows zero, the test has just done its job. Something in the setup &mdash; the account, the address type, the derivation path, the watch-only export &mdash; does not match, and you have found out for the price of the test rather than the price of the balance. Work through the troubleshooting list at the foot of this page before sending anything else.</p>
+
+      <h2><span class="sc-article-num">6</span>Then send the rest</h2>
+
+      <p>Use a fresh receive address for the real transfer rather than the one you just tested. <a href="../glossary.html#term-address_reuse">Address reuse</a> links the two payments together publicly for no benefit, and the proof you just built belongs to the wallet, not to that one address. Verify the new address on the device screen as well &mdash; that check is per-address, every time.</p>
+
+      <p>One transaction for the whole balance is cheaper to spend later than several small ones; several give you separate chunks you can move independently. Neither is wrong, and <a href="sparrow-coin-control.html">coin control</a> covers the trade-off if it matters to you.</p>
+
+      <h2>The step most people skip</h2>
+
+      <p>Once the real transfer has settled, sign one small spend back out of cold storage to your hot wallet. It costs a single fee and it closes the gap this whole page leaves open: the device, the PIN, the signing flow, and &mdash; if you are working air-gapped &mdash; the business of carrying a PSBT out and the signature back.</p>
+
+      ${pullQuote("A wallet you have only ever sent money to is a wallet you have never actually used.")}
+
+      <p>Do it now, while the amount is small and nothing depends on the answer. Then run the <a href="recovery-test-drill.html">recovery drill</a>, which is the last thing standing between a working setup and one you have genuinely checked.</p>
+
+      <h2>When to run it again</h2>
+
+      ${checklist([
+        "A new device, or a new wallet on an existing one.",
+        "A wallet restored from backup, or rebuilt on different software.",
+        "A change of address type or account &mdash; the addresses change, so the proof does not carry over.",
+        "A new destination of any kind, including one belonging to somebody else.",
+        "Before any transfer large enough that you would want to have checked."
+      ])}
+
+      <h2>When it does not arrive</h2>
+
+      <p>Nothing here is an emergency, and none of it is fixed by handing your recovery words to somebody offering to help.</p>
+
+      ${checklist([
+        "<strong>Still unconfirmed after several hours.</strong> The fee was too low for current conditions. <a href='stuck-transaction.html'>Stuck transactions</a> covers bumping it or waiting it out.",
+        "<strong>Confirmed on-chain, invisible in your wallet.</strong> Usually the wallet is watching a different account or script type, or has not scanned far enough ahead to see the address. Check the derivation path and force a rescan.",
+        "<strong>Watch-only wallet showing nothing.</strong> Confirm it is synced and pointed at a working server before concluding anything about the transaction.",
+        "<strong>Nothing at that address at all.</strong> Look up the transaction id and read the output address. If it is not the one you verified, the address was substituted somewhere between the two screens &mdash; stop, and treat the sending machine as compromised.",
+        "<strong>Sent to the wrong address.</strong> There is no recovery. This is the outcome the test exists to make survivable, and the reason it was five dollars."
+      ])}
+
+      ${callout("If you take one thing from this page", `The test is not a ritual for the nervous &mdash; it is the only point in the process where being wrong is cheap. Spend the fee, wait the ten minutes, and let a mistake cost five dollars instead of the balance.`)}`
   },
 
   /* ------------------------------------------------------------------ devices */
@@ -4802,6 +4933,8 @@ const guides = [
       ])}
 
       <p>If the network is busy the fee can be a noticeable fraction of a small test. That is normal, and it is not a reason to skip the test &mdash; it is the cost of finding out that every part of the path works.</p>
+
+      <p>The same test is worth running from your own hot wallet as well, once the coins are off the platform. <a href="test-transaction.html">Sending a test transaction</a> covers that loop end to end &mdash; how small is too small, what a successful test does and does not prove, and what to check when the money does not turn up.</p>
 
       <p><a class="sc-text-link" href="../dashboard.html">Check current network fees <i class="bi bi-arrow-right"></i></a></p>
 
