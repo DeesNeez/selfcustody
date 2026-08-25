@@ -10378,6 +10378,62 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
 
 .sc-article > .sc-source-note { margin-top: 3em; }
 
+/* The Quickstart's closing material is a distinct next-stage section rather
+   than a fifth setup step. It breaks wider than the prose measure and uses a
+   restrained orange field to mark the transition without becoming a warning. */
+.sc-quickstart-next {
+  position: relative;
+  margin: 4em 0 0;
+  padding: 40px 42px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 138, 0, 0.16), transparent 42%),
+    linear-gradient(145deg, rgba(255, 138, 0, 0.105), rgba(17, 18, 20, 0.96) 52%);
+  border: 1px solid rgba(255, 138, 0, 0.42);
+  border-radius: var(--sc-radius);
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 196, 112, 0.08);
+}
+
+.sc-quickstart-next > h2 {
+  margin: 0 0 0.8em;
+  color: var(--sc-orange);
+  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  line-height: 1.15;
+}
+
+.sc-quickstart-next > h3 {
+  margin: 1.8em 0 0.6em;
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.sc-quickstart-next > h2 + h3 { margin-top: 0; }
+
+.sc-quickstart-next > p {
+  margin: 0 0 1.35em;
+  color: var(--sc-ink);
+}
+
+.sc-quickstart-next > ul { margin: 0 0 1.6em; }
+
+.sc-quickstart-next > .sc-callout { margin: 2em 0 0; }
+
+@media (min-width: 992px) {
+  .sc-quickstart-next {
+    width: calc(100% + 140px);
+    margin-left: -70px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .sc-quickstart-next {
+    margin-top: 3em;
+    padding: 28px 22px;
+  }
+}
+
 /* Figures are allowed to break out of the measure -- an image or a chart
    pinned to the text column looks cramped, and the chart in particular needs
    the width to keep its five groups legible. */
@@ -11461,25 +11517,57 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   .sc-halving-chart article p { grid-column:2; text-align:left; }
   .sc-halving-chart article p small { display:inline; margin-right:5px; }
 }
-/* Homepage content map, linked learning path, and trust sections. */
+/* Homepage content map, linked learning path, and trust sections.
+
+   The card itself (not just its body) is the flex column: the media figure
+   and .sc-card-body are its two items, media pinned to its own 176px via
+   flex-shrink: 0 and the body taking flex: 1 1 auto. That grows the body
+   into whatever the row's equal-height stretch adds -- the well-defined
+   flex-basis way, as opposed to min-height: 100% on the body alone, which
+   resolves against the *card's* full height (media included) and so asked
+   the body to be as tall as the whole card on top of the media already
+   sitting above it. The two stacked past the card's own actual height and
+   overflow: hidden silently clipped the excess, which is what was reading
+   as "empty space" -- the link had been pushed out of view, not just down
+   the card. */
+body[data-page="home"] .sc-home-explore-grid .sc-card,
+body[data-page="home"] .sc-home-featured-section .sc-card,
+body[data-page="home"] .sc-home-compare-card {
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-page="home"] .sc-home-explore-grid .sc-home-card-media,
+body[data-page="home"] .sc-home-featured-section .sc-home-feature-media,
+body[data-page="home"] .sc-home-compare-card .sc-home-card-media {
+  flex-shrink: 0;
+}
+
 body[data-page="home"] .sc-home-explore-grid .sc-card-body,
 body[data-page="home"] .sc-home-featured-section .sc-card-body,
 body[data-page="home"] .sc-home-compare-card .sc-card-body {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 0;
 }
 
+/* Not flex: 1 -- these summaries run one or two lines, well short of the
+   card's equalized row height, and a growing paragraph box left a blank
+   void between the copy and the link below it. Sized to its own content,
+   with the link's margin doing the (much smaller, consistent) spacing
+   instead of being pinned to the bottom of whatever height the row stretch
+   produced. */
 body[data-page="home"] .sc-home-explore-grid .sc-card p,
 body[data-page="home"] .sc-home-featured-section .sc-card p,
 body[data-page="home"] .sc-home-compare-card p {
-  flex: 1;
+  flex: none;
 }
 
 body[data-page="home"] .sc-home-explore-grid .sc-text-link,
 body[data-page="home"] .sc-home-featured-section .sc-text-link,
 body[data-page="home"] .sc-home-compare-card .sc-text-link {
-  margin-top: auto;
+  margin-top: 18px;
 }
 
 @media (min-width: 1200px) {
@@ -11489,12 +11577,20 @@ body[data-page="home"] .sc-home-compare-card .sc-text-link {
 }
 
 .sc-home-sticky-intro {
-  position: sticky;
-  top: 112px;
+  position: static;
+}
+
+.sc-home-sticky-intro .sc-eyebrow {
+  margin-bottom: 14px;
 }
 
 .sc-home-sticky-intro h2 {
+  margin-bottom: 18px;
   font-size: clamp(2.35rem, 4.6vw, 4.1rem);
+}
+
+.sc-home-sticky-intro > p {
+  margin-bottom: 24px;
 }
 
 .sc-home-linked-steps {
@@ -11606,12 +11702,6 @@ body[data-page="home"] .sc-home-compare-card .sc-text-link {
   text-align: right;
 }
 
-@media (max-width: 991px) {
-  .sc-home-sticky-intro {
-    position: static;
-  }
-}
-
 @media (max-width: 575px) {
   .sc-home-linked-steps {
     padding: 2px 18px;
@@ -11646,7 +11736,7 @@ body[data-page="home"] .sc-home-trust-section {
 }
 
 body[data-page="home"] .sc-home-explore-section {
-  padding-top: 150px;
+  padding-top: 32px;
   background: #08090b;
 }
 
@@ -11709,7 +11799,12 @@ body[data-page="home"] .sc-home-explore-section {
 }
 
 .sc-home-visual-card {
-  min-height: 100%;
+  /* Not the base .sc-card's height: 100% -- these three summaries are close
+     enough in length that stretching every card in a row to match its
+     tallest sibling bought almost no alignment, only a leftover strip of
+     bare padding at the foot of the shorter ones. Auto lets each card end
+     exactly where its own content does. */
+  height: auto;
   overflow: hidden;
   background: linear-gradient(145deg, #262523, #201f1d);
   border-color: rgba(255, 237, 184, 0.38);
@@ -11784,20 +11879,25 @@ body[data-page="home"] .sc-home-explore-section {
 }
 
 .sc-home-visual-card .sc-card-body {
-  min-height: 242px;
   padding: 24px 26px 27px;
 }
 
 .sc-home-visual-card p {
+  margin-bottom: 0;
   color: rgba(255, 255, 255, 0.64) !important;
 }
 
+/* Keep the photograph confined to the First steps column, as a portrait
+   emerging softly from the section's dark field. */
 body[data-page="home"] .sc-home-safe-path-section {
-  padding-top: 64px;
-  padding-bottom: 76px;
-  background:
-    radial-gradient(circle at 18% 45%, rgba(242, 138, 0, 0.12), transparent 30%),
-    linear-gradient(180deg, #08090b, #10100f 52%, #08090b);
+  padding-top: 48px;
+  padding-bottom: 8px;
+  background: linear-gradient(180deg, #08090b, #10100f 52%, #08090b);
+}
+
+body[data-page="home"] .sc-hero + .sc-home-safe-path-section {
+  padding-top: 48px;
+  background: linear-gradient(180deg, #08090b, #10100f 52%, #08090b);
 }
 
 body[data-page="home"] .sc-home-safe-path-section::before {
@@ -11815,27 +11915,79 @@ body[data-page="home"] .sc-home-safe-path-section::before {
 
 .sc-home-path-media {
   position: relative;
-  height: 235px;
-  margin: 34px 0 0;
+  height: 552px;
+  margin: 26px 0 0;
   overflow: hidden;
-  border: 1px solid rgba(255, 237, 184, 0.34);
-  border-radius: var(--sc-radius);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.36);
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 10%, #000 22%, #000 78%, rgba(0, 0, 0, 0.55) 90%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.55) 8%, #000 18%, #000 82%, rgba(0, 0, 0, 0.55) 92%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 10%, #000 22%, #000 78%, rgba(0, 0, 0, 0.55) 90%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.55) 8%, #000 18%, #000 82%, rgba(0, 0, 0, 0.55) 92%, transparent 100%);
+  mask-composite: intersect;
 }
 
-.sc-home-path-media::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(145deg, transparent 22%, rgba(8, 9, 11, 0.66) 100%);
-  content: "";
+.sc-home-path-media img {
+  object-position: center 38%;
+}
+
+@media (min-width: 992px) {
+  body[data-page="home"] .sc-home-safe-path-section,
+  body[data-page="home"] .sc-hero + .sc-home-safe-path-section {
+    overflow: visible;
+    padding-top: 24px;
+  }
+
+  .sc-home-safe-path-section .row {
+    align-items: stretch !important;
+  }
+
+  .sc-home-safe-path-section .col-lg-5,
+  .sc-home-safe-path-section .col-lg-7 {
+    display: flex;
+  }
+
+  .sc-home-sticky-intro {
+    position: relative;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .sc-home-sticky-intro .sc-eyebrow {
+    position: absolute;
+    top: -49px;
+    left: 0;
+    margin: 0;
+  }
+
+  .sc-home-sticky-intro h2 {
+    margin-top: 0;
+  }
+
+  .sc-home-path-media {
+    height: 0;
+    min-height: 0;
+    margin-top: 8px;
+    flex: 1 1 0;
+  }
+
+  .sc-home-path-media img {
+    object-position: center 48%;
+  }
+
+  .sc-home-linked-steps {
+    width: 100%;
+    height: auto;
+    margin-top: 44px;
+  }
 }
 
 .sc-home-linked-steps {
   position: relative;
   padding: 12px 34px 12px 38px;
-  background:
-    radial-gradient(circle at 4% 14%, rgba(242, 138, 0, 0.1), transparent 24%),
-    rgba(27, 27, 26, 0.82);
+  background: rgba(27, 27, 26, 0.82);
   border-color: rgba(255, 237, 184, 0.34);
   box-shadow:
     0 28px 64px rgba(0, 0, 0, 0.34),
@@ -11849,8 +12001,8 @@ body[data-page="home"] .sc-home-safe-path-section::before {
   bottom: 55px;
   left: 61px;
   width: 1px;
-  background: linear-gradient(180deg, rgba(255, 138, 0, 0.9), rgba(255, 138, 0, 0.14));
-  box-shadow: 0 0 13px rgba(255, 138, 0, 0.42);
+  background: linear-gradient(180deg, #f5222b 0%, #eee2c7 34%, #3c9056 67%, #ff9900 100%);
+  box-shadow: 0 0 13px rgba(255, 255, 255, 0.16);
   content: "";
 }
 
@@ -11863,9 +12015,46 @@ body[data-page="home"] .sc-home-safe-path-section::before {
 
 .sc-home-step-link .sc-step-number {
   border: 1px solid rgba(255, 219, 169, 0.55);
+  border-radius: 50%;
   box-shadow:
     0 0 0 7px rgba(20, 20, 19, 0.95),
     0 0 24px rgba(255, 138, 0, 0.25);
+}
+
+.sc-home-step-link:nth-child(1) .sc-step-number {
+  color: #fff;
+  background: linear-gradient(135deg, #ff4149, #f5222b 52%, #d9121c);
+  border-color: rgba(255, 120, 125, 0.72);
+  box-shadow:
+    0 0 0 7px rgba(20, 20, 19, 0.95),
+    0 0 24px rgba(245, 34, 43, 0.24);
+}
+
+.sc-home-step-link:nth-child(2) .sc-step-number {
+  color: #1b1812;
+  background: linear-gradient(135deg, #fff4dc, #eee2c7 52%, #d2c3a2);
+  border-color: rgba(255, 244, 220, 0.78);
+  box-shadow:
+    0 0 0 7px rgba(20, 20, 19, 0.95),
+    0 0 24px rgba(238, 226, 199, 0.2);
+}
+
+.sc-home-step-link:nth-child(3) .sc-step-number {
+  color: #fff;
+  background: linear-gradient(135deg, #4ba265, #3c9056 52%, #2c7543);
+  border-color: rgba(112, 190, 135, 0.72);
+  box-shadow:
+    0 0 0 7px rgba(20, 20, 19, 0.95),
+    0 0 24px rgba(60, 144, 86, 0.24);
+}
+
+.sc-home-step-link:nth-child(4) .sc-step-number {
+  color: #21180a;
+  background: linear-gradient(135deg, #ffb236, #ff9900 52%, #dc7600);
+  border-color: rgba(255, 194, 91, 0.76);
+  box-shadow:
+    0 0 0 7px rgba(20, 20, 19, 0.95),
+    0 0 24px rgba(255, 153, 0, 0.25);
 }
 
 .sc-home-step-link h3 {
@@ -12088,6 +12277,9 @@ body[data-page="home"] .sc-home-trust-section::before {
   transform: translateX(-50%);
 }
 
+/* Flat #08090b, no radial glow -- that's the same base the trust section
+   above and the close section below both sit on, so the seam between all
+   three disappears instead of this one reading as a lighter patch. */
 body[data-page="home"] .sc-home-help-section {
   position: relative;
   isolation: isolate;
@@ -12095,9 +12287,7 @@ body[data-page="home"] .sc-home-help-section {
   padding-top: 0;
   padding-bottom: 0;
   color: #f4f0e9;
-  background:
-    radial-gradient(circle at 18% 42%, rgba(242, 138, 0, 0.08), transparent 27%),
-    #08090b;
+  background: #08090b;
 }
 
 .sc-home-help-panel {
@@ -12113,7 +12303,7 @@ body[data-page="home"] .sc-home-help-section {
 .sc-home-help-copy {
   display: flex;
   min-height: 100%;
-  padding: clamp(36px, 5vw, 62px);
+  padding: clamp(30px, 4vw, 48px);
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
@@ -12169,7 +12359,7 @@ body[data-page="home"] .sc-home-help-section {
 
 .sc-home-help-topics {
   min-height: 100%;
-  padding: clamp(36px, 5vw, 62px);
+  padding: clamp(30px, 4vw, 48px);
   background:
     radial-gradient(circle at 100% 0, rgba(242, 138, 0, 0.12), transparent 38%),
     rgba(10, 11, 13, 0.34);
@@ -12189,12 +12379,12 @@ body[data-page="home"] .sc-home-help-section {
 .sc-home-help-topic-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .sc-home-help-topic-grid article {
-  min-height: 152px;
-  padding: 17px 18px;
+  min-height: 128px;
+  padding: 14px 16px;
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 237, 184, 0.18);
   border-radius: 10px;
@@ -12302,6 +12492,13 @@ body[data-page="home"] .sc-home-help-section {
   font-size: 0.94rem;
 }
 
+@media (max-width: 1199px) {
+  .sc-home-trust-grid {
+    --bs-gutter-y: 0;
+    row-gap: 20px;
+  }
+}
+
 @media (max-width: 991px) {
   body[data-page="home"] .sc-home-explore-section,
   body[data-page="home"] .sc-home-safe-path-section,
@@ -12310,6 +12507,14 @@ body[data-page="home"] .sc-home-help-section {
   body[data-page="home"] .sc-home-trust-section {
     padding-top: 68px;
     padding-bottom: 68px;
+  }
+
+  body[data-page="home"] .sc-home-safe-path-section {
+    padding-bottom: 16px;
+  }
+
+  body[data-page="home"] .sc-home-explore-section {
+    padding-top: 40px;
   }
 
   .sc-home-path-media {
@@ -12326,6 +12531,24 @@ body[data-page="home"] .sc-home-help-section {
   }
 }
 
+@media (min-width: 576px) and (max-width: 991px) {
+  .sc-home-path-media {
+    width: 100%;
+    max-width: none;
+    height: clamp(320px, 55vw, 500px);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  }
+
+  .sc-home-path-media img {
+    object-position: center;
+  }
+}
+
 @media (max-width: 575px) {
   .sc-home-help-topic-grid {
     grid-template-columns: 1fr;
@@ -12336,7 +12559,7 @@ body[data-page="home"] .sc-home-help-section {
   }
 
   body[data-page="home"] .sc-hero + .sc-section.sc-path-section {
-    padding-bottom: 58px;
+    padding-bottom: 12px;
   }
 
   .sc-home-section-word {
