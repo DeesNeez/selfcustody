@@ -805,7 +805,7 @@ const guides = [
     icon: "bi-currency-bitcoin",
     updated: "2026-08-17",
     status: "published",
-    related: ["complete-path", "what-not-to-normalize", "recovery-test-drill"],
+    related: ["quickstart", "what-not-to-normalize", "recovery-test-drill"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">"Be your own bank" is a good slogan and a bad description. It gets the freedom right and leaves out the job description &mdash; because a bank is not just a place that holds money. It is a large organisation performing a dozen unglamorous tasks on your behalf, most of which you have never had to think about.</p>
@@ -893,60 +893,46 @@ const guides = [
 
       <p>Move an amount you would genuinely shrug at losing. Live with it for a few weeks. Restore it from the backup. Send some of it out and back. Only then decide what else should follow. Every serious loss in this space involves someone who skipped that stage because they were nearly sure.</p>
 
-      ${callout("The next step is the path itself", `<a href="complete-path.html">Start Here</a> takes this from principle to practice &mdash; five stages from an exchange account to a wallet you have proven you can recover.`)}`
+      ${callout("The next step is the path itself", `<a href="quickstart.html">Start Here</a> turns the principle into four practical steps: create, back up, test recovery, and receive a small amount.`)}`
   },
   {
-    slug: "complete-path",
+    slug: "quickstart",
+    aliases: ["complete-path"],
     hubOrder: -1,
     category: "fundamentals",
     products: [],
     eyebrow: "First steps",
-    title: "From Exchange to Self-Custody",
-    summary: "Move your bitcoin, secure the backup, and prove you can recover it.",
+    title: "Intro to Self Custody",
+    summary: "Create a wallet, back it up, prove you can recover it, and only then receive bitcoin.",
     level: "beginner",
     minutes: 20,
     goals: ["learn", "setup", "withdraw"],
     tags: ["Overview", "Start here"],
     icon: "bi-signpost-split",
-    updated: "2026-08-17",
+    updated: "2026-08-24",
     status: "published",
     related: ["what-not-to-normalize", "coldcard-setup", "exchange-withdrawal"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">There is a version of this that takes an afternoon and a version that takes six months. The difference is not intelligence or technical skill &mdash; it is whether you moved money before you understood what you were doing with it.</p>
 
-      <p>This is the whole path, start to finish: from having an account on an exchange to holding bitcoin in a wallet you control and have proven you can recover. Five stages, each with one outcome. Work through them in order.</p>
+      <p>This is the whole path, start to finish: create a wallet, back it up, prove you can recover it, and only then receive bitcoin. Four stages, each with one outcome. Work through them in order.</p>
 
       <p>The rule that makes this work: <strong>do not move on until you can explain the outcome of the current stage in your own words</strong>. Not recite it &mdash; explain it, to yourself, without looking. Every expensive mistake in bitcoin custody is someone who skipped that check because they were nearly sure.</p>
 
       ${figure({
-        src: "../assets/img/complete-path-desk.jpg",
+        src: "../assets/img/quickstart-desk.jpg",
         alt: "A desk laid out for a setup session: a boxed hardware wallet, a recovery-phrase card and pen, a closed laptop, and a cup of coffee",
         caption: "Set aside a proper block of time. This is not a thing to do between meetings.",
         width: 1375,
         height: 768
       })}
 
-      <h2><span class="sc-article-num">1</span>Understand what you own</h2>
+      <h2 id="create-your-wallet"><span class="sc-article-num">1</span>Create your wallet</h2>
 
-      <p>A bitcoin wallet does not hold coins the way a physical wallet holds notes. There is nothing inside it to spill. What it actually holds is <em>keys</em>, and what it actually does is construct transactions and sign them.</p>
+      <p>Begin with the simplest setup that fits what you are protecting. Complexity can come later, after you have proven you can operate and recover a basic wallet.</p>
 
-      <p>The bitcoin itself lives on the network, as records of outputs that particular keys are allowed to spend. Your wallet is the thing that proves you are allowed. This distinction sounds academic until the first time someone tells you they "moved their bitcoin into a hardware wallet" and you realise nothing moved anywhere &mdash; the authority to spend changed hands, which is a different and much more interesting thing.</p>
-
-      <h3>The four words everything else assumes</h3>
-
-      ${checklist([
-        "<strong>Private key</strong> &mdash; the secret that authorises a spend.",
-        "<strong>Recovery words</strong> &mdash; human-readable backup material that can recreate every key in the wallet.",
-        "<strong>Address</strong> &mdash; a destination you can share to receive bitcoin.",
-        "<strong>UTXO</strong> &mdash; one individual chunk of bitcoin your wallet can spend. Your balance is a pile of these, not a single number."
-      ])}
-
-      <p><strong>Outcome:</strong> you can say what your recovery words actually are, and why anyone holding them owns your bitcoin regardless of what device you bought.</p>
-
-      <h2><span class="sc-article-num">2</span>Choose the setup</h2>
-
-      <p>There are three broad shapes, and the honest answer is that most people should start with the simplest option and move through them slowly over years &mdash; not pick the most complex one because it sounds the most secure.</p>
+      <p>There are three broad shapes. Most people should start with the simplest suitable option and move through them slowly over years &mdash; not pick the most complex one because it sounds the most secure.</p>
 
       <div class="sc-setup-grid" aria-label="Three self-custody setup options">
         <article class="sc-setup-option sc-setup-option-mobile">
@@ -990,55 +976,50 @@ const guides = [
 
       <p><a class="sc-text-link" href="../devices.html">Compare hardware <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="../software.html">Compare wallet software <i class="bi bi-arrow-right"></i></a></p>
 
-      <p><strong>Outcome:</strong> you have picked one shape and can say what it protects against and what it asks of you.</p>
+      ${checklist([
+        "Download wallet software only from the maker's official site or the app-store listing linked from it.",
+        "Inspect the packaging and authenticate a hardware device using the maker's official process.",
+        "Generate a completely new wallet on the device or in the app. Never use recovery words supplied in the box or by another person.",
+        "Note the wallet fingerprint if one is shown, or save the first receiving address as a non-secret reference to compare during recovery.",
+        "Keep the wallet empty for now. Creating it is not the same as proving you can recover it."
+      ])}
 
-      <h2><span class="sc-article-num">3</span>Set up and back up</h2>
+      <p><strong>Outcome:</strong> you have created a new, empty wallet in a setup you understand well enough to operate.</p>
 
-      <p>This is where the wallet gets created and where the only truly irreplaceable thing &mdash; your recovery words &mdash; comes into existence. Everything here is worth doing slowly.</p>
+      <h2 id="back-it-up"><span class="sc-article-num">2</span>Back it up</h2>
+
+      <p>Your recovery words are the only truly irreplaceable part of the setup. Everything here is worth doing slowly.</p>
 
       ${checklist([
-        "Inspect the packaging and authenticate the device using the maker's official app or process.",
-        "Generate a new wallet on the device. Never use words that were supplied in the box.",
-        "Write the recovery words offline, in order, by hand. Do not photograph them.",
-        "Complete the confirmation step when prompted &mdash; it catches transcription errors while they are still fixable.",
+        "Write the recovery words offline, in order, by hand. Do not photograph, email, or upload them.",
+        "Complete the wallet's confirmation step when prompted &mdash; it catches transcription errors while they are still fixable.",
+        "Check that every word is legible and numbered before putting the backup away.",
         "Store the device and the backup separately, so one theft, fire, or flood cannot take both."
       ])}
 
       ${figure({
-        src: "../assets/img/complete-path-seed-words.jpg",
-        alt: "A close-up of a hand writing a recovery word onto a numbered backup card",
+        src: "../assets/img/quickstart-seed-words.jpg",
+        alt: "A close-up of a hand writing a recovery word onto a numbered backup card, several words already filled in above it",
         caption: "By hand, offline. This is the step with no undo.",
         width: 1300,
-        height: 726
+        height: 725
       })}
 
       ${callout("A passphrase is not a casual extra password", "A forgotten or mistyped BIP39 passphrase does not lock you out with an error &mdash; it silently opens a different, empty wallet. Add one only when you understand the recovery procedure and have a durable way to preserve it. If you do use one, write down that you used one.")}
 
-      <p><strong>Outcome:</strong> the wallet exists, the words are recorded somewhere durable and offline, and the device and backup are not in the same place.</p>
+      <p><strong>Outcome:</strong> the words are recorded somewhere durable and offline, and the device and backup are not in the same place.</p>
 
-      <h2><span class="sc-article-num">4</span>Withdraw carefully</h2>
+      <h2 id="test-your-recovery"><span class="sc-article-num">3</span>Test your recovery</h2>
 
-      <p>The first withdrawal is the one that teaches you whether any of the previous stage actually worked. Treat it as a test, not a transfer.</p>
+      <p>A backup you have never tested is not a backup. It is an assumption. Test it while the wallet is still empty, when a mistake costs time rather than bitcoin.</p>
 
       ${checklist([
-        "Create a fresh receive address in your wallet.",
-        "Verify the full address on the hardware device screen, not only on the computer.",
-        "Send a small test withdrawal first and wait for it to confirm.",
-        "Confirm it arrived in your wallet before sending anything larger.",
-        "Understand the platform fee, the withdrawal fee, and the network fee before approving &mdash; they are three different charges."
+        "Use the device maker's documented backup-check, dry-run, or recovery procedure. The exact process depends on the wallet.",
+        "If a full restore is required, follow the official instructions while the wallet is empty or use a compatible spare device.",
+        "Confirm the restored wallet fingerprint or first receiving address matches the original wallet.",
+        "If you added a passphrase, confirm that it opens the same wallet as well.",
+        "Never enter recovery words into a website or give them to support. A legitimate recovery check does not require another person to see them."
       ])}
-
-      <p>The reason for checking the address on the device rather than the screen is specific: malware that swaps addresses in the clipboard is common, cheap, and invisible. The computer shows you what the attacker wants you to see. The device does not.</p>
-
-      <p><a class="sc-text-link" href="../exchanges.html">Compare Canadian purchase routes <i class="bi bi-arrow-right"></i></a></p>
-
-      <p><strong>Outcome:</strong> bitcoin has moved from a platform to a wallet you control, and you watched it arrive.</p>
-
-      <h2><span class="sc-article-num">5</span>Prove you can recover</h2>
-
-      <p>A backup you have never tested is not a backup. It is an assumption, and you will discover whether it was correct at the worst possible moment.</p>
-
-      <p>After the first small transaction, and before you commit real savings, follow your device maker's documented recovery-check procedure or restore the words into a wiped spare device. Confirm the wallet fingerprint, the addresses, or the balance match what you expect. This is the single highest-value hour in the whole path.</p>
 
       ${figureSlot({
         shot: "A second, wiped hardware wallet part-way through a restore, seed card beside it, with the first device powered off in the background.",
@@ -1047,7 +1028,45 @@ const guides = [
         icon: "bi-arrow-counterclockwise"
       })}
 
-      <h3>Then keep it working</h3>
+      <p><strong>Outcome:</strong> you have deliberately verified or restored this wallet once and know the backup works.</p>
+
+      <h2 id="receive-bitcoin"><span class="sc-article-num">4</span>Receive bitcoin</h2>
+
+      <p>Your wallet now exists, its backup is protected, and recovery has been proven. Use a small amount to check the receiving path. Treat this as a test, not a transfer.</p>
+
+      ${checklist([
+        "Create a fresh receiving address in your wallet.",
+        "When using a hardware wallet, verify the full address on the device screen, not only on the computer.",
+        "Send a small test amount from an exchange or another wallet and wait for it to confirm.",
+        "Confirm it arrived in the wallet you just recovered. Stop with the test amount for now.",
+        "Understand the platform fee, withdrawal fee, and network fee before approving &mdash; they are three different charges."
+      ])}
+
+      <p>The reason for checking the address on the device rather than the computer is specific: malware can replace an address on the clipboard. The device screen gives you a separate place to verify the destination.</p>
+
+      <p><a class="sc-text-link" href="exchange-withdrawal.html">Withdraw from an exchange <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="test-transaction.html">Send from another wallet <i class="bi bi-arrow-right"></i></a></p>
+
+      <p><strong>Outcome:</strong> a small amount of bitcoin has arrived in a wallet you created, backed up, and proved you can recover.</p>
+
+      <section class="sc-quickstart-next" aria-labelledby="what-comes-next">
+      <h2 id="what-comes-next">What comes next?</h2>
+
+      <h3>Understand what you own</h3>
+
+      <p>You now have a working wallet and a small test balance. Before moving an amount you would not want to lose, learn what the wallet is actually controlling.</p>
+
+      <p>A bitcoin wallet does not hold coins the way a physical wallet holds notes. It holds the keys that authorise transactions. The bitcoin itself remains recorded on the network as individual spendable outputs.</p>
+
+      ${checklist([
+        "<strong>Private key</strong> &mdash; the secret that authorises a spend.",
+        "<strong>Recovery words</strong> &mdash; backup material that can recreate every key in the wallet.",
+        "<strong>Address</strong> &mdash; a destination you can share to receive bitcoin.",
+        "<strong>UTXO</strong> &mdash; one individual chunk of bitcoin your wallet can spend. Your balance is a collection of these, not a single number."
+      ])}
+
+      <p><a class="sc-text-link" href="keys-addresses-utxos.html">Understand what you own <i class="bi bi-arrow-right"></i></a></p>
+
+      <h3>Keep it working</h3>
 
       ${checklist([
         "Check backups periodically for legibility and environmental damage.",
@@ -1056,13 +1075,8 @@ const guides = [
         "Re-evaluate single-signature versus multisig as the amount and the consequences change."
       ])}
 
-      <p><strong>Outcome:</strong> you have restored this wallet at least once, deliberately, and know it works.</p>
-
-      <h2>Where to go from here</h2>
-
-      <p>Those five stages are the whole of it. Everything else on this site &mdash; multisig, passphrases, dice entropy, coin control &mdash; is refinement on top of a foundation that has to be solid first.</p>
-
-      ${callout("Read the failure modes next", `These five stages describe what to do. <a href="what-not-to-normalize.html">What not to normalize</a> describes the six ordinary habits that quietly undo them, and it is worth reading before you move an amount you would miss.`)}`
+      ${callout("Read the failure modes next", `These four steps describe what to do. <a href="what-not-to-normalize.html">What not to normalize</a> describes the ordinary habits that quietly undo them, and it is worth reading before you move an amount you would miss.`)}
+      </section>`
   },
   {
     slug: "what-not-to-normalize",
@@ -1077,7 +1091,7 @@ const guides = [
     icon: "bi-shield-exclamation",
     updated: "2026-08-17",
     status: "published",
-    related: ["complete-path", "dice-entropy", "recovery-test-drill"],
+    related: ["quickstart", "dice-entropy", "recovery-test-drill"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">Almost nobody loses bitcoin to cryptography. The maths holds. What people lose it to is a shortcut that worked the first fifty times, taken by someone who had every intention of being careful.</p>
@@ -1163,7 +1177,7 @@ const guides = [
 
       <p>That is what makes them worth naming in advance. You will not be at your most sceptical the day one of these turns up &mdash; you will be tired, or in a hurry, or halfway through something else. The decision is much easier if you have already made it.</p>
 
-      <p class="mt-4"><a class="sc-text-link" href="complete-path.html">Start here <i class="bi bi-arrow-right"></i></a></p>`
+      <p class="mt-4"><a class="sc-text-link" href="quickstart.html">Start here <i class="bi bi-arrow-right"></i></a></p>`
   },
   {
     slug: "keys-addresses-utxos",
@@ -1178,7 +1192,7 @@ const guides = [
     icon: "bi-wallet2",
     updated: "2026-08-17",
     status: "published",
-    related: ["complete-path", "owning-your-bitcoin", "sparrow-coin-control"],
+    related: ["quickstart", "owning-your-bitcoin", "sparrow-coin-control"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">Almost everyone starts with the same mental picture: a wallet is a container, bitcoin sits inside it, and sending bitcoin moves it from your container to someone else's. It is a reasonable guess and it is wrong in every part, which is why so much of bitcoin seems arbitrary until you replace it.</p>
@@ -1277,7 +1291,7 @@ const guides = [
 
       ${callout("Looking up a word", `This page explains how the pieces fit together rather than defining every term you will meet. For quick definitions — script types, derivation paths, mempool, PSBT, and the rest — the <a href='../glossary.html'>glossary</a> is searchable and built for exactly that.`)}
 
-      ${callout("Ready to do it rather than read about it", `<a href='complete-path.html'>Start Here</a> takes you from an exchange account to a wallet you have proven you can recover, in five stages.`)}`
+      ${callout("Ready to do it rather than read about it", `<a href='quickstart.html'>Start Here</a> walks through four practical steps: create, back up, test recovery, and receive a small amount.`)}`
   },
   {
     slug: "choosing-your-first-setup",
@@ -1292,7 +1306,7 @@ const guides = [
     icon: "bi-signpost-split",
     updated: "2026-08-17",
     status: "published",
-    related: ["complete-path", "owning-your-bitcoin", "keys-addresses-utxos"],
+    related: ["quickstart", "owning-your-bitcoin", "keys-addresses-utxos"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">There is no one-size-fits-all bitcoin wallet, and the search for one is where a lot of people stall &mdash; comparing devices for weeks while their bitcoin sits on an exchange, which is the one option they had already decided against.</p>
@@ -1422,7 +1436,7 @@ const guides = [
         "<strong>Skipping the restore test.</strong> Whatever you choose, it is unproven until you have recovered from the backup once."
       ])}
 
-      ${callout("Then just do it", `Whatever you pick, <a href='complete-path.html'>Start Here</a> takes it from decision to a wallet you have proven works — five stages, small amounts, no step you cannot undo except the ones clearly marked.`)}`
+      ${callout("Then just do it", `Whatever you pick, <a href='quickstart.html'>Start Here</a> takes it from decision to a wallet you have proven works &mdash; four steps, small amounts, and recovery tested before bitcoin arrives.`)}`
   },
   {
     slug: "stuck-transaction",
@@ -1555,7 +1569,7 @@ const guides = [
     icon: "bi-arrow-counterclockwise",
     updated: "2026-08-17",
     status: "published",
-    related: ["complete-path", "owning-your-bitcoin", "what-not-to-normalize"],
+    related: ["quickstart", "owning-your-bitcoin", "what-not-to-normalize"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">Writing down twelve or twenty-four words feels like the hard part is over. It is not. Until you have restored from those words and watched the correct wallet reappear, you do not have a backup &mdash; you have a hypothesis, and the test will otherwise be run for you at the worst possible time.</p>
@@ -1679,7 +1693,7 @@ const guides = [
 
       <p>For a multisig wallet the drill is larger and the failure mode is different: you must also back up the wallet configuration, and rehearse recovery using only the threshold number of keys. Keys alone will not rebuild a multisig, and discovering that during a real recovery is the worst version of this lesson.</p>
 
-      ${callout("This is stage five of the path", `If you arrived here without a wallet yet, <a href="complete-path.html">Start Here</a> covers the four stages before this one. This drill is the one that turns all of them from intentions into something you have actually checked.`)}`
+      ${callout("This is step three of the path", `If you arrived here without a wallet yet, <a href="quickstart.html">Start Here</a> puts this recovery drill after backup and before receiving bitcoin. It is the step that turns the backup from an intention into something you have actually checked.`)}`
   },
 
   {
@@ -3761,7 +3775,7 @@ const guides = [
 
       <p>Once that has worked end to end, you have a wallet you can actually reason about: the computer proposes, the device disposes, and you have watched both halves happen.</p>
 
-      <p class="mt-4"><a class="sc-text-link" href="complete-path.html">Then test your recovery <i class="bi bi-arrow-right"></i></a></p>`
+      <p class="mt-4"><a class="sc-text-link" href="quickstart.html">Then test your recovery <i class="bi bi-arrow-right"></i></a></p>`
   },
   {
     slug: "sparrow-coin-control",
@@ -4857,7 +4871,7 @@ const guides = [
     updated: "2026-08-17",
     productGuide: true,
     status: "published",
-    related: ["complete-path", "sparrow-first-wallet", "what-not-to-normalize"],
+    related: ["quickstart", "sparrow-first-wallet", "what-not-to-normalize"],
     layout: "article",
     body: `
       <p class="sc-guide-intro">Until you withdraw, you do not own bitcoin. You own an entry in a company's database saying they owe you some. The two behave identically right up until the moment they do not &mdash; and by then the withdrawal is no longer available.</p>
