@@ -195,52 +195,50 @@ const currentYear = new Date().getFullYear();
           }
         )}
 
+        <section class="sc-section sc-home-safe-path-section">
+          <div class="container">
+            <div class="row g-5 align-items-start">
+              <div class="col-lg-5">
+                <div class="sc-home-sticky-intro">
+                  <span class="sc-eyebrow">First steps</span>
+                  <h2>Learn the Basics</h2>
+                  <p>Bitcoin can feel like an endless rabbit hole. Start with our step-by-step <a href="guides/quickstart.html">Quickstart guide</a>, or dive into our recommended topic-specific guides. Learn at your own pace and go deeper when you’re ready.</p>
+                  <figure class="sc-home-path-media" aria-hidden="true"><picture><source media="(min-width: 576px) and (max-width: 991px)" srcset="assets/img/quickstart-rabbit-tablet.webp" width="1376" height="768"><img src="assets/img/quickstart-rabbit-portrait.webp" alt="" width="688" height="1024" loading="lazy" decoding="async"></picture></figure>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="sc-home-linked-steps">
+                  <a class="sc-step sc-home-step-link" href="guides/choosing-your-first-setup.html"><span class="sc-step-number">1</span><div><h3>Create Your Wallet</h3><p>Choose a setup that fits your needs, then generate a new wallet from a trusted device or app.</p><span class="sc-text-link">Choose your setup <i class="bi bi-arrow-right"></i></span></div></a>
+                  <a class="sc-step sc-home-step-link" href="guides/seed-backup-metal.html"><span class="sc-step-number">2</span><div><h3>Back It Up</h3><p>Write down your recovery words offline and keep the backup separate from the device.</p><span class="sc-text-link">Protect the backup <i class="bi bi-arrow-right"></i></span></div></a>
+                  <a class="sc-step sc-home-step-link" href="guides/recovery-test-drill.html"><span class="sc-step-number">3</span><div><h3>Test Your Recovery</h3><p>Verify the backup can restore the same wallet before you trust it with bitcoin.</p><span class="sc-text-link">Run a recovery drill <i class="bi bi-arrow-right"></i></span></div></a>
+                  <div class="sc-step sc-home-step-link sc-home-step-multi"><span class="sc-step-number">4</span><div><h3>Receive Bitcoin</h3><p>Verify the receiving address, send a small test amount, and confirm it arrives.</p><div class="sc-home-step-actions"><a class="sc-text-link" href="guides/exchange-withdrawal.html">From an exchange <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="guides/test-transaction.html">From another wallet <i class="bi bi-arrow-right"></i></a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="sc-section sc-path-section sc-home-explore-section">
           <div class="sc-path-stars" aria-hidden="true"></div>
           <div class="container">
             <div class="sc-section-head sc-home-cinematic-head">
               <span class="sc-eyebrow">Explore</span>
-              <h2>Everything in one place</h2>
+              <h2>Everything in One Place</h2>
               <p>Learn the system and check live network data when you are ready to act.</p>
             </div>
             <div class="row g-4 sc-home-explore-grid sc-home-explore-group sc-path-options">
               ${homeExploreCard({ icon: "bi-signpost-split", title: "Guides", text: "Follow practical walkthroughs from first principles and first withdrawals to multisig, privacy, and inheritance.", href: "guides.html", linkText: "Browse guides", image: "assets/img/guides-library-hero.jpg" }).trim()}
               ${homeExploreCard({ icon: "bi-stack", title: "Glossary", text: "Look up the language of bitcoin custody, transactions, wallets, backups, privacy, and network operation.", href: "glossary.html", linkText: "Search the glossary", image: "assets/img/glossary-hero.jpg" }).trim()}
-              ${homeExploreCard({ icon: "bi-graph-up", title: "Live dashboard", text: "Check current network conditions, fees, blocks, supply, and other useful bitcoin data in one view.", href: "dashboard.html", linkText: "Open dashboard", image: "assets/img/dashboard-network-preview-v3.jpg" }).trim()}
+              ${homeExploreCard({ icon: "bi-graph-up", title: "Live Dashboard", text: "Check current network conditions, fees, blocks, supply, and other useful bitcoin data in one view.", href: "dashboard.html", linkText: "Open dashboard", image: "assets/img/dashboard-network-preview-v3.jpg" }).trim()}
             </div>
             <div class="sc-home-compare-intro">
               <span class="sc-eyebrow">Compare</span>
               <p>Compare hardware devices, wallet software, and Canadian buying options by custody model, compatibility, privacy, workflow, and tradeoffs.</p>
             </div>
             <div class="row g-4 sc-home-explore-grid sc-home-compare-group sc-path-options">
-              ${homeExploreCard({ icon: "bi-shield-lock", title: "Hardware devices", text: "Compare signing devices by security model, workflow, openness, recovery design, and the tradeoffs each one makes.", href: "devices.html", linkText: "Compare devices", image: "assets/img/devices-hero.jpg" }).trim()}
-              ${homeExploreCard({ icon: "bi-window", title: "Wallet software", text: "Find mobile and desktop wallets that match your device, privacy needs, node setup, and transaction workflow.", href: "software.html", linkText: "Compare software", image: "assets/img/software-hero.jpg" }).trim()}
-              ${homeExploreCard({ icon: "bi-bank", title: "Canadian exchanges", text: "Compare Canadian buying routes by custody model, funding methods, purchase flow, and withdrawal experience.", href: "exchanges.html", linkText: "Compare exchanges", image: "assets/img/exchanges-hero.jpg" }).trim()}
-            </div>
-          </div>
-        </section>
-
-        <section class="sc-section sc-home-safe-path-section">
-          <div class="container">
-            <div class="row g-5 align-items-start">
-              <div class="col-lg-5">
-                <div class="sc-home-sticky-intro">
-                  <span class="sc-eyebrow">Featured path</span>
-                  <h2>The safe path to self-custody</h2>
-                  <p>Use this as a practical starting point. Each step links to a guide that explains the idea so you can decide what fits your situation.</p>
-                  <a class="sc-text-link" href="guides/complete-path.html">Open the 5-step guide <i class="bi bi-arrow-right"></i></a>
-                  <figure class="sc-home-path-media" aria-hidden="true"><img src="assets/img/complete-path-desk.jpg" alt="" width="1375" height="928" loading="lazy" decoding="async"></figure>
-                </div>
-              </div>
-              <div class="col-lg-7">
-                <div class="sc-home-linked-steps">
-                  <a class="sc-step sc-home-step-link" href="guides/keys-addresses-utxos.html"><span class="sc-step-number">1</span><div><h3>Understand what you own</h3><p>Build the right mental model for keys, addresses, recovery words, and the coins your wallet tracks.</p><span class="sc-text-link">Learn the fundamentals <i class="bi bi-arrow-right"></i></span></div></a>
-                  <a class="sc-step sc-home-step-link" href="guides/choosing-your-first-setup.html"><span class="sc-step-number">2</span><div><h3>Choose a setup</h3><p>Match the shape of the wallet to the amount, your experience, and the risks you actually need to manage.</p><span class="sc-text-link">Choose your first setup <i class="bi bi-arrow-right"></i></span></div></a>
-                  <a class="sc-step sc-home-step-link" href="guides/seed-backup-metal.html"><span class="sc-step-number">3</span><div><h3>Set up and protect the backup</h3><p>Create the wallet carefully, record recovery words offline, and keep the device and backup in separate places.</p><span class="sc-text-link">Protect the backup <i class="bi bi-arrow-right"></i></span></div></a>
-                  <div class="sc-step sc-home-step-link sc-home-step-multi"><span class="sc-step-number">4</span><div><h3>Send a small test transaction</h3><p>Send a small amount from an exchange or another wallet, confirm it arrives, then move the full amount.</p><div class="sc-home-step-actions"><a class="sc-text-link" href="guides/exchange-withdrawal.html">From an exchange <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="guides/test-transaction.html">From a hot wallet <i class="bi bi-arrow-right"></i></a></div></div></div>
-                  <a class="sc-step sc-home-step-link" href="guides/recovery-test-drill.html"><span class="sc-step-number">5</span><div><h3>Prove you can recover</h3><p>Restore from the backup once so recovery is a tested process rather than an assumption.</p><span class="sc-text-link">Run a recovery drill <i class="bi bi-arrow-right"></i></span></div></a>
-                </div>
-              </div>
+              ${homeExploreCard({ icon: "bi-shield-lock", title: "Hardware Devices", text: "Compare signing devices by security model, workflow, openness, recovery design, and the tradeoffs each one makes.", href: "devices.html", linkText: "Compare devices", image: "assets/img/devices-hero.jpg" }).trim()}
+              ${homeExploreCard({ icon: "bi-window", title: "Wallet Software", text: "Find mobile and desktop wallets that match your device, privacy needs, node setup, and transaction workflow.", href: "software.html", linkText: "Compare software", image: "assets/img/software-hero.jpg" }).trim()}
+              ${homeExploreCard({ icon: "bi-bank", title: "Canadian Exchanges", text: "Compare Canadian buying routes by custody model, funding methods, purchase flow, and withdrawal experience.", href: "exchanges.html", linkText: "Compare exchanges", image: "assets/img/exchanges-hero.jpg" }).trim()}
             </div>
           </div>
         </section>
@@ -248,14 +246,14 @@ const currentYear = new Date().getFullYear();
         <section class="sc-section sc-section-muted sc-home-trust-section">
           <div class="container">
             <div class="sc-home-trust-head">
-              <h2>Built to inform, not persuade</h2>
+              <h2>Built to Inform, Not Persuade</h2>
               <p>Self-custody has no universal setup. We explain the options, the risks, and the tradeoffs that matter—so you can decide for yourself.</p>
             </div>
             <div class="row g-3 sc-home-trust-grid">
-              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Education-first</span><h3>Understand before acting</h3><p>Learn the model before choosing a product or moving money.</p></article></div>
-              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Transparent</span><h3>See the tradeoffs</h3><p>Workflow, privacy, custody, and compatibility are shown directly.</p></article></div>
-              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Security boundary</span><h3>Your secrets stay yours</h3><p>This site never asks for recovery words, private keys, PINs, or passphrases.</p></article></div>
-              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Safer habits</span><h3>Testing and backups</h3><p>Verify on-device, start small, and prove recovery before storing meaningful savings.</p></article></div>
+              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Education-first</span><h3>Understand Before Acting</h3><p>Learn the model before choosing a product or moving money.</p></article></div>
+              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Transparent</span><h3>See the Tradeoffs</h3><p>Workflow, privacy, custody, and compatibility are shown directly.</p></article></div>
+              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Security boundary</span><h3>Your Secrets Stay Yours</h3><p>This site never asks for recovery words, private keys, PINs, or passphrases.</p></article></div>
+              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Safer habits</span><h3>Testing and Backups</h3><p>Verify on-device, start small, and prove recovery before storing meaningful savings.</p></article></div>
             </div>
           </div>
         </section>
@@ -267,7 +265,7 @@ const currentYear = new Date().getFullYear();
                 <div class="col-lg-6">
                   <div class="sc-home-help-copy">
                     <span class="sc-eyebrow">One-on-one guidance</span>
-                    <h2>Need help with self-custody?</h2>
+                    <h2>Need Help?</h2>
                     <p>Get practical guidance choosing a wallet, setting up a device, reviewing a backup, or rehearsing a transaction—while you remain in control of every step.</p>
                     <a class="sc-btn sc-home-help-cta" href="contact.html"><span>Get Help</span></a>
                   </div>
@@ -300,9 +298,9 @@ const currentYear = new Date().getFullYear();
             <h2 class="sc-close-title">
               <span class="sc-outlined-word sc-close-word" data-text="CONTROL YOUR MONEY"><span class="sc-word-fill">CONTROL YOUR MONEY</span></span>
             </h2>
-            <p class="sc-close-lead">Follow the complete path from first principles to a wallet you have tested and can recover.</p>
+            <p class="sc-close-lead">Follow the first steps: create a wallet, back it up, prove you can recover it, and only then receive bitcoin.</p>
             <div class="sc-hero-actions sc-close-actions">
-              <a class="sc-btn sc-btn-primary" href="guides/complete-path.html"><span>Start the complete path</span></a>
+              <a class="sc-btn sc-btn-primary" href="guides/quickstart.html"><span>Take the first steps</span></a>
             </div>
           </div>
         </section>`
@@ -317,7 +315,7 @@ const currentYear = new Date().getFullYear();
           "A wealth of knowledge,<br><em>at your fingertips.</em>",
           "Setup walkthroughs for every device and wallet, withdrawal guides for Canadian platforms, and advanced material worth a read.",
           `<a class="sc-btn sc-btn-primary" href="#finder">Find my guide</a>
-           <a class="sc-btn sc-btn-ghost" href="guides/complete-path.html">Quickstart</a>`,
+           <a class="sc-btn sc-btn-ghost" href="guides/quickstart.html">Quickstart</a>`,
           {
             src: "assets/img/guides-library-hero.jpg",
             alt: "",

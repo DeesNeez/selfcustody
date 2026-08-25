@@ -32,7 +32,7 @@ const FILES = {
 };
 
 const SITE = 'https://selfcustody.ca';
-const ASSET_VERSION = '20260823-1640';
+const ASSET_VERSION = '20260825-1100';
 const ASSET_QUERY = /(assets\/(?:vendor\/bootstrap-icons\/bootstrap-icons\.css|css\/(?:style|site-refresh)\.css|js\/site-refresh\.js)\?v=)[^"']+/g;
 
 /* The whole container block, anchored on the <noscript> that always follows it.

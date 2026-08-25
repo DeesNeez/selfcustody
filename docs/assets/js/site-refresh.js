@@ -2997,8 +2997,41 @@
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (!prefersReducedMotion && "IntersectionObserver" in window) {
+    const homeFirstSteps = document.querySelector("#main-content .sc-home-sticky-intro");
+    const homeStepPanel = document.querySelector("#main-content .sc-home-linked-steps");
+
+    /* Both halves of the First Steps block reveal the same way, via an
+       observer that fires immediately when the element is already on screen
+       as well as when it is scrolled into view.
+
+       The left column previously revealed on the first scroll event instead.
+       That block sits directly below the hero, so any viewport tall enough to
+       show it without scrolling -- 1440p and up, or a zoomed-out window --
+       held it at opacity 0 indefinitely while the step panel beside it, which
+       already used an observer, appeared as normal. The section rendered
+       half-empty: steps on the right, blank space where the heading, button
+       and image should be. */
+    const revealWhenSeen = element => {
+      element.classList.add("sc-reveal");
+      element.style.setProperty("--sc-reveal-delay", "0ms");
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.01, rootMargin: "0px 0px -40px 0px" });
+
+      observer.observe(element);
+    };
+
+    if (homeFirstSteps) revealWhenSeen(homeFirstSteps);
+    if (homeStepPanel) revealWhenSeen(homeStepPanel);
+
     const revealTargets = document.querySelectorAll(
-      "#main-content .sc-card, #main-content .sc-detail, #main-content .sc-step, " +
+      "#main-content .sc-card, #main-content .sc-detail, #main-content .sc-step:not(.sc-home-step-link), " +
       "#main-content .sc-callout, #main-content .sc-section-head, #main-content .sc-table-wrap"
     );
 
