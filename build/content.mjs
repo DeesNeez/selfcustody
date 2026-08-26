@@ -4,7 +4,7 @@
 
    Do not hand-edit docs/*.html -- edit here and rebuild. */
 
-import { renderGuideFinder, renderGuideSections, renderGuideIndexNav, publishedGuides, productGuideLinks, renderGlossaryTag, guideCategories } from './guides.mjs';
+import { renderGuideFinder, renderGuideSections, renderGuideIndexNav, renderToolsBand, publishedGuides, productGuideLinks, renderGlossaryTag, guideCategories } from './guides.mjs';
 
 const currentYear = new Date().getFullYear();
 
@@ -246,10 +246,11 @@ const currentYear = new Date().getFullYear();
         <section class="sc-section sc-section-muted sc-home-trust-section">
           <div class="container">
             <div class="sc-home-trust-head">
+              <span class="sc-eyebrow">Our standard</span>
               <h2>Built to Inform, Not Persuade</h2>
               <p>Self-custody has no universal setup. We explain the options, the risks, and the tradeoffs that matter—so you can decide for yourself.</p>
             </div>
-            <div class="row g-3 sc-home-trust-grid">
+            <div class="row sc-home-trust-grid">
               <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Education-first</span><h3>Understand Before Acting</h3><p>Learn the model before choosing a product or moving money.</p></article></div>
               <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Transparent</span><h3>See the Tradeoffs</h3><p>Workflow, privacy, custody, and compatibility are shown directly.</p></article></div>
               <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Security boundary</span><h3>Your Secrets Stay Yours</h3><p>This site never asks for recovery words, private keys, PINs, or passphrases.</p></article></div>
@@ -273,17 +274,25 @@ const currentYear = new Date().getFullYear();
                 <div class="col-lg-6">
                   <div class="sc-home-help-topics">
                     <h3 class="sc-home-help-label">Get help with</h3>
-                    <div class="sc-home-help-topic-grid">
-                      <article><h3>Choose</h3><ul><li>Hardware wallet selection</li><li>Software wallet</li><li>Multisig planning</li></ul></article>
-                      <article><h3>Set up</h3><ul><li>Seed generation</li><li>Guided device setup</li><li>Receiving address verification</li></ul></article>
-                      <article><h3>Protect</h3><ul><li>Recovery word backups</li><li>Passphrases</li><li>Privacy basics</li></ul></article>
-                      <article><h3>Practice</h3><ul><li>Test transactions</li><li>Exchange withdrawals</li><li>Recovery drills</li></ul></article>
-                    </div>
+                    <ul class="sc-home-help-topic-list">
+                      <li>Hardware wallet selection</li>
+                      <li>Software wallets</li>
+                      <li>Multisig planning</li>
+                      <li>Seed generation</li>
+                      <li>Guided device setup</li>
+                      <li>Address verification</li>
+                      <li>Backups</li>
+                      <li>Passphrases</li>
+                      <li>Privacy basics</li>
+                      <li>Test transactions</li>
+                      <li>Exchange withdrawals</li>
+                      <li>Recovery</li>
+                    </ul>
                   </div>
                 </div>
               </div>
               <div class="sc-home-help-boundary">
-                <strong>Your keys stay yours.</strong>
+                <strong>Your keys, your coins.</strong>
                 <p>We guide while you operate your own devices. We never ask for recovery words, private keys, PINs, passphrases, wallet backup files, account access, or sensitive personal information—and never hold or move bitcoin for you.</p>
               </div>
             </div>
@@ -328,6 +337,7 @@ const currentYear = new Date().getFullYear();
         ${renderGuideIndexNav()}
         ${renderGuideFinder()}
         ${renderGuideSections()}
+        ${renderToolsBand()}
 
         <section class="sc-section sc-section-dark">
           <div class="container">
@@ -1845,6 +1855,15 @@ const currentYear = new Date().getFullYear();
             return `<li><a href="${target}">${cat.label}</a></li>`;
           })
           .join("\n            ");
+        /* The offline entropy tool is not a guide category -- it is a
+           standalone page, not a section of guides.html -- so it is appended
+           after the category loop rather than folded into it, set apart by
+           its own divider and colour, and points straight at entropy.html
+           rather than the hub band that promotes it. From any other page on
+           the site, guides.html#entropy-workshop would mean landing on the
+           hub and scrolling past six sections to reach a band whose only job
+           is to link to the real page; going straight there skips that. */
+        const toolItem = `<li class="sc-nav-tool-item"><a class="sc-nav-tool-link" href="${base}entropy.html">Entropy Workshop</a></li>`;
         /* Same shape as Compare: the label only opens the list. The hub
            itself is still one click away as "Start here", the first item
            in the list, so nothing needs the label to be a link too. */
@@ -1854,6 +1873,7 @@ const currentYear = new Date().getFullYear();
           </button>
           <ul class="sc-nav-submenu">
             ${items}
+            ${toolItem}
           </ul>
         </li>`;
       }

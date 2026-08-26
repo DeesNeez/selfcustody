@@ -1,8 +1,8 @@
 @font-face {
   font-display: block;
   font-family: "bootstrap-icons";
-  src: url("./fonts/bootstrap-icons.woff2?subset-20260815") format("woff2"),
-url("./fonts/bootstrap-icons.woff?subset-20260815") format("woff");
+  src: url("./fonts/bootstrap-icons.woff2?subset-20260825") format("woff2"),
+url("./fonts/bootstrap-icons.woff?subset-20260825") format("woff");
 }
 
 .bi::before,
@@ -32,6 +32,7 @@ url("./fonts/bootstrap-icons.woff?subset-20260815") format("woff");
 .bi-building-lock::before { content: "\f878"; }
 .bi-calculator::before { content: "\f1e0"; }
 .bi-camera::before { content: "\f220"; }
+.bi-check::before { content: "\f26e"; }
 .bi-check2-circle::before { content: "\f270"; }
 .bi-cpu::before { content: "\f2d6"; }
 .bi-credit-card-2-front::before { content: "\f2da"; }
@@ -40,11 +41,11 @@ url("./fonts/bootstrap-icons.woff?subset-20260815") format("woff");
 .bi-diagram-3::before { content: "\f2ee"; }
 .bi-emoji-neutral::before { content: "\f323"; }
 .bi-envelope::before { content: "\f32f"; }
+.bi-exclamation-triangle-fill::before { content: "\f33a"; }
 .bi-gear-fill::before { content: "\f3e2"; }
 .bi-graph-down-arrow::before { content: "\f672"; }
 .bi-graph-up::before { content: "\f3f2"; }
 .bi-hourglass-split::before { content: "\f41f"; }
-.bi-lightning::before { content: "\f46f"; }
 .bi-lightning-charge::before { content: "\f46d"; }
 .bi-list::before { content: "\f479"; }
 .bi-people::before { content: "\f4d0"; }

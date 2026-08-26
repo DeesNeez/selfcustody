@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260825-1100" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260825-1100" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260825-1100" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260825-4800" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260825-4800" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260825-4800" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Roll the dice: generating your own entropy","description":"Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.","url":"https://selfcustody.ca/guides/dice-entropy.html","datePublished":"2026-08-21","dateModified":"2026-08-21","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/dice-entropy.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -55,6 +55,7 @@
             <li><a href="../guides.html#exchanges">Exchanges</a></li>
             <li><a href="../guides.html#advanced">Techniques</a></li>
             <li><a href="../guides.html#concepts">Concepts</a></li>
+            <li class="sc-nav-tool-item"><a class="sc-nav-tool-link" href="../entropy.html">Entropy Workshop</a></li>
           </ul>
         </li><li class="sc-nav-menu">
           <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
@@ -101,6 +102,14 @@
       <p>Rolling dice removes the faith. You generate the randomness yourself, on a table, in front of your own eyes, and hand it to the device already made. Nothing about the chip's honesty matters any more, because you did the one part that had to be secret.</p>
 
       <p>It costs you about twenty minutes and a little care. Here is how it works, and &mdash; more importantly &mdash; the handful of ways people accidentally ruin it.</p>
+
+      <aside class="sc-tool-shortcut">
+        <span class="sc-die-mark" aria-hidden="true"></span>
+        <div>
+          <strong>Already rolled, and want to check the device converted them honestly?</strong>
+          <p><a href="../entropy.html">Entropy Workshop</a> turns a set of test rolls into the words and addresses they produce, so you can compare. It is a single file, usable in the browser or saved and run with the network off. <a href="#checking-the-conversion">The rules for using it safely</a> are further down and matter more than the tool does.</p>
+        </div>
+      </aside>
 
       
   <figure class="sc-figure">
@@ -301,6 +310,8 @@
 
       <ul class="sc-caution-list"><li>Only ever do this with throwaway test rolls, on a wallet holding nothing, which you wipe afterwards.</li><li>Never type the rolls or the words of a real wallet into anything except the device itself &mdash; not a website, not an offline copy of one, not a notes app, not a spreadsheet.</li><li>Anything that asks you to enter an existing recovery phrase to "verify" or "validate" it is stealing from you, however official it looks.</li></ul>
 
+      <div class="sc-callout mt-4"><h3>The tool for the job</h3><p>This site publishes one: <a href="../entropy.html">Entropy Workshop</a>. Enter your test rolls and it shows the words and first addresses they convert to, so you can compare them against what your device produced. It is a single file with nothing loaded from anywhere, so you can save it and run it on a machine that has never been online &mdash; and it deliberately cannot generate randomness or accept an existing recovery phrase, which is why it is safe to point you at.</p></div>
+
       <h2>Finishing up</h2>
 
       <p>The dice were the interesting part. They are not the part that keeps your bitcoin safe &mdash; the ordinary, boring steps are, and they are the same ones as for any other wallet.</p>
@@ -406,6 +417,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260825-1100"></script>
+  <script src="../assets/js/site-refresh.js?v=20260825-4800"></script>
 </body>
 </html>
