@@ -139,6 +139,20 @@ const callout = (title, body) => `<div class="sc-callout mt-4"><h3>${title}</h3>
 const official = (url, label = "Official documentation") =>
   `<a class="sc-text-link" href="${url}" target="_blank" rel="noopener">${label} <i class="bi bi-arrow-up-right"></i></a>`;
 
+/* A guide link introduced by its subject's own mark, the way the dice guide
+   carries the die face beside its title. Only worth doing where the mark says
+   something a bootstrap icon would not -- pointing at the entropy guide from
+   the middle of a page about seed generation is exactly that case.
+
+   The mark is a sibling of the anchor rather than a child on purpose:
+   .sc-text-link widens its flex gap on hover, and a mark inside would drift
+   away from the words it belongs to every time the pointer crossed it. */
+const markLink = (href, label, mark = "sc-die-mark") => `
+      <p class="sc-mark-link">
+        <span class="${mark}" aria-hidden="true"></span>
+        <a class="sc-text-link" href="${href}">${label} <i class="bi bi-arrow-right"></i></a>
+      </p>`;
+
 /* "What you need before you start" -- rendered above step one on every guide
    that supplies it, because the most common failure is discovering halfway in
    that the microSD card or the spare device was never on the table. */
@@ -173,6 +187,194 @@ const figureSlot = ({ shot, caption, ratio = "16 / 9", icon = "bi-camera" }) => 
   </figure>`;
 
 const pullQuote = text => `<blockquote class="sc-pull-quote"><p>${text}</p></blockquote>`;
+
+/* ---- the self-check quiz ------------------------------------------------
+
+   Five questions closing the Quickstart. The markup ships fully readable
+   without JavaScript: every explanation is present and visible, and the
+   option buttons simply do nothing. site-refresh.js hides the explanations,
+   activates the buttons, and keeps score -- so the quiz is an enhancement
+   over a readable page rather than the only way to reach the content.
+
+   Correctness lives in a data attribute rather than a script, which means a
+   determined reader can view-source the answers. That is the right trade for
+   a self-check: the cost of cheating is falling for one of the five documented
+   ways people lose bitcoin, and the benefit is that the reasoning survives
+   with the script off. */
+const quiz = ({ heading, eyebrow, intro, questions }) => {
+  const letters = ["A", "B", "C", "D"];
+
+  const items = questions.map((q, qi) => {
+    const options = q.options.map((o, oi) => `
+          <button class="sc-quiz-option" type="button" data-quiz-option${o.correct ? " data-quiz-correct" : ""}>
+            <span class="sc-quiz-letter" aria-hidden="true">${letters[oi]}</span>
+            <span>${o.text}</span>
+          </button>`).join("");
+
+    return `
+      <li class="sc-quiz-item" data-quiz-item>
+        <p class="sc-quiz-prompt"><span class="sc-quiz-n" aria-hidden="true">${qi + 1}</span>${q.prompt}</p>
+        <div class="sc-quiz-options" role="group" aria-label="Answers to question ${qi + 1}">${options}
+        </div>
+        <p class="sc-quiz-why" data-quiz-why><strong>Why:</strong> ${q.why}</p>
+      </li>`;
+  }).join("");
+
+  return `
+    <section class="sc-quiz" data-quiz aria-labelledby="sc-quiz-heading">
+      <div class="sc-quiz-head">
+        <span class="sc-die-mark" aria-hidden="true"></span>
+        <div>
+          <span>${eyebrow}</span>
+          <h2 id="sc-quiz-heading">${heading}</h2>
+        </div>
+        <strong class="sc-quiz-score" data-quiz-score hidden>0 / ${questions.length}</strong>
+      </div>
+      <p class="sc-quiz-intro">${intro}</p>
+      <ol class="sc-quiz-list">${items}
+      </ol>
+      <p class="sc-quiz-result" data-quiz-result hidden></p>
+    </section>`;
+};
+
+/* ---- what the seed splits into ------------------------------------------
+
+   The half of the wallet that can spend, against the half that can only look.
+   Drawn because the asymmetry is the whole idea and prose keeps making it
+   sound like a permissions setting: the xpub is not a restricted version of
+   the private key, it is a different object that derivation only ever
+   produces in one direction.
+
+   The flag panel along the bottom is the part the "vault with a glass front"
+   metaphor leaves out, and it is deliberately the same orange strip the
+   multisig and BIP85 diagrams end on -- all three are about an obligation
+   that the reassuring part of the picture does not contain. */
+const watchOnlyDiagram = () => {
+  return `
+    <figure class="sc-figure sc-diagram-figure sc-key-split-figure">
+      <svg class="sc-dg-svg sc-key-split" viewBox="0 0 720 470" role="img" aria-labelledby="wo-dg-title wo-dg-desc" preserveAspectRatio="xMidYMid meet">
+        <title id="wo-dg-title">What the seed splits into: keys that spend, and keys that only watch</title>
+        <desc id="wo-dg-desc">One seed branches into two sharply different capabilities. On the left, the private keys, written as an xprv, stay on the signing device and are the only thing that can authorise a spend. On the right, the matching public keys, the xpub, can be handed to wallet software so it can derive addresses and watch the balance, but never spend. A privacy warning runs across the bottom: anyone holding the xpub can see every address and payment in the wallet.</desc>
+
+        <defs>
+          <linearGradient id="wo-seed-fill" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#4a3214"/>
+            <stop offset="0.52" stop-color="#312719"/>
+            <stop offset="1" stop-color="#20201d"/>
+          </linearGradient>
+          <linearGradient id="wo-risk-fill" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2c201e"/>
+            <stop offset="0.5" stop-color="#211d1c"/>
+            <stop offset="1" stop-color="#191a19"/>
+          </linearGradient>
+          <linearGradient id="wo-safe-fill" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1c2b26"/>
+            <stop offset="0.5" stop-color="#1b2421"/>
+            <stop offset="1" stop-color="#191b1a"/>
+          </linearGradient>
+          <linearGradient id="wo-privacy-fill" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#332718"/>
+            <stop offset="0.58" stop-color="#282218"/>
+            <stop offset="1" stop-color="#211e19"/>
+          </linearGradient>
+          <filter id="wo-card-shadow" x="-12%" y="-18%" width="124%" height="145%">
+            <feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#000" flood-opacity="0.3"/>
+          </filter>
+          <marker id="wo-arrow-risk" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L8 4L0 8Z" fill="#d65e40"/></marker>
+          <marker id="wo-arrow-safe" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L8 4L0 8Z" fill="#35b48a"/></marker>
+        </defs>
+
+        <text class="sc-dg-panel-title" x="24" y="30">One secret, two halves</text>
+        <text class="sc-dg-panel-sub" x="24" y="52">What stays on the device, and what is safe to hand your phone</text>
+
+        <g class="sc-wo-seed-card" filter="url(#wo-card-shadow)">
+          <rect class="sc-wo-seed" x="244" y="72" width="232" height="64" rx="12" fill="url(#wo-seed-fill)"/>
+          <circle class="sc-wo-seed-icon" cx="274" cy="104" r="17"/>
+          <circle class="sc-wo-seed-dot" cx="268" cy="99" r="2.2"/><circle class="sc-wo-seed-dot" cx="280" cy="99" r="2.2"/>
+          <circle class="sc-wo-seed-dot" cx="268" cy="109" r="2.2"/><circle class="sc-wo-seed-dot" cx="280" cy="109" r="2.2"/>
+          <text class="sc-wo-seed-title" x="304" y="101">Your seed</text>
+          <text class="sc-wo-seed-sub" x="304" y="120">12 or 24 words &middot; the root secret</text>
+        </g>
+
+        <path class="sc-wo-root-line" d="M360 136V158"/>
+        <circle class="sc-wo-junction" cx="360" cy="158" r="4"/>
+        <path class="sc-wo-branch sc-wo-branch-risk" d="M356 158H176V180" marker-end="url(#wo-arrow-risk)"/>
+        <path class="sc-wo-branch sc-wo-branch-safe" d="M364 158H544V180" marker-end="url(#wo-arrow-safe)"/>
+
+        <g filter="url(#wo-card-shadow)">
+          <rect class="sc-wo-panel sc-wo-panel-risk" x="1" y="184" width="350" height="188" rx="14" fill="url(#wo-risk-fill)"/>
+          <path class="sc-wo-panel-rule sc-wo-panel-rule-risk" d="M16 185H336"/>
+          <rect class="sc-wo-header-card sc-wo-header-card-risk" x="20" y="198" width="312" height="42" rx="9"/>
+          <rect class="sc-wo-badge sc-wo-badge-risk" x="28" y="205" width="28" height="28" rx="8"/>
+          <circle class="sc-wo-key-ring" cx="39" cy="219" r="4.5"/>
+          <path class="sc-wo-key-stem" d="M43.5 219H50M47 219V223"/>
+          <text class="sc-wo-kicker sc-wo-kicker-risk" x="68" y="212">DEVICE ONLY</text>
+          <text class="sc-wo-panel-heading" x="68" y="229">Private keys &middot; xprv</text>
+          <rect class="sc-wo-capability sc-wo-capability-risk" x="20" y="245" width="312" height="43" rx="8"/>
+          <text class="sc-wo-capability-main" x="34" y="264">Can sign and spend</text>
+          <text class="sc-wo-capability-sub" x="34" y="281">Never exported &middot; never shown to the phone</text>
+          <text class="sc-wo-note" x="20" y="314">Spending produces a signature, not a key.</text>
+          <text class="sc-wo-note" x="20" y="330">The signature proves the key exists without</text>
+          <text class="sc-wo-note" x="20" y="346">revealing it &mdash; the secret never reaches your</text>
+          <text class="sc-wo-note" x="20" y="362">laptop and never crosses the network.</text>
+        </g>
+
+        <g filter="url(#wo-card-shadow)">
+          <rect class="sc-wo-panel sc-wo-panel-safe" x="369" y="184" width="350" height="188" rx="14" fill="url(#wo-safe-fill)"/>
+          <path class="sc-wo-panel-rule sc-wo-panel-rule-safe" d="M384 185H704"/>
+          <rect class="sc-wo-header-card sc-wo-header-card-safe" x="388" y="198" width="312" height="42" rx="9"/>
+          <rect class="sc-wo-badge sc-wo-badge-safe" x="396" y="205" width="28" height="28" rx="8"/>
+          <path class="sc-wo-eye" d="M401 219S405 214 410 214S419 219 419 219S415 224 410 224S401 219 401 219Z"/>
+          <circle class="sc-wo-eye-dot" cx="410" cy="219" r="2.4"/>
+          <text class="sc-wo-kicker sc-wo-kicker-safe" x="436" y="212">WATCH ONLY</text>
+          <text class="sc-wo-panel-heading" x="436" y="229">Public keys &middot; xpub</text>
+          <rect class="sc-wo-capability sc-wo-capability-safe" x="388" y="245" width="312" height="43" rx="8"/>
+          <text class="sc-wo-capability-main" x="402" y="264">Can derive and watch</text>
+          <text class="sc-wo-capability-sub" x="402" y="281">No signature &middot; no spending power</text>
+          <text class="sc-wo-note" x="388" y="314">Import it and the software derives every</text>
+          <text class="sc-wo-note" x="388" y="330">address, watches the chain, and shows the</text>
+          <text class="sc-wo-note" x="388" y="346">balance, history, and a fresh receiving address</text>
+          <text class="sc-wo-note" x="388" y="362">whenever you need one.</text>
+        </g>
+
+        <g filter="url(#wo-card-shadow)">
+          <rect class="sc-wo-privacy" x="1" y="390" width="718" height="68" rx="14" fill="url(#wo-privacy-fill)"/>
+          <circle class="sc-wo-privacy-icon" cx="40" cy="424" r="17"/>
+          <path class="sc-wo-privacy-eye" d="M30 424S34 419 40 419S50 424 50 424S46 429 40 429S30 424 30 424Z"/>
+          <circle class="sc-wo-privacy-eye-dot" cx="40" cy="424" r="2.4"/>
+          <text class="sc-wo-privacy-title" x="74" y="415">The xpub cannot steal your bitcoin &mdash; but it can map your life</text>
+          <text class="sc-wo-privacy-note" x="74" y="436">Anyone holding it sees every address and every payment, past and future.</text>
+          <text class="sc-wo-privacy-note" x="74" y="452">That is a permanent privacy exposure, not a spending risk.</text>
+        </g>
+      </svg>
+      <div class="sc-key-split-mobile" role="img" aria-labelledby="wo-mobile-title wo-mobile-desc">
+        <p class="sc-ksm-title" id="wo-mobile-title">One secret, two halves</p>
+        <p class="sc-ksm-sub">What stays on the device, and what is safe to hand your phone</p>
+
+        <div class="sc-ksm-seed">
+          <span class="sc-ksm-seed-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span><strong>Your seed</strong><small>12 or 24 words &middot; the root secret</small></span>
+        </div>
+        <span class="sc-ksm-flow" aria-hidden="true">ONE SEED &middot; TWO CAPABILITIES</span>
+
+        <article class="sc-ksm-panel sc-ksm-panel-risk">
+          <header><span class="sc-ksm-badge" aria-hidden="true">S</span><span><small>DEVICE ONLY</small><strong>Private keys &middot; xprv</strong></span></header>
+          <div class="sc-ksm-capability"><strong>Can sign and spend</strong><span>Never exported &middot; never shown to the phone</span></div>
+          <p>Spending produces a signature, not a key. The signature proves the key exists without revealing it, so the secret never reaches your laptop or the network.</p>
+        </article>
+
+        <article class="sc-ksm-panel sc-ksm-panel-safe">
+          <header><span class="sc-ksm-badge" aria-hidden="true">W</span><span><small>WATCH ONLY</small><strong>Public keys &middot; xpub</strong></span></header>
+          <div class="sc-ksm-capability"><strong>Can derive and watch</strong><span>No signature &middot; no spending power</span></div>
+          <p>Wallet software derives every address, watches the chain, and shows your balance, history, and a fresh receiving address whenever you need one.</p>
+        </article>
+
+        <aside class="sc-ksm-privacy"><span class="sc-ksm-badge" aria-hidden="true">P</span><span><strong>The xpub cannot steal your bitcoin &mdash; but it can map your life</strong><small>Anyone holding it sees every address and payment, past and future. That is a permanent privacy exposure.</small></span></aside>
+        <p class="visually-hidden" id="wo-mobile-desc">The seed derives private keys that remain on the signing device and can spend, plus public keys that wallet software can use to watch every address without spending. Sharing the xpub is a permanent privacy exposure.</p>
+      </div>
+      <figcaption>The xpub opens a window, not the vault. Your phone can count what is inside and hand out deposit slots; opening it still requires a signature from the device.</figcaption>
+    </figure>`;
+};
 
 /* ---- the single-sig vs multisig diagram ---------------------------------
 
@@ -905,20 +1107,20 @@ const guides = [
     title: "Intro to Self Custody",
     summary: "Create a wallet, back it up, prove you can recover it, and only then receive bitcoin.",
     level: "beginner",
-    minutes: 20,
+    minutes: 32,
     goals: ["learn", "setup", "withdraw"],
     tags: ["Overview", "Start here"],
     icon: "bi-signpost-split",
-    updated: "2026-08-24",
+    updated: "2026-08-25",
     status: "published",
-    related: ["what-not-to-normalize", "coldcard-setup", "exchange-withdrawal"],
+    related: ["what-not-to-normalize", "choosing-your-first-setup", "recovery-test-drill"],
     layout: "article",
     body: `
-      <p class="sc-guide-intro">There is a version of this that takes an afternoon and a version that takes six months. The difference is not intelligence or technical skill &mdash; it is whether you moved money before you understood what you were doing with it.</p>
+      <p class="sc-guide-intro">Self custody means one specific thing: the secret that authorises spending your bitcoin exists only where you put it. No company holds a copy &mdash; which is why no company can freeze it, lose it in a bankruptcy, or hand it over on request, and why nobody can help you if you destroy it. Both halves of that sentence are the job.</p>
 
-      <p>This is the whole path, start to finish: create a wallet, back it up, prove you can recover it, and only then receive bitcoin. Four stages, each with one outcome. Work through them in order.</p>
+      <p>This is the foundation article for everything else on this site. It assumes nothing except that you have bought some bitcoin, or are about to. It is longer than a checklist because a checklist is easy to follow, and easy to follow into a hole &mdash; the reasoning underneath each step is what tells you what to do when the screen in front of you does not match the instructions.</p>
 
-      <p>The rule that makes this work: <strong>do not move on until you can explain the outcome of the current stage in your own words</strong>. Not recite it &mdash; explain it, to yourself, without looking. Every expensive mistake in bitcoin custody is someone who skipped that check because they were nearly sure.</p>
+      <p>There is a version of this that takes an afternoon and a version that takes six months. The difference is not intelligence or technical skill. It is whether you moved money before you understood what you were doing with it.</p>
 
       ${figure({
         src: "../assets/img/quickstart-desk.jpg",
@@ -928,11 +1130,29 @@ const guides = [
         height: 768
       })}
 
+      <h2 id="what-you-are-building">What you are actually building</h2>
+
+      <p>Strip away the hardware and the vocabulary and a bitcoin wallet is one enormous random number, plus software that knows what to do with it. That number is called the <strong>seed</strong>, and it is written out as twelve or twenty-four ordinary English words so that a human being can copy it down without making a mistake. Every key, every address, and every signature your wallet will ever produce is derived from it, in a fixed and publicly documented order.</p>
+
+      <p>Three consequences follow, and between them they set the shape of everything below.</p>
+
+      ${checklist([
+        "<strong>The words are the wallet.</strong> Not the device, not the app, not the brand. Any compatible wallet fed the same words rebuilds the same keys and finds the same coins.",
+        "<strong>Anyone holding the words holds the bitcoin</strong> &mdash; immediately, permanently, and without needing anything else you own.",
+        "<strong>Nobody can reissue them.</strong> There is no recovery department, no reset link, and no support line with a copy on file."
+      ])}
+
+      <p>So the four stages below are not four chores to get through. They are one idea, taken in order: <strong>make that number well, record it durably, prove the record works, and only then put money behind it.</strong></p>
+
+      <p>The rule that makes it work: <strong>do not move on until you can explain the outcome of the current stage in your own words</strong>. Not recite it &mdash; explain it, to yourself, without looking. Every expensive mistake in bitcoin custody is someone who skipped that check because they were nearly sure.</p>
+
       <h2 id="create-your-wallet"><span class="sc-article-num">1</span>Create your wallet</h2>
 
-      <p>Begin with the simplest setup that fits what you are protecting. Complexity can come later, after you have proven you can operate and recover a basic wallet.</p>
+      <p>This stage has four parts, and only the first is about shopping. Begin with the simplest setup that fits what you are protecting: complexity can come later, once you have proven you can operate and recover a basic wallet.</p>
 
-      <p>There are three broad shapes. Most people should start with the simplest suitable option and move through them slowly over years &mdash; not pick the most complex one because it sounds the most secure.</p>
+      <h3>Pick a shape before you pick a product</h3>
+
+      <p>People stall here for weeks comparing devices, which is a strange place to stall &mdash; the whole time, the bitcoin is sitting on an exchange, which is the one option they had already decided against. The choice is not really between products. It is between shapes: how many keys, on what kind of hardware, in how many places.</p>
 
       <div class="sc-setup-grid" aria-label="Three self-custody setup options">
         <article class="sc-setup-option sc-setup-option-mobile">
@@ -972,29 +1192,113 @@ const guides = [
         </article>
       </div>
 
-      <p>Multisig removes the single point of failure, which is real and valuable. It also multiplies the number of things you must back up, and adds a new category of loss: a setup that nobody &mdash; including you &mdash; can actually restore. Reach for it when you have already demonstrated you can recover a simple wallet.</p>
+      <p>Most people should start with the simplest suitable option and move through them slowly over years &mdash; not pick the most complex one because it sounds the most secure. Multisig removes the single point of failure, which is real and valuable. It also multiplies the number of things you must back up, and adds a new category of loss: a setup that nobody, including you, can actually restore. Reach for it after you have demonstrated you can recover a simple wallet, not before.</p>
 
-      <p><a class="sc-text-link" href="../devices.html">Compare hardware <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="../software.html">Compare wallet software <i class="bi bi-arrow-right"></i></a></p>
+      <h3>You do not have to buy a hardware wallet</h3>
+
+      <p>Dedicated signing hardware is the recommendation on most of this site, and for good reason: it keeps the key away from the machine that reads your email. But it is a recommendation, not an entry requirement, and treating it as one keeps people custodial for another year while they save up and read reviews. There are several honest routes in.</p>
 
       ${checklist([
-        "Download wallet software only from the maker's official site or the app-store listing linked from it.",
-        "Inspect the packaging and authenticate a hardware device using the maker's official process.",
-        "Generate a completely new wallet on the device or in the app. Never use recovery words supplied in the box or by another person.",
-        "Note the wallet fingerprint if one is shown, or save the first receiving address as a non-secret reference to compare during recovery.",
+        "<strong>A phone wallet, today.</strong> Free, five minutes, and it teaches you what an address, a fee, and a backup actually are while the amount at stake is small. The keys live on an internet-connected device, so keep the balance to something you would be annoyed rather than devastated to lose.",
+        "<strong>A dedicated signing device.</strong> The usual answer for savings, and the one the rest of this site assumes by default. Keys are generated on the device and never touch a general-purpose computer.",
+        "<strong>Hardware you build yourself.</strong> Open projects like SeedSigner and Krux run on inexpensive off-the-shelf parts and sign by QR code, so nothing is ever plugged in. More assembly, no supply chain to trust, and no purchase that links your name to a bitcoin product.",
+        "<strong>Bitcoin Core on a computer you control.</strong> The reference implementation ships with a wallet of its own &mdash; see the note below.",
+        "<strong>An old phone or laptop, kept permanently offline.</strong> A workable cold setup, and a genuinely awkward one to operate safely. Worth knowing it exists; worth attempting only once the rest of this page is second nature."
+      ])}
+
+      <p>None of these is the wrong answer. The wrong answer is leaving the coins on an exchange for another eighteen months while you decide.</p>
+
+      ${callout("A note on Bitcoin Core", `<a href="why-run-a-node.html">Running your own node</a> means you verify the rules yourself instead of asking somebody else's server what your balance is, and Bitcoin Core includes a perfectly usable wallet. Two things to know before you pick it. Its keys sit on the computer, so it is a hot wallet unless you pair it with a signing device. And it does not hand you twelve words &mdash; a Core wallet is described by a <a href="../glossary.html#term-descriptor">descriptor</a> containing an extended private key, and the backup is a file rather than a phrase. That is a good backup, but it is not the one the rest of this page describes, and it restores into other descriptor-aware software rather than by typing words into a device. Many people run Core as their node and keep the keys elsewhere, which is the best of both.`)}
+
+      <p><a class="sc-text-link" href="choosing-your-first-setup.html">Choosing your first setup <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="../devices.html">Compare hardware <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="../software.html">Compare wallet software <i class="bi bi-arrow-right"></i></a></p>
+
+      <h3>Where the seed comes from is the most important decision on this page</h3>
+
+      <p>Whatever you chose above, the moment that decides the security of the whole wallet is a few seconds long and almost invisible: the device offers to generate the seed for you, you press yes, and twelve words appear.</p>
+
+      <p>That step is the one part of the process you cannot check. A random number generator is a black box by construction. Good randomness and bad randomness look identical from the outside &mdash; there is no test you can run on twelve words to find out whether they came from a well-seeded generator, a subtly broken one, or a list somebody prepared in advance. If the number is weak or known, nothing you do afterwards helps. The backup is perfect, the recovery test passes, and the coins leave anyway.</p>
+
+      <p>The fix is not to suspect a particular manufacturer. It is to remove the question from the table: <strong>supply the randomness yourself, from something physical you can watch</strong>. Do that and the quality of the device's generator stops mattering, because it is no longer the thing deciding your wallet.</p>
+
+      ${figure({
+        src: "../assets/img/dice-entropy.jpg",
+        alt: "Two dice mid-roll on a green felt table",
+        caption: "A physical process you can watch, in a room you control. That is the entire argument for doing it this way.",
+        width: 1376,
+        height: 768
+      })}
+
+      <p>Most serious signing devices accept this directly. You roll, you type the results in, and the device hashes what you gave it into a seed &mdash; and the better implementations mix your rolls with their own <a href="../glossary.html#term-entropy">entropy</a>, so you are never worse off than if you had let it choose. Ninety-nine rolls of an ordinary six-sided die produce a full-strength twenty-four-word seed.</p>
+
+      <p>Dice are the common route, not the only one:</p>
+
+      ${checklist([
+        "<strong>A coin.</strong> One flip is exactly one binary digit, so 256 flips is a 256-bit seed. Slower and more tedious than dice, and it needs nothing but a coin and patience.",
+        "<strong>Dice with more faces.</strong> Powers of two are the tidiest: a sixteen-sided die is exactly four binary digits a roll, an eight-sided die exactly three. A twenty-sided die carries more randomness per roll than a D6 but does not divide cleanly into binary, so it needs a discard rule &mdash; one more thing to get wrong at two in the morning.",
+        "<strong>Casino dice.</strong> Precision-made and sharp-edged rather than rounded, so the bias is smaller than a board-game die. Nice to have, and not remotely necessary &mdash; the maths tolerates a badly skewed die far better than most people expect.",
+        "<strong>Whatever you use, do not re-roll a result you dislike.</strong> Editing the randomness is the one way to actually damage it. Roll on a hard flat surface, record what lands, and keep going."
+      ])}
+
+      ${cautions([
+        "Do not use a website, a phone app, or a spreadsheet to generate the number. That is trading a black box you own for one you do not.",
+        "Do not invent the words yourself, or pick a phrase you find memorable. Human-chosen seeds are guessed at scale, automatically, and emptied within minutes.",
+        "Do not shorten the roll count because it is probably enough. It is one afternoon, once, for the life of the wallet."
+      ])}
+
+      ${markLink("dice-entropy.html", "Roll the dice: generating your own entropy")}
+
+      <p>Whichever way you make the number, there is one thing worth knowing before you start: <strong>there is no standard for turning rolls into words</strong>. COLDCARD, SeedSigner and Krux hash the digits; Keystone rewrites every 6 to a 0 first and wants 100 rolls; BlueWallet packs bits without hashing at all. The same rolls produce unrelated wallets on different devices, which is why the recovery words are the backup and the column of rolls in your notebook is not. If you want to see that for yourself, <a href="../entropy.html">Entropy Workshop</a> converts a set of test rolls and shows you the wallet they land on.</p>
+
+      <h3>What the words actually are</h3>
+
+      <p>Worth ninety seconds, because it explains several things that otherwise look arbitrary. The twelve or twenty-four words come from a standard called <a href="../glossary.html#term-bip39">BIP39</a>, which maps a random number onto a fixed list of 2,048 English words. Each word therefore carries eleven bits. Twenty-four words is 264 bits: 256 bits of actual seed plus an eight-bit <a href="../glossary.html#term-checksum">checksum</a>. Twelve words is 132 bits: 128 of seed plus four of checksum.</p>
+
+      <p>That checksum is quietly one of the most useful things in the design. Copy a word down wrong and the phrase is usually rejected outright, rather than silently opening a different, empty wallet and leaving you to work out what happened.</p>
+
+      <p>From the seed, your wallet derives a master private key &mdash; written out as an <code>xprv</code> &mdash; and a matching master public key, the <a href="../glossary.html#term-xpub">xpub</a>. Every key in the wallet hangs off that root, addressed by a derivation path, which is why one backup can restore an unlimited number of addresses. It is also why the next section matters.</p>
+
+      ${callout("Not every wallet uses words, and words do not cross schemes", `BIP39 is the most common format, not the only one. Bitcoin Core backs up a descriptor with an <code>xprv</code> in it. Some Trezor models offer SLIP39 Shamir shares instead of a single phrase. Electrum has a seed format of its own. Words written under one scheme will not restore under another, so record which wallet produced them. The formats, the extended-key types, and the derivation paths behind them deserve an article of their own &mdash; for now, <a href="keys-addresses-utxos.html">keys, addresses and UTXOs</a> covers the model and <a href="how-wallets-find-coins.html">how a wallet finds your coins</a> covers the branch problem.`)}
+
+      <h3>Pair it with wallet software, even if the keys are cold</h3>
+
+      <p>A signing device is deliberately stupid. It has a small screen, no idea what the current block height is, and no way to look anything up. On its own it can tell you almost nothing about your money.</p>
+
+      <p>The wallet software is the other half. It watches the blockchain, finds every payment made to you, adds them up, keeps labels and history, estimates fees, and builds the transactions your device will sign. You want it even for a wallet you intend never to touch &mdash; a balance you cannot see is a balance you will start checking on a block explorer instead, which is worse for your privacy and worse for your nerves.</p>
+
+      <p>What you give it is not the seed. It is the <strong>xpub</strong>: one long line of text from which the software can derive every address the wallet will ever use, watch for payments to all of them, and show you the result &mdash; with no ability whatsoever to move a single satoshi. This is called a <a href="../glossary.html#term-watch_only_wallet">watch-only wallet</a>.</p>
+
+      ${pullQuote("A vault with a glass front. You can count what is inside, watch deposits land, and hand out deposit slots all day. Opening it takes the key, and the key is in your other hand.")}
+
+      ${watchOnlyDiagram()}
+
+      <p>When you do want to spend, the two halves work together and the seed still never travels: the software builds an unsigned transaction &mdash; a <a href="../glossary.html#term-psbt">PSBT</a> &mdash; the device displays it, you approve it on the device's own screen, and the software broadcasts the signed result. <a href="sparrow-first-wallet.html">Sparrow</a> is the usual desktop answer; <a href="bluewallet-watch-only.html">BlueWallet</a>, Cove and Nunchuk do the same job from a phone.</p>
+
+      <p>One thing to be clear-eyed about: your xpub is not a spending risk, but it is not nothing either. Anyone holding it sees every address you will ever use and every payment you ever receive, forever. Treat it as private information rather than as a public identifier.</p>
+
+      <h3>Doing it</h3>
+
+      ${checklist([
+        "Download wallet software only from the maker's official site or the app-store listing linked from it. Verify the release signature where the maker publishes one.",
+        "Buy hardware direct from the manufacturer. Never second-hand, never from a marketplace listing, never from a reseller you found through an advertisement.",
+        "Inspect the packaging and run the maker's own authenticity check before going any further.",
+        "Generate a completely new wallet on the device or in the app. Never use recovery words supplied in the box, printed on an enclosed card, or given to you by another person &mdash; there is no legitimate reason for a wallet to arrive with a seed already in it.",
+        "Supply your own entropy if the device supports it, and take the extra twenty minutes to do it properly.",
+        "Note the wallet fingerprint and the first receiving address. Neither is secret, and they are what you will check against in stage three.",
+        "Pair a watch-only wallet using the xpub, and keep the seed off every internet-connected machine.",
         "Keep the wallet empty for now. Creating it is not the same as proving you can recover it."
       ])}
 
-      <p><strong>Outcome:</strong> you have created a new, empty wallet in a setup you understand well enough to operate.</p>
+      <p><strong>Outcome:</strong> you have created a new, empty wallet whose seed you know the origin of, and you can see it from software without being able to spend from that software.</p>
 
       <h2 id="back-it-up"><span class="sc-article-num">2</span>Back it up</h2>
 
-      <p>Your recovery words are the only truly irreplaceable part of the setup. Everything here is worth doing slowly.</p>
+      <p>Your recovery words are the only truly irreplaceable part of the setup. The device can be replaced with an identical one, or a different brand entirely. The software can be reinstalled. The words cannot be reissued by anybody, at any price. Everything in this stage is worth doing slowly.</p>
 
       ${checklist([
-        "Write the recovery words offline, in order, by hand. Do not photograph, email, or upload them.",
-        "Complete the wallet's confirmation step when prompted &mdash; it catches transcription errors while they are still fixable.",
-        "Check that every word is legible and numbered before putting the backup away.",
-        "Store the device and the backup separately, so one theft, fire, or flood cannot take both."
+        "Write the words offline, in order, by hand, on the card the device came with or on plain paper. Do not photograph them, email them, type them into a computer, or store them in a password manager.",
+        "Number every word. Order is part of the secret, and an unnumbered list is a puzzle you have set for your future self.",
+        "Complete the wallet's confirmation step when it prompts you. It catches transcription errors while they are still free to fix.",
+        "Check every word is legible to somebody who is not you and who is under stress. Your handwriting is the failure mode here, not your memory."
       ])}
 
       ${figure({
@@ -1005,48 +1309,178 @@ const guides = [
         height: 725
       })}
 
-      ${callout("A passphrase is not a casual extra password", "A forgotten or mistyped BIP39 passphrase does not lock you out with an error &mdash; it silently opens a different, empty wallet. Add one only when you understand the recovery procedure and have a durable way to preserve it. If you do use one, write down that you used one.")}
+      <h3>Paper is where you start, not where you finish</h3>
 
-      <p><strong>Outcome:</strong> the words are recorded somewhere durable and offline, and the device and backup are not in the same place.</p>
+      <p>The awkward property of backups is that the situations which make you reach for one are the same situations that destroy paper. A card in a drawer is a perfectly good backup right up until the house is on fire, under water, or being emptied by somebody else.</p>
+
+      <p>And paper does not need a disaster to fail. Ink fades in a warm drawer. Damp and mould get into a basement or a garage. A burst pipe two floors up reaches it. Somebody helping you move house sees an unlabelled card of random words and throws it out. None of these announce themselves &mdash; you find out at the moment you go looking.</p>
+
+      <p>A stamped stainless steel plate closes most of that gap in about an hour. Common stainless steels melt far above the temperatures a house fire reaches, and steel does not care about water, damp, or thirty years in a box. Titanium is higher still. Avoid aluminium, which ordinary structure fires can exceed.</p>
+
+      <p>Two things metal is not. It is not theft protection &mdash; a plate is exactly as readable to whoever finds it as the paper was, and rather more durable in their hands. And it is not an excuse to keep only one copy. Durability and secrecy are separate problems, and location is still the whole of your defence on the second one.</p>
+
+      ${callout("The shortcut that halves the work", `Every word in the BIP39 list is uniquely identified by its first four letters &mdash; no two words share them. A plate recording <strong>ABAN</strong> is exactly as complete as one recording <strong>ABANDON</strong>. Four characters per word roughly halves both the stamping and the number of chances to mis-strike. Words shorter than four letters are written in full, and the shortcut applies to BIP39 wordlists only.`)}
+
+      <p><a class="sc-text-link" href="seed-backup-metal.html">Durable seed backups <i class="bi bi-arrow-right"></i></a></p>
+
+      <h3>Write down more than the words</h3>
+
+      <p>The words restore the keys. Finding the coins also needs to know which branch of the key tree to walk down, and a wallet restored a decade from now &mdash; or set up with anything other than the current default &mdash; may not guess correctly. Keep a short, separate note recording:</p>
+
+      ${checklist([
+        "How many words there are, and which wallet or device produced them.",
+        "Whether a passphrase is in use. Not the passphrase, and not in the same place &mdash; just the fact that one exists, so your heirs are not restoring an empty wallet and concluding the bitcoin was a story.",
+        "The script type or derivation path, and the full wallet descriptor if you have one. Essential for multisig, and cheap insurance for everything else.",
+        "The master fingerprint and the first receiving address, so a future restore has something to check itself against.",
+        "The date, and where the other copy lives."
+      ])}
+
+      <p>None of that is secret on its own, and none of it can spend anything. It is the difference between a restore that works and a restore that shows a balance of zero and no explanation.</p>
+
+      <h3>Where it lives</h3>
+
+      ${checklist([
+        "Store the device and the backup separately, so one theft, fire, or flood cannot take both.",
+        "Consider a second copy in a genuinely different building. Two copies in one house is one copy.",
+        "Think about who could find it accidentally, and who could find it deliberately. Those are different lists.",
+        "Never enter the words into a website, a support chat, a recovery tool, or a form. There is no legitimate process that requires another person to see them."
+      ])}
+
+      <div class="sc-callout mt-4">
+        <h3>A passphrase, in one paragraph</h3>
+        <p>A BIP39 <a href="../glossary.html#term-passphrase">passphrase</a> is an extra word or sentence added on top of the seed. It is not a password on your wallet &mdash; it is a switch that selects a different wallet entirely. Every possible passphrase is valid, so a forgotten or mistyped one does not lock you out with an error: it silently opens a different, empty wallet, and there is no message telling you which case you are in. That is genuinely useful, because a found backup without the passphrase reaches nothing. It is also a second irreplaceable secret, and it deserves its own article rather than a footnote here. Do not add one during your first setup. <a href="passphrase-setup.html">BIP39 passphrases, and when not to use one</a> is the full treatment.</p>
+      </div>
+
+      <p><strong>Outcome:</strong> the words exist somewhere durable and offline, the device and the backup are not in the same place, and you have recorded the handful of non-secret details a future restore will need.</p>
 
       <h2 id="test-your-recovery"><span class="sc-article-num">3</span>Test your recovery</h2>
 
-      <p>A backup you have never tested is not a backup. It is an assumption. Test it while the wallet is still empty, when a mistake costs time rather than bitcoin.</p>
+      <p>A backup you have never tested is not a backup. It is an assumption &mdash; and if you never test it deliberately, the test still happens, at a moment you did not choose.</p>
+
+      <p>Most advice stops at "follow the manufacturer's instructions", which is not enough, because the device is not the thing under test. <strong>The card on your table is the thing under test.</strong> A real recovery drill starts from those words and nothing else, and finishes with a specific value you can compare.</p>
+
+      <h3>First, decide what a pass looks like</h3>
+
+      <p>Before you touch anything, write down two things from the wallet you already have:</p>
 
       ${checklist([
-        "Use the device maker's documented backup-check, dry-run, or recovery procedure. The exact process depends on the wallet.",
-        "If a full restore is required, follow the official instructions while the wallet is empty or use a compatible spare device.",
-        "Confirm the restored wallet fingerprint or first receiving address matches the original wallet.",
-        "If you added a passphrase, confirm that it opens the same wallet as well.",
-        "Never enter recovery words into a website or give them to support. A legitimate recovery check does not require another person to see them."
+        "<strong>The master fingerprint</strong> &mdash; eight hexadecimal characters, shown by most devices under a settings or advanced menu, and by your wallet software next to the key.",
+        "<strong>The first receiving address, in full</strong> &mdash; every character, including the prefix."
       ])}
 
-      ${figureSlot({
-        shot: "A second, wiped hardware wallet part-way through a restore, seed card beside it, with the first device powered off in the background.",
+      <p>Neither is secret, and neither can spend anything. Without one of them the drill has no pass condition, and "it seemed to restore fine" is not a result.</p>
+
+      <h3>Then pick the method that matches what you own</h3>
+
+      <p>All three prove something. They differ entirely in what happens if the backup turns out to be wrong.</p>
+
+      <p><strong>A second device, wiped.</strong> The most thorough version and the safest one. Take any compatible signing device &mdash; a spare, a second unit, a borrowed one you will wipe afterwards &mdash; reset it, and enter the words from your card. Only from the card. Then compare the fingerprint and the first address. If they match, your handwriting reproduces the wallet, and your original device was never touched. Wipe the second device again when you are done: a spare quietly holding a live copy of your seed is a new problem, not a spare.</p>
+
+      <p><strong>The device's built-in backup check.</strong> Most devices offer one, called something like <em>verify backup</em>, <em>dry-run recovery</em>, or <em>seed check</em>. You type the words back in and the device compares them against the seed it already holds, without erasing anything. It is fast, completely safe, and it will tell you plainly if a word is wrong. Its limit is worth knowing: it proves the words match <em>this device's</em> seed. It does not prove they rebuild the wallet anywhere else, and it will not catch a wrong derivation path or a passphrase you have misremembered.</p>
+
+      <p><strong>Wipe your only device and restore from the card.</strong> This is the real thing &mdash; the full chain, end to end, with nothing held in reserve. It is also the one method that turns a bad backup into an immediate and permanent loss. There is exactly one safe moment for it, and it is now, while the wallet is empty. Reset the device to factory settings, enter the words, and watch the same wallet reappear. Done today it costs you twenty minutes. Done after the wallet has a balance, you are betting that balance on your own handwriting.</p>
+
+      <p>That last point is the entire reason this stage sits before stage four rather than after it. Prefer a second device if you have one, the built-in check if you do not, and the full wipe-and-restore while there is still nothing to lose.</p>
+
+      ${figure({
+        src: "../assets/img/recovery-test-drill-two-devices.jpg",
+        alt: "Two hardware wallets side by side on a desk with a seed card between them",
         caption: "A restore you have actually performed is worth more than any amount of care taken earlier.",
-        ratio: "16 / 9",
-        icon: "bi-arrow-counterclockwise"
+        width: 1300,
+        height: 726
       })}
 
-      <p><strong>Outcome:</strong> you have deliberately verified or restored this wallet once and know the backup works.</p>
+      <h3>What counts as a pass</h3>
+
+      ${checklist([
+        "The restored wallet reports the same master fingerprint.",
+        "The first receiving address matches character for character, prefix included. A different prefix means a different script type, not a different wallet &mdash; fixable, but you need to know before you fund it.",
+        "The balance is what you expect it to be, which at this stage is zero.",
+        "If you used a passphrase, run the check twice: once without it, confirming you land in the empty base wallet, and once with it, confirming you land in the right one.",
+        "Wipe whatever you restored onto, unless it is now a key in its own right."
+      ])}
+
+      ${cautions([
+        "If anything does not match, stop. Do not fund the wallet. Re-read the card for transposed or misread words &mdash; and if it cannot be reconciled, generate a fresh seed and start stage one again. That is an annoying afternoon, not a loss.",
+        "The words go into a signing device's own keypad or screen, and nowhere else. Not a website, not a laptop, not a spreadsheet, not a support chat, however official it looks."
+      ])}
+
+      <p><a class="sc-text-link" href="recovery-test-drill.html">The full recovery drill <i class="bi bi-arrow-right"></i></a></p>
+
+      <p><strong>Outcome:</strong> you have rebuilt this wallet from the backup alone and confirmed it produced the same fingerprint and the same first address.</p>
 
       <h2 id="receive-bitcoin"><span class="sc-article-num">4</span>Receive bitcoin</h2>
 
-      <p>Your wallet now exists, its backup is protected, and recovery has been proven. Use a small amount to check the receiving path. Treat this as a test, not a transfer.</p>
+      <p>Your wallet exists, its backup is protected, and recovery has been proven. Now check the receiving path with an amount that does not matter. Treat this as a test, not a transfer.</p>
 
       ${checklist([
-        "Create a fresh receiving address in your wallet.",
-        "When using a hardware wallet, verify the full address on the device screen, not only on the computer.",
-        "Send a small test amount from an exchange or another wallet and wait for it to confirm.",
-        "Confirm it arrived in the wallet you just recovered. Stop with the test amount for now.",
-        "Understand the platform fee, withdrawal fee, and network fee before approving &mdash; they are three different charges."
+        "Create a fresh receiving address in your wallet software.",
+        "With a hardware wallet, display the same address on the device screen and compare it to the one on the computer. The device is the trustworthy screen; the computer is not.",
+        "Send a small amount from an exchange or another wallet, and wait for it to confirm.",
+        "Confirm it arrived in the wallet you just recovered, watching from your own software rather than a public block explorer.",
+        "Understand the platform fee, the withdrawal fee, and the network fee before approving. They are three different charges and only one of them is bitcoin's."
       ])}
 
-      <p>The reason for checking the address on the device rather than the computer is specific: malware can replace an address on the clipboard. The device screen gives you a separate place to verify the destination.</p>
+      <p>The reason for checking the address on the device rather than the computer is specific rather than superstitious. Malware that swaps a bitcoin address on the clipboard is common, cheap, and entirely automated &mdash; you copy your address, and something else pastes. The device screen is drawn by the device itself, so an address that matches on both was not swapped in transit.</p>
 
-      <p><a class="sc-text-link" href="exchange-withdrawal.html">Withdraw from an exchange <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="test-transaction.html">Send from another wallet <i class="bi bi-arrow-right"></i></a></p>
+      <p>Once the test amount lands, send some of it back out again. Receiving proves the address. Spending proves the whole loop: that the device signs, that you can approve it, and that the software broadcasts. That is the point at which the wallet is genuinely working rather than merely populated.</p>
 
-      <p><strong>Outcome:</strong> a small amount of bitcoin has arrived in a wallet you created, backed up, and proved you can recover.</p>
+      <p><a class="sc-text-link" href="exchange-withdrawal.html">Withdraw from an exchange <i class="bi bi-arrow-right"></i></a> &nbsp; <a class="sc-text-link" href="test-transaction.html">Send a test transaction <i class="bi bi-arrow-right"></i></a></p>
+
+      <p><strong>Outcome:</strong> a small amount of bitcoin has arrived in a wallet you created, backed up, and proved you can recover &mdash; and you have moved some of it out again.</p>
+
+      ${quiz({
+        heading: "Did it land?",
+        eyebrow: "Five questions",
+        intro: "One per stage. They are not trick questions, but they are not giveaways either &mdash; each one is a place where the intuitive answer is the expensive one.",
+        questions: [
+          {
+            prompt: "Your hardware wallet arrives sealed, and inside the box is a card with twelve words already filled in and a note calling it your recovery phrase. What is it?",
+            options: [
+              { text: "Your wallet, pre-generated at the factory to save you a step." },
+              { text: "A theft attempt. Generate a new wallet on the device and never use those words.", correct: true },
+              { text: "Usable, as long as you add a passphrase so the printed words are not enough on their own." }
+            ],
+            why: "No legitimate manufacturer ships a seed. Whoever printed that card can spend from it the moment you fund it, and the third option is worse than it looks &mdash; it keeps a seed somebody else knows at the root of your wallet, and now your entire security rests on one passphrase you also have to back up."
+          },
+          {
+            prompt: "The device's own random number generator is almost certainly fine. So what does rolling ninety-nine dice actually buy you?",
+            options: [
+              { text: "More randomness than a chip can produce, so a stronger seed." },
+              { text: "A seed that is longer, and therefore harder to guess." },
+              { text: "Nothing extra, if the generator is fine. The point is that you cannot tell whether it is.", correct: true }
+            ],
+            why: "A 24-word seed is 256 bits either way &mdash; quantity is not the issue. The issue is that a weak or rigged generator produces output indistinguishable from a good one, and no test on the finished words can separate them. Supplying the number yourself removes the only step in the process you were taking on faith."
+          },
+          {
+            prompt: "You imported your cold wallet's xpub into a phone app to watch the balance. Someone takes the phone, unlocked. What can they do?",
+            options: [
+              { text: "Nothing much &mdash; they can see the current balance, but not the history." },
+              { text: "Spend the coins, since the xpub is derived from the private key." },
+              { text: "See every address and every payment, past and future, but move nothing.", correct: true }
+            ],
+            why: "Derivation runs one way: the xpub yields public keys and addresses, never the private keys, so spending is impossible without a signature from the device. What they get instead is complete and permanent visibility of your finances. That is a privacy loss rather than a theft, which is exactly why an xpub should be treated as private rather than published."
+          },
+          {
+            prompt: "Which of these actually proves your written backup works?",
+            options: [
+              { text: "Checking that the words are legible, correctly spelled, and in the right order on the card." },
+              { text: "Entering the words into a wiped device and confirming it derives the same fingerprint and first address.", correct: true },
+              { text: "Keeping two copies of the card in two separate buildings." }
+            ],
+            why: "The first is proofreading and the third is redundancy &mdash; both worth doing, and neither is a test. Only the second one starts from the backup alone and ends with a value you can compare, which is the definition of a test. Two copies of a wrong phrase is still nothing."
+          },
+          {
+            prompt: "Your wallet software shows a receive address. Why bother comparing it against the hardware wallet's own screen?",
+            options: [
+              { text: "Because malware on the computer can show you an address that is not yours.", correct: true },
+              { text: "Because the device stores addresses that the software does not know about." },
+              { text: "Because it confirms the address has not been used before." }
+            ],
+            why: "The computer is the part of the setup you cannot vouch for, and clipboard-swapping malware is cheap and fully automated. The device's screen is drawn by the device itself, so matching the two is the one check that catches a substitution &mdash; and it is per-address, every time, not once at setup."
+          }
+        ]
+      })}
 
       <section class="sc-quickstart-next" aria-labelledby="what-comes-next">
       <h2 id="what-comes-next">What comes next?</h2>
@@ -1075,7 +1509,7 @@ const guides = [
         "Re-evaluate single-signature versus multisig as the amount and the consequences change."
       ])}
 
-      ${callout("Read the failure modes next", `These four steps describe what to do. <a href="what-not-to-normalize.html">What not to normalize</a> describes the ordinary habits that quietly undo them, and it is worth reading before you move an amount you would miss.`)}
+      ${callout("Read the failure modes next", `These four stages describe what to do. <a href="what-not-to-normalize.html">What not to normalize</a> describes the ordinary habits that quietly undo them, and it is worth reading before you move an amount you would miss.`)}
       </section>`
   },
   {
@@ -5176,6 +5610,14 @@ const guides = [
 
       <p>It costs you about twenty minutes and a little care. Here is how it works, and &mdash; more importantly &mdash; the handful of ways people accidentally ruin it.</p>
 
+      <aside class="sc-tool-shortcut">
+        <span class="sc-die-mark" aria-hidden="true"></span>
+        <div>
+          <strong>Already rolled, and want to check the device converted them honestly?</strong>
+          <p><a href="../entropy.html">Entropy Workshop</a> turns a set of test rolls into the words and addresses they produce, so you can compare. It is a single file, usable in the browser or saved and run with the network off. <a href="#checking-the-conversion">The rules for using it safely</a> are further down and matter more than the tool does.</p>
+        </div>
+      </aside>
+
       ${figure({
         src: "../assets/img/dice-entropy.jpg",
         alt: "Two dice mid-roll on a green felt table",
@@ -5283,6 +5725,8 @@ const guides = [
         "Never type the rolls or the words of a real wallet into anything except the device itself &mdash; not a website, not an offline copy of one, not a notes app, not a spreadsheet.",
         "Anything that asks you to enter an existing recovery phrase to \"verify\" or \"validate\" it is stealing from you, however official it looks."
       ])}
+
+      ${callout("The tool for the job", `This site publishes one: <a href="../entropy.html">Entropy Workshop</a>. Enter your test rolls and it shows the words and first addresses they convert to, so you can compare them against what your device produced. It is a single file with nothing loaded from anywhere, so you can save it and run it on a machine that has never been online &mdash; and it deliberately cannot generate randomness or accept an existing recovery phrase, which is why it is safe to point you at.`)}
 
       <h2>Finishing up</h2>
 
@@ -8242,8 +8686,52 @@ const renderGuideIndexNav = () => {
     const n = published.filter(g => g.category === cat.key).length;
     return `<li><a href="#${cat.key}">${cat.label} <span class="sc-guide-nav-count">${n}</span></a></li>`;
   }).join("");
-  return `<nav class="sc-guide-nav" aria-label="Guide sections"><ul>${items}</ul></nav>`;
+  /* The tool is not a guide category, and it sits below all of them on the
+     page. Without an entry here it is only reachable by scrolling past six
+     sections, which is how it ended up effectively hidden. Marked out rather
+     than blended in, because it is a different kind of thing. */
+  const tool = `<li><a class="is-tool" href="#entropy-workshop">Entropy Workshop</a></li>`;
+  return `<nav class="sc-guide-nav" aria-label="Guide sections"><ul>${items}${tool}</ul></nav>`;
 };
+
+/* ---- the tool band -------------------------------------------------------
+
+   One band on the hub for the one tool the site publishes. Deliberately not a
+   guide card: it is not something to read, and dropping it into a category
+   grid would both misfile it and bury it among forty siblings.
+
+   The die face is the same mark the dice guide carries beside its title, so a
+   reader who has met one recognises the other. */
+const renderToolsBand = () => `
+    <section id="entropy-workshop" class="sc-section sc-section-dark">
+      <div class="container">
+        <div class="sc-section-head">
+          <span class="sc-eyebrow">Interactive tool</span>
+          <h2>Test the method</h2>
+          <p>Use a disposable sequence to check how your device turns physical randomness into a wallet.</p>
+        </div>
+        <div class="sc-tool-band">
+          <span class="sc-die-mark" aria-hidden="true"></span>
+          <div class="sc-tool-copy">
+            <h2>Entropy Workshop</h2>
+            <p>Enter the rolls or flips you already made and see the recovery words and first addresses they convert to &mdash; then compare that against what your device showed you. If the two disagree, your device uses a different conversion, which is common and worth knowing before you trust a column of rolls as a backup.</p>
+            <ul class="sc-tool-facts">
+              <li>One file, with nothing loaded from anywhere</li>
+              <li>Use it here, or save it and run it on a machine that has never been online</li>
+              <li>Checks itself against the published BIP test vectors on load</li>
+              <li>Generates no randomness, and has nowhere to type an existing phrase</li>
+            </ul>
+          </div>
+          <div class="sc-tool-actions">
+            <div class="sc-hero-actions">
+              <a class="sc-btn sc-btn-primary" href="entropy.html"><span>Enter Workshop</span></a>
+            </div>
+            <a class="sc-text-link" href="entropy.html" download="selfcustody-entropy-check.html" data-tool-download>Download the file <i class="bi bi-arrow-down-right"></i></a>
+            <p>Use throwaway rolls, on a wallet you will wipe afterwards. <a href="guides/dice-entropy.html">Roll the dice</a> explains the procedure and the rules that matter more than the tool does.</p>
+          </div>
+        </div>
+      </div>
+    </section>`;
 
 /* ---- guide page rendering ----------------------------------------------- */
 
@@ -8352,5 +8840,6 @@ export {
   renderGuideFinder,
   renderGuideSections,
   renderGuideIndexNav,
+  renderToolsBand,
   renderGuideBody
 };

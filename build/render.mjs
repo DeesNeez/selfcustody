@@ -14,6 +14,8 @@
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { pages, renderHeader, renderFooter, routes } from './content.mjs';
 import { guides, publishedGuides, renderGuideBody } from './guides.mjs';
+import { renderEntropyPage } from './tools/entropy-page.mjs';
+import { createHash } from 'node:crypto';
 
 /* file -> page key. Several files can share a key: lab-demo.html is the same
    dashboard markup wrapped with lab-probe.js. */
@@ -32,7 +34,7 @@ const FILES = {
 };
 
 const SITE = 'https://selfcustody.ca';
-const ASSET_VERSION = '20260825-1100';
+const ASSET_VERSION = '20260825-4800';
 const ASSET_QUERY = /(assets\/(?:vendor\/bootstrap-icons\/bootstrap-icons\.css|css\/(?:style|site-refresh)\.css|js\/site-refresh\.js)\?v=)[^"']+/g;
 
 /* The whole container block, anchored on the <noscript> that always follows it.
@@ -240,6 +242,32 @@ for (const guide of publishedGuides) {
   }
 }
 
+/* ---- the offline entropy tool -------------------------------------------
+
+   One self-contained file with the crypto core and the wordlist inlined, so
+   the copy served from the site and the copy saved to a USB stick are byte for
+   byte the same thing. Its SHA-256 is written alongside it: a reader who
+   downloads the page can check they got what was published, which is the only
+   way an offline tool can be worth anything.
+
+   Deliberately absent from the sitemap, and carrying noindex of its own. It is
+   reached from the guides that explain how to use it, not from a search
+   result landed on cold. */
+
+/* Lived at docs/tools/entropy.html before it moved to the root. Removed
+   outright rather than left behind: a stale copy at the old URL would keep
+   answering requests with an out-of-date file, silently, forever. */
+if (existsSync('docs/tools')) rmSync('docs/tools', { recursive: true });
+
+const entropyPage = renderEntropyPage();
+writeFileSync('docs/entropy.html', entropyPage);
+const entropyHash = createHash('sha256').update(entropyPage).digest('hex');
+writeFileSync('docs/entropy.html.sha256', `${entropyHash}  entropy.html
+`);
+console.log(`
+entropy.html                   ${Math.round(entropyPage.length / 1024)} KB`);
+console.log(`  sha256  ${entropyHash}`);
+
 const planned = guides.length - publishedGuides.length;
 console.log(`\n${publishedGuides.length} guide page(s) written, ${planned} planned, ${aliasCount} redirect(s)`);
 
@@ -284,27 +312,49 @@ console.log(`sitemap.xml    ${sitemapEntries.length} URLs`);
 /* The icon font is subset to the glyphs in use, so an icon added later would
    render as a blank box. Catch that here rather than in someone's browser.
    Two names are built by concatenation in site-refresh.js and cannot be found
-   by scanning, so they are listed explicitly. */
+   by scanning, so they are listed explicitly.
+
+   Glyphs are asked for two ways and both are checked. Most are `bi-*` classes
+   in markup. A few are raw `content: "\fXXXX"` codepoints in the stylesheet --
+   the tick on .sc-check-list and the triangle on .sc-caution-list -- and those
+   used to pass this check while being absent from the font, because nothing
+   here looked at them. They rendered blank on every guide page.
+
+   Checking the shipped stylesheet is enough to cover the font as well:
+   subset-icons.mjs writes the rules and the woff/woff2 from one keep list, so
+   a rule in that file and a glyph in that font cannot disagree. */
 const iconCss = readFileSync('docs/assets/vendor/bootstrap-icons/bootstrap-icons.css', 'utf8');
-const available = new Set([...iconCss.matchAll(/\.(bi-[a-z0-9-]+)::before/g)].map(m => m[1]));
+const iconRules = [...iconCss.matchAll(/\.(bi-[a-z0-9-]+)::before\s*\{\s*content:\s*"\\([0-9a-f]{4})"/g)];
+const available = new Set(iconRules.map(m => m[1]));
+const availablePoints = new Set(iconRules.map(m => m[2]));
 
 let scan = readFileSync('build/content.mjs', 'utf8')
   + readFileSync('build/guides.mjs', 'utf8')
   + readFileSync('docs/assets/js/site-refresh.js', 'utf8');
 for (const f of readdirSync('docs')) if (f.endsWith('.html') && !f.startsWith('_')) scan += readFileSync(`docs/${f}`, 'utf8');
 for (const f of readdirSync('docs/guides')) scan += readFileSync(`docs/guides/${f}`, 'utf8');
-for (const f of ['docs/assets/css/site-refresh.css', 'docs/assets/css/lab.css', 'docs/lab-probe.js']) {
-  try { scan += readFileSync(f, 'utf8'); } catch {}
+
+let cssScan = '';
+for (const f of ['docs/assets/css/site-refresh.css', 'docs/assets/css/lab.css']) {
+  try { cssScan += readFileSync(f, 'utf8'); } catch {}
 }
+try { scan += readFileSync('docs/lab-probe.js', 'utf8'); } catch {}
+scan += cssScan;
 
 const referenced = new Set(['bi-arrow-up-right', 'bi-arrow-down-right', 'bi-arrow-right']);
 for (const m of scan.matchAll(/\bbi-[a-z0-9]+(?:-[a-z0-9]+)*/g)) referenced.add(m[0]);
 referenced.delete('bi-arrow');   // truncated match from the concatenations above
 
+const referencedPoints = new Set();
+for (const m of cssScan.matchAll(/content:\s*"\\([0-9a-fA-F]{4})"/g)) referencedPoints.add(m[1].toLowerCase());
+
 const absent = [...referenced].filter(n => !available.has(n));
-if (absent.length) {
-  console.error(`\n  ABORT: these icons are used but not in the subset font: ${absent.join(', ')}`);
-  console.error('  Run "npm run icons:subset", then re-subset the woff2 (see build/subset-icons.mjs).');
+const absentPoints = [...referencedPoints].filter(p => !availablePoints.has(p));
+if (absent.length || absentPoints.length) {
+  const named = absent.length ? ` ${absent.join(', ')}` : '';
+  const points = absentPoints.length ? ` ${absentPoints.map(p => `U+${p.toUpperCase()}`).join(', ')} (set by codepoint in CSS)` : '';
+  console.error(`\n  ABORT: these icons are used but not in the subset font:${named}${points}`);
+  console.error('  Run "npm run icons:subset" to regenerate the stylesheet and the font.');
   process.exit(1);
 }
-console.log(`icon check: all ${referenced.size} referenced glyphs present in the subset font`);
+console.log(`icon check: ${referenced.size} glyphs by name and ${referencedPoints.size} by codepoint, all present in the subset font`);
