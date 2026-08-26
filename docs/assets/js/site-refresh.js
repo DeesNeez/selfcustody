@@ -3290,6 +3290,96 @@
   }
 
   /**
+   * The entropy tool's download link on the guides hub.
+   *
+   * `<a download>` is honoured over http and https, which is how the published
+   * site serves this. It is silently ignored for file:// URLs in Chrome -- the
+   * click does nothing at all, with no error anywhere -- which is exactly the
+   * state anyone reviewing the built site from disk would meet. So when the
+   * page itself was opened from a file, drop the attribute and let the link do
+   * the ordinary thing and navigate. Landing on the tool, which then reports
+   * that it is the local copy, beats a button that appears to be broken.
+   */
+  document.querySelectorAll('[data-tool-download]').forEach(link => {
+    if (location.protocol === 'file:') link.removeAttribute('download');
+  });
+
+  /**
+   * The Quickstart's self-check.
+   *
+   * The markup ships as a readable page: every explanation is present and
+   * visible, and the option buttons do nothing. This adds .is-live, which is
+   * what the stylesheet keys the hidden explanations off, then lets one option
+   * be picked per question and keeps score. With the script off nothing is
+   * lost except the scoring -- the reasoning is still on the page.
+   *
+   * A wrong pick marks the correct option too. The point is to teach the five
+   * things the article was about, not to grade anybody.
+   */
+  const quizSection = document.querySelector("[data-quiz]");
+
+  if (quizSection) {
+    const items = [...quizSection.querySelectorAll("[data-quiz-item]")];
+    const scoreEl = quizSection.querySelector("[data-quiz-score]");
+    const resultEl = quizSection.querySelector("[data-quiz-result]");
+    let answered = 0;
+    let correct = 0;
+
+    const verdict = score => {
+      if (score === items.length) {
+        return "Full marks. You can explain the outcome of every stage, which is the only bar this page sets.";
+      }
+      if (score === items.length - 1) {
+        return "One away. Re-read the stage you missed before you move an amount you would actually miss.";
+      }
+      if (score >= Math.ceil(items.length / 2)) {
+        return "The shape is there and the details are not — and in custody the details are where the losses happen. Another pass through the four stages is worth the twenty minutes.";
+      }
+      return "Worth reading again properly, unhurried. Every question here maps to a documented way people have lost bitcoin, so none of it is detail you can safely pick up later.";
+    };
+
+    quizSection.classList.add("is-live");
+    if (scoreEl) scoreEl.hidden = false;
+
+    items.forEach(item => {
+      const options = [...item.querySelectorAll("[data-quiz-option]")];
+      const why = item.querySelector("[data-quiz-why]");
+
+      options.forEach(option => {
+        option.addEventListener("click", () => {
+          if (item.classList.contains("is-answered")) return;
+
+          const right = option.hasAttribute("data-quiz-correct");
+          item.classList.add("is-answered");
+          option.classList.add(right ? "is-correct" : "is-wrong");
+
+          /* aria-disabled rather than the disabled property: disabling the
+             button that currently has focus drops focus to the body, which
+             strands a keyboard reader mid-page. The guard above is what
+             actually stops a second answer. */
+          options.forEach(other => {
+            other.setAttribute("aria-disabled", "true");
+            if (other.hasAttribute("data-quiz-correct")) other.classList.add("is-answer");
+          });
+
+          answered += 1;
+          if (right) correct += 1;
+          if (scoreEl) scoreEl.textContent = `${correct} / ${items.length}`;
+
+          /* The explanation appears where a screen reader is already sitting,
+             so announce it rather than leaving it to be discovered. */
+          if (why) why.setAttribute("role", "status");
+
+          if (answered === items.length && resultEl) {
+            resultEl.textContent = verdict(correct);
+            resultEl.hidden = false;
+          }
+        });
+      });
+    });
+  }
+
+  /**
    * Searchable Bitcoin glossary. The public API is the source of record, so a
    * catalogue update does not require rebuilding this site. All remote values
    * are inserted with textContent rather than interpreted as markup.

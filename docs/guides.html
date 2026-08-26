@@ -28,9 +28,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260825-1100" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260825-1100" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260825-1100" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260825-4800" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260825-4800" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260825-4800" rel="stylesheet">
 </head>
 <body class="site-refresh" data-page="guides">
   <div id="site-header">
@@ -54,6 +54,7 @@
             <li><a href="guides.html#exchanges">Exchanges</a></li>
             <li><a href="guides.html#advanced">Techniques</a></li>
             <li><a href="guides.html#concepts">Concepts</a></li>
+            <li class="sc-nav-tool-item"><a class="sc-nav-tool-link" href="entropy.html">Entropy Workshop</a></li>
           </ul>
         </li><li class="sc-nav-menu">
           <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
@@ -87,7 +88,7 @@
         </div>
       </section>
 
-        <nav class="sc-guide-nav" aria-label="Guide sections"><ul><li><a href="#fundamentals">Start here <span class="sc-guide-nav-count">8</span></a></li><li><a href="#devices">Devices <span class="sc-guide-nav-count">12</span></a></li><li><a href="#software">Software <span class="sc-guide-nav-count">8</span></a></li><li><a href="#exchanges">Exchanges <span class="sc-guide-nav-count">2</span></a></li><li><a href="#advanced">Techniques <span class="sc-guide-nav-count">10</span></a></li><li><a href="#concepts">Concepts <span class="sc-guide-nav-count">12</span></a></li></ul></nav>
+        <nav class="sc-guide-nav" aria-label="Guide sections"><ul><li><a href="#fundamentals">Start here <span class="sc-guide-nav-count">8</span></a></li><li><a href="#devices">Devices <span class="sc-guide-nav-count">12</span></a></li><li><a href="#software">Software <span class="sc-guide-nav-count">8</span></a></li><li><a href="#exchanges">Exchanges <span class="sc-guide-nav-count">2</span></a></li><li><a href="#advanced">Techniques <span class="sc-guide-nav-count">10</span></a></li><li><a href="#concepts">Concepts <span class="sc-guide-nav-count">12</span></a></li><li><a class="is-tool" href="#entropy-workshop">Entropy Workshop</a></li></ul></nav>
         
     <section id="finder" class="sc-section sc-section-muted sc-finder-section" hidden data-guide-finder>
       <div class="container">
@@ -249,7 +250,7 @@
           <span class="sc-eyebrow">Foundations</span>
           <h2>Understand the system before you move money</h2>
           <p>The vocabulary and the decisions everything else assumes you have already made.</p>
-          <p class="sc-section-reviewed"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> These guides were last reviewed Aug 17&ndash;24, 2026</p>
+          <p class="sc-section-reviewed"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> These guides were last reviewed Aug 17&ndash;25, 2026</p>
           
         </div>
         <div class="row g-4">
@@ -267,7 +268,7 @@
       <p>Create a wallet, back it up, prove you can recover it, and only then receive bitcoin.</p>
       <div class="sc-tags"><span class="sc-tag">Overview</span><span class="sc-tag">Start here</span></div>
       <div class="sc-guide-card-foot">
-        <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 20 min</span></p>
+        <p class="sc-guide-card-meta"><span><i class="bi bi-hourglass-split" aria-hidden="true"></i> 32 min</span></p>
         <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
       </div>
     </div></article>
@@ -1303,6 +1304,36 @@
     </div></div>
       </div>
     </section>
+        
+    <section id="entropy-workshop" class="sc-section sc-section-dark">
+      <div class="container">
+        <div class="sc-section-head">
+          <span class="sc-eyebrow">Interactive tool</span>
+          <h2>Test the method</h2>
+          <p>Use a disposable sequence to check how your device turns physical randomness into a wallet.</p>
+        </div>
+        <div class="sc-tool-band">
+          <span class="sc-die-mark" aria-hidden="true"></span>
+          <div class="sc-tool-copy">
+            <h2>Entropy Workshop</h2>
+            <p>Enter the rolls or flips you already made and see the recovery words and first addresses they convert to &mdash; then compare that against what your device showed you. If the two disagree, your device uses a different conversion, which is common and worth knowing before you trust a column of rolls as a backup.</p>
+            <ul class="sc-tool-facts">
+              <li>One file, with nothing loaded from anywhere</li>
+              <li>Use it here, or save it and run it on a machine that has never been online</li>
+              <li>Checks itself against the published BIP test vectors on load</li>
+              <li>Generates no randomness, and has nowhere to type an existing phrase</li>
+            </ul>
+          </div>
+          <div class="sc-tool-actions">
+            <div class="sc-hero-actions">
+              <a class="sc-btn sc-btn-primary" href="entropy.html"><span>Enter Workshop</span></a>
+            </div>
+            <a class="sc-text-link" href="entropy.html" download="selfcustody-entropy-check.html" data-tool-download>Download the file <i class="bi bi-arrow-down-right"></i></a>
+            <p>Use throwaway rolls, on a wallet you will wipe afterwards. <a href="guides/dice-entropy.html">Roll the dice</a> explains the procedure and the rules that matter more than the tool does.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
         <section class="sc-section sc-section-dark">
           <div class="container">
@@ -1352,6 +1383,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260825-1100"></script>
+  <script src="assets/js/site-refresh.js?v=20260825-4800"></script>
 </body>
 </html>

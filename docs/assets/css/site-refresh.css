@@ -6050,6 +6050,20 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
   background: rgba(242, 138, 0, 0.14);
 }
 
+/* The one entry in this list that is not a guide category -- a divider above
+   it and an orange resting colour (rather than the plain white the six
+   category links share) say so before a reader ever opens the link, the same
+   distinction the hub's own nav strip already makes for it there. */
+body.site-refresh .navbar .sc-nav-tool-item {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.site-refresh .navbar .sc-nav-submenu a.sc-nav-tool-link {
+  color: #ffc07f;
+}
+
 @media (max-width: 991px) {
   body.site-refresh .navbar-mobile .sc-nav-menu-toggle {
     width: 100%;
@@ -6101,6 +6115,16 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
     font-size: 16px;
     font-weight: 500;
     letter-spacing: normal;
+  }
+
+  body.site-refresh .navbar-mobile .sc-nav-tool-item {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  body.site-refresh .navbar-mobile .sc-nav-submenu a.sc-nav-tool-link {
+    color: #ffc07f;
   }
 }
 
@@ -9127,6 +9151,27 @@ body[data-page="dashboard"] .sc-dash-hero + .sc-section + .sc-section {
 .sc-finder-search-clear:hover,
 .sc-finder-search-clear:focus-visible { color: #fff; }
 
+/* The one entry in this strip that is not a guide category. Orange rather than
+   the shared surface, so it reads as a different kind of destination instead
+   of a seventh section of the library. */
+.sc-guide-nav a.is-tool {
+  background: rgba(255, 138, 0, 0.1);
+  border-color: rgba(255, 138, 0, 0.45);
+}
+
+/* A dedicated hover rather than relying on the shared .sc-guide-nav a:hover
+   above: that rule nudges a chip from neutral gray to a light orange tint,
+   which reads as a big, obvious change. This chip starts in that same tint at
+   rest, so the identical nudge only pushes it a little further along a scale
+   it is already partway across -- hover barely registered. Pushing the
+   background further and adding a glow that only exists on hover (rather than
+   just deepening a color already in play) gives it back a real, visible state
+   change of its own. */
+.sc-guide-nav a.is-tool:hover {
+  background: rgba(255, 138, 0, 0.32);
+  box-shadow: 0 0 0 1px rgba(255, 138, 0, 0.55);
+}
+
 .sc-guide-nav-count {
   padding: 1px 8px;
   color: var(--sc-paper);
@@ -10360,9 +10405,33 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   }
 }
 
+/* The h2 rule sits above its heading and closes the section before it. This
+   one sits below and opens a subsection -- different marks for different jobs,
+   so the two breaks never read as the same weight. Without it a subheading is
+   only a size step, which is not enough separation from the bold lead-ins the
+   checklists are full of.
+
+   Short and orange rather than a rule across the measure: the quickstart alone
+   has twelve of these, and twelve hairlines on a page that already rules above
+   every h2 reads as ruled paper. Orange keeps the mark in the same vocabulary
+   as the numbers hung off the h2s. */
 .sc-article > h3 {
-  margin: 1.8em 0 0.6em;
+  position: relative;
+  margin: 2.1em 0 0.85em;
+  padding-bottom: 0.5em;
+  color: #fff;
   font-size: 1.25rem;
+}
+
+.sc-article > h3::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 34px;
+  height: 2px;
+  background: var(--sc-orange);
+  border-radius: 2px;
+  content: "";
 }
 
 .sc-article > .sc-guide-intro {
@@ -10584,6 +10653,216 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
     inset 0 1px 0 rgba(255, 255, 255, 0.14),
     inset 0 -8px 14px rgba(0, 0, 0, 0.5),
     0 5px 12px rgba(0, 0, 0, 0.42);
+}
+
+/* A pointer to the tool from inside the guide that explains it, set near the
+   top for the reader who arrived already holding a column of rolls. Quieter
+   than a .sc-callout on purpose -- it is a shortcut past the article, not a
+   warning, and the warnings on this particular page need to stay the loudest
+   thing on it. */
+.sc-article > .sc-tool-shortcut {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin: 2em 0;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.026);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid var(--sc-orange);
+  border-radius: var(--sc-radius-sm);
+}
+
+.sc-tool-shortcut .sc-die-mark {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -5px 9px rgba(0, 0, 0, 0.5),
+    0 3px 8px rgba(0, 0, 0, 0.42);
+}
+
+.sc-tool-shortcut strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #fff;
+  font-size: 0.98rem;
+}
+
+.sc-tool-shortcut p {
+  margin: 0;
+  color: var(--sc-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 575.98px) {
+  .sc-article > .sc-tool-shortcut { padding: 16px; gap: 12px; }
+}
+
+/* The nav chip above links straight to this section by hash. #header is
+   position: fixed at 78px tall, and nothing about a hash jump accounts for
+   that on its own -- the browser aligns the section's top edge with the
+   viewport's top edge, which tucks the heading directly under the header
+   rather than below it. scroll-margin-top pads that landing so the section
+   actually stops in view instead of a little too far down. */
+#entropy-workshop { scroll-margin-top: 100px; }
+
+/* ---- the offline tool band on the guides hub ---------------------------
+   Three columns on a wide screen -- mark, copy, action -- collapsing to one on
+   a phone. Bordered rather than filled, because it sits inside an already
+   tinted .sc-section-dark and a second fill would muddy both. */
+.sc-tool-band {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 280px);
+  gap: 28px;
+  align-items: start;
+  padding: 34px 36px;
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 138, 0, 0.11), transparent 40%) padding-box,
+    linear-gradient(#191817, #161615) padding-box,
+    linear-gradient(118deg,
+      rgba(255, 138, 0, 0.7) 0%,
+      rgba(255, 190, 112, 0.28) 22%,
+      rgba(255, 255, 255, 0.09) 52%,
+      rgba(255, 138, 0, 0.42) 100%) border-box;
+  border: 1px solid transparent;
+  border-radius: var(--sc-radius);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 22px 56px rgba(0, 0, 0, 0.24),
+    0 0 0 1px rgba(0, 0, 0, 0.16);
+}
+
+.sc-tool-band > .sc-die-mark {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  border-radius: 13px;
+}
+
+.sc-tool-copy h2 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  line-height: 1.2;
+}
+
+.sc-tool-copy > p {
+  margin: 0 0 18px;
+  color: var(--sc-ink-soft);
+  font-size: 0.98rem;
+}
+
+.sc-tool-facts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.sc-tool-facts li {
+  position: relative;
+  padding-left: 26px;
+  color: var(--sc-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.sc-tool-facts li::before {
+  position: absolute;
+  left: 0;
+  top: 1px;
+  color: var(--sc-success);
+  font-family: "bootstrap-icons";
+  content: "\f26e";
+}
+
+.sc-tool-actions {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.sc-tool-actions .sc-btn { width: 100%; justify-content: center; }
+
+/* The same skin as a hero's primary button (.sc-hero-actions .sc-btn-primary):
+   gradient border, glow, and a shine sweep on hover. Reused here as its own
+   rule rather than by also adding the sc-hero-actions class to this wrapper --
+   that class also carries a frosted backdrop-pill treatment (background,
+   padding, border-radius, backdrop-filter) meant for buttons sitting directly
+   on a busy hero photo or video. Stacked inside this panel, which already has
+   its own solid background, that pill rendered as an unwanted second box
+   behind the button rather than the button skin alone. */
+/* The primary button is wrapped in its own .sc-hero-actions div in the markup
+   (see renderToolsBand in build/guides.mjs) specifically so it is the exact
+   same element structure as the homepage's Explore Guides button -- same
+   classes, same rules, guaranteed identical rather than hand-copied. An
+   earlier version of this tried to reproduce the look with a scoped rule set
+   here and quietly missed one of the shared sizing rules, which is exactly
+   the kind of drift reusing the real class is meant to prevent. */
+/* Site-wide, .sc-hero-actions is `width: max-content` -- it shrink-wraps to
+   its buttons because the homepage sits it next to a second button in a row.
+   Here it is the only thing in this column, and shrinking to content dropped
+   it from filling the column (previously true of the plain button that used
+   to live here) down to a ~177px pill on a ~650px-wide column -- a real size
+   regression, not just a skin change. Stretched back to the column's width;
+   the existing .sc-tool-actions .sc-btn { width: 100% } rule below then fills
+   this box the same way it always filled the column directly. */
+body.site-refresh .sc-tool-actions .sc-hero-actions { width: 100%; margin: 0; }
+
+/* The button is a flex item of the pill above now, not a direct grid item of
+   .sc-tool-actions any more -- and as a lone flex item, its own width: 100%
+   (from the plain rule just above) measured out to its content size instead
+   of the pill's full width, even though nothing else was competing for the
+   space. flex-grow is the mechanism flexbox actually uses to hand a lone item
+   the rest of the line, so it is what reliably fills it; width stays as a
+   fallback for browsers not running the flex algorithm on this element. */
+.sc-tool-actions .sc-hero-actions .sc-btn { flex-grow: 1; }
+
+.sc-tool-actions > p {
+  margin: 0;
+  color: var(--sc-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 991.98px) {
+  .sc-tool-band {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 28px 24px;
+  }
+  .sc-tool-actions { grid-column: 1 / -1; }
+  .sc-tool-actions .sc-btn { width: auto; }
+}
+
+@media (max-width: 575.98px) {
+  .sc-tool-band { grid-template-columns: 1fr; gap: 20px; padding: 24px 20px; }
+}
+
+/* A guide link carrying its subject's mark (see markLink in build/guides.mjs).
+   The face is sized down from the 46px chart version to sit against a line of
+   body text rather than a heading, and its inset shade is scaled with it --
+   the 8px version reads as a gradient over the whole face at this size. */
+.sc-mark-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sc-mark-link .sc-die-mark {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -5px 9px rgba(0, 0, 0, 0.5),
+    0 3px 8px rgba(0, 0, 0, 0.42);
 }
 
 .sc-chart-heading > div > span {
@@ -10988,8 +11267,470 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   font-weight: 800;
 }
 
+/* The Quickstart's key split is the first diagram a new reader meets, so it
+   carries more hierarchy than the generic concept-diagram treatment. The
+   orange root visibly forks into a red spending branch and a green watching
+   branch; the last amber band deliberately changes the question from theft
+   risk to privacy risk. Everything remains SVG text for zooming, copying and
+   assistive technology. */
+.sc-key-split-figure {
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 17% 46%, rgba(214, 94, 64, 0.1), transparent 33%),
+    radial-gradient(circle at 83% 46%, rgba(53, 180, 138, 0.1), transparent 33%),
+    linear-gradient(155deg, #242321, #191a19 64%, #171817);
+  border-color: rgba(217, 194, 143, 0.3);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.sc-key-split-figure::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d65e40 0%, #f28a00 49%, #35b48a 100%);
+  content: "";
+}
+
+.sc-key-split-figure .sc-dg-panel-title {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.sc-key-split-figure .sc-dg-panel-sub {
+  fill: #b8b4ac;
+  font-size: 11.5px;
+}
+
+.sc-wo-seed {
+  stroke: rgba(242, 138, 0, 0.82);
+  stroke-width: 1.25;
+}
+
+.sc-wo-seed-icon {
+  fill: rgba(242, 138, 0, 0.17);
+  stroke: rgba(255, 177, 72, 0.65);
+  stroke-width: 1;
+}
+
+.sc-wo-seed-dot { fill: #ffad3d; }
+
+.sc-wo-seed-title,
+.sc-wo-panel-heading,
+.sc-wo-capability-main,
+.sc-wo-privacy-title {
+  fill: #fff;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 700;
+}
+
+.sc-wo-seed-title { font-size: 14px; }
+
+.sc-wo-seed-sub,
+.sc-wo-capability-sub,
+.sc-wo-note,
+.sc-wo-privacy-note {
+  font-family: "Open Sans", sans-serif;
+}
+
+.sc-wo-seed-sub {
+  fill: #c8bca7;
+  font-size: 10.5px;
+}
+
+.sc-wo-root-line {
+  fill: none;
+  stroke: #f28a00;
+  stroke-width: 1.6;
+}
+
+.sc-wo-junction {
+  fill: #f28a00;
+  stroke: #2a2218;
+  stroke-width: 3;
+}
+
+.sc-wo-branch {
+  fill: none;
+  stroke-width: 1.6;
+}
+
+.sc-wo-branch-risk { stroke: rgba(214, 94, 64, 0.9); }
+.sc-wo-branch-safe { stroke: rgba(53, 180, 138, 0.9); }
+
+.sc-wo-panel {
+  stroke-width: 1.25;
+}
+
+.sc-wo-panel-risk { stroke: rgba(214, 94, 64, 0.62); }
+.sc-wo-panel-safe { stroke: rgba(53, 180, 138, 0.58); }
+
+.sc-wo-panel-rule {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.sc-wo-panel-rule-risk { stroke: #d65e40; }
+.sc-wo-panel-rule-safe { stroke: #35b48a; }
+
+.sc-wo-header-card {
+  stroke-width: 1;
+}
+
+.sc-wo-header-card-risk {
+  fill: rgba(214, 94, 64, 0.055);
+  stroke: rgba(214, 94, 64, 0.28);
+}
+
+.sc-wo-header-card-safe {
+  fill: rgba(53, 180, 138, 0.06);
+  stroke: rgba(53, 180, 138, 0.3);
+}
+
+.sc-wo-badge { stroke-width: 1; }
+
+.sc-wo-badge-risk {
+  fill: rgba(214, 94, 64, 0.14);
+  stroke: rgba(255, 157, 138, 0.46);
+}
+
+.sc-wo-badge-safe {
+  fill: rgba(53, 180, 138, 0.14);
+  stroke: rgba(127, 224, 192, 0.42);
+}
+
+.sc-wo-key-ring,
+.sc-wo-key-stem,
+.sc-wo-eye,
+.sc-wo-privacy-eye {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.sc-wo-key-ring,
+.sc-wo-key-stem { stroke: #ff9d8a; }
+.sc-wo-eye { stroke: #7fe0c0; }
+.sc-wo-eye-dot { fill: #7fe0c0; }
+
+.sc-wo-kicker {
+  font-family: "Open Sans", sans-serif;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.sc-wo-kicker-risk { fill: #ff9d8a; }
+.sc-wo-kicker-safe { fill: #7fe0c0; }
+.sc-wo-panel-heading { font-size: 14px; }
+
+.sc-wo-capability {
+  stroke-width: 1;
+}
+
+.sc-wo-capability-risk {
+  fill: rgba(214, 94, 64, 0.065);
+  stroke: rgba(214, 94, 64, 0.32);
+}
+
+.sc-wo-capability-safe {
+  fill: rgba(53, 180, 138, 0.075);
+  stroke: rgba(53, 180, 138, 0.34);
+}
+
+.sc-wo-capability-main { font-size: 12px; }
+
+.sc-wo-capability-sub {
+  fill: #aaa79f;
+  font-size: 10px;
+}
+
+.sc-wo-note {
+  fill: #c5c1b9;
+  font-size: 11.25px;
+}
+
+.sc-wo-privacy {
+  stroke: rgba(242, 138, 0, 0.58);
+  stroke-width: 1.2;
+}
+
+.sc-wo-privacy-icon {
+  fill: rgba(242, 138, 0, 0.14);
+  stroke: rgba(255, 177, 72, 0.52);
+  stroke-width: 1;
+}
+
+.sc-wo-privacy-eye { stroke: #f5a94a; }
+.sc-wo-privacy-eye-dot { fill: #f5a94a; }
+.sc-wo-privacy-title { font-size: 12.5px; }
+
+.sc-wo-privacy-note {
+  fill: #c3bdb2;
+  font-size: 10.75px;
+}
+
+.sc-key-split-figure figcaption {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(217, 194, 143, 0.18);
+}
+
+.sc-key-split-mobile { display: none; }
+
 @media (max-width: 575.98px) {
   .sc-diagram-figure { padding: 14px; }
+  .sc-key-split-figure { padding: 14px 10px; }
+  .sc-key-split-figure .sc-key-split { display: none; }
+
+  .sc-key-split-mobile {
+    display: grid;
+    gap: 12px;
+    padding: 8px 2px 2px;
+  }
+
+  .sc-ksm-title,
+  .sc-ksm-sub,
+  .sc-ksm-panel p {
+    margin: 0;
+  }
+
+  .sc-ksm-title {
+    color: #fff;
+    font-family: "Jost", sans-serif;
+    font-size: 1.24rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .sc-ksm-sub {
+    margin-top: -7px;
+    color: #aaa69f;
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+
+  .sc-ksm-seed {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 22px 0;
+    padding: 12px 14px;
+    background: linear-gradient(145deg, #443016, #26221a 70%);
+    border: 1px solid rgba(242, 138, 0, 0.72);
+    border-radius: 11px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  }
+
+  .sc-ksm-seed > span:last-child,
+  .sc-ksm-panel header > span:last-child,
+  .sc-ksm-privacy > span:last-child {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  .sc-ksm-seed strong,
+  .sc-ksm-panel header strong,
+  .sc-ksm-privacy strong {
+    color: #fff;
+  }
+
+  .sc-ksm-seed strong { font-size: 0.92rem; }
+
+  .sc-ksm-seed small {
+    margin-top: 2px;
+    color: #c6bba9;
+    font-size: 0.68rem;
+  }
+
+  .sc-ksm-seed-icon {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    grid-template-columns: repeat(2, 4px);
+    place-content: center;
+    gap: 5px;
+    background: rgba(242, 138, 0, 0.13);
+    border: 1px solid rgba(255, 177, 72, 0.52);
+    border-radius: 50%;
+  }
+
+  .sc-ksm-seed-icon i {
+    width: 4px;
+    height: 4px;
+    background: #ffad3d;
+    border-radius: 50%;
+  }
+
+  .sc-ksm-flow {
+    position: relative;
+    margin: -1px 0 0;
+    padding-top: 17px;
+    color: #c7a46f;
+    text-align: center;
+    font-size: 0.59rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+  }
+
+  .sc-ksm-flow::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 13px;
+    background: linear-gradient(#f28a00, rgba(242, 138, 0, 0.24));
+    content: "";
+  }
+
+  .sc-ksm-panel {
+    position: relative;
+    overflow: hidden;
+    padding: 16px;
+    border: 1px solid;
+    border-radius: 12px;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+  }
+
+  .sc-ksm-panel::before {
+    position: absolute;
+    top: 0;
+    right: 14px;
+    left: 14px;
+    height: 2px;
+    border-radius: 2px;
+    content: "";
+  }
+
+  .sc-ksm-panel-risk {
+    background: radial-gradient(circle at 0 0, rgba(214, 94, 64, 0.13), transparent 48%), #1e1c1b;
+    border-color: rgba(214, 94, 64, 0.58);
+  }
+
+  .sc-ksm-panel-safe {
+    background: radial-gradient(circle at 0 0, rgba(53, 180, 138, 0.13), transparent 48%), #1a201e;
+    border-color: rgba(53, 180, 138, 0.54);
+  }
+
+  .sc-ksm-panel-risk::before { background: #d65e40; }
+  .sc-ksm-panel-safe::before { background: #35b48a; }
+
+  .sc-ksm-panel header,
+  .sc-ksm-privacy {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+  }
+
+  .sc-ksm-panel header {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9px;
+  }
+
+  .sc-ksm-badge {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    place-items: center;
+    border: 1px solid;
+    border-radius: 9px;
+    font-size: 0.7rem;
+    font-weight: 800;
+  }
+
+  .sc-ksm-panel-risk .sc-ksm-badge {
+    color: #ff9d8a;
+    background: rgba(214, 94, 64, 0.12);
+    border-color: rgba(255, 157, 138, 0.4);
+  }
+
+  .sc-ksm-panel-safe .sc-ksm-badge {
+    color: #7fe0c0;
+    background: rgba(53, 180, 138, 0.12);
+    border-color: rgba(127, 224, 192, 0.38);
+  }
+
+  .sc-ksm-panel header small {
+    margin-bottom: 1px;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+  }
+
+  .sc-ksm-panel-risk header small { color: #ff9d8a; }
+  .sc-ksm-panel-safe header small { color: #7fe0c0; }
+  .sc-ksm-panel header strong { font-size: 0.95rem; }
+
+  .sc-ksm-capability {
+    display: flex;
+    gap: 2px;
+    margin: 13px 0 12px;
+    padding: 10px 11px;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+  }
+
+  .sc-ksm-capability strong {
+    color: #fff;
+    font-size: 0.82rem;
+  }
+
+  .sc-ksm-capability span {
+    color: #aaa69f;
+    font-size: 0.67rem;
+  }
+
+  .sc-ksm-panel p {
+    color: #c8c4bc;
+    font-size: 0.76rem;
+    line-height: 1.6;
+  }
+
+  .sc-ksm-privacy {
+    gap: 13px;
+    padding: 16px;
+    background: linear-gradient(145deg, #332719, #211f1a);
+    border: 1px solid rgba(242, 138, 0, 0.54);
+    border-radius: 12px;
+  }
+
+  .sc-ksm-privacy .sc-ksm-badge {
+    color: #f5a94a;
+    background: rgba(242, 138, 0, 0.11);
+    border-color: rgba(255, 177, 72, 0.44);
+  }
+
+  .sc-ksm-privacy strong {
+    font-size: 0.79rem;
+    line-height: 1.4;
+  }
+
+  .sc-ksm-privacy small {
+    margin-top: 4px;
+    color: #bbb5aa;
+    font-size: 0.68rem;
+    line-height: 1.5;
+  }
+
+  .sc-key-split-figure figcaption {
+    margin-top: 12px;
+    padding: 12px 4px 0;
+  }
 }
 
 /* ---- searchable glossary ---------------------------------------------- */
@@ -11284,6 +12025,292 @@ body.site-refresh .sc-guide-next-actions .sc-btn {
   font-size: 0.92em;
   font-weight: 700;
   letter-spacing: 0.03em;
+}
+
+/* ---- the self-check quiz -----------------------------------------------
+
+   Closes the Quickstart. Two rules shape everything here.
+
+   One: it degrades to a readable page. The explanations are in the markup and
+   visible by default, and the buttons are inert until site-refresh.js adds
+   .is-live -- so with the script off a reader gets five questions with their
+   reasoning underneath rather than a column of dead controls.
+
+   Two: state is never carried by colour alone. A right answer gets a tick and
+   a wrong one gets a cross, the revealed answer is labelled by its position in
+   the list, and the explanation appears in words either way. The green and red
+   are the same pair the level badges and the concept diagrams use. */
+.sc-article > .sc-quiz {
+  position: relative;
+  overflow: hidden;
+  margin: 3.6em 0 0;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 0 0, rgba(242, 138, 0, 0.12), transparent 34%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(217, 194, 143, 0.28);
+  border-radius: var(--sc-radius);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065);
+}
+
+.sc-article > .sc-quiz::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #f28a00, #d9c28f 52%, #35b48a);
+  content: "";
+}
+
+.sc-quiz-head {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.sc-quiz-head > div > span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--sc-orange-dark);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sc-quiz-head h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.24rem;
+  line-height: 1.25;
+}
+
+/* Tabular figures so the score does not jog sideways as it counts up. */
+.sc-quiz-score {
+  padding: 7px 12px;
+  color: var(--sc-ink-soft);
+  background: rgba(255, 255, 255, 0.028);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-quiz-intro {
+  margin: 20px 0 0;
+  color: var(--sc-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.sc-quiz-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sc-quiz-item {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(110, 105, 94, 0.36);
+}
+
+.sc-quiz-prompt {
+  display: flex;
+  gap: 12px;
+  margin: 0 0 14px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.sc-quiz-n {
+  flex-shrink: 0;
+  color: var(--sc-orange);
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-quiz-n::after {
+  color: rgba(255, 138, 0, 0.45);
+  content: ".";
+}
+
+.sc-quiz-options {
+  display: grid;
+  gap: 8px;
+}
+
+.sc-quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  color: var(--sc-ink);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.026);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--sc-radius-sm);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.sc-quiz-letter {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  color: var(--sc-muted);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--sc-radius-xs);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 22px;
+}
+
+/* Only reachable once the script has turned the buttons on. */
+.sc-quiz.is-live .sc-quiz-option:hover {
+  background: rgba(255, 138, 0, 0.09);
+  border-color: rgba(255, 138, 0, 0.42);
+}
+
+.sc-quiz-option[aria-disabled="true"] {
+  cursor: default;
+}
+
+.sc-quiz.is-live .sc-quiz-option[aria-disabled="true"]:hover {
+  background: rgba(255, 255, 255, 0.026);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* The three end states. .is-answer marks the correct option after a wrong
+   pick, so a miss still shows what the answer was. */
+.sc-quiz-option.is-correct,
+.sc-quiz.is-live .sc-quiz-option.is-correct:hover {
+  background: rgba(53, 180, 138, 0.12);
+  border-color: rgba(53, 180, 138, 0.6);
+}
+
+.sc-quiz-option.is-wrong,
+.sc-quiz.is-live .sc-quiz-option.is-wrong:hover {
+  background: rgba(214, 94, 64, 0.12);
+  border-color: rgba(214, 94, 64, 0.6);
+}
+
+.sc-quiz-option.is-answer:not(.is-correct),
+.sc-quiz.is-live .sc-quiz-option.is-answer:not(.is-correct):hover {
+  background: rgba(53, 180, 138, 0.05);
+  border-color: rgba(53, 180, 138, 0.34);
+}
+
+.sc-quiz-option.is-correct .sc-quiz-letter {
+  color: #0f1512;
+  background: #7fe0c0;
+}
+
+.sc-quiz-option.is-wrong .sc-quiz-letter {
+  color: #1a0f0c;
+  background: #ff9d8a;
+}
+
+.sc-quiz-option.is-answer:not(.is-correct) .sc-quiz-letter {
+  color: #7fe0c0;
+  background: rgba(53, 180, 138, 0.2);
+}
+
+/* A verdict glyph at the far end, so the state never rests on fill colour
+   alone. Codepoints rather than bi-* classes because these are pseudo-element
+   content -- \f270 is bi-check2-circle and \f62a is bi-x, both of which the
+   subset font carries. */
+.sc-quiz-option.is-correct::after,
+.sc-quiz-option.is-wrong::after,
+.sc-quiz-option.is-answer:not(.is-correct)::after {
+  margin-left: auto;
+  padding-left: 10px;
+  font-family: "bootstrap-icons";
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.sc-quiz-option.is-correct::after,
+.sc-quiz-option.is-answer:not(.is-correct)::after {
+  color: #7fe0c0;
+  content: "\f270";
+}
+
+.sc-quiz-option.is-wrong::after {
+  color: #ff9d8a;
+  content: "\f62a";
+}
+
+.sc-quiz-why {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  color: var(--sc-ink-soft);
+  background: rgba(255, 255, 255, 0.022);
+  border-left: 3px solid rgba(255, 138, 0, 0.5);
+  border-radius: 0 var(--sc-radius-xs) var(--sc-radius-xs) 0;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.sc-quiz-why strong {
+  color: var(--sc-orange-dark);
+}
+
+/* Held back only once the script is driving. Without it every explanation is
+   on the page, which is the whole fallback. */
+.sc-quiz.is-live .sc-quiz-why {
+  display: none;
+}
+
+.sc-quiz.is-live .sc-quiz-item.is-answered .sc-quiz-why {
+  display: block;
+}
+
+.sc-quiz-result {
+  margin: 24px 0 0;
+  padding-top: 20px;
+  color: #fff;
+  border-top: 1px solid rgba(110, 105, 94, 0.36);
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+@media (max-width: 575.98px) {
+  .sc-article > .sc-quiz {
+    padding: 22px 18px;
+  }
+
+  .sc-quiz-head {
+    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-areas:
+      "mark title"
+      "score score";
+  }
+
+  .sc-quiz-head > .sc-die-mark {
+    grid-area: mark;
+    width: 38px;
+    height: 38px;
+  }
+
+  .sc-quiz-head > div {
+    grid-area: title;
+  }
+
+  .sc-quiz-score {
+    grid-area: score;
+    justify-self: start;
+  }
 }
 
 /* Guide data visuals: one visual language, with a layout chosen for the data. */
@@ -12360,9 +13387,7 @@ body[data-page="home"] .sc-home-help-section {
 .sc-home-help-topics {
   min-height: 100%;
   padding: clamp(30px, 4vw, 48px);
-  background:
-    radial-gradient(circle at 100% 0, rgba(242, 138, 0, 0.12), transparent 38%),
-    rgba(10, 11, 13, 0.34);
+  background: rgba(10, 11, 13, 0.34);
   border-left: 1px solid rgba(255, 237, 184, 0.16);
 }
 
@@ -12376,55 +13401,49 @@ body[data-page="home"] .sc-home-help-section {
   text-transform: uppercase;
 }
 
-.sc-home-help-topic-grid {
+.sc-home-help-topic-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.sc-home-help-topic-grid article {
-  min-height: 128px;
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 237, 184, 0.18);
-  border-radius: 10px;
-}
-
-.sc-home-help-topic-grid h3 {
-  margin: 0 0 10px;
-  color: var(--sc-orange);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.sc-home-help-topic-grid ul {
-  display: grid;
-  gap: 5px;
   margin: 0;
-  padding: 0;
+  padding: 4px 0;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.038), rgba(255, 255, 255, 0.014));
+  border: 1px solid rgba(234, 223, 200, 0.2);
+  border-radius: 12px;
   list-style: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
-.sc-home-help-topic-grid li {
+.sc-home-help-topic-list li {
   position: relative;
-  padding-left: 13px;
-  color: rgba(255, 255, 255, 0.82);
+  min-height: 48px;
+  padding: 13px 14px 13px 36px;
+  color: rgba(255, 255, 255, 0.78);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.075);
   font-size: 0.88rem;
   font-weight: 600;
   line-height: 1.35;
 }
 
-.sc-home-help-topic-grid li::before {
+.sc-home-help-topic-list li:nth-child(odd) {
+  border-right: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.sc-home-help-topic-list li:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.sc-home-help-topic-list li::before {
   position: absolute;
-  top: 0.58em;
-  left: 0;
-  width: 4px;
-  height: 4px;
-  background: rgba(255, 157, 38, 0.8);
+  top: 50%;
+  left: 16px;
+  width: 7px;
+  height: 7px;
+  background: #eadfc8;
   border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(234, 223, 200, 0.08);
   content: "";
+  transform: translateY(-50%);
 }
 
 .sc-home-help-boundary {
@@ -12438,7 +13457,19 @@ body[data-page="home"] .sc-home-help-section {
 }
 
 .sc-home-help-boundary strong {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
   color: #fff;
+}
+
+.sc-home-help-boundary strong::before {
+  width: 7px;
+  height: 7px;
+  background: var(--sc-orange);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.13);
+  content: "";
 }
 
 .sc-home-help-boundary p {
@@ -12449,54 +13480,116 @@ body[data-page="home"] .sc-home-help-section {
 
 .sc-home-trust-head {
   max-width: 760px;
-  margin: 0 auto 34px;
-  text-align: center;
+  margin: 0 0 38px;
 }
 
 .sc-home-trust-head p {
   max-width: 700px;
-  margin-right: auto;
-  margin-left: auto;
+  margin: 0;
 }
 
-.sc-home-trust-card {
-  height: 100%;
-  padding: 24px 22px;
+.sc-home-trust-head .sc-eyebrow {
+  margin-bottom: 10px;
+}
+
+.sc-home-trust-grid {
+  --bs-gutter-x: 0;
+  --bs-gutter-y: 0;
+  margin-right: 0;
+  margin-left: 0;
+  overflow: hidden;
   background: rgba(18, 19, 20, 0.78);
-  border: 1px solid rgba(255, 237, 184, 0.3);
-  border-radius: var(--sc-radius);
+  border: 1px solid rgba(255, 237, 184, 0.34);
+  border-radius: calc(var(--sc-radius) + 2px);
   box-shadow:
-    0 20px 48px rgba(0, 0, 0, 0.38),
+    0 24px 58px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.045);
   backdrop-filter: blur(14px);
 }
 
+.sc-home-trust-grid > div:not(:last-child) {
+  border-right: 1px solid rgba(255, 237, 184, 0.16);
+}
+
+.sc-home-trust-grid > div:nth-child(1) {
+  --trust-accent: #f04a51;
+  --trust-wash: rgba(240, 74, 81, 0.12);
+}
+
+.sc-home-trust-grid > div:nth-child(2) {
+  --trust-accent: #eadfc8;
+  --trust-wash: rgba(234, 223, 200, 0.105);
+}
+
+.sc-home-trust-grid > div:nth-child(3) {
+  --trust-accent: #4aa36a;
+  --trust-wash: rgba(74, 163, 106, 0.13);
+}
+
+.sc-home-trust-grid > div:nth-child(4) {
+  --trust-accent: #ff9800;
+  --trust-wash: rgba(255, 152, 0, 0.13);
+}
+
+.sc-home-trust-card {
+  position: relative;
+  height: 100%;
+  min-height: 210px;
+  padding: 28px 25px 26px;
+  background:
+    radial-gradient(circle at 12% 0, var(--trust-wash), transparent 48%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.025), transparent 62%);
+}
+
 .sc-home-trust-card > span {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--sc-orange);
+  display: flex;
+  position: relative;
+  z-index: 1;
+  gap: 9px;
+  align-items: center;
+  margin-bottom: 19px;
+  color: var(--trust-accent);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
+.sc-home-trust-card > span::before {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  background: var(--trust-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--trust-wash);
+  content: "";
+}
+
 .sc-home-trust-card h3 {
+  position: relative;
+  z-index: 1;
   margin-bottom: 9px;
   color: #fff;
   font-size: 1.08rem;
 }
 
 .sc-home-trust-card p {
+  position: relative;
+  z-index: 1;
   margin: 0;
   font-size: 0.94rem;
 }
 
 @media (max-width: 1199px) {
-  .sc-home-trust-grid {
-    --bs-gutter-y: 0;
-    row-gap: 20px;
-  }
+  .sc-home-trust-grid > div { border-right: 0; }
+  .sc-home-trust-grid > div:nth-child(odd) { border-right: 1px solid rgba(255, 237, 184, 0.16); }
+  .sc-home-trust-grid > div:nth-child(-n + 2) { border-bottom: 1px solid rgba(255, 237, 184, 0.16); }
+}
+
+@media (max-width: 767px) {
+  .sc-home-trust-grid > div:nth-child(odd) { border-right: 0; }
+  .sc-home-trust-grid > div:not(:last-child) { border-bottom: 1px solid rgba(255, 237, 184, 0.16); }
+  .sc-home-trust-card { min-height: 0; }
 }
 
 @media (max-width: 991px) {
@@ -12550,12 +13643,16 @@ body[data-page="home"] .sc-home-help-section {
 }
 
 @media (max-width: 575px) {
-  .sc-home-help-topic-grid {
+  .sc-home-help-topic-list {
     grid-template-columns: 1fr;
   }
 
-  .sc-home-help-topic-grid article {
-    min-height: auto;
+  .sc-home-help-topic-list li:nth-child(odd) {
+    border-right: 0;
+  }
+
+  .sc-home-help-topic-list li:nth-last-child(2) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.075);
   }
 
   body[data-page="home"] .sc-hero + .sc-section.sc-path-section {
