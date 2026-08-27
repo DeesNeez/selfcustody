@@ -989,13 +989,16 @@ const EntropyCore = (() => {
       faces: '1-8 for the octal die, 0-9 and A-F for the hex dice',
       keep: /[^0-9A-F]/g,
       grouped: 3,
-      rolled: 23,
       lookup: true,
       allow: ['12345678', '0123456789ABCDEF', '0123456789ABCDEF'],
       shape: /^[1-8][0-9A-F]{2}$/,
       indexOf: OCTAHEX_INDEX,
       wrong: 'each word is one octal die showing 1-8 then two hex dice',
-      counts: { 24: 69 },
+      /* Both lengths, unlike the BitBox table. Three dice are 11 bits and a
+         word index is 11 bits, so the method does not care how many words you
+         want -- it is the same throw either way. 11 words rolled for a 12-word
+         seed, 23 for a 24-word one; the last word is picked in both cases. */
+      counts: { 12: 33, 24: 69 },
       extra: false,
       most: 69,
       /* One octal die and two hex dice: 3 + 4 + 4 = 11 bits a word. */
@@ -1360,6 +1363,14 @@ const EntropyCore = (() => {
 
   /* The minimum is the count that fills the seed; the maximum is the same
      number unless the method absorbs extras. */
+  /* Whole words a lookup method rolls, for the length asked for. Derived from
+     the entry count rather than stored twice: three dice make one word, so the
+     two numbers cannot disagree if only one of them exists. */
+  const rolledWords = (method, words) => {
+    const spec = METHODS[method];
+    return spec.counts[words] / spec.grouped;
+  };
+
   const limits = (method, words) => {
     const spec = METHODS[method];
     const least = spec.counts[words];
@@ -1400,7 +1411,7 @@ const EntropyCore = (() => {
     }
 
     if (spec.grouped) {
-      const need = spec.rolled;
+      const need = rolledWords(method, words);
       const have = Math.floor(count / spec.grouped);
       return {
         have, need, unit: 'word', rolls: count,
@@ -1444,7 +1455,7 @@ const EntropyCore = (() => {
       return clean.slice(0, i);
     }
 
-    if (spec.grouped) return clean.slice(0, spec.rolled * spec.grouped);
+    if (spec.grouped) return clean.slice(0, rolledWords(method, words) * spec.grouped);
 
     return clean.slice(0, limits(method, words).most * (spec.size || 1));
   };
@@ -1475,21 +1486,31 @@ const EntropyCore = (() => {
 
      23 words come straight out of the table. The 24th cannot: 23 words carry
      253 bits, a 24-word seed is 256 bits of entropy plus an 8-bit checksum,
-     so the last word is 3 unrolled bits followed by a checksum over all of
-     them. Three free bits is eight endings, and the device shows exactly
-     those eight for you to pick from. Each one is a different wallet.
+     so the last word is unrolled bits followed by a checksum over all of them,
+     and every value those free bits can take is a different valid wallet.
 
-     This returns all eight rather than choosing, because choosing is the
-     one part of the procedure that belongs to the person doing it. */
-  const lookupDraft = ({ method, input, wordlist }) => {
+     How many depends on the length, because 11 does not divide either seed
+     evenly:
+
+       24 words   23 rolled = 253 bits, 256 wanted, 3 free   ->   8 endings
+       12 words   11 rolled = 121 bits, 128 wanted, 7 free   -> 128 endings
+
+     The checksum is BIP39's: the first entropy/32 bits of its SHA-256, so 8
+     bits for a 24-word seed and 4 for a 12-word one. The last word index is
+     the free bits followed by those checksum bits, which is why the 24-word
+     case reads as tail * 256 + the first hash byte.
+
+     This returns every ending rather than choosing one, because choosing is
+     the part of the procedure that belongs to the person doing it. */
+  const lookupDraft = ({ method, input, words, wordlist }) => {
     const spec = METHODS[method];
     const clean = normalise(method, input);
-    const wanted = spec.rolled * spec.grouped;
+    const rolled = rolledWords(method, words);
+    const wanted = rolled * spec.grouped;
 
     if (clean.length !== wanted) {
-      throw new Error(`${wanted} entries needed for ${spec.rolled} words, ${clean.length} supplied`);
+      throw new Error(`${wanted} entries needed for ${rolled} words, ${clean.length} supplied`);
     }
-
 
     const indices = [];
     for (let i = 0; i < wanted; i += spec.grouped) {
@@ -1500,12 +1521,18 @@ const EntropyCore = (() => {
       indices.push(spec.indexOf(group));
     }
 
+    const entropyBits = words === 24 ? 256 : 128;
+    const checksumBits = entropyBits / 32;
+    const freeBits = entropyBits - rolled * 11;
+
     const rolledBits = indices.map(i => i.toString(2).padStart(11, '0')).join('');
     const options = [];
-    for (let tail = 0; tail < 8; tail++) {
-      const entropy = bitsToBytes(rolledBits + tail.toString(2).padStart(3, '0'), 32);
+    for (let tail = 0; tail < (1 << freeBits); tail++) {
+      const entropy = bitsToBytes(rolledBits + tail.toString(2).padStart(freeBits, '0'), entropyBits / 8);
+      /* The checksum bits are the top of the first hash byte. */
+      const checksum = sha256(entropy)[0] >> (8 - checksumBits);
       options.push({
-        word: wordlist[tail * 256 + sha256(entropy)[0]],
+        word: wordlist[(tail << checksumBits) | checksum],
         entropy: hex(entropy)
       });
     }
@@ -1535,7 +1562,7 @@ const EntropyCore = (() => {
     /* The lookup method never builds entropy and then reads words off it; the
        table names the words and the entropy is what they imply. */
     if (spec.lookup) {
-      const { words: rolled, options } = lookupDraft({ method, input, wordlist });
+      const { words: rolled, options } = lookupDraft({ method, input, words, wordlist });
       const picked = options[choice];
       if (!picked) throw new Error('pick one of the eight endings for the last word');
       const mnemonic = [...rolled, picked.word];
@@ -1603,7 +1630,7 @@ const EntropyCore = (() => {
     ADDRESS_TYPES, METHODS, accountPath, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
     cardBits, cardEntropy, cardsLeft, sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
-    progress, nextAllowed, clamp,
+    progress, nextAllowed, clamp, rolledWords,
     deriveSeed, deriveAddresses, buildWallet, limits,
     assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative
   };
