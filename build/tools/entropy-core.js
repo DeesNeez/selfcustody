@@ -976,6 +976,31 @@ const EntropyCore = (() => {
     return CARD_DECK.filter(card => !used.has(card));
   };
 
+  /* The first card drawn twice from the same deck, or null if there is none.
+
+     Counted per pass rather than across the whole draw, because a finished
+     deck is meant to be shuffled and drawn again: the 53rd card is legitimately
+     one of the first 52 over. That is the same accounting cardsLeft uses to
+     decide which keys to grey out, so the pad and this agree about when a deck
+     has been used up.
+
+     A repeat is not a fabrication -- it is arithmetic. The bits a draw is
+     credited with come from cardEntropy, which is log2(52!/(52-n)!) and assumes
+     every card is one that had not been drawn yet. Twenty-five copies of the
+     ace of spades is worth 5.7 bits, not 132.4, and the meter would have said
+     132.4. */
+  const repeatedCard = (clean, deck = 52) => {
+    const seen = new Set();
+    for (let i = 0; i + 2 <= clean.length; i += 2) {
+      const nth = i / 2;
+      if (nth % deck === 0) seen.clear();
+      const card = clean.slice(i, i + 2);
+      if (seen.has(card)) return { card, at: nth + 1 };
+      seen.add(card);
+    }
+    return null;
+  };
+
   const METHODS = {
     dice: {
       label: 'Dice',
@@ -1671,6 +1696,17 @@ const EntropyCore = (() => {
         : `that sequence is not valid for ${spec.label}`);
     }
 
+    /* Well-formed and still impossible. The pad cannot produce this -- it greys
+       out what has been drawn -- but a pasted transcript can, and a repeat is
+       the one error that costs entropy without changing the card count the
+       meter reads. */
+    if (spec.deck) {
+      const again = repeatedCard(clean, spec.deck);
+      if (again) {
+        throw new Error(`card ${again.at} is ${again.card}, which has already been drawn — one deck cannot deal the same card twice. Shuffle and keep drawing to start a fresh deck, or correct the transcript.`);
+      }
+    }
+
     if (spec.variable) {
       const need = spec.bits[words];
       const have = spec.bitsOf(clean).length;
@@ -1728,7 +1764,7 @@ const EntropyCore = (() => {
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
-    cardBits, cardEntropy, cardsLeft, sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
+    cardBits, cardEntropy, cardsLeft, repeatedCard, sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, nextAllowed, clamp, rolledWords,
     deriveSeed, deriveAddresses, buildWallet, limits,
     assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative

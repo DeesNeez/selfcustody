@@ -881,6 +881,33 @@ export const VECTORS = [
   /* The one that counted as 25 cards and hashed 51 characters. */
   ['cards: a trailing half-card is refused rather than hashed',
     () => refusedDraw(CARDS_25 + 'A'), 'refused'],
+
+  /* Duplicates. Well-formed, so the shape check passes them, and the card
+     count the meter reads is unaffected -- which is exactly why they matter:
+     cardEntropy is log2(52!/(52-n)!) and assumes every card is a new one. */
+  ['cards: the same card 25 times is refused',
+    () => refusedDraw('AS'.repeat(25)), 'refused'],
+  ['cards: one repeat inside an otherwise real draw is refused',
+    () => refusedDraw(CARDS_25.slice(0, 48) + CARDS_25.slice(0, 2)), 'refused'],
+  /* Named and placed, because "there is a duplicate somewhere in 52 cards" is
+     not something anyone can act on. Reported before the count is, so a short
+     transcript hears about the impossible card rather than about its length. */
+  ['cards: the repeat is named with its position',
+    () => {
+      try { C.deriveSeed({ method: 'cards', input: 'AS2H3D4CAS', words: 12, wordlist: WORDLIST }); return 'accepted'; }
+      catch (err) { return err.message.startsWith('card 5 is AS, which has already been drawn'); }
+    }, true],
+  /* A finished deck is meant to be shuffled and drawn again, so the 53rd card
+     repeating one of the first 52 is a legitimate draw rather than a mistake.
+     The check counts per pass for this reason -- the same accounting cardsLeft
+     uses to decide which keys the pad greys out. */
+  ['cards: a fresh deck after 52 may repeat the first deck',
+    () => C.deriveSeed({ method: 'cards', input: C.CARD_DECK.join('') + C.CARD_DECK.slice(0, 6).join(''),
+      words: 24, wordlist: WORDLIST }).mnemonic.length, 24],
+  ['cards: but a repeat inside the second deck is still refused',
+    () => refusedDraw(C.CARD_DECK.join('') + 'AC2C3CAC'), 'refused'],
+  ['cards: repeatedCard finds nothing in a real draw',
+    () => C.repeatedCard(REAL_DRAW), null],
   /* The tolerance is not a taste call: it is the longest code minus one, the
      furthest a single final event can carry the total past the target. Pinned
      so the two tables cannot drift apart from the numbers they imply. */
