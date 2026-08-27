@@ -1613,7 +1613,7 @@ const EntropyCore = (() => {
     if (spec.lookup) {
       const { words: rolled, options } = lookupDraft({ method, input, words, wordlist });
       const picked = options[choice];
-      if (!picked) throw new Error('pick one of the eight endings for the last word');
+      if (!picked) throw new Error(`pick one of the ${options.length} endings for the last word`);
       const mnemonic = [...rolled, picked.word];
       return { entropy: picked.entropy, mnemonic, options, ...seedOf(mnemonic, passphrase) };
     }

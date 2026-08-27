@@ -177,16 +177,6 @@ const NAMESPACE_ORIGINS = new Set([
   'https://schema.org'       /* JSON-LD @context; vocabulary identifier, not a URL to load */
 ]);
 
-/* Our own origin. It appears in code for one reason: the offline build
-   rewrites its relative links to absolute ones, so a file saved to a USB stick
-   still has somewhere to point. Those are anchors -- following one is a
-   decision to leave the tool -- and the same string appears in canonical tags
-   and JSON-LD, which are metadata. None of it is fetched on load.
-
-   Declared rather than ignored, so that if something ever does call our own
-   origin automatically it still has to be written down here first. */
-const SELF_ORIGIN = 'https://selfcustody.ca';
-
 function scriptOrigins(text) {
   const found = new Set();
   for (const m of text.matchAll(/https?:\/\/[a-z0-9.-]+/gi)) {
@@ -194,6 +184,33 @@ function scriptOrigins(text) {
     if (!NAMESPACE_ORIGINS.has(origin)) found.add(origin);
   }
   return [...found];
+}
+
+/* The strict script rule in one place, so linked and inline code cannot drift.
+
+   There is deliberately no exception for selfcustody.ca. It is the page's own
+   origin when served, but it is an external host when the same page is opened
+   from file:// -- exactly the context in which the original Google Fonts leak
+   mattered. Legitimate click-through URLs belong in inert markup, not hidden
+   behind a blanket exception for executable code. */
+const undeclaredScriptOrigins = (text, permitted = {}) =>
+  scriptOrigins(text).filter(origin => !(origin in permitted));
+
+/* A guard needs a guard of its own. Both regressions this catches have existed
+   here: computed URLs escaped the runtime-call patterns, and selfcustody.ca was
+   skipped because it was mistaken for a harmless same-origin request. The
+   script rule is intentionally blunt, so seeing the literal must be enough. */
+function assertScriptGuard() {
+  const probes = [
+    ['the site origin', 'https://selfcustody.ca'],
+    ['another origin', 'https://example.invalid']
+  ];
+  for (const [label, origin] of probes) {
+    const source = `const endpoint = "${origin}/collect"; fetch(endpoint);`;
+    if (!undeclaredScriptOrigins(source).includes(origin)) {
+      throw new Error(`fetch guard self-test failed: a computed request to ${label} was not rejected`);
+    }
+  }
 }
 
 /* Local scripts and stylesheets a page pulls in. Their contents are as much a
@@ -259,9 +276,7 @@ function checkAsset(file) {
   const permitted = SCRIPT_ORIGINS[where] || {};
   const problems = [];
 
-  for (const origin of scriptOrigins(body)) {
-    if (origin === SELF_ORIGIN) continue;
-    if (origin in permitted) continue;
+  for (const origin of undeclaredScriptOrigins(body, permitted)) {
     problems.push(SCRIPT_ORIGINS[where]
       ? `${where} names ${origin}, which is not declared for it`
       : `${where} names ${origin}, and no external origin is declared for this file`);
@@ -272,7 +287,7 @@ function checkAsset(file) {
   if (/\.css$/i.test(file)) {
     for (const { url, why } of autoFetched(body)) {
       const origin = originOf(url);
-      if (origin && origin !== SELF_ORIGIN) problems.push(`${where}: ${why} -> ${url}`);
+      if (origin) problems.push(`${where}: ${why} -> ${url}`);
     }
   }
   return problems;
@@ -299,11 +314,8 @@ function checkFile(path, name) {
     const type = (m[1].match(/\btype\s*=\s*["']([^"']*)["']/i)?.[1] || '').toLowerCase();
     if (type && !/(java|ecma)script$|^module$|^text\/js$/.test(type)) continue;
 
-    for (const origin of scriptOrigins(m[2])) {
-      if (origin === SELF_ORIGIN) continue;
-      if (!(origin in SHARED_SCRIPT_ORIGINS)) {
-        problems.push(`an inline script names ${origin}, which is not declared`);
-      }
+    for (const origin of undeclaredScriptOrigins(m[2])) {
+      problems.push(`an inline script names ${origin}, which is not declared`);
     }
   }
 
@@ -333,6 +345,7 @@ function walk(dir, out = []) {
 }
 
 export function assertNoUnexpectedFetches(root = 'docs') {
+  assertScriptGuard();
   const failures = [];
   const assets = new Set();
 

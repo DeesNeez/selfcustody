@@ -650,7 +650,7 @@ ${FONTS.map(embedFont).join('\n')}
     display: inline-flex; align-items: center; justify-content: center; gap: 9px;
     position: relative; isolation: isolate; overflow: hidden;
     width: 100%; padding: 15px 20px; white-space: nowrap;
-    color: var(--ink); text-decoration: none;
+    color: #fff; text-decoration: none; text-shadow: none;
     font-size: 0.95rem; font-weight: 800; text-align: center;
     border: 1px solid transparent;
     border-radius: 10px;
@@ -662,7 +662,9 @@ ${FONTS.map(embedFont).join('\n')}
       0 9px 24px rgba(255, 122, 0, 0.22);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
+  .dl:visited { color: #fff; text-decoration: none; }
   .dl:hover {
+    color: #fff; text-decoration: none; text-shadow: none;
     background:
       linear-gradient(135deg, #ffab38, #df6900) padding-box,
       linear-gradient(135deg, #ffe0b5, #9b4000) border-box;
@@ -672,17 +674,19 @@ ${FONTS.map(embedFont).join('\n')}
     transform: translateY(-2px);
   }
   .dl::after {
-    position: absolute; z-index: 1; top: -45%; bottom: -45%; left: -32%; width: 24%;
-    background: linear-gradient(90deg, transparent, rgba(255, 245, 224, 0.52), transparent);
-    content: ""; opacity: 0; transform: skewX(-18deg) translateX(-180%);
+    position: absolute; z-index: 1; top: -45%; bottom: -45%; left: -32%; width: 22%;
+    background: linear-gradient(90deg, transparent, rgba(255, 245, 224, 0.42), transparent);
+    content: ""; pointer-events: none; opacity: 0;
+    transform: skewX(-18deg) translateX(-180%);
     transition: transform 0.72s cubic-bezier(0.2, 0.72, 0.22, 1), opacity 0.18s ease;
   }
-  .dl:hover::after { opacity: 1; transform: skewX(-18deg) translateX(680%); }
-  /* Above the sweep. The shine is a positioned box at z-index 1 and the label
-     was in normal flow beneath it, so hovering wiped the text as the band
-     crossed -- worst on the longest label, "Open the offline file", which the
-     band covers most of. The light passes behind the words now. */
+  .dl:hover::after { opacity: 1; transform: skewX(-18deg) translateX(700%); }
+  /* Keep the white icon and label above the moving highlight. */
   .dl > * { position: relative; z-index: 2; }
+  .dl:focus-visible {
+    color: #fff; text-decoration: none; text-shadow: none;
+    outline: 2px solid #fff; outline-offset: 3px;
+  }
   .dl-icon { flex: 0 0 auto; display: block; }
   .download-action small { color: var(--muted); font-size: 0.75rem; }
 
@@ -881,8 +885,10 @@ ${FONTS.map(embedFont).join('\n')}
      .wrap's widened measure for the two-column shell is folded into its one
      rule the same way. */
   .hero-shell {
-    display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
-    align-items: center; gap: clamp(28px, 5vw, 56px);
+    display: block; width: 100%;
+  }
+  .hero-heading {
+    display: block;
   }
   .hero-copy { min-width: 0; }
   .hero .crumb { margin-bottom: 18px; }
@@ -892,12 +898,38 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .hero .eyebrow::before { content: ""; width: 25px; height: 1px; background: var(--orange); }
   .hero h1 { max-width: 660px; margin-bottom: 14px; font-size: clamp(2.75rem, 5vw, 3.8rem); letter-spacing: -0.035em; }
+  .sc-guide-title-row { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; }
+  .sc-guide-title-row h1 { margin-bottom: 0; }
   .hero .lead { max-width: 660px; font-size: clamp(0.98rem, 1.35vw, 1.08rem); line-height: 1.55; }
-  .hero .status { margin-top: 20px; gap: 7px; }
+  .hero-meta {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+    margin-top: 18px;
+  }
+  .github-link {
+    display: inline-flex; align-items: center; gap: 11px; min-height: 48px; padding: 12px 20px;
+    color: #fff; text-decoration: none; font-size: 0.94rem; font-weight: 700;
+    line-height: 1.2;
+    border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 9px;
+    background: rgba(8, 8, 8, 0.36);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+  .github-link:visited { color: #fff; text-decoration: none; }
+  .github-link:hover {
+    color: #fff; text-decoration: none;
+    border-color: rgba(255, 173, 76, 0.72); background: rgba(255, 138, 0, 0.11);
+    transform: translateY(-1px);
+  }
+  .github-link:focus-visible { outline: 2px solid #ffad4c; outline-offset: 3px; }
+  .github-link svg { flex: 0 0 auto; width: 20px; height: 20px; }
+  .hero .status { align-items: stretch; gap: 10px; margin: 0; }
   .hero .status li {
-    position: relative; padding: 6px 11px 6px 28px; border-radius: 999px;
+    display: grid; align-items: center; position: relative;
+    min-height: 40px; padding: 8px 12px 8px 30px; border-radius: 9px;
     background: rgba(8, 8, 8, 0.28); backdrop-filter: blur(4px);
   }
+  .hero .status [data-status-text], .hero .status .status-reserve { grid-area: 1 / 1; }
+  .hero .status .status-reserve { visibility: hidden; pointer-events: none; }
   .hero .status li::before {
     content: ""; position: absolute; left: 12px; top: 50%; width: 7px; height: 7px;
     border-radius: 50%; background: #8e887e; transform: translateY(-50%);
@@ -926,15 +958,6 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .hero .status li.bad::before { background: var(--danger); }
 
-  .entropy-visual {
-    padding: 18px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 15px;
-    background: rgba(12, 12, 12, 0.42);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055), 0 18px 44px rgba(0, 0, 0, 0.28);
-  }
-  .visual-top {
-    display: grid; grid-template-columns: 50px minmax(0, 1fr); align-items: center; gap: 14px;
-    padding-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-  }
   /* The same four-pip die used beside the Roll the dice guide title. Kept as
      an inline SVG so the standalone download still fetches nothing. */
   .guide-die-mark {
@@ -946,24 +969,9 @@ ${FONTS.map(embedFont).join('\n')}
     background-repeat: no-repeat; background-position: center; background-size: 100% 100%;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -10px 18px rgba(0, 0, 0, 0.5), 0 7px 16px rgba(0, 0, 0, 0.38);
   }
-  .visual-heading strong { display: block; color: #fff; font: 600 1.08rem/1.2 "Jost", sans-serif; }
-  .visual-heading span { display: block; margin-top: 4px; color: var(--muted); font-size: 0.72rem; line-height: 1.4; }
-  .entropy-code {
-    display: grid; gap: 6px; margin: 14px 0 12px; padding: 10px 12px;
-    color: #b9b2a7; background: rgba(0, 0, 0, 0.28); border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.63rem; line-height: 1.2; letter-spacing: 0.055em;
+  .sc-guide-title-row .sc-die-mark {
+    flex: 0 0 auto; width: 58px; height: 58px; margin: 0; border-radius: 14px;
   }
-  .entropy-code span { display: flex; justify-content: space-between; gap: 10px; }
-  .entropy-code em { color: var(--orange); font-style: normal; }
-  .entropy-code b { color: #8be3c6; font-weight: 600; }
-  .visual-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 7px; }
-  .visual-flow span {
-    padding: 7px 5px; color: #c7c0b6; border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 9px; background: rgba(255,255,255,.035); text-align: center;
-    font-size: 0.66rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
-  }
-  .visual-flow i { color: var(--orange); font-style: normal; }
   .workspace { padding-bottom: 56px; }
   .security-brief {
     position: relative; margin: -22px 0 16px; padding: 20px 22px 20px 68px;
@@ -1089,25 +1097,24 @@ ${FONTS.map(embedFont).join('\n')}
 
   @media (max-width: 820px) {
     .hero { min-height: auto; padding: 108px 0 44px; }
-    .hero-shell { grid-template-columns: 1fr; gap: 28px; }
     .hero h1 { font-size: clamp(2.8rem, 9vw, 3.8rem); }
-    .entropy-visual { width: min(100%, 560px); }
     .security-brief { margin-top: -20px; }
     .workbench-intro { grid-template-columns: 1fr; gap: 12px; }
     .setup-grid { grid-template-columns: 1fr; }
     .workbench .setup-grid .setup-wide { grid-column: auto; }
+  }
+  @media (max-width: 767.98px) {
+    .sc-guide-title-row { align-items: flex-start; gap: 14px; }
+    .sc-guide-title-row .sc-die-mark { width: 44px; height: 44px; border-radius: 11px; }
   }
   @media (max-width: 620px) {
     .wrap { padding-inline: 18px; }
     .hero { padding: 34px 0 40px; }
     .hero .crumb { margin-bottom: 18px; }
     .hero h1 { font-size: clamp(2.45rem, 13vw, 3.35rem); }
-    .hero .status { display: grid; }
-    .entropy-visual { padding: 20px; border-radius: 16px; }
-    .visual-top { grid-template-columns: 54px minmax(0, 1fr); gap: 14px; }
-    .guide-die-mark { width: 54px; height: 54px; border-radius: 14px; }
-    .visual-flow { gap: 4px; }
-    .visual-flow span { padding: 8px 4px; font-size: .58rem; }
+    .hero-meta { display: grid; gap: 10px; }
+    .github-link { justify-content: center; width: 100%; }
+    .hero .status { display: grid; gap: 10px; }
     .security-brief { margin-top: -16px; padding: 58px 18px 18px; }
     .security-brief::before { left: 18px; top: 16px; }
     .download { margin-bottom: 34px; padding: 19px 18px; }
@@ -1142,6 +1149,13 @@ ${FONTS.map(embedFont).join('\n')}
 /* The suite the page runs on load. Kept as source text rather than imported so
    the shipped file carries its own vectors -- an offline copy that could not
    re-check itself would be asking for exactly the faith this tool removes. */
+/* How many vectors the shipped page runs. Counted from the suite below rather
+   than written down beside it: the badge reserves width for the finished text,
+   and a hand-kept number goes stale the moment a vector is added -- silently,
+   because a slightly narrow reserve still looks fine until it does not. */
+const selfTestCount = () =>
+  (selfTest().match(/\n\s*\['[^']+',\s*\(\)/g) || []).length;
+
 const selfTest = () => `
   /* Every expected value here is from a published specification: FIPS 180-4,
      RFC 4231, and the test vectors in BIP32, BIP39, BIP84 and BIP86. None of
@@ -2095,6 +2109,7 @@ const ui = () => `
     const results = runSelfTest();
     const bad = results.filter(r => !r.ok);
     const badge = $('selftest');
+    const badgeText = badge.querySelector('[data-status-text]');
 
     $('vectors').replaceChildren(...results.map(r => {
       const li = document.createElement('li');
@@ -2105,7 +2120,7 @@ const ui = () => `
 
     if (bad.length) {
       badge.className = 'bad';
-      badge.textContent = 'Self-test FAILED: ' + bad.length + ' of ' + results.length;
+      badgeText.textContent = 'Self-test FAILED: ' + bad.length + ' of ' + results.length;
       $('go').disabled = true;
       fail('This copy of the page failed its own test vectors, so its output cannot be trusted. '
          + 'Do not use it. Re-download the file and check it against the published checksum.');
@@ -2114,7 +2129,7 @@ const ui = () => `
     }
 
     badge.className = 'good';
-    badge.textContent = 'Self-test: ' + results.length + '/' + results.length + ' vectors pass';
+    badgeText.textContent = 'Self-test: ' + results.length + '/' + results.length + ' vectors pass';
 
     /* Served over a network, or opened from disk. This is the one thing the
        page can actually tell about its own situation, and it is weaker than it
@@ -2123,6 +2138,7 @@ const ui = () => `
        and makes no claim about the machine. */
     const offline = isOffline();
     const where = $('where');
+    const whereText = where.querySelector('[data-status-text]');
     /* Deliberately not a green "safe" state. The old badge said "this copy is
        running offline" in the same green as the passing self-test, which was
        two mistakes at once: it read as an all-clear, and it was not even true
@@ -2131,7 +2147,7 @@ const ui = () => `
        rather than the machine: it needs no network. Whether the machine has
        one is not something a page can see. */
     where.className = offline ? '' : 'warn';
-    where.textContent = offline
+    whereText.textContent = offline
       ? 'Opened from a local file \\u2014 this tool requires no network requests'
       : 'Loaded over a network \\u2014 this copy is online';
     /* ---- the network adapter -------------------------------------------
@@ -2208,7 +2224,7 @@ const ui = () => `
       const button = document.querySelector('a.dl');
       if (button) {
         button.removeAttribute('download');
-        button.querySelector('[data-dl-label]').textContent = 'Open the offline file';
+        button.querySelector('[data-dl-label]').textContent = 'Open offline file';
         const note = document.querySelector('[data-dl-note]');
         if (note) note.textContent = 'Saving it needs the served site \u2014 this copy is running from disk';
       }
@@ -2224,8 +2240,9 @@ const ui = () => `
        a connection, which is fine -- following one is a decision to leave the
        tool, not something the tool needs. */
     if (OFFLINE_BUILD) {
+      const siteRoot = document.querySelector('[data-site-root]').dataset.siteRoot;
       document.querySelectorAll('[data-site-link]').forEach(link => {
-        link.href = 'https://selfcustody.ca/' + link.getAttribute('href').replace(/^(\\.\\.\\/)+/, '');
+        link.href = siteRoot + link.getAttribute('href').replace(/^(\\.\\.\\/)+/, '');
       });
     }
 
@@ -2241,7 +2258,13 @@ const ui = () => `
        the other let a passphrase typed and then deleted arrive back at a
        matching key with no seed behind it, and derive() then skipped the work
        and read .options off null. */
-    $('passphrase').addEventListener('input', invalidateDerivedState);
+    /* Cancelling the 20 ms derivation timer also cancels its finally block.
+       Repaint here so an input event in that small window cannot leave the
+       button disabled and labelled "Working..." indefinitely. */
+    $('passphrase').addEventListener('input', () => {
+      invalidateDerivedState();
+      paintCount();
+    });
     paintSegments();
     paintSteps();
     paintCount();
@@ -2267,49 +2290,57 @@ const segment = (group, options) => options.map(o => `
 
 const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   <div class="wrap hero-shell">
-    <div class="hero-copy">
-      <nav class="crumb" aria-label="Breadcrumb">
-        <a href="guides.html" data-site-link>Guides</a>
-        <span aria-hidden="true">&rarr;</span>
-        <span>Entropy Workshop</span>
-      </nav>
-      <span class="eyebrow">Offline capable tool</span>
-      <h1>Entropy Workshop</h1>
-      <p class="lead">Flip a coin, roll dice, or draw a card physically &mdash; then see the wallet those events produce. Nothing here generates randomness on its own &mdash; you supply every bit.</p>
-      <ul class="status">
-        <li id="selftest">Running self-test&hellip;</li>
-        <li id="where">Checking&hellip;</li>
-        <li id="adapter" class="warn" hidden>This machine reports a network connection</li>
-        ${offline
-          /* Only the downloaded file makes this claim, because only it can:
-             the site page loads a stylesheet, a script and two webfonts. It
-             is also the one claim here worth a badge of its own -- "running
-             offline" describes where this copy happens to sit, while this
-             describes the file, and stays true on a connected machine.
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="guides.html" data-site-link>Guides</a>
+      <span aria-hidden="true">&rarr;</span>
+      <span>Entropy Workshop</span>
+    </nav>
+    <div class="hero-heading">
+      <div class="hero-copy">
+        <span class="eyebrow">Offline capable tool</span>
+        <div class="sc-guide-title-row">
+          <span class="sc-die-mark guide-die-mark" aria-hidden="true"></span>
+          <h1>Entropy Workshop</h1>
+        </div>
+        <p class="lead">Flip a coin, roll dice, or draw a card physically &mdash; then see the wallet those events produce. Nothing here generates randomness on its own &mdash; you supply every bit.</p>
+        <div class="hero-meta">
+          <a class="github-link" href="https://github.com/DeesNeez/selfcustody/blob/main/docs/entropy-offline.html" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.65 7.65 0 0 1 8 3.82a7.65 7.65 0 0 1 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+            </svg>
+            <span>View source on GitHub</span>
+          </a>
+          <ul class="status">
+            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: ${selfTestCount()}/${selfTestCount()} vectors pass</span></li>
+            <li id="adapter" class="warn" hidden>This machine reports a network connection</li>
+            <!-- Reserving the longer of the two things this badge can end up
+                 saying. Without it the badge was laid out for "Checking..." and
+                 then grew to nearly three times that the moment the script ran
+                 -- 111px to 318px, measured -- which is the jump on load and
+                 refresh that the reserve beside the self-test already prevents.
+                 The offline wording is the longer one, and either copy can show
+                 either message, since the site build opened from disk reports
+                 itself as a local file. -->
+            <li id="where"><span data-status-text>Checking&hellip;</span><span class="status-reserve" aria-hidden="true">Opened from a local file &mdash; this tool requires no network requests</span></li>${offline
+            /* Only the downloaded file makes this claim, because only it can:
+               the site page loads a stylesheet, a script and two webfonts. It
+               is also the one claim here worth a badge of its own -- "running
+               offline" describes where this copy happens to sit, while this
+               describes the file, and stays true on a connected machine.
 
-             The site page says nothing in its place. It would only be a
-             second way of saying "you are online", which the badge beside it
-             already says. */
-          ? '<li class="good">No network requests</li>'
-          : ''}
-      </ul>
-    </div>
-
-    <div class="entropy-visual" aria-hidden="true">
-      <div class="visual-top">
-        <span class="guide-die-mark"></span>
-        <div class="visual-heading"><strong>Entropy pipeline</strong><span>An example, not a live result &mdash; physical randomness converted into a wallet.</span></div>
+               The site page says nothing in its place. It would only be a
+               second way of saying "you are online", which the badge beside it
+               already says. */
+            ? '\n            <li class="good">No network requests</li>'
+            : ''}
+          </ul>
+        </div>
       </div>
-      <div class="entropy-code">
-        <span><em>rolls</em> 6 2 5 1 4 3 6 6 2 1&hellip;</span>
-        <span><em>digest</em> <b>7f 83 b1 65&hellip;</b></span>
-      </div>
-      <div class="visual-flow"><span>physical</span><i>&rarr;</i><span>SHA-256</span><i>&rarr;</i><span>BIP39</span></div>
     </div>
   </div>
 </section>
 
-<main class="wrap workspace">
+<main class="wrap workspace"${offline ? ' data-site-root="https://selfcustody.ca/"' : ''}>
 
 <noscript>
   <div class="banner noscript-brief">
@@ -2570,7 +2601,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   <div class="body">
     <p>A coin gives exactly one bit, so 256 flips are 256 bits and go straight in unchanged. You can check that mapping by hand.</p>
     <p>A six-sided die face carries log&#8322;(6) = 2.58 bits, which is not a whole number, so the rolls are hashed with SHA-256 instead and the result used as the entropy. That is what COLDCARD, SeedSigner, Krux and Gordian all do, and it is why 99 rolls is the number you see everywhere.</p>
-    <p>Three dice at once sidestep the problem rather than solving it. Eight faces is three bits and sixteen is four, so an octal die and two hex dice throw 3 + 4 + 4 = 11 bits together &mdash; which is one word index exactly, with no remainder to hash away and no bias to correct. That is why a printed dictionary can name the word directly, and why 23 throws finish a seed where a six-sided die needs 99 rolls and a checksum you cannot see.</p>
+    <p>Three dice at once sidestep the problem rather than solving it. Eight faces is three bits and sixteen is four, so an octal die and two hex dice throw 3 + 4 + 4 = 11 bits together &mdash; which is one word index exactly, with no remainder to hash away and no bias to correct. A 24-word seed takes 23 throws of all three dice, then one final octal throw to select among eight checksum-valid endings. A 12-word seed takes 11 three-dice throws, then one octal and one hex die to select among 128 endings. The printed dictionary names every word directly; the six-sided-die method instead needs 99 rolls and calculates a checksum you cannot see.</p>
     <p>Cards shorten as you draw them, which no other source here does. The first card is one of 52 and worth log&#8322;(52) = 5.70 bits, the next one of 51, and so on &mdash; so a whole deck is 225.6 bits rather than 52 &times; 5.70, and one deck cannot fill a 24-word seed. Shuffle it and keep drawing. Both conversions above use every card: one hashes the draw, the other reads the BIP39 tool&rsquo;s codes, which run two, four or five bits long depending on the card.</p>
     <p><strong>There is no standard here.</strong> Four of the conversions in use are offered above, and they disagree with each other on purpose: hashing the digits as rolled, hashing them after rewriting every 6 to a 0, reading them as bits without hashing at all, and looking each word up in a table. The same column of rolls produces four unrelated wallets. Others are not offered &mdash; BlueWallet packs bits its own way, and SeedSigner used a different method before February 2022 &mdash; so a mismatch against all four still does not mean your device is broken.</p>
     <p>Which is the point worth leaving with. Your recovery words are the backup. The column of rolls, flips or cards in your notebook is not, because what you wrote down does not say which of these conversions produced the wallet.</p>
