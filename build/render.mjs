@@ -80,7 +80,7 @@ const FILES = {
 };
 
 const SITE = 'https://selfcustody.ca';
-const ASSET_VERSION = '20260827-4902';
+const ASSET_VERSION = '20260827-4904';
 const ASSET_QUERY = /(assets\/(?:vendor\/bootstrap-icons\/bootstrap-icons\.css|css\/(?:style|site-refresh)\.css|js\/site-refresh\.js)\?v=)[^"']+/g;
 
 /* The whole container block, anchored on the <noscript> that always follows it.
@@ -352,7 +352,7 @@ const entropySite = `<!DOCTYPE html>
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="x-dns-prefetch-control" content="off">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device.">
+  <meta name="description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device. Experimental, and meant for testing rather than for securing real bitcoin.">
   <title>Entropy Workshop | SelfCustody.ca</title>
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${SITE}/entropy.html">
@@ -360,7 +360,7 @@ const entropySite = `<!DOCTYPE html>
   <meta property="og:locale" content="en_CA">
   <meta property="og:site_name" content="SelfCustody.ca">
   <meta property="og:title" content="Entropy Workshop | SelfCustody.ca">
-  <meta property="og:description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device.">
+  <meta property="og:description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device. Experimental, and meant for testing rather than for securing real bitcoin.">
   <meta property="og:url" content="${SITE}/entropy.html">
   <meta property="og:image" content="${SITE}/assets/img/social-preview.jpg?v=5">
   <meta name="twitter:card" content="summary_large_image">
