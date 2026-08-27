@@ -35,9 +35,9 @@
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4919" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4919" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4919" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4920" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260827-4920" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260827-4920" rel="stylesheet">
   <style>
 
   @font-face {
@@ -236,12 +236,11 @@
   .sc-workshop .source-pick{
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
   }
-  /* Picture left, words right. The label is left-aligned here where the other
-     rows centre theirs, because ragged-left text beside a fixed-width drawing
-     reads as two columns rather than as a caption that slipped. */
+  /* Picture then words, the pair centred as one group so the three cards read
+     as a row of matching things rather than three left-aligned lists. */
   .sc-workshop .source-pick button{
-    display: flex; align-items: center; gap: 12px;
-    min-width: 0; text-align: left;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    min-width: 0;
   }
   .sc-workshop .source-pick .seg-mark{ flex: 0 0 auto; display: grid; place-items: center; }
   .sc-workshop .source-pick .seg-mark svg{
@@ -1339,7 +1338,7 @@
         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M5 13.4v4.6a11 5.2 0 0 0 22 0v-4.6"/>
     <ellipse cx="16" cy="13.4" rx="11" ry="5.2"/>
-    <ellipse cx="16" cy="13.4" rx="4.5" ry="2.1" opacity=".55"/></svg></span><span class="seg-body">Coins<small>heads or tails</small></span></button>
+    <ellipse cx="16" cy="13.4" rx="4.5" ry="2.1" opacity=".55"/></svg></span><span class="seg-body">Coins<small>heads or tails (binary)</small></span></button>
             <button type="button" data-group="source" data-value="dice" aria-pressed="false"><span class="seg-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9"
         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <g transform="rotate(-9 16 16)">
@@ -1725,7 +1724,7 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4919"></script>
+  <script src="assets/js/site-refresh.js?v=20260827-4920"></script>
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file

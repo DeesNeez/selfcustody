@@ -212,12 +212,11 @@
   .source-pick {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
   }
-  /* Picture left, words right. The label is left-aligned here where the other
-     rows centre theirs, because ragged-left text beside a fixed-width drawing
-     reads as two columns rather than as a caption that slipped. */
+  /* Picture then words, the pair centred as one group so the three cards read
+     as a row of matching things rather than three left-aligned lists. */
   .source-pick button {
-    display: flex; align-items: center; gap: 12px;
-    min-width: 0; text-align: left;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    min-width: 0;
   }
   .source-pick .seg-mark { flex: 0 0 auto; display: grid; place-items: center; }
   .source-pick .seg-mark svg {
@@ -1289,7 +1288,7 @@
         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M5 13.4v4.6a11 5.2 0 0 0 22 0v-4.6"/>
     <ellipse cx="16" cy="13.4" rx="11" ry="5.2"/>
-    <ellipse cx="16" cy="13.4" rx="4.5" ry="2.1" opacity=".55"/></svg></span><span class="seg-body">Coins<small>heads or tails</small></span></button>
+    <ellipse cx="16" cy="13.4" rx="4.5" ry="2.1" opacity=".55"/></svg></span><span class="seg-body">Coins<small>heads or tails (binary)</small></span></button>
             <button type="button" data-group="source" data-value="dice" aria-pressed="false"><span class="seg-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9"
         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <g transform="rotate(-9 16 16)">
