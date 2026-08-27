@@ -46,6 +46,23 @@ import { copyFileSync } from 'node:fs';
    exactly as here. Adding them to the subset is not possible and not needed. */
 const FONTS = ['jost-latin.woff2', 'open-sans-latin.woff2'];
 
+/* Every generated file is written LF-only, on every platform.
+
+   This is a correctness requirement, not a style choice. entropy-core.js is
+   checked out with CRLF on Windows and LF elsewhere, and it is inlined
+   verbatim into templates that are LF, so the artifact came out mixed: 1569
+   CRLF lines and 2356 LF ones. Git normalised the committed blob, which meant
+   the SHA-256 published beside the file described the working copy rather than
+   the bytes GitHub served. Anyone following the verify instructions in
+   SECURITY.md would have got a mismatch and been right to distrust the file.
+
+   It also made the build platform-dependent: identical source, different
+   checksum, depending on which operating system ran it.
+
+   The artifact is committed with -text in .gitattributes so git stores these
+   bytes exactly, and assert-workshop.mjs fails the build if a CR survives. */
+const toLF = text => text.replace(/\r\n/g, '\n');
+
 /* file -> page key. Several files can share a key: block-demo.html is the same
    dashboard markup wrapped with block-probe.js. */
 const FILES = {
@@ -303,7 +320,10 @@ if (existsSync('docs/entropy.html.sha256')) rmSync('docs/entropy.html.sha256');
    file the verify instructions name and the one a reader is meant to hash --
    the browsable page below is a different file with the site's chrome around
    the same tool, and hashing that instead would prove nothing. */
-const entropyOffline = renderEntropyOffline();
+/* Belt and braces on the line endings. entropy-page.mjs normalises what it
+   inlines, and this catches anything a future template drags in: the bytes
+   hashed on the next line are the bytes written, and both are LF only. */
+const entropyOffline = toLF(renderEntropyOffline());
 writeFileSync('docs/entropy-offline.html', entropyOffline);
 const entropyHash = createHash('sha256').update(entropyOffline).digest('hex');
 writeFileSync('docs/entropy-offline.html.sha256', `${entropyHash}  entropy-offline.html
@@ -363,7 +383,7 @@ ${embed.scripts}
 </body>
 </html>
 `;
-writeFileSync('docs/entropy.html', entropySite);
+writeFileSync('docs/entropy.html', toLF(entropySite));
 
 console.log(`
 entropy-offline.html           ${Math.round(entropyOffline.length / 1024)} KB`);

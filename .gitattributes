@@ -1,0 +1,10 @@
+# The Entropy Workshop's downloadable artifact and its checksum.
+#
+# -text means git stores and checks out these bytes exactly, with no
+# end-of-line translation in either direction. That is not a preference here,
+# it is a correctness requirement: the SHA-256 published beside the artifact
+# describes specific bytes, and letting git rewrite them on commit or checkout
+# made the published checksum describe a file nobody could obtain. Someone
+# following the verify instructions got a mismatch and was right to stop.
+docs/entropy-offline.html       -text
+docs/entropy-offline.html.sha256 -text
