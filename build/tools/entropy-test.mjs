@@ -35,11 +35,23 @@ const REAL_OCTAHEX = '5B3172E48C6F19A2D7403E8B5C1'
   + '69F2A83D07E4B1C596A2F38D0E7'
   + '4B1A6C39F28E5D07B4A1936FC2E';
 
-/* A real 25-card draw from a CSPRNG-shuffled deck, pinned so the suite stays
+/* A real 27-card draw from a CSPRNG-shuffled deck, pinned so the suite stays
    deterministic. It has to be accepted: a check that refused genuine shuffles
    would teach people to redraw until they passed, which is the one thing the
-   dice guide says never to do. */
+   dice guide says never to do.
+
+   Twenty-seven, not the 25 the minimum asks for. It was described as 25 for
+   long enough that the exact boundary went untested underneath the wrong
+   number; the two cases below pin 25 and 24 from a prefix of this same draw. */
 const REAL_DRAW = '7H2CTS4DJHAS9C6SKD3H8DQCTC5H2SJD9HKC4S7DAH6C3STD8SQH5C';
+const CARDS_25 = REAL_DRAW.slice(0, 50);
+const CARDS_24 = REAL_DRAW.slice(0, 48);
+const refusedDraw = input => {
+  try {
+    C.deriveSeed({ method: 'cards', input, words: 12, wordlist: WORDLIST });
+    return 'accepted';
+  } catch { return 'refused'; }
+};
 
 /* iancoleman/bip39, src/js/entropy.js, eventBits["card"] -- transcribed from
    the published source rather than from this implementation. */
@@ -847,8 +859,28 @@ export const VECTORS = [
   ['cards: the entropy is SHA-256 of the transcript',
     () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy,
     C.hex(C.sha256(C.utf8(REAL_DRAW)).slice(0, 16))],
-  ['cards: 25 drawn cards make a 12-word phrase',
+  ['cards: 27 drawn cards make a 12-word phrase',
     () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).mnemonic.length, 12],
+  /* The boundary itself. 25 cards carry 132.4 bits and 24 carry 127.6, so 25
+     is the fewest that can fill a 12-word seed -- taken as a prefix of the
+     draw above so both sides of the line come from a genuine shuffle. */
+  ['cards: exactly 25 is accepted, the fewest that fill 12 words',
+    () => C.deriveSeed({ method: 'cards', input: CARDS_25, words: 12, wordlist: WORDLIST }).mnemonic.length, 12],
+  ['cards: 24 is one short and refused',
+    () => refusedDraw(CARDS_24), 'refused'],
+
+  /* normalise() keeps ranks and suits in one list, so a malformed pair passes
+     it and reads as an event. Every one of these derived a wallet before
+     deriveSeed checked the shape. */
+  ['cards: two suits are not a card',
+    () => refusedDraw('SS'.repeat(25)), 'refused'],
+  ['cards: two ranks are not a card',
+    () => refusedDraw('AK'.repeat(25)), 'refused'],
+  ['cards: a suit before its rank is refused',
+    () => refusedDraw('SA'.repeat(25)), 'refused'],
+  /* The one that counted as 25 cards and hashed 51 characters. */
+  ['cards: a trailing half-card is refused rather than hashed',
+    () => refusedDraw(CARDS_25 + 'A'), 'refused'],
   /* The tolerance is not a taste call: it is the longest code minus one, the
      furthest a single final event can carry the total past the target. Pinned
      so the two tables cannot drift apart from the numbers they imply. */
