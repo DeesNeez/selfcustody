@@ -226,6 +226,11 @@ ${FONTS.map(embedFont).join('\n')}
   fieldset { margin: 26px 0 0; padding: 0; border: 0; }
   legend { padding: 0; margin-bottom: 9px; color: #fff; font-size: 0.95rem; font-weight: 700; }
   .hint { margin: 7px 0 0; color: var(--muted); font-size: 0.85rem; }
+  /* The only hint that sits directly on top of something to press. A shared
+     7px top margin and no bottom left the sentence crowding the first row of
+     keys, so it reads as a label on the "1" rather than as instructions for
+     the pad. */
+  #pad-hint { margin-bottom: 15px; }
 
 
   .seg { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -259,14 +264,19 @@ ${FONTS.map(embedFont).join('\n')}
   .source-pick {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
   }
-  /* Picture left, words right, both against the left edge. Centring the pair
-     was tried and looked worse: with three labels of different lengths the
-     drawings land at three different offsets, so the row loses the vertical
-     line the eye follows down the left of the cards. */
+  /* Against the left edge, so all three drawings sit at the same offset and
+     the row keeps a line down its left side. Centring the group was tried
+     both ways -- with the text centred and with it ragged-left -- and both
+     put the three drawings at three different offsets.
+
+     Larger type than the other steps carry: this row is the first choice on
+     the page and reads as a heading for what follows, not as one more toggle.
+     Sized against the 90px card, not against the segmented controls below. */
   .source-pick button {
-    display: flex; align-items: center; gap: 12px;
-    min-width: 0; text-align: left;
+    display: flex; align-items: center; gap: 13px;
+    min-width: 0; text-align: left; font-size: 1.06rem;
   }
+  .source-pick button small { margin-top: 2px; font-size: 0.8rem; }
   .source-pick .seg-mark { flex: 0 0 auto; display: grid; place-items: center; }
   .source-pick .seg-mark svg {
     display: block; width: 30px; height: 30px;
@@ -348,20 +358,34 @@ ${FONTS.map(embedFont).join('\n')}
     margin: 10px 0 0; padding: 9px 12px; border-radius: 9px;
     font-size: 0.82rem; line-height: 1.55;
   }
-  /* The verdict and the opener sit on one line; the explanation takes its own
-     when opened. Laid out with flex rather than by setting display on the
-     <summary>: display:inline there stops the browser treating it as the
-     disclosure's summary at all, and the first version of this shipped with
-     the "collapsed" text permanently visible underneath. */
-  .checksum-note {
-    display: flex; flex-wrap: wrap; align-items: baseline;
-    column-gap: 10px; row-gap: 4px;
+  /* The verdict alone on the line, and the arithmetic behind it one tap away.
+     The box itself is the disclosure now, so the green line carries nothing
+     but "Checksum verified" and a chevron.
+
+     The summary keeps its default display and loses its marker through
+     list-style, which is deliberate: setting display on a <summary> stops
+     some browsers treating it as the disclosure's summary at all, and the
+     first version of this shipped with the "collapsed" text permanently
+     visible underneath. The row is laid out by a span inside it instead. */
+  .checksum-note > summary { cursor: pointer; list-style: none; }
+  .checksum-note > summary::-webkit-details-marker { display: none; }
+  .checksum-head { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .checksum-head b { flex: 1 1 auto; min-width: 0; font-weight: 700; }
+  /* Drawn rather than typed, so it takes the box's own colour and turns with
+     the disclosure instead of being a glyph the font may not carry. */
+  .checksum-head i {
+    flex: 0 0 auto; width: 7px; height: 7px; margin-right: 2px;
+    border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+    transform: translateY(-2px) rotate(45deg); transition: transform 0.15s ease;
   }
-  .checksum-note b { flex: 0 0 auto; font-weight: 700; }
-  .checksum-more { flex: 1 1 auto; min-width: 0; margin: 0; }
-  .checksum-more[open] { flex-basis: 100%; }
-  .checksum-more summary { color: inherit; opacity: .75; font-size: 0.8rem; font-weight: 400; }
-  .checksum-more p { margin: 7px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.6; }
+  .checksum-note[open] .checksum-head i { transform: translateY(1px) rotate(-135deg); }
+  .checksum-body b { display: block; margin-top: 10px; opacity: .9; }
+  .checksum-body p { margin: 5px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.6; }
+  /* A failed phrase has nothing worth expanding: it cannot be used, and the
+     arithmetic about which last word fits would be beside the point. */
+  .checksum-note.is-bad > summary { cursor: default; }
+  .checksum-note.is-bad .checksum-head i,
+  .checksum-note.is-bad .checksum-body { display: none; }
   .checksum-note.is-ok {
     color: #8be3c6; border: 1px solid rgba(53, 180, 138, 0.32); background: rgba(53, 180, 138, 0.07);
   }
@@ -1530,11 +1554,18 @@ const ui = () => `
      letters do, and the suits read far better as their own symbols. The value
      stays the letter, so the transcript, the hash and the BIP39 tool's table
      all still see C, D, H and S. */
+  /* Every rank is named, digits included. Naming only the five faces put a
+     caption under A, T, J, Q and K and nothing under 2 to 9, which sat the
+     lettered glyphs a line above their neighbours. Spelling the numbers out
+     lines the row up and reads as one set rather than five labelled keys
+     among eight bare ones. */
+  const RANK_NAMES = {
+    A: 'Ace', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six',
+    7: 'Seven', 8: 'Eight', 9: 'Nine', T: 'Ten', J: 'Jack', Q: 'Queen', K: 'King'
+  };
+
   const CARD_KEYS = [
-    ...[...C.CARD_RANKS].map(r => {
-      const named = { A: 'Ace', T: 'Ten', J: 'Jack', Q: 'Queen', K: 'King' }[r];
-      return named ? [r, named] : [r, null];
-    }),
+    ...[...C.CARD_RANKS].map(r => [r, RANK_NAMES[r] || null]),
     ['C', 'Clubs', '♣'], ['D', 'Diamonds', '♦'],
     ['H', 'Hearts', '♥'], ['S', 'Spades', '♠']
   ];
@@ -1551,7 +1582,8 @@ const ui = () => `
     /* Five dice showing 1 to 4, then the coin. Both alphabets are on the pad
        at once and the keys that cannot come next are disabled, which is
        easier to follow than a rule about every sixth entry. */
-    bitbox: [['1'], ['2'], ['3'], ['4'], ['H', 'Heads'], ['T', 'Tails']],
+    bitbox: [['1', 'One'], ['2', 'Two'], ['3', 'Three'], ['4', 'Four'],
+             ['H', 'Heads'], ['T', 'Tails']],
     coin: [['H', 'Heads'], ['T', 'Tails']],
     /* Thirteen ranks then four suits, all on the pad at once. Which are live
        is decided by C.nextAllowed, which for cards answers from the deck
@@ -1563,8 +1595,16 @@ const ui = () => `
 
   function buildPad() {
     const pad = $('pad');
+    const keys = KEYS[method()];
+    /* Only some keys on a pad carry a name -- the ranks pad names A, T, J, Q
+       and K but not 2 through 9, and the bitbox pad names its coin but not its
+       dice. A caption on some keys and not others sits the named glyphs a line
+       higher than their neighbours, so where any key has one they all reserve
+       one. Same reservation trick the status line uses: hold the space rather
+       than let the row jump around it. */
+    const named = keys.some(([, label]) => label);
     pad.dataset.method = method();
-    pad.replaceChildren(...KEYS[method()].map(([value, label, face]) => {
+    pad.replaceChildren(...keys.map(([value, label, face]) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'key';
@@ -1572,9 +1612,13 @@ const ui = () => `
       if (face) button.dataset.suit = value;
       button.setAttribute('aria-label', label || value);
       button.append(document.createTextNode(face || value));
-      if (label) {
+      if (label || named) {
         const small = document.createElement('small');
-        small.textContent = label.toUpperCase();
+        /* A non-breaking space rather than nothing: an empty <small> collapses
+           and reserves no line at all. Hidden from screen readers, which have
+           the key's aria-label already. */
+        small.textContent = label ? label.toUpperCase() : ' ';
+        if (!label) small.setAttribute('aria-hidden', 'true');
         button.append(small);
       }
       button.addEventListener('click', () => press(value));
@@ -2036,7 +2080,9 @@ const ui = () => `
     $('checksum-line').textContent = sum.ok
       ? 'Checksum verified.'
       : 'This phrase fails the BIP39 checksum. Do not use it.';
-    $('checksum-more').hidden = !sum.ok;
+    /* Nothing to open on a failure, and a disclosure that opens onto nothing
+       is worse than none: forced shut, with the chevron and body hidden. */
+    if (!sum.ok) note.open = false;
     $('checksum-detail').textContent = 'Word ' + sum.words + ' is ' + sum.freeBits
       + ' bits of entropy followed by ' + sum.checksumBits + ' of checksum. '
       + (spec().lookup
@@ -2705,13 +2751,13 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
   <h3>Recovery words</h3>
   <ol class="words" id="words"></ol>
-  <div class="checksum-note" id="checksum-note">
-    <b id="checksum-line"></b>
-    <details class="checksum-more" id="checksum-more">
-      <summary>What the last word is made of</summary>
+  <details class="checksum-note" id="checksum-note">
+    <summary><span class="checksum-head"><b id="checksum-line"></b><i aria-hidden="true"></i></span></summary>
+    <div class="checksum-body">
+      <b>What the last word is made of</b>
       <p id="checksum-detail"></p>
-    </details>
-  </div>
+    </div>
+  </details>
 
   <div class="xpub-box xprv-box">
     <div class="label"><span>Account private key</span><code id="xprv-path"></code></div>
