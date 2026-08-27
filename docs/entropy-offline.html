@@ -710,6 +710,14 @@
   }
   .src-list li:first-child { border-top: 0; }
   .src-list b { color: var(--ink-soft); font-size: 0.84rem; }
+  /* Everything above is a citation for something on the page; the two lines
+     below are not, so they are separated from the list rather than reading as
+     the end of it. */
+  .src-tail {
+    margin-top: 22px; padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
   .src-list a { color: var(--orange); text-decoration: none; word-break: break-word; }
   .src-list span { display: block; margin-top: 3px; font-size: 0.82rem; line-height: 1.55; }
   @media (max-width: 620px) {
@@ -1027,7 +1035,10 @@
     .path-row button { width: 100%; }
   }
 
-  .vectors { margin: 10px 0 0; padding: 0; list-style: none; font-family: ui-monospace, monospace; font-size: 0.78rem; }
+  /* Space below as well as above. The list is two dozen monospace lines and
+     the sentence naming their sources ran straight on from the last one, so it
+     read as a 25th entry rather than as a note about the whole list. */
+  .vectors { margin: 10px 0 20px; padding: 0; list-style: none; font-family: ui-monospace, monospace; font-size: 0.78rem; }
   .vectors li { padding: 2px 0; }
   .vectors li::before { content: "ok  "; color: var(--success); }
   .vectors li.bad::before { content: "FAIL "; color: var(--danger); }
@@ -1327,13 +1338,14 @@
 </section>
 
 <details class="method-note">
-  <summary>Why the dice and the coins are treated differently</summary>
+  <summary>Why coins, dice and cards are treated differently</summary>
   <div class="body">
     <p>A coin gives exactly one bit, so 256 flips are 256 bits and go straight in unchanged. You can check that mapping by hand.</p>
     <p>A six-sided die face carries log&#8322;(6) = 2.58 bits, which is not a whole number, so the rolls are hashed with SHA-256 instead and the result used as the entropy. That is what COLDCARD, SeedSigner, Krux and Gordian all do, and it is why 99 rolls is the number you see everywhere.</p>
     <p>Three dice at once sidestep the problem rather than solving it. Eight faces is three bits and sixteen is four, so an octal die and two hex dice throw 3 + 4 + 4 = 11 bits together &mdash; which is one word index exactly, with no remainder to hash away and no bias to correct. That is why a printed dictionary can name the word directly, and why 23 throws finish a seed where a six-sided die needs 99 rolls and a checksum you cannot see.</p>
+    <p>Cards shorten as you draw them, which no other source here does. The first card is one of 52 and worth log&#8322;(52) = 5.70 bits, the next one of 51, and so on &mdash; so a whole deck is 225.6 bits rather than 52 &times; 5.70, and one deck cannot fill a 24-word seed. Shuffle it and keep drawing. Both conversions above use every card: one hashes the draw, the other reads the BIP39 tool&rsquo;s codes, which run two, four or five bits long depending on the card.</p>
     <p><strong>There is no standard here.</strong> Four of the conversions in use are offered above, and they disagree with each other on purpose: hashing the digits as rolled, hashing them after rewriting every 6 to a 0, reading them as bits without hashing at all, and looking each word up in a table. The same column of rolls produces four unrelated wallets. Others are not offered &mdash; BlueWallet packs bits its own way, and SeedSigner used a different method before February 2022 &mdash; so a mismatch against all four still does not mean your device is broken.</p>
-    <p>Which is the point worth leaving with. Your recovery words are the backup; the column of rolls in your notebook is not, because the rolls alone do not say which of these produced the wallet.</p>
+    <p>Which is the point worth leaving with. Your recovery words are the backup. The column of rolls, flips or cards in your notebook is not, because what you wrote down does not say which of these conversions produced the wallet.</p>
   </div>
 </details>
 
@@ -1457,7 +1469,7 @@
       </ul>
     </div>
 
-    <p>Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
+    <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
   </div>
