@@ -3955,12 +3955,14 @@ const EntropyCore = (() => {
     const note = $('checksum-note');
     note.className = 'checksum-note' + (sum.ok ? ' is-ok' : ' is-bad');
     note.textContent = sum.ok
-      ? 'Checksum verified. Word ' + sum.words + ' carries ' + sum.checksumBits
-        + ' bits of checksum over the ' + sum.entropyBits + ' before it'
+      ? 'Checksum verified. Word ' + sum.words + ' is ' + sum.freeBits
+        + ' bits of entropy followed by ' + sum.checksumBits + ' of checksum. '
         + (spec().lookup
-          ? ', and the ' + sum.freeBits + ' bits in front of those are the ones you picked above.'
-          : ' — the other ' + sum.freeBits + ' bits come from your ' + spec().unit
-            + 's, so only one word ' + sum.words + ' is valid and there is nothing to choose.')
+          ? 'Those ' + sum.freeBits + ' are the bits you never rolled, which is the choice you made above; the '
+            + sum.checksumBits + ' are computed from everything else.'
+          : 'Hashing fixes all ' + sum.entropyBits + ' entropy bits, so those ' + sum.freeBits
+            + ' are already decided and exactly one word ' + sum.words + ' fits. A lookup table leaves them unrolled and does offer a list; a hash does not.')
+        + ' The checksum itself is never a choice — it is computed either way.'
       : 'This phrase does not pass the BIP39 checksum, which should be impossible here. Do not use it.';
 
     $('words').replaceChildren(...state.seed.mnemonic.map((word, i) => {
