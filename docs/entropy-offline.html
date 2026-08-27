@@ -3736,14 +3736,12 @@ const EntropyCore = (() => {
     const info = spec();
     const bits = C.sourceEntropy({ method: method(), input });
     const target = state.words === 24 ? 256 : 128;
-    /* Shown past the target rather than pinned to it, because the reading is
-       honest about the source: a hundred rolls really do carry 258.5 bits.
-       What is not honest is leaving it there and letting a bar past full imply
-       that more rolls keep helping. A seed holds what it holds -- everything
-       above the target is hashed down into the same 256 bits. */
+    /* Left running past the target rather than pinned to it, because the
+       reading is honest about the source: a hundred rolls really do carry
+       258.5 bits. What that number must not imply is that the extra helps,
+       which is the note's job below. */
     const over = bits > target;
-    $('meter-val').textContent = bits.toFixed(1) + ' / ' + target + ' bits'
-      + (over ? ' — seed max ' + target : '');
+    $('meter-val').textContent = bits.toFixed(1) + ' / ' + target + ' bits';
     $('meter-fill').style.width = Math.min(100, bits / target * 100) + '%';
     $('meter-fill').classList.toggle('is-full', bits >= target);
 
@@ -3775,8 +3773,8 @@ const EntropyCore = (() => {
        would let someone roll another fifty in the belief they were buying
        something. They are not; they are choosing a different wallet. */
     if (over) {
-      $('meter-note').textContent += ' Past that, more ' + info.unit
-        + 's change which wallet you get but not how hard it is to guess.';
+      $('meter-note').textContent += ' The seed stops at ' + target + ' bits, so more '
+        + info.unit + 's change which wallet you get but not how hard it is to guess.';
     }
   }
 
