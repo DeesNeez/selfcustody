@@ -107,6 +107,8 @@ export function assertWorkshop() {
       `the ${name} build does not clear on pageshow, so a restored page can come back with its results`);
     check(!/addEventListener\('visibilitychange'/.test(html),
       `the ${name} build clears on visibilitychange, which would destroy work when someone switches apps mid-roll`);
+    check(/\$\('passphrase'\)\.addEventListener\('input',\s*\(\)\s*=>\s*\{\s*invalidateDerivedState\(\);\s*paintCount\(\);/s.test(html),
+      `the ${name} build cancels derivation on passphrase edits without restoring the Derive button`);
     check(/<noscript>/.test(html),
       `the ${name} build has no noscript notice; with scripting off it is a page of dead controls`);
     check(/name="referrer" content="no-referrer"/.test(html),

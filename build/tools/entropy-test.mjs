@@ -459,6 +459,16 @@ export const VECTORS = [
     }, 0],
   ['octahex: 11 throws produce a 12-word phrase',
     () => C.deriveSeed({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST, choice: 0 }).mnemonic.length, 12],
+  ['octahex: an invalid 12-word choice reports all 128 endings',
+    () => {
+      try {
+        C.deriveSeed({ method: 'octahex', input: '100'.repeat(11), words: 12,
+                       wordlist: WORDLIST, choice: 128 });
+        return 'accepted';
+      } catch (err) {
+        return err.message;
+      }
+    }, 'pick one of the 128 endings for the last word'],
   /* The BitBox table is published for 24 words only, so it must not gain a
      12-word form by accident. */
   ['bitbox: still 24 words only',
@@ -676,6 +686,17 @@ export const VECTORS = [
     () => C.descriptorOrigin("m/84'/0'/0'"), '84h/0h/0h'],
   ['descriptor: receive and change in one expression',
     () => descriptorFor('native').includes('/<0;1>/*'), true],
+  ['descriptor: a root path has no slash after the fingerprint',
+    () => {
+      const seed = C.mnemonicToSeed(ABANDON_12.split(' '));
+      const { xpub } = C.deriveAddresses({ seed, addressType: 'native', path: 'm' });
+      const descriptor = C.watchOnlyDescriptor({
+        addressType: 'native', fingerprint: C.masterFingerprint(seed), path: 'm', xpub
+      });
+      return descriptor.includes('[73c5da0a]')
+        && !descriptor.includes('[73c5da0a/]')
+        && descsumCheck(descriptor);
+    }, true],
   /* parsePath is more forgiving than the descriptor grammar. It accepts
      "m84h/0h/0h" with no slash after the m, and reading the path as text
      rather than rebuilding it from the parsed indices emitted
