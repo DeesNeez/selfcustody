@@ -1649,6 +1649,28 @@ const EntropyCore = (() => {
     const clean = normalise(method, input);
     const count = events(method, input).length;
 
+    /* Shape before size, because a malformed sequence has no meaningful size.
+
+       normalise() only drops characters the method has no use for, which is
+       enough for every single-character alphabet here but not for cards: ranks
+       and suits share one keep-list, so "SS", "AK" and a reversed "SA" all
+       survive it and all read as two-character events. Each one hashed into a
+       seed and returned a wallet.
+
+       The quiet one is a trailing half-card. events() is right to refuse to
+       count it -- the card being chosen right now is not yet an event -- so a
+       draw of 25 cards and a stray rank passes the count check on 25 while
+       spec.entropy hashes all 51 characters. The count, the meter and the
+       thing actually hashed disagreed, and nothing said so.
+
+       This is the last gate before a phrase, and the page is not the only
+       caller: this file is meant to be read and reused on its own. */
+    if (spec.valid && !spec.valid.test(clean)) {
+      throw new Error(spec.wrong
+        ? `that sequence is not valid — ${spec.wrong}`
+        : `that sequence is not valid for ${spec.label}`);
+    }
+
     if (spec.variable) {
       const need = spec.bits[words];
       const have = spec.bitsOf(clean).length;
