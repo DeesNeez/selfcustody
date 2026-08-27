@@ -1,32 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device.">
-  <title>Entropy Workshop | SelfCustody.ca</title>
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://selfcustody.ca/entropy.html">
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="en_CA">
-  <meta property="og:site_name" content="SelfCustody.ca">
-  <meta property="og:title" content="Entropy Workshop | SelfCustody.ca">
-  <meta property="og:description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device.">
-  <meta property="og:url" content="https://selfcustody.ca/entropy.html">
-  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
-  <link rel="icon" type="image/svg+xml" href="assets/img/self-custody-favicon.svg">
-  <link rel="icon" href="assets/img/favicon.png">
-  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4888" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4888" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4888" rel="stylesheet">
-  <style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src data:; img-src data:; form-action 'none'; base-uri 'none'">
+<meta name="robots" content="noindex">
+<title>Entropy Workshop | SelfCustody.ca</title>
+<style>
 
   @font-face {
     font-family: "Jost";
@@ -57,9 +37,9 @@
     --danger: #d65e40;
   }
 
-  .sc-workshop *{ box-sizing: border-box; }
+  * { box-sizing: border-box; }
 
-  .sc-workshop{
+  body {
     margin: 0;
     padding: 0;
     color: var(--ink);
@@ -71,37 +51,37 @@
     line-height: 1.7;
   }
 
-  .sc-workshop h1, .sc-workshop h2, .sc-workshop h3, .sc-workshop h4, .sc-workshop .brand{ font-family: "Jost", "Open Sans", sans-serif; }
+  h1, h2, h3, h4, .brand { font-family: "Jost", "Open Sans", sans-serif; }
 
-  .sc-workshop .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 28px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 28px; }
 
-  .sc-workshop /* ---- site chrome ------------------------------------------------------
-     Rebuilt here rather than shared with the rest of the site, .sc-workshop because a
+  /* ---- site chrome ------------------------------------------------------
+     Rebuilt here rather than shared with the rest of the site, because a
      <link> to site-refresh.css would leave the downloaded copy unstyled the
-     moment it is opened offline. Same tokens, .sc-workshop same shapes, .sc-workshop one file. */
+     moment it is opened offline. Same tokens, same shapes, one file. */
 
   /* ---- the file banner --------------------------------------------------
 
-     What sits at the top of the downloaded copy, .sc-workshop in place of the site header
+     What sits at the top of the downloaded copy, in place of the site header
      that used to be drawn here. A navigation bar in this file was always a
-     small lie: its links only resolve with a connection, .sc-workshop and this file exists
+     small lie: its links only resolve with a connection, and this file exists
      to be useful without one. What an air-gapped reader needs instead is to
-     know what they are holding, .sc-workshop so that is what it says. */
-  .file-banner{
+     know what they are holding, so that is what it says. */
+  .file-banner {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     background: #0d0d0e;
   }
-  .sc-workshop .file-banner-inner{
+  .file-banner-inner {
     display: flex; align-items: center; gap: 14px;
     padding-top: 14px; padding-bottom: 14px;
   }
-  .sc-workshop .file-banner strong{
+  .file-banner strong {
     display: block; color: #fff; font-size: 1rem; letter-spacing: 0.01em;
   }
-  .sc-workshop .file-banner span{
+  .file-banner span {
     display: block; margin-top: 2px; color: var(--muted); font-size: 0.85rem;
   }
-  .sc-workshop .brand-mark{
+  .brand-mark {
     flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px;
     background-image:
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 46'%3E%3Ccircle cx='13.5' cy='13.5' r='4.6' fill='%23f5222b'/%3E%3Ccircle cx='32.5' cy='13.5' r='4.6' fill='%23eee2c7'/%3E%3Ccircle cx='13.5' cy='32.5' r='4.6' fill='%233c9056'/%3E%3Ccircle cx='32.5' cy='32.5' r='4.6' fill='%23ff9900'/%3E%3C/svg%3E"),
@@ -111,10 +91,10 @@
   }
 
 
-  .sc-workshop /* ---- hero -------------------------------------------------------------
-     The same shape the guide pages open with: cleared header, .sc-workshop display-size
-     heading, .sc-workshop lead, .sc-workshop then the badges. */
-  .hero{
+  /* ---- hero -------------------------------------------------------------
+     The same shape the guide pages open with: cleared header, display-size
+     heading, lead, then the badges. */
+  .hero {
     min-height: 420px;
     display: flex; align-items: center;
     padding: 108px 0 46px;
@@ -123,222 +103,222 @@
       radial-gradient(circle at 88% 10%, rgba(255, 138, 0, 0.15), transparent 32rem),
       linear-gradient(135deg, #1f1f1e, #292825);
   }
-  .sc-workshop /* The 108px above clears the site's fixed header, .sc-workshop which the downloaded copy
-     does not have -- its banner is a short static bar. Left alone, .sc-workshop that
+  /* The 108px above clears the site's fixed header, which the downloaded copy
+     does not have -- its banner is a short static bar. Left alone, that
      padding becomes a band of empty space above the breadcrumb. */
   /* min-height plus align-items:center was the real culprit: with the hero
-     taller than its contents, .sc-workshop centring pushed the breadcrumb down however
-     small the padding got. Sized to its content instead, .sc-workshop so the padding is
+     taller than its contents, centring pushed the breadcrumb down however
+     small the padding got. Sized to its content instead, so the padding is
      the whole story. */
-  .is-offline-copy .hero{ min-height: auto; padding-top: 40px; padding-bottom: 40px; }
+  .is-offline-copy .hero { min-height: auto; padding-top: 40px; padding-bottom: 40px; }
   @media (max-width: 820px) {
-    .sc-workshop .is-offline-copy .hero{ padding-top: 30px; padding-bottom: 32px; }
+    .is-offline-copy .hero { padding-top: 30px; padding-bottom: 32px; }
   }
 
-  .sc-workshop .crumb{ display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 700; }
-  .sc-workshop /* Links default to the accent instead of the browser's blue. Every context
-     below used to set its own colour, .sc-workshop so any link added somewhere new arrived
+  .crumb { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 700; }
+  /* Links default to the accent instead of the browser's blue. Every context
+     below used to set its own colour, so any link added somewhere new arrived
      unstyled and close to unreadable on this background -- twice. Class rules
      still win where a context wants something else. */
-  a{ color: var(--orange); }
+  a { color: var(--orange); }
 
-  .sc-workshop /* An author display rule beats the browser's [hidden]{ display: none }, .sc-workshop so
+  /* An author display rule beats the browser's [hidden] { display: none }, so
      anything given display:grid or display:flex keeps rendering after the
      script hides it. That has now caught the download panel and the
-     fingerprint arrow, .sc-workshop both of which stayed on screen while their hidden
-     attribute was correctly set -- invisible in the markup, .sc-workshop obvious on screen.
-     One guard, .sc-workshop rather than remembering it rule by rule. */
-  [hidden]{ display: none !important; }
+     fingerprint arrow, both of which stayed on screen while their hidden
+     attribute was correctly set -- invisible in the markup, obvious on screen.
+     One guard, rather than remembering it rule by rule. */
+  [hidden] { display: none !important; }
 
-  .sc-workshop .crumb a{ color: var(--ink-soft); text-decoration: none; }
-  .sc-workshop .crumb a:hover{ color: var(--orange); }
-  .sc-workshop .crumb span{ color: var(--muted); }
+  .crumb a { color: var(--ink-soft); text-decoration: none; }
+  .crumb a:hover { color: var(--orange); }
+  .crumb span { color: var(--muted); }
 
-  .sc-workshop h1{ margin: 0 0 16px; font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.1; color: #fff; }
-  .sc-workshop .lead{ margin: 0; max-width: 640px; color: var(--ink-soft); font-size: 1.12rem; line-height: 1.6; }
-  .sc-workshop .eyebrow{
+  h1 { margin: 0 0 16px; font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.1; color: #fff; }
+  .lead { margin: 0; max-width: 640px; color: var(--ink-soft); font-size: 1.12rem; line-height: 1.6; }
+  .eyebrow {
     display: block; margin-bottom: 12px; color: var(--orange-dark);
     font-size: 0.72rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
   }
 
-  .sc-workshop{ display: block; padding-bottom: 70px; }
+  main { display: block; padding-bottom: 70px; }
 
-  .sc-workshop .banner{
+  .banner {
     margin: 22px 0; padding: 16px 18px; border-radius: 12px;
     border: 1px solid rgba(255, 138, 0, 0.42);
     background: rgba(255, 138, 0, 0.08);
     font-size: 0.93rem;
   }
-  .sc-workshop .banner strong{ color: var(--orange); }
-  .sc-workshop .banner p{ margin: 0 0 8px; }
-  .sc-workshop .banner p:last-child{ margin-bottom: 0; }
+  .banner strong { color: var(--orange); }
+  .banner p { margin: 0 0 8px; }
+  .banner p:last-child { margin-bottom: 0; }
 
-  .sc-workshop .status{
+  .status {
     display: flex; flex-wrap: wrap; gap: 10px;
     margin: 20px 0 0; padding: 0; list-style: none;
     font-size: 0.78rem; font-weight: 700;
   }
-  .sc-workshop .status li{
+  .status li {
     padding: 6px 11px; border-radius: 7px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.03);
     color: var(--muted);
   }
-  .sc-workshop .status li.good{ color: #8be3c6; border-color: rgba(53, 180, 138, 0.4); background: rgba(53, 180, 138, 0.08); }
-  .sc-workshop .status li.warn{ color: #ffc07f; border-color: rgba(255, 138, 0, 0.4); background: rgba(255, 138, 0, 0.08); }
-  .sc-workshop .status li.bad{ color: #ff9d8a; border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.1); }
+  .status li.good { color: #8be3c6; border-color: rgba(53, 180, 138, 0.4); background: rgba(53, 180, 138, 0.08); }
+  .status li.warn { color: #ffc07f; border-color: rgba(255, 138, 0, 0.4); background: rgba(255, 138, 0, 0.08); }
+  .status li.bad  { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.1); }
 
-  .sc-workshop fieldset{ margin: 26px 0 0; padding: 0; border: 0; }
-  .sc-workshop legend{ padding: 0; margin-bottom: 9px; color: #fff; font-size: 0.95rem; font-weight: 700; }
-  .sc-workshop .hint{ margin: 7px 0 0; color: var(--muted); font-size: 0.85rem; }
-  .sc-workshop /* Sits under a full-width row of four evenly spaced buttons, .sc-workshop where a
+  fieldset { margin: 26px 0 0; padding: 0; border: 0; }
+  legend { padding: 0; margin-bottom: 9px; color: #fff; font-size: 0.95rem; font-weight: 700; }
+  .hint { margin: 7px 0 0; color: var(--muted); font-size: 0.85rem; }
+  /* Sits under a full-width row of four evenly spaced buttons, where a
      left-aligned single line reads as though it fell out of the row. */
-  .hint-centred{ text-align: center; }
+  .hint-centred { text-align: center; }
 
-  .sc-workshop .seg{ display: flex; flex-wrap: wrap; gap: 8px; }
-  .sc-workshop .seg button{
+  .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg button {
     flex: 1 1 auto; min-width: 116px; padding: 11px 14px;
     color: var(--ink); background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px;
     font: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer;
     transition: background-color 0.15s ease, border-color 0.15s ease;
   }
-  .sc-workshop .seg button:hover{ border-color: rgba(255, 138, 0, 0.45); background: rgba(255, 138, 0, 0.07); }
-  .sc-workshop .seg button[aria-pressed="true"]{
+  .seg button:hover { border-color: rgba(255, 138, 0, 0.45); background: rgba(255, 138, 0, 0.07); }
+  .seg button[aria-pressed="true"] {
     color: #fff; background: rgba(255, 138, 0, 0.16); border-color: var(--orange);
   }
-  .sc-workshop .seg button small{ display: block; font-weight: 600; font-size: 0.75rem; color: var(--muted); }
-  .sc-workshop .seg button[aria-pressed="true"] small{ color: #ffc07f; }
-  .sc-workshop .seg button:disabled{ opacity: 0.35; cursor: not-allowed; }
-  .sc-workshop /* Equal shares rather than sized to their text, .sc-workshop so a longer label does not
+  .seg button small { display: block; font-weight: 600; font-size: 0.75rem; color: var(--muted); }
+  .seg button[aria-pressed="true"] small { color: #ffc07f; }
+  .seg button:disabled { opacity: 0.35; cursor: not-allowed; }
+  /* Equal shares rather than sized to their text, so a longer label does not
      make one option look like the important one. */
-  .seg-even button{ flex: 1 1 0; }
-  .sc-workshop .seg button:disabled:hover{ border-color: rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.03); }
-  .sc-workshop /* Four conversions with device names under them need more room than a
-     two-way choice, .sc-workshop or the names wrap mid-word. */
-  .seg-tall button{ min-width: 152px; }
+  .seg-even button { flex: 1 1 0; }
+  .seg button:disabled:hover { border-color: rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.03); }
+  /* Four conversions with device names under them need more room than a
+     two-way choice, or the names wrap mid-word. */
+  .seg-tall button { min-width: 152px; }
 
-  .sc-workshop .opt{
+  .opt {
     margin-left: 8px; padding: 2px 7px; border-radius: 999px;
     background: rgba(255, 255, 255, 0.07); color: var(--muted);
     font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
     vertical-align: middle;
   }
 
-  .sc-workshop /* ---- the account key --------------------------------------------------
+  /* ---- the account key --------------------------------------------------
      Sits below the addresses because it is the same information at a
-     different altitude: the addresses are two leaves, .sc-workshop this is the branch they
-     hang off. Wrapped rather than scrolled, .sc-workshop since people copy it by hand as
+     different altitude: the addresses are two leaves, this is the branch they
+     hang off. Wrapped rather than scrolled, since people copy it by hand as
      often as by button. */
-  /* The wallet's identity, .sc-workshop so it sits above the words rather than below the
+  /* The wallet's identity, so it sits above the words rather than below the
      addresses: it is the first thing to compare against the device. */
-  .fingerprint{
+  .fingerprint {
     margin: 26px 0 22px; padding: 18px 18px 16px;
     border: 1px solid rgba(255, 138, 0, 0.28); border-radius: 12px;
     background: rgba(255, 138, 0, 0.05);
   }
-  .sc-workshop .fp-label{
+  .fp-label {
     display: block; margin-bottom: 8px; color: var(--muted);
     font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
   }
-  .sc-workshop .fp-row{ display: flex; align-items: flex-start; gap: 6px 14px; flex-wrap: wrap; }
-  .sc-workshop .fp-cell{ display: flex; align-items: baseline; gap: 10px; }
-  .sc-workshop /* An author display rule beats the browser's [hidden]{ display: none }, .sc-workshop so
+  .fp-row { display: flex; align-items: flex-start; gap: 6px 14px; flex-wrap: wrap; }
+  .fp-cell { display: flex; align-items: baseline; gap: 10px; }
+  /* An author display rule beats the browser's [hidden] { display: none }, so
      the arrow half needs to opt back out explicitly. Without this it shows the
      same fingerprint twice whenever there is no passphrase. */
-  .fp-cell[hidden]{ display: none; }
-  .sc-workshop .fp-row b{
+  .fp-cell[hidden] { display: none; }
+  .fp-row b {
     color: #ffad4c; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.08em;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  .sc-workshop .fp-cell em{
+  .fp-cell em {
     color: var(--muted); font-style: normal;
     font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
   }
-  .sc-workshop .fp-arrow{ color: var(--muted); font-style: normal; font-size: 1.1rem; }
-  .sc-workshop .fingerprint .hint{ margin: 10px 0 0; }
+  .fp-arrow { color: var(--muted); font-style: normal; font-size: 1.1rem; }
+  .fingerprint .hint { margin: 10px 0 0; }
 
-  .sc-workshop .xpub-box{
+  .xpub-box {
     margin-top: 16px; padding: 18px 20px;
     border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
     background: rgba(0, 0, 0, 0.22);
   }
-  .sc-workshop .xpub-box p{
+  .xpub-box p {
     margin: 8px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.86rem; line-height: 1.55; color: var(--ink); word-break: break-all;
   }
-  .sc-workshop .xpub-box .label{ display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  .sc-workshop .xpub-box .label span{
+  .xpub-box .label { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .xpub-box .label span {
     color: var(--muted); font-size: 0.72rem; font-weight: 800;
     letter-spacing: 0.12em; text-transform: uppercase;
   }
-  .sc-workshop .xpub-box .label b{ color: #ffad4c; }
-  .sc-workshop .xpub-box #xpub-alt-row{ margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
-  .sc-workshop .xpub-note{
+  .xpub-box .label b { color: #ffad4c; }
+  .xpub-box #xpub-alt-row { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+  .xpub-note {
     font-family: inherit !important; color: var(--muted) !important;
     font-size: 0.85rem !important; margin-top: 12px !important; word-break: normal !important;
   }
 
-  .sc-workshop /* ---- the eight endings ------------------------------------------------
+  /* ---- the eight endings ------------------------------------------------
      Only the lookup method reaches this. It sits between the button and the
-     results because it is a step, .sc-workshop not an outcome: nothing downstream is a
+     results because it is a step, not an outcome: nothing downstream is a
      wallet until one of these is chosen. */
-  .endings{
+  .endings {
     margin-top: 22px; padding: 20px 22px;
     border: 1px solid rgba(255, 138, 0, 0.3); border-radius: 14px;
     background: rgba(255, 138, 0, 0.05);
   }
-  .sc-workshop .endings strong{ display: block; margin-bottom: 8px; color: #ffad4c; font-size: 1.02rem; }
-  .sc-workshop .endings p{ margin: 0 0 16px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
-  .sc-workshop .ending-list{ display: flex; flex-wrap: wrap; gap: 8px; }
-  .sc-workshop .ending{
+  .endings strong { display: block; margin-bottom: 8px; color: #ffad4c; font-size: 1.02rem; }
+  .endings p { margin: 0 0 16px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
+  .ending-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ending {
     padding: 10px 16px; color: var(--ink); background: rgba(0, 0, 0, 0.28);
     border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 10px;
     font: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     transition: background-color 0.15s ease, border-color 0.15s ease;
   }
-  .sc-workshop .ending:hover{ border-color: rgba(255, 138, 0, 0.45); background: rgba(255, 138, 0, 0.07); }
-  .sc-workshop .ending[aria-pressed="true"]{ color: #fff; background: rgba(255, 138, 0, 0.16); border-color: var(--orange); }
+  .ending:hover { border-color: rgba(255, 138, 0, 0.45); background: rgba(255, 138, 0, 0.07); }
+  .ending[aria-pressed="true"] { color: #fff; background: rgba(255, 138, 0, 0.16); border-color: var(--orange); }
 
-  .sc-workshop input[type="text"], .sc-workshop textarea{
+  input[type="text"], textarea {
     width: 100%; padding: 12px 14px; color: var(--ink);
     background: rgba(0, 0, 0, 0.28);
     border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 10px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.95rem; line-height: 1.6;
   }
-  .sc-workshop input[type="text"]:focus, .sc-workshop textarea:focus{ outline: 2px solid var(--orange); outline-offset: 1px; }
-  .sc-workshop textarea{ min-height: 116px; resize: vertical; word-break: break-all; }
+  input[type="text"]:focus, textarea:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+  textarea { min-height: 116px; resize: vertical; word-break: break-all; }
 
-  .sc-workshop .path-row{ display: flex; gap: 8px; align-items: flex-start; }
-  .sc-workshop .path-row input{ flex: 1; }
-  .sc-workshop .path-row button{
+  .path-row { display: flex; gap: 8px; align-items: flex-start; }
+  .path-row input { flex: 1; }
+  .path-row button {
     padding: 12px 14px; color: var(--ink-soft); background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px;
     font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap;
   }
-  .sc-workshop .path-row button:hover{ border-color: rgba(255, 138, 0, 0.45); }
+  .path-row button:hover { border-color: rgba(255, 138, 0, 0.45); }
 
-  .sc-workshop /* ---- the keypad -------------------------------------------------------
-     Ninety-nine entries is a lot to type without a slip, .sc-workshop and a slip here is
-     not a typo -- it is a different wallet. Big targets, .sc-workshop an undo, .sc-workshop and a count
+  /* ---- the keypad -------------------------------------------------------
+     Ninety-nine entries is a lot to type without a slip, and a slip here is
+     not a typo -- it is a different wallet. Big targets, an undo, and a count
      that never lets you overshoot. Typing still works; this is the easier way
-     in, .sc-workshop not the only one. */
-  .pad{
+     in, not the only one. */
+  .pad {
     display: grid; gap: 8px; margin-bottom: 8px;
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
-  .sc-workshop .pad[data-method="coin"]{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .sc-workshop /* Twenty keys. Five across keeps them square-ish at this width and puts
-     1-20 in four tidy rows, .sc-workshop which is easier to find a face in than six. */
-  .pad[data-method="octahex"]{ grid-template-columns: repeat(8, minmax(0, 1fr)); }
-  .sc-workshop .pad[data-method="octahex"] .key{ padding: 13px 6px; font-size: 1.15rem; }
+  .pad[data-method="coin"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Twenty keys. Five across keeps them square-ish at this width and puts
+     1-20 in four tidy rows, which is easier to find a face in than six. */
+  .pad[data-method="octahex"] { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .pad[data-method="octahex"] .key { padding: 13px 6px; font-size: 1.15rem; }
   @media (max-width: 560px) {
-    .sc-workshop .pad[data-method="octahex"]{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .pad[data-method="octahex"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
 
-  .sc-workshop .key{
+  .key {
     padding: 16px 8px; color: #fff;
     background: rgba(255, 255, 255, 0.045);
     border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 11px;
@@ -346,120 +326,120 @@
     cursor: pointer; user-select: none;
     transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
   }
-  .sc-workshop .key small{ display: block; margin-top: 3px; font-size: 0.7rem; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
-  .sc-workshop .key:hover:not(:disabled){ background: rgba(255, 138, 0, 0.14); border-color: rgba(255, 138, 0, 0.6); }
-  .sc-workshop .key:active:not(:disabled){ transform: translateY(1px); background: rgba(255, 138, 0, 0.22); }
-  .sc-workshop .key:disabled{ opacity: 0.3; cursor: not-allowed; }
+  .key small { display: block; margin-top: 3px; font-size: 0.7rem; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
+  .key:hover:not(:disabled) { background: rgba(255, 138, 0, 0.14); border-color: rgba(255, 138, 0, 0.6); }
+  .key:active:not(:disabled) { transform: translateY(1px); background: rgba(255, 138, 0, 0.22); }
+  .key:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  .sc-workshop .pad-tools{ display: flex; gap: 8px; margin-bottom: 12px; }
-  .sc-workshop .key-tool{
+  .pad-tools { display: flex; gap: 8px; margin-bottom: 12px; }
+  .key-tool {
     padding: 9px 14px; color: var(--ink-soft);
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 9px;
     font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;
   }
-  .sc-workshop .key-tool:hover:not(:disabled){ color: #fff; border-color: rgba(255, 138, 0, 0.45); }
-  .sc-workshop .key-tool:disabled{ opacity: 0.35; cursor: not-allowed; }
+  .key-tool:hover:not(:disabled) { color: #fff; border-color: rgba(255, 138, 0, 0.45); }
+  .key-tool:disabled { opacity: 0.35; cursor: not-allowed; }
 
   @media (max-width: 620px) {
-    .sc-workshop .pad{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .sc-workshop .key{ padding: 18px 8px; font-size: 1.5rem; }
+    .pad { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .key { padding: 18px 8px; font-size: 1.5rem; }
   }
 
-  .sc-workshop /* Says why entry stopped. role="status" rather than an alert: it is
-     information, .sc-workshop not an error, .sc-workshop and it should not interrupt anyone using a
+  /* Says why entry stopped. role="status" rather than an alert: it is
+     information, not an error, and it should not interrupt anyone using a
      screen reader mid-roll. */
-  .cap-notice{
+  .cap-notice {
     margin: 8px 0 0; padding: 9px 12px;
     border: 1px solid rgba(255, 138, 0, 0.35); border-radius: 9px;
     background: rgba(255, 138, 0, 0.08);
     color: #ffad4c; font-size: 0.85rem; line-height: 1.5;
   }
 
-  .sc-workshop /* The entropy meter. Deliberately quieter than the roll counter beside it:
-     the counter says whether the page will accept the input, .sc-workshop which is the
-     actionable fact, .sc-workshop while this says how much the input could be worth, .sc-workshop which
+  /* The entropy meter. Deliberately quieter than the roll counter beside it:
+     the counter says whether the page will accept the input, which is the
+     actionable fact, while this says how much the input could be worth, which
      is the interesting one. */
-  .meter{ margin-top: 14px; }
-  .sc-workshop .meter-head{
+  .meter { margin-top: 14px; }
+  .meter-head {
     display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
     margin-bottom: 7px; color: var(--muted); font-size: 0.78rem;
     letter-spacing: .04em; text-transform: uppercase;
   }
-  .sc-workshop .meter-head b{
+  .meter-head b {
     color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.85rem; letter-spacing: 0; text-transform: none;
   }
-  .sc-workshop .meter-track{
+  .meter-track {
     height: 6px; border-radius: 99px; overflow: hidden;
     background: rgba(255, 255, 255, 0.08);
   }
-  .sc-workshop .meter-track i{
+  .meter-track i {
     display: block; width: 0; height: 100%; border-radius: 99px;
     background: linear-gradient(90deg, rgba(255, 138, 0, 0.55), #ff8a00);
     transition: width .28s ease;
   }
-  .sc-workshop .meter-track i.is-full{ background: linear-gradient(90deg, #4fb477, #6ede9a); }
-  .sc-workshop .meter-note{ margin: 8px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.55; }
-  @media (prefers-reduced-motion: reduce) { .sc-workshop .meter-track i{ transition: none; } }
+  .meter-track i.is-full { background: linear-gradient(90deg, #4fb477, #6ede9a); }
+  .meter-note { margin: 8px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.55; }
+  @media (prefers-reduced-motion: reduce) { .meter-track i { transition: none; } }
 
-  .sc-workshop /* The dice source has two kinds behind it; the toggle only appears once the
-     dice card is chosen, .sc-workshop so the first row stays three even choices.
+  /* The dice source has two kinds behind it; the toggle only appears once the
+     dice card is chosen, so the first row stays three even choices.
 
      The question sits on its own line above the pair rather than inline beside
-     them. Set alongside, .sc-workshop at the size a hint is set, .sc-workshop it read as a caption on
+     them. Set alongside, at the size a hint is set, it read as a caption on
      the buttons instead of a question about them -- and it is a real choice,
-     .sc-workshop not an aside: the two dice go to different wallets. */
-  .sub-pick{
+     not an aside: the two dice go to different wallets. */
+  .sub-pick {
     display: grid; gap: 10px;
     margin-top: 17px; padding-top: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.09);
   }
-  .sc-workshop .sub-pick > span{
+  .sub-pick > span {
     color: #fff; font-family: "Jost", sans-serif; font-size: 1rem; font-weight: 700;
   }
 
-  .sc-workshop /* Red suits red, .sc-workshop black suits the ordinary key colour -- the one place on the
+  /* Red suits red, black suits the ordinary key colour -- the one place on the
      pad where the glyph carries meaning the letter does not. */
-  .key[data-suit="H"], .sc-workshop .key[data-suit="D"]{ color: #ff7a6b; }
-  .sc-workshop /* The glyph is the label here, .sc-workshop so it gets the room a face value would. */
-  .key[data-suit]{ padding-left: 4px; padding-right: 4px; font-size: 1.95rem; line-height: 1; }
-  .sc-workshop /* "DIAMONDS" is three characters longer than any other name on the pad and
-     was the one that did not fit: 66px of text in a 53px box, .sc-workshop painting out
+  .key[data-suit="H"], .key[data-suit="D"] { color: #ff7a6b; }
+  /* The glyph is the label here, so it gets the room a face value would. */
+  .key[data-suit] { padding-left: 4px; padding-right: 4px; font-size: 1.95rem; line-height: 1; }
+  /* "DIAMONDS" is three characters longer than any other name on the pad and
+     was the one that did not fit: 66px of text in a 53px box, painting out
      past the key's own edge. The tracking goes and the size comes down until
      the longest name fits the narrowest key. */
-  .key[data-suit] small{ letter-spacing: 0; font-size: 0.54rem; }
-  .sc-workshop .pad[data-method="cards"], .sc-workshop .pad[data-method="cardbits"]{
+  .key[data-suit] small { letter-spacing: 0; font-size: 0.54rem; }
+  .pad[data-method="cards"], .pad[data-method="cardbits"] {
     grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
   }
 
-  .sc-workshop .count{ display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 0.85rem; }
-  .sc-workshop .count b{ font-variant-numeric: tabular-nums; color: #fff; }
-  .sc-workshop .count .short{ color: var(--muted); }
-  .sc-workshop .count .ready{ color: #8be3c6; }
-  .sc-workshop .count .over{ color: #ff9d8a; }
+  .count { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 0.85rem; }
+  .count b { font-variant-numeric: tabular-nums; color: #fff; }
+  .count .short { color: var(--muted); }
+  .count .ready { color: #8be3c6; }
+  .count .over  { color: #ff9d8a; }
 
-  .sc-workshop .go{
+  .go {
     margin-top: 22px; padding: 14px 26px; width: 100%;
     color: #241300; background: var(--orange); border: 0; border-radius: 10px;
     font: inherit; font-size: 1rem; font-weight: 800; cursor: pointer;
   }
-  .sc-workshop .go:hover{ background: #ffa233; }
-  .sc-workshop .go:disabled{ opacity: 0.45; cursor: not-allowed; }
+  .go:hover { background: #ffa233; }
+  .go:disabled { opacity: 0.45; cursor: not-allowed; }
 
-  .sc-workshop .error{
+  .error {
     margin-top: 18px; padding: 14px 16px; border-radius: 10px;
     border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.1);
     color: #ff9d8a; font-size: 0.92rem;
   }
 
-  .sc-workshop /* Shown either way, .sc-workshop saying different things: served, .sc-workshop it offers the download;
+  /* Shown either way, saying different things: served, it offers the download;
      from a local file it confirms which file you are running and keeps the
-     checksum check, .sc-workshop which is the one moment that check is genuinely useful.
-     It sits above the controls rather than below the results, .sc-workshop because whether
+     checksum check, which is the one moment that check is genuinely useful.
+     It sits above the controls rather than below the results, because whether
      to run this online or offline is a decision you want to make before you
-     start typing rolls in, .sc-workshop not after. */
-  .download{
+     start typing rolls in, not after. */
+  .download {
     display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px;
     align-items: center;
     margin: 0 0 38px; padding: 21px 22px; border-radius: 16px;
@@ -467,85 +447,85 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
-  .sc-workshop /* Without this the grid item keeps its default min-width:auto, .sc-workshop which is the
-     intrinsic width of the widest thing inside it -- the verify commands, .sc-workshop set
+  /* Without this the grid item keeps its default min-width:auto, which is the
+     intrinsic width of the widest thing inside it -- the verify commands, set
      in white-space:pre. The item then refuses to shrink and pushes the whole
-     page into a horizontal scroll on a phone, .sc-workshop rather than letting the <pre>
+     page into a horizontal scroll on a phone, rather than letting the <pre>
      scroll inside itself as intended. */
-  .download-copy{ min-width: 0; }
-  .sc-workshop .download-copy strong{ display: block; margin-bottom: 9px; color: #fff; font-family: "Jost", sans-serif; font-size: 1.25rem; }
-  .sc-workshop .download-copy p{ margin: 0 0 10px; color: var(--ink-soft); font-size: 0.9rem; }
-  .sc-workshop .download-copy .verify{ margin: 0 0 6px; color: var(--muted); font-size: 0.85rem; }
-  .sc-workshop .download-copy .verify:last-child{ margin-bottom: 0; }
-  .sc-workshop .download-copy code{
+  .download-copy { min-width: 0; }
+  .download-copy strong { display: block; margin-bottom: 9px; color: #fff; font-family: "Jost", sans-serif; font-size: 1.25rem; }
+  .download-copy p { margin: 0 0 10px; color: var(--ink-soft); font-size: 0.9rem; }
+  .download-copy .verify { margin: 0 0 6px; color: var(--muted); font-size: 0.85rem; }
+  .download-copy .verify:last-child { margin-bottom: 0; }
+  .download-copy code {
     padding: 1px 5px; border-radius: 4px; word-break: break-all;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.9em; color: var(--ink-soft); background: rgba(0, 0, 0, 0.3);
   }
-  .sc-workshop .download-copy pre{
+  .download-copy pre {
     margin: 0 0 10px; padding: 10px 12px; overflow-x: auto;
     background: rgba(0, 0, 0, 0.34); border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
   }
-  .sc-workshop .download-copy pre code{
+  .download-copy pre code {
     padding: 0; background: none; border-radius: 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.8rem; color: var(--ink); white-space: pre;
   }
-  .sc-workshop .download-copy pre span{ color: var(--muted); }
+  .download-copy pre span { color: var(--muted); }
 
-  .sc-workshop /* The two commands and the platform each one belongs to. This was a single
+  /* The two commands and the platform each one belongs to. This was a single
      <pre> with the labels pushed right by literal spaces: inside white-space:
-     pre that placed them beyond the block's own scroll edge, .sc-workshop so on a phone the
+     pre that placed them beyond the block's own scroll edge, so on a phone the
      reader got two near-identical hash commands and neither label -- the one
      part that says which is which was the part that could not be seen. As grid
-     cells they stay in the layout, .sc-workshop and wrap under their command rather than
+     cells they stay in the layout, and wrap under their command rather than
      off the side of it. */
-  .verify-cmds{
+  .verify-cmds {
     display: grid; grid-template-columns: minmax(0, 1fr) auto;
     gap: 4px 14px; align-items: baseline;
     margin: 0 0 10px; padding: 10px 12px;
     background: rgba(0, 0, 0, 0.34);
     border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;
   }
-  .sc-workshop .verify-cmds code{
+  .verify-cmds code {
     min-width: 0; padding: 0; overflow-x: auto;
     background: none; border-radius: 0; word-break: normal; white-space: pre;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.8rem; color: var(--ink);
   }
-  .sc-workshop .verify-cmds span{ color: var(--muted); font-size: 0.78rem; }
+  .verify-cmds span { color: var(--muted); font-size: 0.78rem; }
 
   @media (max-width: 560px) {
-    .sc-workshop .verify-cmds{ grid-template-columns: minmax(0, 1fr); gap: 2px; }
-    .sc-workshop .verify-cmds span{ margin-bottom: 9px; }
-    .sc-workshop .verify-cmds span:last-of-type{ margin-bottom: 0; }
+    .verify-cmds { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .verify-cmds span { margin-bottom: 9px; }
+    .verify-cmds span:last-of-type { margin-bottom: 0; }
   }
-  .sc-workshop .download-copy a{ color: var(--orange); }
+  .download-copy a { color: var(--orange); }
 
 
-  .sc-workshop .verify-details{ margin: 12px 0 0; }
-  .sc-workshop .verify-details summary{
+  .verify-details { margin: 12px 0 0; }
+  .verify-details summary {
     display: flex; align-items: center; gap: 9px; width: fit-content;
     color: var(--ink-soft); font-size: 0.84rem;
   }
-  .sc-workshop .verify-details summary::before{
+  .verify-details summary::before {
     content: "+"; display: grid; place-items: center; width: 20px; height: 20px;
     border: 1px solid rgba(255, 138, 0, 0.34); border-radius: 6px;
     color: #ffad4c; font-size: 0.9rem; line-height: 1;
   }
-  .sc-workshop .verify-details[open] summary::before{ content: "\2212"; }
-  .sc-workshop .verify-body{ margin-top: 12px; }
+  .verify-details[open] summary::before { content: "\2212"; }
+  .verify-body { margin-top: 12px; }
 
-  .sc-workshop .download-action{ display: grid; gap: 8px; justify-items: center; min-width: 205px; }
+  .download-action { display: grid; gap: 8px; justify-items: center; min-width: 205px; }
 
-  .sc-workshop /* On the hub, .sc-workshop the visible border around "Enter Workshop" is not the button's
+  /* On the hub, the visible border around "Enter Workshop" is not the button's
      own -- its gradient border-box ring is too close in colour to read clearly
-     on its own, .sc-workshop same problem as here. What actually reads as a border is the
-     dark translucent frame the button sits inside, .sc-workshop .sc-hero-actions on that
+     on its own, same problem as here. What actually reads as a border is the
+     dark translucent frame the button sits inside, .sc-hero-actions on that
      page. Copied here as .dl-frame so the two match by construction rather
      than by eye. */
-  .dl-frame{
+  .dl-frame {
     display: flex; width: 100%;
     padding: 6px;
     background: rgba(8, 9, 11, 0.62);
@@ -554,12 +534,12 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 46px rgba(0, 0, 0, 0.34);
   }
 
-  .sc-workshop /* Same skin as the hub's "Enter Workshop" button (gradient border, glow, a
+  /* Same skin as the hub's "Enter Workshop" button (gradient border, glow, a
      shine sweep on hover) rather than the flat single-color fill this used to
      have. Downloading this file is arguably the main action on this page --
      it deserves the same weight as the button pointing at it from the hub,
-     .sc-workshop not a plainer one once you actually arrive. */
-  .dl{
+     not a plainer one once you actually arrive. */
+  .dl {
     display: inline-flex; align-items: center; justify-content: center; gap: 9px;
     position: relative; isolation: isolate; overflow: hidden;
     width: 100%; padding: 15px 20px; white-space: nowrap;
@@ -575,7 +555,7 @@
       0 9px 24px rgba(255, 122, 0, 0.22);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .sc-workshop .dl:hover{
+  .dl:hover {
     background:
       linear-gradient(135deg, #ffab38, #df6900) padding-box,
       linear-gradient(135deg, #ffe0b5, #9b4000) border-box;
@@ -584,164 +564,164 @@
       0 12px 30px rgba(255, 122, 0, 0.3);
     transform: translateY(-2px);
   }
-  .sc-workshop .dl::after{
+  .dl::after {
     position: absolute; z-index: 1; top: -45%; bottom: -45%; left: -32%; width: 24%;
     background: linear-gradient(90deg, transparent, rgba(255, 245, 224, 0.52), transparent);
     content: ""; opacity: 0; transform: skewX(-18deg) translateX(-180%);
     transition: transform 0.72s cubic-bezier(0.2, 0.72, 0.22, 1), opacity 0.18s ease;
   }
-  .sc-workshop .dl:hover::after{ opacity: 1; transform: skewX(-18deg) translateX(680%); }
-  .sc-workshop .dl-icon{ flex: 0 0 auto; display: block; }
-  .sc-workshop .download-action small{ color: var(--muted); font-size: 0.75rem; }
+  .dl:hover::after { opacity: 1; transform: skewX(-18deg) translateX(680%); }
+  .dl-icon { flex: 0 0 auto; display: block; }
+  .download-action small { color: var(--muted); font-size: 0.75rem; }
 
   @media (max-width: 620px) {
-    .sc-workshop .download{ grid-template-columns: 1fr; gap: 16px; }
-    .sc-workshop .download-action{ justify-items: stretch; }
-    .sc-workshop .dl{ text-align: center; }
+    .download { grid-template-columns: 1fr; gap: 16px; }
+    .download-action { justify-items: stretch; }
+    .dl { text-align: center; }
   }
 
 
-  .sc-workshop /* ---- the refusal dialog ----------------------------------------------
-     A modal rather than an inline message, .sc-workshop because this is the one thing on
+  /* ---- the refusal dialog ----------------------------------------------
+     A modal rather than an inline message, because this is the one thing on
      the page that must not be scrolled past. Red rather than the page's
-     orange: everything else here warns, .sc-workshop this one stops. */
-  .alarm{
+     orange: everything else here warns, this one stops. */
+  .alarm {
     width: min(560px, calc(100vw - 32px));
     padding: 26px 28px; color: var(--ink);
     background: #201a18;
     border: 1px solid rgba(214, 94, 64, 0.7); border-radius: 14px;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
   }
-  .sc-workshop .alarm::backdrop{ background: rgba(8, 7, 6, 0.72); }
-  .sc-workshop .alarm-head{ display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
-  .sc-workshop .alarm-mark{
+  .alarm::backdrop { background: rgba(8, 7, 6, 0.72); }
+  .alarm-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .alarm-mark {
     display: grid; place-items: center; flex: 0 0 40px; width: 40px; height: 40px;
     color: #2a0f08; background: #ff9d8a; border-radius: 11px;
     font-family: "Jost", sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1;
   }
-  .sc-workshop .alarm h2{ margin: 0; color: #ff9d8a; font-size: 1.3rem; line-height: 1.2; }
-  .sc-workshop .alarm-lede{ margin: 0 0 12px; font-size: 0.95rem; }
-  .sc-workshop .alarm-reasons{ margin: 0 0 18px; padding: 0; list-style: none; display: grid; gap: 8px; }
-  .sc-workshop .alarm-reasons li{
+  .alarm h2 { margin: 0; color: #ff9d8a; font-size: 1.3rem; line-height: 1.2; }
+  .alarm-lede { margin: 0 0 12px; font-size: 0.95rem; }
+  .alarm-reasons { margin: 0 0 18px; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .alarm-reasons li {
     padding: 11px 13px; font-size: 0.9rem; line-height: 1.55;
     background: rgba(214, 94, 64, 0.1);
     border-left: 3px solid rgba(214, 94, 64, 0.75);
     border-radius: 0 8px 8px 0;
   }
-  .sc-workshop .alarm-note{ padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-  .sc-workshop .alarm-note p{ margin: 0 0 10px; color: var(--muted); font-size: 0.86rem; line-height: 1.6; }
-  .sc-workshop .alarm-note p:last-child{ margin-bottom: 0; }
-  .sc-workshop .alarm-note strong{ color: var(--ink-soft); }
-  .sc-workshop .alarm-actions{ display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-  .sc-workshop .alarm-primary{
+  .alarm-note { padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+  .alarm-note p { margin: 0 0 10px; color: var(--muted); font-size: 0.86rem; line-height: 1.6; }
+  .alarm-note p:last-child { margin-bottom: 0; }
+  .alarm-note strong { color: var(--ink-soft); }
+  .alarm-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .alarm-primary {
     padding: 11px 18px; color: #241300; background: var(--orange);
     border: 0; border-radius: 9px; font: inherit; font-size: 0.92rem; font-weight: 800; cursor: pointer;
   }
-  .sc-workshop .alarm-primary:hover{ background: #ffa233; }
+  .alarm-primary:hover { background: #ffa233; }
 
-  .sc-workshop .results{ margin-top: 34px; padding-top: 28px; border-top: 1px solid rgba(110, 105, 94, 0.4); }
-  .sc-workshop .results h2{ margin: 0 0 4px; font-size: 1.2rem; color: #fff; }
-  .sc-workshop .results h3{ margin: 28px 0 10px; font-size: 1rem; color: #fff; }
+  .results { margin-top: 34px; padding-top: 28px; border-top: 1px solid rgba(110, 105, 94, 0.4); }
+  .results h2 { margin: 0 0 4px; font-size: 1.2rem; color: #fff; }
+  .results h3 { margin: 28px 0 10px; font-size: 1rem; color: #fff; }
 
-  .sc-workshop ol.words{
+  ol.words {
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px;
     margin: 14px 0 0; padding: 0; list-style: none;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  .sc-workshop ol.words li{
+  ol.words li {
     display: flex; gap: 8px; align-items: baseline; padding: 9px 11px;
     background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;
     font-size: 0.9rem;
   }
-  .sc-workshop ol.words b{ color: #fff; font-weight: 600; }
-  .sc-workshop ol.words span{ color: var(--orange-dark); font-size: 0.72rem; min-width: 1.4em; font-variant-numeric: tabular-nums; }
+  ol.words b { color: #fff; font-weight: 600; }
+  ol.words span { color: var(--orange-dark); font-size: 0.72rem; min-width: 1.4em; font-variant-numeric: tabular-nums; }
 
-  .sc-workshop .addr{ margin-top: 10px; padding: 14px 16px; background: rgba(255, 255, 255, 0.035);
+  .addr { margin-top: 10px; padding: 14px 16px; background: rgba(255, 255, 255, 0.035);
           border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; }
-  .sc-workshop .addr .label{ display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;
+  .addr .label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;
                  font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-  .sc-workshop .addr .label span{ color: var(--orange-dark); }
-  .sc-workshop .addr .label code{ color: var(--muted); font-size: 0.75rem; letter-spacing: 0; text-transform: none; }
-  .sc-workshop .addr p{ margin: 8px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  .addr .label span { color: var(--orange-dark); }
+  .addr .label code { color: var(--muted); font-size: 0.75rem; letter-spacing: 0; text-transform: none; }
+  .addr p { margin: 8px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
             font-size: 0.95rem; color: #fff; word-break: break-all; line-height: 1.5; }
 
-  .sc-workshop details{ margin-top: 26px; }
-  .sc-workshop summary{ cursor: pointer; color: var(--ink-soft); font-size: 0.9rem; font-weight: 700; }
-  .sc-workshop details .body{ margin-top: 12px; color: var(--muted); font-size: 0.88rem; }
-  .sc-workshop details code{ color: var(--ink-soft); word-break: break-all; }
-  .sc-workshop /* Every link in a disclosure, .sc-workshop not only the ones inside .src-list -- the
+  details { margin-top: 26px; }
+  summary { cursor: pointer; color: var(--ink-soft); font-size: 0.9rem; font-weight: 700; }
+  details .body { margin-top: 12px; color: var(--muted); font-size: 0.88rem; }
+  details code { color: var(--ink-soft); word-break: break-all; }
+  /* Every link in a disclosure, not only the ones inside .src-list -- the
      loose paragraphs around the lists were falling back to the browser's
-     default blue, .sc-workshop which is close to unreadable on this background. */
-  details .body a{ color: var(--orange); text-decoration: none; }
-  .sc-workshop details .body a:hover{ text-decoration: underline; }
+     default blue, which is close to unreadable on this background. */
+  details .body a { color: var(--orange); text-decoration: none; }
+  details .body a:hover { text-decoration: underline; }
 
-  .sc-workshop /* ---- sources ----------------------------------------------------------
+  /* ---- sources ----------------------------------------------------------
      Every claim this page makes about a device is someone else's published
-     document, .sc-workshop and a reader who cannot get from the claim to that document is
+     document, and a reader who cannot get from the claim to that document is
      being asked for exactly the faith this tool exists to remove. */
-  .src-group{ margin: 20px 0 0; }
-  .sc-workshop /* Ruled, .sc-workshop because these two headings are the only thing separating one list
+  .src-group { margin: 20px 0 0; }
+  /* Ruled, because these two headings are the only thing separating one list
      of sources from the next and small uppercase text alone did not read as a
      divider. */
-  .src-group h3{
+  .src-group h3 {
     margin: 0 0 12px; padding-bottom: 8px;
     border-bottom: 1px solid rgba(255, 138, 0, 0.35);
     color: #ffad4c;
     font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
   }
-  .sc-workshop .src-list{ margin: 0; padding: 0; list-style: none; }
-  .sc-workshop .src-list li{
+  .src-list { margin: 0; padding: 0; list-style: none; }
+  .src-list li {
     padding: 10px 0; border-top: 1px solid rgba(255, 255, 255, 0.07);
     display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 4px 18px;
   }
-  .sc-workshop .src-list li:first-child{ border-top: 0; }
-  .sc-workshop .src-list b{ color: var(--ink-soft); font-size: 0.84rem; }
-  .sc-workshop .src-list a{ color: var(--orange); text-decoration: none; word-break: break-word; }
-  .sc-workshop .src-list a:hover{ text-decoration: underline; }
-  .sc-workshop .src-list span{ display: block; margin-top: 3px; font-size: 0.82rem; line-height: 1.55; }
+  .src-list li:first-child { border-top: 0; }
+  .src-list b { color: var(--ink-soft); font-size: 0.84rem; }
+  .src-list a { color: var(--orange); text-decoration: none; word-break: break-word; }
+  .src-list a:hover { text-decoration: underline; }
+  .src-list span { display: block; margin-top: 3px; font-size: 0.82rem; line-height: 1.55; }
   @media (max-width: 620px) {
-    .sc-workshop .src-list li{ grid-template-columns: minmax(0, 1fr); }
+    .src-list li { grid-template-columns: minmax(0, 1fr); }
   }
 
-  .sc-workshop /* ---- site footer ------------------------------------------------------ */
+  /* ---- site footer ------------------------------------------------------ */
 
   /* ---- the file footer ---------------------------------------------------
 
      The site footer used to be redrawn here: a grid of links to Devices,
-     .sc-workshop Software, .sc-workshop Exchanges and the rest, .sc-workshop none of which resolve on a machine with
+     Software, Exchanges and the rest, none of which resolve on a machine with
      no network. This replaces it with the two things that do matter when you
-     are holding a file offline -- how to prove it is the published one, .sc-workshop and
+     are holding a file offline -- how to prove it is the published one, and
      the warning that outranks everything else on the page. */
-  .file-footer{
+  .file-footer {
     margin-top: 40px; padding: 34px 0 30px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: #0d0d0e;
     color: var(--muted); font-size: 0.9rem;
   }
-  .sc-workshop .file-footer h2{ margin: 0 0 10px; color: #fff; font-size: 1.1rem; }
-  .sc-workshop .file-footer p{ margin: 0 0 14px; line-height: 1.65; }
-  .sc-workshop .file-footer pre{
+  .file-footer h2 { margin: 0 0 10px; color: #fff; font-size: 1.1rem; }
+  .file-footer p { margin: 0 0 14px; line-height: 1.65; }
+  .file-footer pre {
     margin: 0 0 16px; padding: 13px 15px; overflow-x: auto;
     border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px;
     background: rgba(0, 0, 0, 0.4);
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.8rem; line-height: 1.7; color: var(--ink-soft);
   }
-  .sc-workshop .file-footer pre span{ color: var(--muted); }
-  .sc-workshop .file-footer-note{ font-size: 0.85rem; }
-  .sc-workshop .file-footer-note strong{ color: #ffad4c; }
+  .file-footer pre span { color: var(--muted); }
+  .file-footer-note { font-size: 0.85rem; }
+  .file-footer-note strong { color: #ffad4c; }
 
-  .sc-workshop .colophon{ margin-top: 32px; padding-top: 22px; border-top: 1px solid rgba(110, 105, 94, 0.4);
+  .colophon { margin-top: 32px; padding-top: 22px; border-top: 1px solid rgba(110, 105, 94, 0.4);
               color: var(--muted); font-size: 0.85rem; }
-  .sc-workshop .colophon a{ color: var(--orange); }
+  .colophon a { color: var(--orange); }
 
-  .sc-workshop /* The site answers this width with a hamburger menu, .sc-workshop which needs a script and
+  /* The site answers this width with a hamburger menu, which needs a script and
      a focus trap to do properly. For a single leaf page the honest version is
-     smaller: stop pinning the header, .sc-workshop let it scroll away, .sc-workshop and give the four
-     links their own scrollable strip. Nothing is hidden behind a control, .sc-workshop and
+     smaller: stop pinning the header, let it scroll away, and give the four
+     links their own scrollable strip. Nothing is hidden behind a control, and
      the hero gets the screen back. */
-  @media (max-width: 620px){
+  @media (max-width: 620px) {
     .site-header { position: static; padding: 14px 0; backdrop-filter: none; }
     .header-inner { flex-wrap: wrap; justify-content: center; gap: 12px; }
     .brand { font-size: 21px; margin-right: 0; }
@@ -760,48 +740,48 @@
     .footer-grid { grid-template-columns: 1fr; }
   }
 
-  .sc-workshop /* Same background as every guide article's hero (.sc-guide-head in the main
+  /* Same background as every guide article's hero (.sc-guide-head in the main
      site stylesheet) -- one soft orange glow top-right over a plain diagonal
      dark panel. The earlier version of this page had two radial gradients (an
      orange one and a --success green one) plus a pixel-grid overlay and a ringed
-     circle bleeding off the corner; none of that exists on a guide page, .sc-workshop and
-     next to the rest of the site it read as a different, .sc-workshop over-decorated
+     circle bleeding off the corner; none of that exists on a guide page, and
+     next to the rest of the site it read as a different, over-decorated
      product rather than a page of this one -- so both are folded into the one
-     .hero rule above instead of layered as a second, .sc-workshop later-loaded override.
+     .hero rule above instead of layered as a second, later-loaded override.
      .wrap's widened measure for the two-column shell is folded into its one
      rule the same way. */
-  .hero-shell{
+  .hero-shell {
     display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
     align-items: center; gap: clamp(28px, 5vw, 56px);
   }
-  .sc-workshop .hero-copy{ min-width: 0; }
-  .sc-workshop .hero .crumb{ margin-bottom: 18px; }
-  .sc-workshop .hero .eyebrow{
+  .hero-copy { min-width: 0; }
+  .hero .crumb { margin-bottom: 18px; }
+  .hero .eyebrow {
     display: inline-flex; align-items: center; gap: 9px; margin-bottom: 10px;
     color: #ffad4c; letter-spacing: 0.18em;
   }
-  .sc-workshop .hero .eyebrow::before{ content: ""; width: 25px; height: 1px; background: var(--orange); }
-  .sc-workshop .hero h1{ max-width: 660px; margin-bottom: 14px; font-size: clamp(2.75rem, 5vw, 3.8rem); letter-spacing: -0.035em; }
-  .sc-workshop .hero .lead{ max-width: 660px; font-size: clamp(0.98rem, 1.35vw, 1.08rem); line-height: 1.55; }
-  .sc-workshop .hero .status{ margin-top: 20px; gap: 7px; }
-  .sc-workshop .hero .status li{
+  .hero .eyebrow::before { content: ""; width: 25px; height: 1px; background: var(--orange); }
+  .hero h1 { max-width: 660px; margin-bottom: 14px; font-size: clamp(2.75rem, 5vw, 3.8rem); letter-spacing: -0.035em; }
+  .hero .lead { max-width: 660px; font-size: clamp(0.98rem, 1.35vw, 1.08rem); line-height: 1.55; }
+  .hero .status { margin-top: 20px; gap: 7px; }
+  .hero .status li {
     position: relative; padding: 6px 11px 6px 28px; border-radius: 999px;
     background: rgba(8, 8, 8, 0.28); backdrop-filter: blur(4px);
   }
-  .sc-workshop .hero .status li::before{
+  .hero .status li::before {
     content: ""; position: absolute; left: 12px; top: 50%; width: 7px; height: 7px;
     border-radius: 50%; background: #8e887e; transform: translateY(-50%);
     box-shadow: 0 0 0 3px rgba(142, 136, 126, 0.12);
   }
-  .sc-workshop .hero .status li.good::before{ background: var(--success); box-shadow: 0 0 0 3px rgba(53, 180, 138, 0.15), 0 0 12px rgba(53, 180, 138, 0.7); }
-  .sc-workshop /* The one badge worth catching an eye. Being online is not dangerous here --
+  .hero .status li.good::before { background: var(--success); box-shadow: 0 0 0 3px rgba(53, 180, 138, 0.15), 0 0 12px rgba(53, 180, 138, 0.7); }
+  /* The one badge worth catching an eye. Being online is not dangerous here --
      there is nothing to type that could leak a wallet -- but it is the fact
-     that decides whether this session suits a wallet worth anything, .sc-workshop and a
+     that decides whether this session suits a wallet worth anything, and a
      still amber dot beside a still green one is easy to read straight past.
 
-     Only the online state moves. The offline state is reassurance, .sc-workshop and
+     Only the online state moves. The offline state is reassurance, and
      reassurance that flashes stops reassuring. */
-  .hero .status li.warn::before{
+  .hero .status li.warn::before {
     background: var(--orange);
     box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.15), 0 0 12px rgba(255, 138, 0, 0.7);
     animation: status-ping 2.6s ease-out infinite;
@@ -812,22 +792,22 @@
     100% { box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.15), 0 0 12px rgba(255, 138, 0, 0.7); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sc-workshop .hero .status li.warn::before{ animation: none; }
+    .hero .status li.warn::before { animation: none; }
   }
-  .sc-workshop .hero .status li.bad::before{ background: var(--danger); }
+  .hero .status li.bad::before { background: var(--danger); }
 
-  .sc-workshop .entropy-visual{
+  .entropy-visual {
     padding: 18px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 15px;
     background: rgba(12, 12, 12, 0.42);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055), 0 18px 44px rgba(0, 0, 0, 0.28);
   }
-  .sc-workshop .visual-top{
+  .visual-top {
     display: grid; grid-template-columns: 50px minmax(0, 1fr); align-items: center; gap: 14px;
     padding-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.09);
   }
-  .sc-workshop /* The same four-pip die used beside the Roll the dice guide title. Kept as
+  /* The same four-pip die used beside the Roll the dice guide title. Kept as
      an inline SVG so the standalone download still fetches nothing. */
-  .guide-die-mark{
+  .guide-die-mark {
     display: block; width: 50px; height: 50px; border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 13px;
     background-image:
@@ -836,132 +816,132 @@
     background-repeat: no-repeat; background-position: center; background-size: 100% 100%;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -10px 18px rgba(0, 0, 0, 0.5), 0 7px 16px rgba(0, 0, 0, 0.38);
   }
-  .sc-workshop .visual-heading strong{ display: block; color: #fff; font: 600 1.08rem/1.2 "Jost", sans-serif; }
-  .sc-workshop .visual-heading span{ display: block; margin-top: 4px; color: var(--muted); font-size: 0.72rem; line-height: 1.4; }
-  .sc-workshop .entropy-code{
+  .visual-heading strong { display: block; color: #fff; font: 600 1.08rem/1.2 "Jost", sans-serif; }
+  .visual-heading span { display: block; margin-top: 4px; color: var(--muted); font-size: 0.72rem; line-height: 1.4; }
+  .entropy-code {
     display: grid; gap: 6px; margin: 14px 0 12px; padding: 10px 12px;
     color: #b9b2a7; background: rgba(0, 0, 0, 0.28); border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.63rem; line-height: 1.2; letter-spacing: 0.055em;
   }
-  .sc-workshop .entropy-code span{ display: flex; justify-content: space-between; gap: 10px; }
-  .sc-workshop .entropy-code em{ color: var(--orange); font-style: normal; }
-  .sc-workshop .entropy-code b{ color: #8be3c6; font-weight: 600; }
-  .sc-workshop .visual-flow{ display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 7px; }
-  .sc-workshop .visual-flow span{
+  .entropy-code span { display: flex; justify-content: space-between; gap: 10px; }
+  .entropy-code em { color: var(--orange); font-style: normal; }
+  .entropy-code b { color: #8be3c6; font-weight: 600; }
+  .visual-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 7px; }
+  .visual-flow span {
     padding: 7px 5px; color: #c7c0b6; border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 9px; background: rgba(255,255,255,.035); text-align: center;
     font-size: 0.66rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
   }
-  .sc-workshop .visual-flow i{ color: var(--orange); font-style: normal; }
-  .sc-workshop .workspace{ padding-bottom: 56px; }
-  .sc-workshop .security-brief{
+  .visual-flow i { color: var(--orange); font-style: normal; }
+  .workspace { padding-bottom: 56px; }
+  .security-brief {
     position: relative; margin: -22px 0 16px; padding: 20px 22px 20px 68px;
     border-color: rgba(255, 138, 0, 0.46); border-radius: 16px;
     background: linear-gradient(135deg, #29231d, #211f1c);
     box-shadow: 0 18px 44px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.05);
   }
-  .sc-workshop .security-brief::before{
+  .security-brief::before {
     content: "!"; position: absolute; left: 20px; top: 20px; display: grid; place-items: center;
     width: 32px; height: 32px; color: #241300; background: var(--orange); border-radius: 10px;
     font-family: "Jost", sans-serif; font-size: 1.2rem; font-weight: 800;
   }
-  .sc-workshop .security-brief strong{ color: #ffad4c; }
-  .sc-workshop .security-brief .critical-line{
+  .security-brief strong { color: #ffad4c; }
+  .security-brief .critical-line {
     width: fit-content; max-width: calc(100% + 14px);
     margin: 13px 0 -4px -14px; padding: 11px 14px;
     color: var(--ink-soft); background: rgba(8, 8, 8, .38);
     border: 1px solid rgba(255, 48, 72, .28); border-radius: 9px;
     text-align: left;
   }
-  .sc-workshop .security-brief strong.critical{
+  .security-brief strong.critical {
     color: #ff4d5d; text-shadow: 0 0 14px rgba(255, 44, 65, .18);
   }
 
 
-  .sc-workshop .workbench-intro{ display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; margin: 0 0 16px; }
-  .sc-workshop .workbench-intro .eyebrow{ margin-bottom: 9px; }
-  .sc-workshop .workbench-intro h2{ margin: 0 0 7px; color: #fff; font-size: clamp(1.7rem, 3vw, 2.35rem); line-height: 1.15; }
-  .sc-workshop /* Capped, .sc-workshop because the column runs to 853px and lines that long are hard to
+  .workbench-intro { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; margin: 0 0 16px; }
+  .workbench-intro .eyebrow { margin-bottom: 9px; }
+  .workbench-intro h2 { margin: 0 0 7px; color: #fff; font-size: clamp(1.7rem, 3vw, 2.35rem); line-height: 1.15; }
+  /* Capped, because the column runs to 853px and lines that long are hard to
      track back to the start -- measured at 123 characters unconstrained,
-     .sc-workshop against the 92 this gives. It used to look truncated only because the
-     sentence was long enough to need four lines; shortened, .sc-workshop it fills the
+     against the 92 this gives. It used to look truncated only because the
+     sentence was long enough to need four lines; shortened, it fills the
      measure and the raggedness goes with it. */
-  .workbench-intro p{ max-width: 650px; margin: 0; color: var(--muted); font-size: 0.92rem; }
-  .sc-workshop .step-map{ display: flex; align-items: center; gap: 5px; padding-bottom: 6px; color: #777168; font-size: 0.7rem; font-weight: 800; letter-spacing: .08em; }
-  .sc-workshop .step-map b{ display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid rgba(255, 138, 0, .32); border-radius: 50%; color: #ffad4c; }
-  .sc-workshop .step-map i{ width: 11px; height: 1px; background: rgba(255,255,255,.12); }
+  .workbench-intro p { max-width: 650px; margin: 0; color: var(--muted); font-size: 0.92rem; }
+  .step-map { display: flex; align-items: center; gap: 5px; padding-bottom: 6px; color: #777168; font-size: 0.7rem; font-weight: 800; letter-spacing: .08em; }
+  .step-map b { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid rgba(255, 138, 0, .32); border-radius: 50%; color: #ffad4c; }
+  .step-map i { width: 11px; height: 1px; background: rgba(255,255,255,.12); }
 
-  .sc-workshop .workbench{
+  .workbench {
     position: relative; padding: 16px 24px 24px; border: 1px solid rgba(255,255,255,.12);
     border-radius: 22px; background: linear-gradient(155deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
     box-shadow: 0 26px 68px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.06), 0 -1px 32px rgba(255,138,0,.035);
   }
-  .sc-workshop .workbench fieldset{ position: relative; margin: 0; padding: 24px 0 25px 56px; border-bottom: 1px solid rgba(255,255,255,.085); }
-  .sc-workshop .workbench legend{ float: left; width: 100%; margin: 0 0 13px; font-family: "Jost", sans-serif; font-size: 1.07rem; }
-  .sc-workshop .workbench legend .step-num{ position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
-  .sc-workshop .workbench legend::before{
+  .workbench fieldset { position: relative; margin: 0; padding: 24px 0 25px 56px; border-bottom: 1px solid rgba(255,255,255,.085); }
+  .workbench legend { float: left; width: 100%; margin: 0 0 13px; font-family: "Jost", sans-serif; font-size: 1.07rem; }
+  .workbench legend .step-num { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  .workbench legend::before {
     content: attr(data-step); position: absolute; left: 0; top: 21px; display: grid; place-items: center;
     width: 37px; height: 37px; color: #ffad4c; border: 1px solid rgba(255,138,0,.4); border-radius: 11px;
     background: rgba(255,138,0,.075); font: 800 0.82rem/1 "Open Sans", sans-serif;
   }
-  .sc-workshop .workbench legend + *{ clear: both; }
-  .sc-workshop .workbench .seg{ gap: 10px; }
-  .sc-workshop .workbench .seg button{ min-height: 58px; border-radius: 12px; }
-  .sc-workshop .workbench .seg button[aria-pressed="true"]{
+  .workbench legend + * { clear: both; }
+  .workbench .seg { gap: 10px; }
+  .workbench .seg button { min-height: 58px; border-radius: 12px; }
+  .workbench .seg button[aria-pressed="true"] {
     background: linear-gradient(135deg, rgba(255,138,0,.22), rgba(255,138,0,.11));
     box-shadow: inset 0 0 0 1px rgba(255,138,0,.32), inset 0 1px 0 rgba(255,255,255,.08), 0 8px 22px rgba(255,138,0,.08);
     transform: translateY(-1px);
   }
-  .sc-workshop .workbench .hint strong{ color: var(--ink-soft); }
-  .sc-workshop .workbench textarea{ min-height: 132px; }
-  .sc-workshop .workbench .go{
+  .workbench .hint strong { color: var(--ink-soft); }
+  .workbench textarea { min-height: 132px; }
+  .workbench .go {
     margin-top: 27px; min-height: 56px; border-radius: 13px;
     border: 1px solid #ffb14f;
     background: linear-gradient(135deg, #ff9b1a, #e57700);
     box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 16px 34px rgba(255, 138, 0, .18);
     transition: background-color .15s ease, transform .15s ease, box-shadow .15s ease;
   }
-  .sc-workshop .workbench .go:hover:not(:disabled){ transform: translateY(-1px); box-shadow: 0 20px 42px rgba(255, 138, 0, .23); }
-  .sc-workshop .workbench .go:disabled{ box-shadow: none; }
-  .sc-workshop .workbench .results{ margin-top: 32px; padding: 28px; border: 1px solid rgba(53,180,138,.32); border-radius: 16px; background: linear-gradient(150deg, rgba(53,180,138,.07), rgba(53,180,138,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
-  .sc-workshop .workbench .error{ margin-bottom: 0; }
+  .workbench .go:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 20px 42px rgba(255, 138, 0, .23); }
+  .workbench .go:disabled { box-shadow: none; }
+  .workbench .results { margin-top: 32px; padding: 28px; border: 1px solid rgba(53,180,138,.32); border-radius: 16px; background: linear-gradient(150deg, rgba(53,180,138,.07), rgba(53,180,138,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+  .workbench .error { margin-bottom: 0; }
 
-  .sc-workshop .setup-grid{
+  .setup-grid {
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
     padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,.085);
   }
-  .sc-workshop .workbench .setup-grid fieldset{
+  .workbench .setup-grid fieldset {
     padding: 18px 18px 18px 58px; border: 1px solid rgba(255,255,255,.09); border-radius: 15px;
     background: rgba(255,255,255,.018);
   }
-  .sc-workshop .workbench .setup-grid legend{ font-size: 1rem; }
-  .sc-workshop .workbench .setup-grid legend::before{ left: 14px; top: 15px; width: 34px; height: 34px; border-radius: 10px; }
-  .sc-workshop .workbench .setup-grid .setup-wide{ grid-column: 1 / -1; }
-  .sc-workshop .workbench .setup-grid .seg button{ min-height: 52px; }
-  .sc-workshop .workbench .address-options{
+  .workbench .setup-grid legend { font-size: 1rem; }
+  .workbench .setup-grid legend::before { left: 14px; top: 15px; width: 34px; height: 34px; border-radius: 10px; }
+  .workbench .setup-grid .setup-wide { grid-column: 1 / -1; }
+  .workbench .setup-grid .seg button { min-height: 52px; }
+  .workbench .address-options {
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
   }
-  .sc-workshop .workbench .address-options button{
+  .workbench .address-options button {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
     width: 100%; min-width: 0; height: 58px; padding: 8px;
     line-height: 1.2; text-align: center;
   }
-  .sc-workshop .workbench .address-options button small{ margin: 0; line-height: 1.15; }
-  .sc-workshop .workbench .entry-step{ padding-bottom: 10px; border-bottom: 0; }
+  .workbench .address-options button small { margin: 0; line-height: 1.15; }
+  .workbench .entry-step { padding-bottom: 10px; border-bottom: 0; }
 
   @media (prefers-reduced-motion: reduce) {
-    .sc-workshop *, .sc-workshop *::before, .sc-workshop *::after{ scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
   }
 
-  .sc-workshop > details{
+  main > details {
     margin-top: 16px; padding: 18px 20px; border: 1px solid rgba(255,255,255,.09);
     border-radius: 13px; background: rgba(255,255,255,.025);
   }
-  .sc-workshop > details[open]{ border-color: rgba(255,138,0,.25); }
-  .sc-workshop > details summary{ color: var(--ink); }
+  main > details[open] { border-color: rgba(255,138,0,.25); }
+  main > details summary { color: var(--ink); }
 
-  .sc-workshop > .method-note{
+  main > .method-note {
     position: relative; overflow: hidden; padding: 0;
     border-color: rgba(255,138,0,.22);
     background:
@@ -969,115 +949,88 @@
       linear-gradient(145deg, rgba(255,255,255,.042), rgba(255,255,255,.018));
     box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 12px 30px rgba(0,0,0,.13);
   }
-  .sc-workshop > .method-note::before{
+  main > .method-note::before {
     content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
     background: linear-gradient(180deg, #ffad4c, #d96f00);
   }
-  .sc-workshop .method-note summary{
+  .method-note summary {
     display: flex; align-items: center; gap: 13px; padding: 17px 19px 17px 21px;
     list-style: none; color: #fff !important;
     font-family: "Jost", "Open Sans", sans-serif; font-size: 1rem; font-weight: 650;
   }
-  .sc-workshop .method-note summary::-webkit-details-marker{ display: none; }
-  .sc-workshop .method-note summary::after{
+  .method-note summary::-webkit-details-marker { display: none; }
+  .method-note summary::after {
     content: "\203A"; margin-left: auto; color: #ffad4c;
     font: 400 1.55rem/1 "Jost", sans-serif; transform: rotate(90deg);
     transition: transform .16s ease;
   }
-  .sc-workshop .method-note[open] summary::after{ transform: rotate(-90deg); }
-  .sc-workshop .method-note[open] summary{ border-bottom: 1px solid rgba(255,255,255,.075); }
-  .sc-workshop .method-note .body{ margin: 0; padding: 18px 21px 20px; }
-  .sc-workshop .method-note .body p:first-child{ margin-top: 0; }
-  .sc-workshop .method-note .body p:last-child{ margin-bottom: 0; }
+  .method-note[open] summary::after { transform: rotate(-90deg); }
+  .method-note[open] summary { border-bottom: 1px solid rgba(255,255,255,.075); }
+  .method-note .body { margin: 0; padding: 18px 21px 20px; }
+  .method-note .body p:first-child { margin-top: 0; }
+  .method-note .body p:last-child { margin-bottom: 0; }
 
   @media (max-width: 820px) {
-    .sc-workshop .hero{ min-height: auto; padding: 108px 0 44px; }
-    .sc-workshop .hero-shell{ grid-template-columns: 1fr; gap: 28px; }
-    .sc-workshop .hero h1{ font-size: clamp(2.8rem, 9vw, 3.8rem); }
-    .sc-workshop .entropy-visual{ width: min(100%, 560px); }
-    .sc-workshop .security-brief{ margin-top: -20px; }
-    .sc-workshop .workbench-intro{ grid-template-columns: 1fr; gap: 12px; }
-    .sc-workshop .setup-grid{ grid-template-columns: 1fr; }
-    .sc-workshop .workbench .setup-grid .setup-wide{ grid-column: auto; }
+    .hero { min-height: auto; padding: 108px 0 44px; }
+    .hero-shell { grid-template-columns: 1fr; gap: 28px; }
+    .hero h1 { font-size: clamp(2.8rem, 9vw, 3.8rem); }
+    .entropy-visual { width: min(100%, 560px); }
+    .security-brief { margin-top: -20px; }
+    .workbench-intro { grid-template-columns: 1fr; gap: 12px; }
+    .setup-grid { grid-template-columns: 1fr; }
+    .workbench .setup-grid .setup-wide { grid-column: auto; }
   }
   @media (max-width: 620px) {
-    .sc-workshop .wrap{ padding-inline: 18px; }
-    .sc-workshop .hero{ padding: 34px 0 40px; }
-    .sc-workshop .hero .crumb{ margin-bottom: 18px; }
-    .sc-workshop .hero h1{ font-size: clamp(2.45rem, 13vw, 3.35rem); }
-    .sc-workshop .hero .status{ display: grid; }
-    .sc-workshop .entropy-visual{ padding: 20px; border-radius: 16px; }
-    .sc-workshop .visual-top{ grid-template-columns: 54px minmax(0, 1fr); gap: 14px; }
-    .sc-workshop .guide-die-mark{ width: 54px; height: 54px; border-radius: 14px; }
-    .sc-workshop .visual-flow{ gap: 4px; }
-    .sc-workshop .visual-flow span{ padding: 8px 4px; font-size: .58rem; }
-    .sc-workshop .security-brief{ margin-top: -16px; padding: 58px 18px 18px; }
-    .sc-workshop .security-brief::before{ left: 18px; top: 16px; }
-    .sc-workshop .download{ margin-bottom: 34px; padding: 19px 18px; }
-    .sc-workshop .step-map{ display: none; }
-    .sc-workshop .workbench{ padding: 12px 14px 20px; border-radius: 18px; }
-    .sc-workshop .workbench fieldset{ padding: 23px 0 24px 0; }
-    .sc-workshop .workbench .setup-grid fieldset{ padding: 18px 14px; }
-    .sc-workshop .workbench legend{ padding-left: 60px; min-height: 37px; display: flex; align-items: center; }
-    .sc-workshop /* left:0 put the badge exactly on the card's border -- measured at a zero
-       gap, .sc-workshop so it read as overlapping it. Inset far enough to sit inside the
-       box, .sc-workshop with the heading moved to match. */
-    .workbench legend::before, .sc-workshop .workbench .setup-grid legend::before{ left: 13px; top: 16px; }
-    .sc-workshop .workbench .results{ padding: 21px 16px; }
-    .sc-workshop .path-row{ flex-direction: column; }
-    .sc-workshop .path-row button{ width: 100%; }
+    .wrap { padding-inline: 18px; }
+    .hero { padding: 34px 0 40px; }
+    .hero .crumb { margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(2.45rem, 13vw, 3.35rem); }
+    .hero .status { display: grid; }
+    .entropy-visual { padding: 20px; border-radius: 16px; }
+    .visual-top { grid-template-columns: 54px minmax(0, 1fr); gap: 14px; }
+    .guide-die-mark { width: 54px; height: 54px; border-radius: 14px; }
+    .visual-flow { gap: 4px; }
+    .visual-flow span { padding: 8px 4px; font-size: .58rem; }
+    .security-brief { margin-top: -16px; padding: 58px 18px 18px; }
+    .security-brief::before { left: 18px; top: 16px; }
+    .download { margin-bottom: 34px; padding: 19px 18px; }
+    .step-map { display: none; }
+    .workbench { padding: 12px 14px 20px; border-radius: 18px; }
+    .workbench fieldset { padding: 23px 0 24px 0; }
+    .workbench .setup-grid fieldset { padding: 18px 14px; }
+    .workbench legend { padding-left: 60px; min-height: 37px; display: flex; align-items: center; }
+    /* left:0 put the badge exactly on the card's border -- measured at a zero
+       gap, so it read as overlapping it. Inset far enough to sit inside the
+       box, with the heading moved to match. */
+    .workbench legend::before, .workbench .setup-grid legend::before { left: 13px; top: 16px; }
+    .workbench .results { padding: 21px 16px; }
+    .path-row { flex-direction: column; }
+    .path-row button { width: 100%; }
   }
 
-  .sc-workshop .vectors{ margin: 10px 0 0; padding: 0; list-style: none; font-family: ui-monospace, monospace; font-size: 0.78rem; }
-  .sc-workshop .vectors li{ padding: 2px 0; }
-  .sc-workshop .vectors li::before{ content: "ok  "; color: var(--success); }
-  .sc-workshop .vectors li.bad::before{ content: "FAIL "; color: var(--danger); }
+  .vectors { margin: 10px 0 0; padding: 0; list-style: none; font-family: ui-monospace, monospace; font-size: 0.78rem; }
+  .vectors li { padding: 2px 0; }
+  .vectors li::before { content: "ok  "; color: var(--success); }
+  .vectors li.bad::before { content: "FAIL "; color: var(--danger); }
 
   @media (max-width: 620px) {
-    .sc-workshop ol.words{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .sc-workshop .seg button{ min-width: 0; }
+    ol.words { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .seg button { min-width: 0; }
   }
 </style>
 </head>
-<body class="site-refresh" data-page="entropy">
-  <div id="site-header">
-      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
-      <header id="header" class="fixed-top">
-        <div class="container d-flex align-items-center">
-          <a class="sc-brand me-auto" href="index.html" aria-label="Self Custody home">
-            <span class="sc-brand-mark" aria-hidden="true"></span>
-            <span class="sc-brand-name">SELF CUSTODY</span>
-            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
-          </a>
-          <nav id="navbar" class="navbar" aria-label="Primary navigation">
-            <ul><li><a class=" " href="index.html"><span>Home</span></a></li><li class="sc-nav-menu">
-          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
-            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
-          </button>
-          <ul class="sc-nav-submenu">
-            <li><a href="guides.html">Start here</a></li>
-            <li><a href="guides.html#devices">Devices</a></li>
-            <li><a href="guides.html#software">Software</a></li>
-            <li><a href="guides.html#exchanges">Exchanges</a></li>
-            <li><a href="guides.html#advanced">Techniques</a></li>
-            <li><a href="guides.html#concepts">Concepts</a></li>
-            <li class="sc-nav-tool-item"><a class="sc-nav-tool-link" href="entropy.html">Entropy Workshop</a></li>
-          </ul>
-        </li><li class="sc-nav-menu">
-          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
-            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
-          </button>
-          <ul class="sc-nav-submenu">
-            <li><a class="" href="devices.html">Devices</a></li>
-            <li><a class="" href="software.html">Software</a></li>
-            <li><a class="" href="exchanges.html">Exchanges</a></li>
-          </ul>
-        </li><li><a class=" " href="glossary.html"><span>Glossary</span></a></li><li><a class=" " href="dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="contact.html"><span>Get Help</span></a></li></ul>
-            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
-          </nav>
-        </div>
-      </header></div>
-    <main id="main-content"><div class="sc-workshop">
+<body class="is-offline-copy">
+
+<header class="file-banner">
+  <div class="wrap file-banner-inner">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div>
+      <strong>Entropy Workshop</strong>
+      <span>A single file from selfcustody.ca. It fetches nothing, and works with the network off.</span>
+    </div>
+  </div>
+</header>
+
 <section class="hero">
   <div class="wrap hero-shell">
     <div class="hero-copy">
@@ -1092,7 +1045,7 @@
       <ul class="status">
         <li id="selftest">Running self-test&hellip;</li>
         <li id="where">Checking&hellip;</li>
-        
+        <li class="good">No network requests</li>
       </ul>
     </div>
 
@@ -1129,7 +1082,7 @@
       <p class="verify">Running from: <code id="dl-path"></code></p>
     </div>
 
-    <details class="verify-details">
+    <details class="verify-details" open>
       <summary>Verify this file against the published checksum</summary>
       <div class="verify-body">
         <p class="verify">Check that this is the file that was published, rather than whatever happened to arrive:</p>
@@ -1471,44 +1424,14 @@
 <p class="colophon">Part of <strong>SelfCustody.ca</strong>. The full procedure and the rules that matter more than this tool does are in <a href="guides/dice-entropy.html" data-site-link>Roll the dice</a> and <a href="guides/quickstart.html" data-site-link>Intro to Self Custody</a>.</p>
 
 </main>
-</div></main>
-    <div id="site-footer">
-    <footer class="sc-footer">
-      <div class="container">
-        <div class="row g-4">
-          <div class="col-lg-5">
-            <h3 class="sc-footer-brand"><img src="assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
-            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
-          </div>
-          <div class="col-12 col-lg-4 sc-footer-explore">
-            <h4>Explore</h4>
-            <ul class="sc-footer-links sc-footer-links-grid">
-              <li><a href="index.html">Home</a></li>
-              <li><a href="guides.html">Guides</a></li>
-              <li><a href="devices.html">Devices</a></li>
-              <li><a href="software.html">Software</a></li>
-              <li><a href="exchanges.html">Exchanges</a></li>
-              <li><a href="glossary.html">Glossary</a></li>
-              <li><a href="dashboard.html">Dashboard</a></li>
-              <li><a href="contact.html">Get Help</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-3">
-            <aside class="sc-footer-warning" aria-label="Important security warning">
-              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
-              <h4>Important!</h4>
-              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
-            </aside>
-          </div>
-        </div>
-        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
-          <span>© <span data-year>2026</span> SelfCustody.ca</span>
-          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
-        </div>
-      </div>
-    </footer></div>
-  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4888"></script>
+
+<footer class="file-footer">
+  <div class="wrap">
+    <p class="file-footer-note"><strong>Never type an existing recovery phrase into any page</strong>, including this one &mdash; which is why there is nowhere here to do it. This file is education, not financial advice.</p>
+    <p class="file-footer-note">Published at selfcustody.ca/entropy-offline.html, where the checksum sits beside it &middot; &copy; <span id="year">2026</span> SelfCustody.ca</p>
+  </div>
+</footer>
+
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file
@@ -2985,7 +2908,7 @@ const EntropyCore = (() => {
 <script>
 'use strict';
 (function () {
-  const OFFLINE_BUILD = false;
+  const OFFLINE_BUILD = true;
   const C = EntropyCore;
   const WORDLIST_RAW = 'abandon ability able about above absent absorb abstract absurd abuse access accident account accuse achieve acid acoustic acquire across act action actor actress actual adapt add addict address adjust admit adult advance advice aerobic affair afford afraid again age agent agree ahead aim air airport aisle alarm album alcohol alert alien all alley allow almost alone alpha already also alter always amateur amazing among amount amused analyst anchor ancient anger angle angry animal ankle announce annual another answer antenna antique anxiety any apart apology appear apple approve april arch arctic area arena argue arm armed armor army around arrange arrest arrive arrow art artefact artist artwork ask aspect assault asset assist assume asthma athlete atom attack attend attitude attract auction audit august aunt author auto autumn average avocado avoid awake aware away awesome awful awkward axis baby bachelor bacon badge bag balance balcony ball bamboo banana banner bar barely bargain barrel base basic basket battle beach bean beauty because become beef before begin behave behind believe below belt bench benefit best betray better between beyond bicycle bid bike bind biology bird birth bitter black blade blame blanket blast bleak bless blind blood blossom blouse blue blur blush board boat body boil bomb bone bonus book boost border boring borrow boss bottom bounce box boy bracket brain brand brass brave bread breeze brick bridge brief bright bring brisk broccoli broken bronze broom brother brown brush bubble buddy budget buffalo build bulb bulk bullet bundle bunker burden burger burst bus business busy butter buyer buzz cabbage cabin cable cactus cage cake call calm camera camp can canal cancel candy cannon canoe canvas canyon capable capital captain car carbon card cargo carpet carry cart case cash casino castle casual cat catalog catch category cattle caught cause caution cave ceiling celery cement census century cereal certain chair chalk champion change chaos chapter charge chase chat cheap check cheese chef cherry chest chicken chief child chimney choice choose chronic chuckle chunk churn cigar cinnamon circle citizen city civil claim clap clarify claw clay clean clerk clever click client cliff climb clinic clip clock clog close cloth cloud clown club clump cluster clutch coach coast coconut code coffee coil coin collect color column combine come comfort comic common company concert conduct confirm congress connect consider control convince cook cool copper copy coral core corn correct cost cotton couch country couple course cousin cover coyote crack cradle craft cram crane crash crater crawl crazy cream credit creek crew cricket crime crisp critic crop cross crouch crowd crucial cruel cruise crumble crunch crush cry crystal cube culture cup cupboard curious current curtain curve cushion custom cute cycle dad damage damp dance danger daring dash daughter dawn day deal debate debris decade december decide decline decorate decrease deer defense define defy degree delay deliver demand demise denial dentist deny depart depend deposit depth deputy derive describe desert design desk despair destroy detail detect develop device devote diagram dial diamond diary dice diesel diet differ digital dignity dilemma dinner dinosaur direct dirt disagree discover disease dish dismiss disorder display distance divert divide divorce dizzy doctor document dog doll dolphin domain donate donkey donor door dose double dove draft dragon drama drastic draw dream dress drift drill drink drip drive drop drum dry duck dumb dune during dust dutch duty dwarf dynamic eager eagle early earn earth easily east easy echo ecology economy edge edit educate effort egg eight either elbow elder electric elegant element elephant elevator elite else embark embody embrace emerge emotion employ empower empty enable enact end endless endorse enemy energy enforce engage engine enhance enjoy enlist enough enrich enroll ensure enter entire entry envelope episode equal equip era erase erode erosion error erupt escape essay essence estate eternal ethics evidence evil evoke evolve exact example excess exchange excite exclude excuse execute exercise exhaust exhibit exile exist exit exotic expand expect expire explain expose express extend extra eye eyebrow fabric face faculty fade faint faith fall false fame family famous fan fancy fantasy farm fashion fat fatal father fatigue fault favorite feature february federal fee feed feel female fence festival fetch fever few fiber fiction field figure file film filter final find fine finger finish fire firm first fiscal fish fit fitness fix flag flame flash flat flavor flee flight flip float flock floor flower fluid flush fly foam focus fog foil fold follow food foot force forest forget fork fortune forum forward fossil foster found fox fragile frame frequent fresh friend fringe frog front frost frown frozen fruit fuel fun funny furnace fury future gadget gain galaxy gallery game gap garage garbage garden garlic garment gas gasp gate gather gauge gaze general genius genre gentle genuine gesture ghost giant gift giggle ginger giraffe girl give glad glance glare glass glide glimpse globe gloom glory glove glow glue goat goddess gold good goose gorilla gospel gossip govern gown grab grace grain grant grape grass gravity great green grid grief grit grocery group grow grunt guard guess guide guilt guitar gun gym habit hair half hammer hamster hand happy harbor hard harsh harvest hat have hawk hazard head health heart heavy hedgehog height hello helmet help hen hero hidden high hill hint hip hire history hobby hockey hold hole holiday hollow home honey hood hope horn horror horse hospital host hotel hour hover hub huge human humble humor hundred hungry hunt hurdle hurry hurt husband hybrid ice icon idea identify idle ignore ill illegal illness image imitate immense immune impact impose improve impulse inch include income increase index indicate indoor industry infant inflict inform inhale inherit initial inject injury inmate inner innocent input inquiry insane insect inside inspire install intact interest into invest invite involve iron island isolate issue item ivory jacket jaguar jar jazz jealous jeans jelly jewel job join joke journey joy judge juice jump jungle junior junk just kangaroo keen keep ketchup key kick kid kidney kind kingdom kiss kit kitchen kite kitten kiwi knee knife knock know lab label labor ladder lady lake lamp language laptop large later latin laugh laundry lava law lawn lawsuit layer lazy leader leaf learn leave lecture left leg legal legend leisure lemon lend length lens leopard lesson letter level liar liberty library license life lift light like limb limit link lion liquid list little live lizard load loan lobster local lock logic lonely long loop lottery loud lounge love loyal lucky luggage lumber lunar lunch luxury lyrics machine mad magic magnet maid mail main major make mammal man manage mandate mango mansion manual maple marble march margin marine market marriage mask mass master match material math matrix matter maximum maze meadow mean measure meat mechanic medal media melody melt member memory mention menu mercy merge merit merry mesh message metal method middle midnight milk million mimic mind minimum minor minute miracle mirror misery miss mistake mix mixed mixture mobile model modify mom moment monitor monkey monster month moon moral more morning mosquito mother motion motor mountain mouse move movie much muffin mule multiply muscle museum mushroom music must mutual myself mystery myth naive name napkin narrow nasty nation nature near neck need negative neglect neither nephew nerve nest net network neutral never news next nice night noble noise nominee noodle normal north nose notable note nothing notice novel now nuclear number nurse nut oak obey object oblige obscure observe obtain obvious occur ocean october odor off offer office often oil okay old olive olympic omit once one onion online only open opera opinion oppose option orange orbit orchard order ordinary organ orient original orphan ostrich other outdoor outer output outside oval oven over own owner oxygen oyster ozone pact paddle page pair palace palm panda panel panic panther paper parade parent park parrot party pass patch path patient patrol pattern pause pave payment peace peanut pear peasant pelican pen penalty pencil people pepper perfect permit person pet phone photo phrase physical piano picnic picture piece pig pigeon pill pilot pink pioneer pipe pistol pitch pizza place planet plastic plate play please pledge pluck plug plunge poem poet point polar pole police pond pony pool popular portion position possible post potato pottery poverty powder power practice praise predict prefer prepare present pretty prevent price pride primary print priority prison private prize problem process produce profit program project promote proof property prosper protect proud provide public pudding pull pulp pulse pumpkin punch pupil puppy purchase purity purpose purse push put puzzle pyramid quality quantum quarter question quick quit quiz quote rabbit raccoon race rack radar radio rail rain raise rally ramp ranch random range rapid rare rate rather raven raw razor ready real reason rebel rebuild recall receive recipe record recycle reduce reflect reform refuse region regret regular reject relax release relief rely remain remember remind remove render renew rent reopen repair repeat replace report require rescue resemble resist resource response result retire retreat return reunion reveal review reward rhythm rib ribbon rice rich ride ridge rifle right rigid ring riot ripple risk ritual rival river road roast robot robust rocket romance roof rookie room rose rotate rough round route royal rubber rude rug rule run runway rural sad saddle sadness safe sail salad salmon salon salt salute same sample sand satisfy satoshi sauce sausage save say scale scan scare scatter scene scheme school science scissors scorpion scout scrap screen script scrub sea search season seat second secret section security seed seek segment select sell seminar senior sense sentence series service session settle setup seven shadow shaft shallow share shed shell sheriff shield shift shine ship shiver shock shoe shoot shop short shoulder shove shrimp shrug shuffle shy sibling sick side siege sight sign silent silk silly silver similar simple since sing siren sister situate six size skate sketch ski skill skin skirt skull slab slam sleep slender slice slide slight slim slogan slot slow slush small smart smile smoke smooth snack snake snap sniff snow soap soccer social sock soda soft solar soldier solid solution solve someone song soon sorry sort soul sound soup source south space spare spatial spawn speak special speed spell spend sphere spice spider spike spin spirit split spoil sponsor spoon sport spot spray spread spring spy square squeeze squirrel stable stadium staff stage stairs stamp stand start state stay steak steel stem step stereo stick still sting stock stomach stone stool story stove strategy street strike strong struggle student stuff stumble style subject submit subway success such sudden suffer sugar suggest suit summer sun sunny sunset super supply supreme sure surface surge surprise surround survey suspect sustain swallow swamp swap swarm swear sweet swift swim swing switch sword symbol symptom syrup system table tackle tag tail talent talk tank tape target task taste tattoo taxi teach team tell ten tenant tennis tent term test text thank that theme then theory there they thing this thought three thrive throw thumb thunder ticket tide tiger tilt timber time tiny tip tired tissue title toast tobacco today toddler toe together toilet token tomato tomorrow tone tongue tonight tool tooth top topic topple torch tornado tortoise toss total tourist toward tower town toy track trade traffic tragic train transfer trap trash travel tray treat tree trend trial tribe trick trigger trim trip trophy trouble truck true truly trumpet trust truth try tube tuition tumble tuna tunnel turkey turn turtle twelve twenty twice twin twist two type typical ugly umbrella unable unaware uncle uncover under undo unfair unfold unhappy uniform unique unit universe unknown unlock until unusual unveil update upgrade uphold upon upper upset urban urge usage use used useful useless usual utility vacant vacuum vague valid valley valve van vanish vapor various vast vault vehicle velvet vendor venture venue verb verify version very vessel veteran viable vibrant vicious victory video view village vintage violin virtual virus visa visit visual vital vivid vocal voice void volcano volume vote voyage wage wagon wait walk wall walnut want warfare warm warrior wash wasp waste water wave way wealth weapon wear weasel weather web wedding weekend weird welcome west wet whale what wheat wheel when where whip whisper wide width wife wild will win window wine wing wink winner winter wire wisdom wise wish witness wolf woman wonder wood wool word work world worry worth wrap wreck wrestle wrist write wrong yard year yellow you young youth zebra zero zone zoo';
 

@@ -29,6 +29,32 @@ const ABANDON_24 = 'abandon '.repeat(23) + 'art';
 const REAL_ROLLS = '544114545535114225212651531526245631146421553114213555633324324654465346361515622414366414163654633';
 const REAL_FLIPS = 'THTTTHTHTHTHHHTTHHTTTTHTTHHHTHHHTHHTHHHTTHTHTHTHTHHTHTHTTTTHTTTTTTTTTHHHTTTTHTHTHTTTTHTTTHTHTTTHHTHTTTHHHTTTHHHTHTHTTHTHTTHTHTHTTTHHHTHHHTHTHHTTTTHHTHTTHTHHHHHTHTHTTTHHHHHTTHHHHHHHHTHHTHTTHHHHTHHTHTTTHTHTTTHTHTTTHHTHTHHTTTTTHTTHHTTHHTTTTTTHHHHHHHTHHHTHHHHH';
 
+/* Sixty-nine entries -- 23 words of octal, hex, hex -- from a CSPRNG, with
+   the octal column held to 1-8 and the hex columns to 0-F. */
+const REAL_OCTAHEX = '5B3172E48C6F19A2D7403E8B5C1'
+  + '69F2A83D07E4B1C596A2F38D0E7'
+  + '4B1A6C39F28E5D07B4A1936FC2E';
+
+/* A real 25-card draw from a CSPRNG-shuffled deck, pinned so the suite stays
+   deterministic. It has to be accepted: a check that refused genuine shuffles
+   would teach people to redraw until they passed, which is the one thing the
+   dice guide says never to do. */
+const REAL_DRAW = '7H2CTS4DJHAS9C6SKD3H8DQCTC5H2SJD9HKC4S7DAH6C3STD8SQH5C';
+
+/* iancoleman/bip39, src/js/entropy.js, eventBits["card"] -- transcribed from
+   the published source rather than from this implementation. */
+const COLEMAN_CARDS = [
+  ['AC','00000'],['2C','00001'],['3C','00010'],['4C','00011'],['5C','00100'],['6C','00101'],
+  ['7C','00110'],['8C','00111'],['9C','01000'],['TC','01001'],['JC','01010'],['QC','01011'],
+  ['KC','01100'],['AD','01101'],['2D','01110'],['3D','01111'],['4D','10000'],['5D','10001'],
+  ['6D','10010'],['7D','10011'],['8D','10100'],['9D','10101'],['TD','10110'],['JD','10111'],
+  ['QD','11000'],['KD','11001'],['AH','11010'],['2H','11011'],['3H','11100'],['4H','11101'],
+  ['5H','11110'],['6H','11111'],['7H','0000'],['8H','0001'],['9H','0010'],['TH','0011'],
+  ['JH','0100'],['QH','0101'],['KH','0110'],['AS','0111'],['2S','1000'],['3S','1001'],
+  ['4S','1010'],['5S','1011'],['6S','1100'],['7S','1101'],['8S','1110'],['9S','1111'],
+  ['TS','00'],['JS','01'],['QS','10'],['KS','11']
+];
+
 export const VECTORS = [
   /* ---- FIPS 180-4, RFC 1320 and RFC 4231 ---- */
   ['sha256 of empty', () => C.hex(C.sha256(C.utf8(''))),
@@ -71,6 +97,71 @@ export const VECTORS = [
     return `${C.hex(node.key)} ${C.hex(node.chainCode)}`;
   }, '471b76e389e528d6de6d816857e012c5455051cad6660850e58372a6c3e6e7c8 '
    + 'c783e67b921d2beb8f6b389cc646d7263b4145701dadd2161548a8b078e65e9e'],
+
+  /* ---- the master fingerprint ----
+
+     BIP32's first test vector gives the parent fingerprint of m/0' as
+     3442193e, and the parent of m/0' is the master key -- so that value is the
+     master fingerprint for its seed, quoted from the specification rather than
+     from this code. */
+  ['bip32 master fingerprint',
+    () => C.masterFingerprint(C.fromHex('000102030405060708090a0b0c0d0e0f')), '3442193E'],
+  ['a passphrase changes the fingerprint', () => {
+    const args = { method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST };
+    const plain = C.deriveSeed(args);
+    const salted = C.deriveSeed({ ...args, passphrase: 'test' });
+    return [
+      plain.fingerprint === plain.baseFingerprint,
+      salted.fingerprint !== salted.baseFingerprint,
+      salted.baseFingerprint === plain.fingerprint
+    ].join(' ');
+  }, 'true true true'],
+  ['the fingerprint is eight hex digits', () => {
+    const { fingerprint } = C.deriveSeed({ method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST });
+    return /^[0-9A-F]{8}$/.test(fingerprint) ? 'eight upper hex' : fingerprint;
+  }, 'eight upper hex'],
+
+  /* ---- extended public keys ----
+
+     BIP32 publishes the master and first-child xpub for its own seed; BIP49
+     and BIP84 publish the account key for the abandon-about mnemonic in their
+     own prefixes. All four are quoted verbatim, so the version bytes, the
+     depth, the parent fingerprint and the child index are all pinned -- get
+     any one of them wrong and the string still looks like an xpub. */
+  ['bip32 master xpub',
+    () => C.encodeXpub(C.masterKey(C.fromHex('000102030405060708090a0b0c0d0e0f'))),
+    'xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8'],
+  ['bip32 xpub for m/0h',
+    () => C.encodeXpub(C.derive(C.masterKey(C.fromHex('000102030405060708090a0b0c0d0e0f')), "m/0'")),
+    'xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw'],
+  ['bip49 account ypub', () => accountKey("m/49'/0'/0'", 'nested'),
+    'ypub6Ww3ibxVfGzLrAH1PNcjyAWenMTbbAosGNB6VvmSEgytSER9azLDWCxoJwW7Ke7icmizBMXrzBx9979FfaHxHcrArf3zbeJJJUZPf663zsP'],
+  ['bip84 account zpub', () => accountKey("m/84'/0'/0'", 'native'),
+    'zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs'],
+  /* The same key in two prefixes. SLIP-132 changes four version bytes and
+     nothing else, which is why a wallet showing zpub and one showing xpub can
+     look like a mismatch and not be one. */
+  ['slip-132 prefixes are the same key in different clothes', () => {
+    const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'");
+    const asX = C.encodeXpub(node);
+    const asZ = C.encodeXpub(node, C.ADDRESS_TYPES.native.xpubVersion);
+    return [asX.slice(0, 4), asZ.slice(0, 4), asX === asZ ? 'same' : 'different'].join(' ');
+  }, 'xpub zpub different'],
+  ['taproot has no prefix of its own',
+    () => C.ADDRESS_TYPES.taproot.xpubVersion === C.XPUB_VERSION ? 'plain xpub' : 'other',
+    'plain xpub'],
+  ['the account key is handed back with the addresses', () => {
+    const out = C.deriveAddresses({
+      seed: C.mnemonicToSeed(ABANDON_12.split(' ')), addressType: 'native', path: "m/84'/0'/0'"
+    });
+    return [out.xpub.slice(0, 4), out.typedXpub.slice(0, 4)].join(' ');
+  }, 'xpub zpub'],
+  ['legacy needs no second form', () => {
+    const out = C.deriveAddresses({
+      seed: C.mnemonicToSeed(ABANDON_12.split(' ')), addressType: 'legacy', path: "m/44'/0'/0'"
+    });
+    return out.typedXpub === null ? 'one form' : 'two';
+  }, 'one form'],
 
   /* ---- addresses, from the test vectors in BIP44/49/84/86 ---- */
   ['bip44 legacy receive', () => addressFor('legacy', "m/44'/0'/0'", 0),
@@ -137,11 +228,437 @@ export const VECTORS = [
 
   ['dice rolls are the sha256 of the digits as typed',
     () => C.hex(C.METHODS.dice.entropy('123456'.repeat(16) + '123', 32)),
-    C.hex(C.sha256(C.utf8('123456'.repeat(16) + '123')))]
+    C.hex(C.sha256(C.utf8('123456'.repeat(16) + '123')))],
+
+  /* COLDCARD's own documentation works this example: rolling 123456 gives a
+     seed value of sha256('123456'). It is the only vendor-published vector
+     this page has for a dice conversion, so it is pinned verbatim. */
+  ['coldcard: the worked example from its docs',
+    () => C.hex(C.METHODS.dice.entropy('123456', 32)),
+    '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'],
+
+  /* ---- rewriting a 6 to a 0 ----
+
+     The BIP39 HTML tool and Keystone both work in base 6, so a rolled 6
+     becomes a 0 before hashing. Same hash, different digits going in. */
+  ['six is rewritten as zero before hashing',
+    () => C.hex(C.METHODS.dicezero.entropy('123456', 32)),
+    C.hex(C.sha256(C.utf8('123450')))],
+  ['rewriting changes the wallet',
+    () => C.hex(C.METHODS.dicezero.entropy(REAL_ROLLS, 32))
+      === C.hex(C.METHODS.dice.entropy(REAL_ROLLS, 32)) ? 'same' : 'different',
+    'different'],
+  ['rolls without a six hash identically either way',
+    () => C.hex(C.METHODS.dicezero.entropy('12345'.repeat(20), 32))
+      === C.hex(C.METHODS.dice.entropy('12345'.repeat(20), 32)) ? 'same' : 'different',
+    'same'],
+
+  /* ---- the bit table ----
+
+     The mapping is the one in entropy.js in the BIP39 HTML tool, which works
+     in base 6 -- a rolled 6 is a 0 there -- and gives 0:00 1:01 2:10 3:11
+     4:0 5:1. Read back as rolled faces that is 1:01 2:10 3:11 4:0 5:1 6:00. */
+  ['bit table: every face maps to its published code',
+    () => C.diceBits('123456'), '0110110100'],
+  ['bit table: 4s and 5s carry one bit each',
+    () => C.diceBits('4545'), '0101'],
+  ['bit table: a rolled six reads as base-6 zero',
+    () => C.diceBits('6') === C.diceBits('0') ? 'same' : 'different', 'same'],
+  /* The codes are NOT prefix-free, whatever the method gets called elsewhere:
+     "0" opens both "00" and "01". Pinned so nobody later "fixes" the table
+     into something self-delimiting and silently moves every wallet. */
+  ['bit table: the codes are not prefix free',
+    () => {
+      const codes = ['00', '01', '10', '11', '0', '1'];
+      return codes.some((a, i) => codes.some((b, j) => i !== j && b.startsWith(a)))
+        ? 'not prefix free' : 'prefix free';
+    }, 'not prefix free'],
+  ['bit table: 128 rolls of 6 give 256 zero bits',
+    () => C.hex(C.METHODS.dicebits.entropy('6'.repeat(128), 32)), '00'.repeat(32)],
+  ['bit table: 128 rolls of 3 give 256 one bits',
+    () => C.hex(C.METHODS.dicebits.entropy('3'.repeat(128), 32)), 'ff'.repeat(32)],
+  /* Raw mode keeps the last whole 32 bits and discards from the front, so a
+     leading roll that overshoots the target is dropped rather than the
+     trailing one. 129 threes are 258 bits; the first two go. */
+  ['bit table: the leading bits are the ones discarded',
+    () => C.hex(C.METHODS.dicebits.entropy('6' + '3'.repeat(128), 32)), 'ff'.repeat(32)],
+  ['bit table: hashing the same rolls gives something else',
+    () => C.hex(C.METHODS.dicebits.entropy(REAL_ROLLS.repeat(2), 32))
+      === C.hex(C.METHODS.dice.entropy(REAL_ROLLS.repeat(2), 32)) ? 'same' : 'different',
+    'different'],
+  ['bit table: rolls past the bit count are refused, not trimmed', () => {
+    try {
+      C.deriveSeed({ method: 'dicebits', input: '1'.repeat(200), words: 24, wordlist: WORDLIST });
+      return 'accepted';
+    } catch { return 'refused'; }
+  }, 'refused'],
+  ['bit table: one bit of overshoot is allowed', () => {
+    /* Landing exactly on 256 is not always possible: 127 two-bit faces plus a
+       one-bit face is 255, and the next roll carries the count to either 256
+       or 257 depending on its face. Both must be accepted, or a legitimate
+       sequence would be unusable. */
+    const short = '1'.repeat(127) + '4';                       /* 255 bits */
+    const at256 = C.progress({ method: 'dicebits', input: short + '4', words: 24 });
+    const at257 = C.progress({ method: 'dicebits', input: short + '1', words: 24 });
+    return [at256.have, at256.ready, at257.have, at257.ready].join(' ');
+  }, '256 true 257 true'],
+  ['bit table: two bits of overshoot is not', () => {
+    const at258 = C.progress({ method: 'dicebits', input: '1'.repeat(129), words: 24 });
+    return [at258.have, at258.ready, at258.over].join(' ');
+  }, '258 false true'],
+  ['bit table: rolls short of the bit count are refused', () => {
+    try {
+      C.deriveSeed({ method: 'dicebits', input: '4'.repeat(200), words: 24, wordlist: WORDLIST });
+      return 'accepted';
+    } catch { return 'refused'; }
+  }, 'refused'],
+
+  /* ---- the BitBox02 lookup table ----
+
+     Cells quoted from BitBox's published lookup table PDF. Corners first, so
+     a mistake in the weighting of any one die shows up rather than cancelling
+     out in the middle of the range. */
+  ['bitbox: first cell of the table', () => wordFor('11111H'), 'abandon'],
+  ['bitbox: the coin is the last bit', () => wordFor('11111T'), 'ability'],
+  ['bitbox: die five outranks the coin', () => wordFor('11114T'), 'abstract'],
+  ['bitbox: row 1234 of page one', () => wordFor('12341H'), 'brand'],
+  ['bitbox: page two starts at divorce', () => wordFor('21111H'), 'divorce'],
+  ['bitbox: row 3222 of page three', () => wordFor('32221H'), 'never'],
+  ['bitbox: last cell of the table', () => wordFor('44444T'), 'zoo'],
+
+  /* 23 words of all-ones dice and heads is 253 zero bits, so the eight valid
+     endings are the eight 24-word phrases whose entropy is all zeros bar the
+     last three bits. The first of them is BIP39's own all-zero vector, which
+     ties this table to the published standard rather than to itself. */
+  ['bitbox: 23 rolled words from the first cell',
+    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST }).words.join(' '),
+    'abandon '.repeat(22) + 'abandon'],
+  ['bitbox: the eight endings offered for zero entropy',
+    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST })
+      .options.map(o => o.word).join(' '),
+    'art diesel false kite organ ready surface trouble'],
+  ['bitbox: the first ending is the bip39 all-zero phrase',
+    () => C.deriveSeed({ method: 'bitbox', input: '11111H'.repeat(23), words: 24, wordlist: WORDLIST, choice: 0 })
+      .mnemonic.join(' '),
+    ABANDON_24],
+  ['bitbox: every offered ending passes the bip39 checksum',
+    () => {
+      const draft = C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST });
+      return draft.options.every((opt, i) => {
+        const built = C.entropyToMnemonic(C.fromHex(opt.entropy), WORDLIST);
+        return built.join(' ') === [...draft.words, opt.word].join(' ')
+          && C.deriveSeed({ method: 'bitbox', input: '11111H'.repeat(23), words: 24, wordlist: WORDLIST, choice: i })
+            .mnemonic.join(' ') === built.join(' ');
+      }) ? 'all valid' : 'mismatch';
+    }, 'all valid'],
+  ['bitbox: a coin where a die belongs is refused', () => {
+    try {
+      C.lookupDraft({ method: 'bitbox', input: 'H1111H' + '11111H'.repeat(22), wordlist: WORDLIST });
+      return 'accepted';
+    } catch { return 'refused'; }
+  }, 'refused'],
+  ['bitbox: a short sequence is refused', () => {
+    try { C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    catch { return 'refused'; }
+  }, 'refused'],
+
+  /* Every method must be checkable. A method with no rules entry throws from
+     assessEntropy rather than returning a verdict, and because that runs
+     before the page's own try/catch it escaped as a silent failure -- the
+     previous wallet stayed on screen looking like the answer. */
+  ['every method has an entropy rule', () => Object.keys(C.METHODS).filter(m => {
+    try { C.assessEntropy({ method: m, input: '1' }); return false; } catch { return true; }
+  }).join(',') || 'all covered', 'all covered'],
+  ['every method survives a full check', () => Object.keys(C.METHODS).filter(m => {
+    const sample = m === 'coin' ? REAL_FLIPS : m === 'bitbox' ? '12341H'.repeat(23) : REAL_ROLLS;
+    try { C.assessEntropy({ method: m, input: sample }); return false; } catch { return true; }
+  }).join(',') || 'all covered', 'all covered'],
+
+  /* ---- one octal and two hex dice ----
+
+     Three dice are 3 + 4 + 4 = 11 bits, which is one word index exactly. The
+     codes below are cells read off the published dictionary at entropy.page,
+     sampled the length of it and at both ends, because the one thing that
+     could silently go wrong here is the leading digit: the octal die is
+     numbered 1 to 8, so the dictionary opens at 100 rather than 000 and every
+     block is one higher than the multiplier it stands for. */
+  ['octahex: the dictionary opens at 100', () => wordAt('100'), 'abandon'],
+  ['octahex: the second hex die is the low digit', () => wordAt('101'), 'ability'],
+  ['octahex: the first hex die is the middle digit', () => wordAt('110'), 'acoustic'],
+  ['octahex: the last cell of the first block', () => wordAt('1FF'), 'cable'],
+  ['octahex: the second block starts where the first ends', () => wordAt('200'), 'cactus'],
+  ['octahex: a cell from the middle of the range', () => wordAt('6F0'), 'safe'],
+  ['octahex: the seventh block', () => wordAt('700'), 'scale'],
+  ['octahex: the eighth block', () => wordAt('800'), 'theme'],
+  ['octahex: the dictionary ends at 8FF', () => wordAt('8FF'), 'zoo'],
+  ['octahex: an octal die read as 0-7 would shift every word', () => {
+    /* The mistake this method invites. 100 is the first word; treating the
+       leading digit as the multiplier itself lands 256 places away. */
+    const right = C.METHODS.octahex.indexOf('100');
+    const wrong = Number('1') * 256 + 0 + 0;
+    return `${right} ${wrong}`;
+  }, '0 256'],
+
+  ['octahex: 69 entries make 23 words',
+    () => [C.limits('octahex', 24).least, C.METHODS.octahex.rolled].join(' '), '69 23'],
+  ['octahex: 23 rolled words from the first cell',
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST }).words.join(' '),
+    'abandon '.repeat(22) + 'abandon'],
+  /* 23 words of the first cell is 253 zero bits, so the eight endings are the
+     same eight the BitBox table offers for the same entropy, and the first of
+     them is BIP39's published all-zero phrase. Two unrelated dice methods
+     landing on the same standard vector is the check worth having. */
+  ['octahex: the eight endings for zero entropy',
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST })
+      .options.map(o => o.word).join(' '),
+    'art diesel false kite organ ready surface trouble'],
+  ['octahex: the first ending is the bip39 all-zero phrase',
+    () => C.deriveSeed({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST, choice: 0 })
+      .mnemonic.join(' '),
+    ABANDON_24],
+  ['octahex: the octal die picks the ending', () => {
+    /* The deck says to roll the octal die once more and take that option
+       number, so face 1 is the first ending and face 8 the last. */
+    const draft = C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST });
+    return [draft.options[0].word, draft.options[7].word].join(' ');
+  }, 'art trouble'],
+  ['octahex: a 0 on the octal die is refused', () => {
+    try { C.lookupDraft({ method: 'octahex', input: '000' + '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    catch { return 'refused'; }
+  }, 'refused'],
+  ['octahex: a 9 on the octal die is refused', () => {
+    try { C.lookupDraft({ method: 'octahex', input: '900' + '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    catch { return 'refused'; }
+  }, 'refused'],
+  ['octahex: a short sequence is refused', () => {
+    try { C.lookupDraft({ method: 'octahex', input: '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    catch { return 'refused'; }
+  }, 'refused'],
+  ['octahex: the keypad allows the octal die only in first place',
+    () => [C.nextAllowed('octahex', ''), C.nextAllowed('octahex', '1'), C.nextAllowed('octahex', '1A')].join(' '),
+    '12345678 0123456789ABCDEF 0123456789ABCDEF'],
+  ['octahex: a real sequence is allowed', () => refused('octahex', REAL_OCTAHEX), 'allowed'],
+  ['octahex: refuses a repeated cell',
+    () => refused('octahex', '4C7'.repeat(23)), 'refused'],
+
+  /* ---- the derivative check ----
+
+     A sequence can use every face the right number of times, never repeat as a
+     whole, and still have been written out rather than rolled. Blocks of three
+     ascending are the clearest case: flat face counts, chi-squared of zero,
+     high LZ complexity, and a derivative of 0,0,1 forever. Krux runs the same
+     check on its own rolls. */
+  ['blocked ascending rolls are refused despite flat face counts', () => {
+    /* Every face six times, in order. Flat counts, chi-squared of nothing, no
+       repeat of the whole, high LZ complexity -- and obviously typed. Named
+       individually so a later change cannot quietly make this pass on a
+       different rule than the one it is here to pin. */
+    const blocks = Array.from({ length: 36 }, (_, i) => Math.floor(i / 6) + 1).join('').repeat(3) + '111';
+    const st = C.assessEntropy({ method: 'dice', input: blocks });
+    return [st.stats.distinct === 6, Math.round(st.stats.chi) === 0, st.ok ? 'allowed' : 'refused'].join(' ');
+  }, 'true true refused'],
+  ['the derivative leaves real rolls alone',
+    () => [refused('dice', REAL_ROLLS), refused('coin', REAL_FLIPS)].join(' '),
+    'allowed allowed'],
+  ['the derivative is not computed for coin flips',
+    () => C.derivative(['H', 'T', 'H']).length, 0],
+  ['the derivative is the gap between rolls',
+    () => C.derivative(['5', '9', '2']).join(','), '4,-7'],
+  ['the derivative can be read in another base',
+    () => C.derivative(['9', 'A', 'F'], f => parseInt(f, 16)).join(','), '1,5'],
+
+  /* ---- the ceiling ----
+
+     Entry is trimmed to what the method can actually convert, so the box never
+     holds a sequence the page will refuse on submit. */
+  ['clamp: dice stop at the ceiling',
+    () => C.clamp({ method: 'dice', input: '1'.repeat(600), words: 24 }).length, 500],
+  ['clamp: coin flips are exact, not a range',
+    () => C.clamp({ method: 'coin', input: 'H'.repeat(400), words: 24 }).length, 256],
+  ['clamp: twelve words take half the flips',
+    () => C.clamp({ method: 'coin', input: 'H'.repeat(400), words: 12 }).length, 128],
+  ['clamp: the lookup table stops on a whole word',
+    () => C.clamp({ method: 'octahex', input: '135'.repeat(40), words: 24 }).length, 69],
+  ['clamp: bitbox stops on a whole word',
+    () => C.clamp({ method: 'bitbox', input: '1234H'.repeat(60), words: 24 }).length, 138],
+  /* The bit table has no fixed roll count, so it trims at the roll that fills
+     the last bit rather than at a length. */
+  ['clamp: the bit table stops once the bits are there', () => {
+    const trimmed = C.clamp({ method: 'dicebits', input: '1'.repeat(400), words: 24 });
+    return [trimmed.length, C.diceBits(trimmed).length].join(' ');
+  }, '128 256'],
+  ['clamp: one-bit faces need more rolls to reach the same bits', () => {
+    const trimmed = C.clamp({ method: 'dicebits', input: '4'.repeat(400), words: 24 });
+    return [trimmed.length, C.diceBits(trimmed).length].join(' ');
+  }, '256 256'],
+  ['clamp: anything already inside the ceiling is untouched',
+    () => C.clamp({ method: 'dice', input: REAL_ROLLS, words: 24 }), REAL_ROLLS],
+  ['clamp: what it returns always converts', () => {
+    const trimmed = C.clamp({ method: 'coin', input: 'H'.repeat(400), words: 24 });
+    try {
+      C.deriveSeed({ method: 'coin', input: trimmed, words: 24, wordlist: WORDLIST });
+      return 'converts';
+    } catch (err) { return 'refused: ' + err.message; }
+  }, 'converts'],
+
+  /* ---- the passphrase ----
+
+     BIP39's own vector already pins the seed for "TREZOR" above. What matters
+     to this page is the consequence: the words do not change, so a passphrase
+     mismatch looks exactly like a device converting dice differently. */
+  ['passphrase leaves the recovery words alone', () => {
+    const args = { method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST };
+    const plain = C.deriveSeed(args);
+    const salted = C.deriveSeed({ ...args, passphrase: 'test' });
+    return plain.mnemonic.join(' ') === salted.mnemonic.join(' ')
+      && C.hex(plain.seed) !== C.hex(salted.seed) ? 'same words, different seed' : 'unexpected';
+  }, 'same words, different seed'],
+  ['an empty passphrase is the same as none', () => {
+    const args = { method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST };
+    return C.hex(C.deriveSeed(args).seed) === C.hex(C.deriveSeed({ ...args, passphrase: '' }).seed)
+      ? 'identical' : 'different';
+  }, 'identical'],
+
+  /* ---- playing cards ------------------------------------------------------
+
+     The bit table is the BIP39 HTML tool's own, published in
+     src/js/entropy.js. Every one of its 52 codes is pinned below rather than
+     spot-checked: the table is generated here from a rule (five bits for the
+     first 32 cards, four for the next 16, two for the last four) and a rule
+     that is subtly wrong would still pass a handful of samples. */
+  ['cards: every code matches the published BIP39 tool table',
+    () => COLEMAN_CARDS.filter(([card, bits]) => C.cardBits(card) !== bits).length, 0],
+  ['cards: all 52 codes are pinned, not a sample',
+    () => COLEMAN_CARDS.length, 52],
+  ['cards: the first card is five bits',
+    () => C.cardBits('AC'), '00000'],
+  ['cards: the last four are two bits',
+    () => C.cardBits('TS') + ' ' + C.cardBits('KS'), '00 11'],
+  /* The codes are not prefix-free -- "00" for the ten of spades opens "00000"
+     for the ace of clubs -- exactly as the tool's dice table is not. Pinned so
+     that nobody "fixes" the table into something the tool would not agree
+     with. */
+  ['cards: the codes are deliberately not prefix-free',
+    () => C.cardBits('AC').startsWith(C.cardBits('TS')), true],
+  ['cards: a whole deck averages the published 4.46 bits',
+    () => (C.cardBits(C.CARD_DECK.join('')).length / 52).toFixed(4),
+    ((32 * 5 + 16 * 4 + 4 * 2) / 52).toFixed(4)],
+
+  /* Entropy of a draw. log2(52!) is the standard figure for a shuffled deck,
+     and the running total has to land on it exactly at 52 cards. */
+  ['cards: a full deck is log2(52!) bits',
+    () => C.cardEntropy(52).toFixed(4),
+    Array.from({ length: 52 }, (_, i) => Math.log2(i + 1)).reduce((a, b) => a + b).toFixed(4)],
+  ['cards: 225.58 bits, which is short of a 24-word seed',
+    () => C.cardEntropy(52).toFixed(2), '225.58'],
+  ['cards: 25 is the first draw to carry 128 bits',
+    () => [C.cardEntropy(24) < 128, C.cardEntropy(25) >= 128].join(),  'true,true'],
+  ['cards: 58 is the first draw to carry 256 bits',
+    () => [C.cardEntropy(57) < 256, C.cardEntropy(58) >= 256].join(), 'true,true'],
+  ['cards: the 53rd card is worth a full log2(52) again',
+    () => (C.cardEntropy(53) - C.cardEntropy(52)).toFixed(6), Math.log2(52).toFixed(6)],
+
+  /* The deck itself: drawn cards cannot come back until it is exhausted. */
+  ['cards: a fresh deck offers 52',
+    () => C.cardsLeft('').length, 52],
+  ['cards: a drawn card is not offered again',
+    () => C.cardsLeft('ASKD').includes('AS'), false],
+  ['cards: an exhausted deck comes back whole',
+    () => C.cardsLeft(C.CARD_DECK.join('')).length, 52],
+  ['cards: after a rank, every suit it still has',
+    () => C.nextAllowed('cards', 'A'), 'CDHS'],
+  ['cards: a suit already drawn at that rank is gone',
+    () => C.nextAllowed('cards', 'ASA'), 'CDH'],
+
+  /* Two characters an event, which every count has to respect. */
+  ['cards: a spaced transcript counts cards, not characters',
+    () => C.events('cards', 'AS KD 7H').length, 3],
+  ['cards: a rank with no suit yet is not a card',
+    () => C.events('cards', 'ASKD7').length, 2],
+  ['cards: clamp never cuts a card in half',
+    () => C.clamp({ method: 'cards', input: C.CARD_DECK.join('').repeat(3), words: 24 }).length % 2, 0],
+
+  /* Per-event entropy, for the meter. */
+  ['meter: a flip is one bit',
+    () => C.sourceEntropy({ method: 'coin', input: 'HTHT' }), 4],
+  ['meter: 99 rolls of a d6 fall just short of 256 bits',
+    () => C.sourceEntropy({ method: 'dice', input: '4'.repeat(99) }).toFixed(1), '255.9'],
+  ['meter: an octal die and two hex dice are 11 bits',
+    () => C.sourceEntropy({ method: 'octahex', input: '1AB' }), 11],
+
+  /* The fabrication check. Cards defeat chi-squared and LZ entirely, so what
+     is left has to carry the whole load -- these pin that it does. */
+  ['cards: a real shuffle is accepted',
+    () => C.assessEntropy({ method: 'cards', input: REAL_DRAW }).ok, true],
+  ['cards: a deck read in order is refused',
+    () => C.assessEntropy({ method: 'cards', input: C.CARD_DECK.slice(0, 25).join('') }).ok, false],
+  ['cards: a deck read backwards is refused',
+    () => C.assessEntropy({ method: 'cards', input: C.CARD_DECK.slice(0, 25).reverse().join('') }).ok, false],
+  ['cards: dealt one whole suit at a time is refused',
+    () => C.assessEntropy({ method: 'cards',
+      input: [...C.CARD_RANKS].map(r => r + 'S').concat([...C.CARD_RANKS].map(r => r + 'H')).slice(0, 25).join('') }).ok, false],
+  ['cards: stepped by rank instead of suit is still refused',
+    () => C.assessEntropy({ method: 'cards',
+      input: [...C.CARD_RANKS].flatMap(r => [...C.CARD_SUITS].map(su => r + su)).slice(0, 25).join('') }).ok, false],
+  /* Chi-squared really is constant here, which is why it is switched off. */
+  ['cards: chi-squared cannot tell a shuffle from a sorted deck',
+    () => {
+      /* Held to the same number of cards, because the statistic is a function
+         of how many were drawn and nothing else. That is the whole problem. */
+      const n = 25;
+      const shuffled = C.events('cards', REAL_DRAW).slice(0, n);
+      const sorted = C.events('cards', C.CARD_DECK.slice(0, n).join(''));
+      return C.chiSquared(shuffled, C.CARD_DECK).toFixed(3) === C.chiSquared(sorted, C.CARD_DECK).toFixed(3);
+    }, true],
+
+  /* End to end: the entropy is SHA-256 over the cards as drawn. */
+  ['cards: the entropy is SHA-256 of the transcript',
+    () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy,
+    C.hex(C.sha256(C.utf8(REAL_DRAW)).slice(0, 16))],
+  ['cards: 25 drawn cards make a 12-word phrase',
+    () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).mnemonic.length, 12],
+  /* The tolerance is not a taste call: it is the longest code minus one, the
+     furthest a single final event can carry the total past the target. Pinned
+     so the two tables cannot drift apart from the numbers they imply. */
+  ['slack: the dice table tolerates one bit, its longest code minus one',
+    () => C.METHODS.dicebits.slack,
+    Math.max(...[...'123456'].map(f => C.diceBits(f).length)) - 1],
+  ['slack: the card table tolerates four, its longest code minus one',
+    () => C.METHODS.cardbits.slack,
+    Math.max(...C.CARD_DECK.map(c => C.cardBits(c).length)) - 1],
+  ['cards: a draw landing past the target by less than the slack is accepted',
+    () => {
+      /* Every card is worth 2, 4 or 5 bits, so a draw that is one short of 128
+         can only land between 128 and 132 -- the range the tolerance covers. */
+      let bits = 0, n = 0;
+      const deck = C.CARD_DECK.slice();
+      while (bits < 128) { bits += C.cardBits(deck[n % 52]).length; n++; }
+      return bits <= 128 + C.METHODS.cardbits.slack;
+    }, true],
+  ['cards: every method has a fabrication rule',
+    () => Object.keys(C.METHODS).filter(m => !C.assessEntropy({ method: m, input: '' })).length, 0]
 ];
+
+/* One BitBox cell, looked up the way the table is read: five dice and a coin
+   name a word outright. */
+function wordFor(group) {
+  return WORDLIST[C.bitboxIndex(group)];
+}
+
+/* One cell of the octal-and-hex dictionary, given as the three characters
+   printed beside the word. */
+function wordAt(code) {
+  return WORDLIST[C.METHODS.octahex.indexOf(code)];
+}
 
 function refused(method, input) {
   return C.assessEntropy({ method, input }).ok ? 'allowed' : 'refused';
+}
+
+/* The account-level extended key, in whichever prefix the address type uses. */
+function accountKey(path, type) {
+  const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), path);
+  return C.encodeXpub(node, C.ADDRESS_TYPES[type].xpubVersion);
 }
 
 function addressFor(type, path, branch) {
