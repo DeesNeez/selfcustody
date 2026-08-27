@@ -371,6 +371,33 @@ const EntropyCore = (() => {
     return out;
   };
 
+  /* ---- extended public keys ---------------------------------------------
+
+     78 bytes in a fixed order, base58check encoded: version, depth, parent
+     fingerprint, child index, chain code, then the compressed public key.
+
+     The version bytes are the interesting part. BIP32 defines one value, which
+     renders as "xpub". Wallets later started varying it by address type so the
+     prefix would say which kind of address the key was for -- ypub for nested
+     SegWit, zpub for native. That convention is SLIP-132, and it is not a BIP:
+     the key material is identical either way, and only the four leading bytes
+     differ. Which is why the same account shown by two honest wallets can look
+     like two different keys, and why this page shows both forms rather than
+     picking a side. */
+  const XPUB_VERSION = 0x0488b21e;
+
+  const encodeXpub = (node, version = XPUB_VERSION) => {
+    const out = new Uint8Array(78);
+    const view = new DataView(out.buffer);
+    view.setUint32(0, version, false);
+    out[4] = node.depth;
+    out.set(node.parentFingerprint, 5);
+    view.setUint32(9, node.index, false);
+    out.set(node.chainCode, 13);
+    out.set(publicKeyOf(node), 45);
+    return base58check(out);
+  };
+
   /* ---- bech32 and bech32m ----------------------------------------------- */
 
   const BECH32 = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
@@ -441,12 +468,33 @@ const EntropyCore = (() => {
 
   /* ---- BIP32 ------------------------------------------------------------ */
 
+  /* Depth, parent fingerprint and child index are carried alongside the key
+     because an extended key is not just the key -- serialising one needs to
+     say where in the tree it sits, and a wallet asked to import it will check
+     that. The master node is depth 0 with no parent and no index. */
   const masterKey = seed => {
     const I = hmacSha512(utf8('Bitcoin seed'), seed);
-    return { key: I.slice(0, 32), chainCode: I.slice(32), depth: 0 };
+    return {
+      key: I.slice(0, 32), chainCode: I.slice(32), depth: 0,
+      parentFingerprint: new Uint8Array(4), index: 0
+    };
   };
 
   const toBigInt = bytes => BigInt('0x' + hex(bytes));
+
+  /* The first four bytes of HASH160 over the compressed public key. Not a
+     commitment to anything -- just enough for a wallet to notice it has been
+     handed a key from a different tree than it expected. */
+  const publicKeyOf = node => compress(pointMul(toBigInt(node.key)));
+  const fingerprint = node => hash160(publicKeyOf(node)).slice(0, 4);
+
+  /* The eight hex digits a signing device shows to say which wallet it is
+     currently holding. It is derived from the seed, so adding a passphrase
+     changes it -- which is the whole reason devices display it: entering the
+     passphrase differently gives a different wallet, and this is the number
+     that tells you so before you fund anything. Upper case, the way COLDCARD,
+     SeedSigner and Sparrow print it. */
+  const masterFingerprint = seed => hex(fingerprint(masterKey(seed))).toUpperCase();
 
   const ckdPriv = (parent, index) => {
     const hardened = index >= 0x80000000;
@@ -458,7 +506,10 @@ const EntropyCore = (() => {
     const I = hmacSha512(parent.chainCode, data);
     const child = mod(toBigInt(I.slice(0, 32)) + toBigInt(parent.key), N);
     if (child === 0n) throw new Error('invalid child key');
-    return { key: toBytes32(child), chainCode: I.slice(32), depth: parent.depth + 1 };
+    return {
+      key: toBytes32(child), chainCode: I.slice(32), depth: parent.depth + 1,
+      parentFingerprint: fingerprint(parent), index
+    };
   };
 
   /* "m/84'/0'/0'" -> [2147483732, 2147483648, 2147483648] */
@@ -480,6 +531,7 @@ const EntropyCore = (() => {
 
   const ADDRESS_TYPES = {
     legacy: {
+      xpubVersion: 0x0488b21e, /* BIP32's own version bytes, and what every wallet understands. */
       label: 'Legacy',
       prefix: '1',
       purpose: 44,
@@ -487,6 +539,7 @@ const EntropyCore = (() => {
       encode: pub => base58check(concat(new Uint8Array([0x00]), hash160(pub)))
     },
     nested: {
+      xpubVersion: 0x049d7cb2, /* The SLIP-132 variant for nested SegWit. */
       label: 'Nested SegWit',
       prefix: '3',
       purpose: 49,
@@ -497,6 +550,7 @@ const EntropyCore = (() => {
       }
     },
     native: {
+      xpubVersion: 0x04b24746, /* The SLIP-132 variant for native SegWit. */
       label: 'Native SegWit',
       prefix: 'bc1q',
       purpose: 84,
@@ -504,6 +558,7 @@ const EntropyCore = (() => {
       encode: pub => segwitAddress('bc', 0, hash160(pub))
     },
     taproot: {
+      xpubVersion: 0x0488b21e, /* Taproot descriptors use plain xpub; there is no SLIP-132 prefix for it. */
       label: 'Taproot',
       prefix: 'bc1p',
       purpose: 86,
@@ -534,11 +589,179 @@ const EntropyCore = (() => {
 
      Neither path invents anything. Same input, same words, every time. */
 
+  /* ---- rewriting a 6 to a 0 ---------------------------------------------
+
+     The BIP39 HTML tool works in base 6, where a die's faces are 0 to 5, so
+     it rewrites every rolled 6 as a 0 before doing anything else. Keystone
+     does the same and asks for 100 rolls.
+
+     It looks like a triviality and is not. Hashing "126" and hashing "120"
+     give unrelated wallets, so a device that rewrites and a device that does
+     not will disagree on the same column of rolls even though both are
+     honestly hashing dice. */
+  const sixToZero = input => input.replace(/6/g, '0');
+
+  /* ---- the bit table ----------------------------------------------------
+
+     Also from entropy.js in the BIP39 HTML tool. Each base-6 value carries a
+     fixed bit string:
+
+       0 -> 00   1 -> 01   2 -> 10   3 -> 11   4 -> 0   5 -> 1
+
+     Written in terms of the face actually rolled, which is what a person has
+     in front of them:
+
+       1 -> 01   2 -> 10   3 -> 11   4 -> 0    5 -> 1   6 -> 00
+
+     Four faces carry two bits and two carry one, which is a deliberate trade:
+     log2(6) = 2.58 bits per roll cannot be spent as whole bits without bias,
+     so this spends (4*2 + 2*1) / 6 = 1.67 instead and keeps every bit
+     unbiased. The cost is that no fixed number of rolls fills a seed -- 128
+     rolls of 4s and 5s give 128 bits where 128 rolls of anything else give
+     256 -- so this method counts bits, not rolls.
+
+     Two things about it are easy to get wrong and both change the wallet.
+     The codes are not prefix-free -- "0" opens "00" and "01" -- so the bits
+     mean nothing without the rolls that produced them. And the tool keeps the
+     LAST whole 32 bits, discarding from the front, not the back. */
+  const DICE_BITS = { 0: '00', 1: '01', 2: '10', 3: '11', 4: '0', 5: '1', 6: '00' };
+
+  const diceBits = input => {
+    let bits = '';
+    for (const face of input) bits += DICE_BITS[face] || '';
+    return bits;
+  };
+
+  /* Bits are packed most significant first, the same order the coin path uses
+     and the same order BIP39 reads entropy in. */
+  const bitsToBytes = (bits, bytes) => {
+    const out = new Uint8Array(bytes);
+    for (let i = 0; i < bytes * 8; i++) {
+      if (bits[i] === '1') out[i >> 3] |= 0x80 >> (i & 7);
+    }
+    return out;
+  };
+
+  /* The trailing bits, matching the BIP39 tool's raw mode. */
+  const tailBits = (bits, bytes) => bitsToBytes(bits.slice(bits.length - bytes * 8), bytes);
+
+  /* ---- the BitBox02 lookup table ----------------------------------------
+
+     Five dice and a coin choose one word directly, with no hashing anywhere.
+     Faces 5 and 6 are rerolled, so each die carries exactly 4 possibilities:
+     4^5 = 1024, doubled by the coin, is 2048 -- the wordlist exactly.
+
+     The published table is laid out die 1 as the page, dice 2 to 4 as the row
+     and die 5 with the coin as the column, heads before tails. That makes the
+     first die the most significant and the coin the last bit:
+
+       (d1-1)*512 + (d2-1)*128 + (d3-1)*32 + (d4-1)*8 + (d5-1)*2 + coin
+
+     Checked against every one of the 2048 cells in BitBox's own lookup table
+     PDF, not against a sample of it.
+
+     Only 23 words are rolled. The 24th is mostly checksum and cannot be
+     chosen freely, which is why the device offers a short list of valid
+     endings instead -- see bitboxDraft. */
+  const BITBOX_GROUP = 6;
+  const BITBOX_ROLLED = 23;
+
+  const bitboxIndex = g =>
+    (Number(g[0]) - 1) * 512 +
+    (Number(g[1]) - 1) * 128 +
+    (Number(g[2]) - 1) * 32 +
+    (Number(g[3]) - 1) * 8 +
+    (Number(g[4]) - 1) * 2 +
+    (g[5] === 'T' ? 1 : 0);
+
+  const BITBOX_GROUP_SHAPE = /^[1-4]{5}[HT]$/;
+
+  /* ---- one octal and two hex dice ---------------------------------------
+
+     Eight faces is three bits and sixteen is four, so one octal die and two
+     hex dice are 3 + 4 + 4 = 11 bits thrown at once -- which is exactly one
+     BIP39 word index, with nothing left over and nothing to hash. Three dice
+     in a cup, read left to right, and the printed dictionary names the word.
+
+     The detail that matters, and the one worth getting from the artifact
+     rather than the explanation: the octal die is numbered 1 to 8, not 0 to 7.
+     The published dictionary runs from 100 for "abandon" to 8FF for "zoo", so
+     the leading digit is one more than the block it selects:
+
+       index = (octal - 1) * 256 + hex1 * 16 + hex2
+
+     Checked against cells sampled the length of that dictionary, both ends
+     included. Reading the die as 0 to 7 would shift every word by 256 places
+     and produce a wallet nobody could account for.
+
+     Like the BitBox table, only 23 words are rolled. The 24th is mostly
+     checksum, so the octal die is thrown once more and its face picks one of
+     the eight endings the device offers. */
+  const OCTAHEX_INDEX = g =>
+    (Number(g[0]) - 1) * 256 + parseInt(g[1], 16) * 16 + parseInt(g[2], 16);
+
+  /* ---- playing cards -----------------------------------------------------
+
+     Suit-major, clubs first, ace low: the order iancoleman/bip39 numbers its
+     card table in. Keeping the same order means one index serves both the
+     bit table below and the ordinal the fabrication check steps through. */
+  const CARD_RANKS = 'A23456789TJQK';
+  const CARD_SUITS = 'CDHS';
+  const CARD_DECK = (() => {
+    const deck = [];
+    for (const suit of CARD_SUITS) for (const rank of CARD_RANKS) deck.push(rank + suit);
+    return deck;
+  })();
+  const CARD_ORD = card => CARD_DECK.indexOf(card);
+
+  /* The BIP39 tool's card codes, which are not a flat six bits per card: the
+     first 32 cards get five bits, the next 16 get four, the last 4 get two.
+     That is the same variable-length trick as its dice table and carries the
+     same caveat -- "00" for the ten of spades is a prefix of "00000" for the
+     ace of clubs, so the codes cannot be read back apart. Generated from the
+     rule rather than typed out, and pinned against the published table in
+     build/tools/entropy-test.mjs so a slip in the rule cannot pass quietly. */
+  const cardCode = index =>
+    index < 32 ? index.toString(2).padStart(5, '0')
+    : index < 48 ? (index - 32).toString(2).padStart(4, '0')
+    : (index - 48).toString(2).padStart(2, '0');
+  const CARD_BITS = Object.fromEntries(CARD_DECK.map((card, i) => [card, cardCode(i)]));
+
+  const cardBits = input => {
+    let out = '';
+    for (let i = 0; i + 2 <= input.length; i += 2) out += CARD_BITS[input.slice(i, i + 2)] || '';
+    return out;
+  };
+
+  /* How much a draw is actually worth. The first card off a shuffled deck is
+     one of 52, the second one of 51, and so on -- so the total is
+     log2(52!/(52-n)!), not n x log2(52). Drawing the deck out and shuffling
+     again starts the count over, which is why the modulo is here: one deck
+     tops out at log2(52!) = 225.6 bits, short of the 256 a 24-word seed
+     needs, and the honest way to reach it is a second shuffle rather than
+     pretending the 53rd card was worth as much as the first. */
+  const LOG2 = x => Math.log(x) / Math.LN2;
+  const cardEntropy = drawn => {
+    let bits = 0;
+    for (let i = 0; i < drawn; i++) bits += LOG2(52 - (i % 52));
+    return bits;
+  };
+
+  /* Which cards are still face-down, given what has been drawn. Resets on each
+     fresh shuffle so the keypad can offer the whole deck again. */
+  const cardsLeft = input => {
+    const drawn = [];
+    for (let i = 0; i + 2 <= input.length; i += 2) drawn.push(input.slice(i, i + 2));
+    const used = new Set(drawn.slice(Math.floor(drawn.length / 52) * 52));
+    return CARD_DECK.filter(card => !used.has(card));
+  };
+
   const METHODS = {
     dice: {
       label: 'Dice',
       unit: 'roll',
       faces: '1-6',
+      keep: /[^1-6]/g,
       counts: { 12: 50, 24: 99 },
       /* Every roll goes into the hash, so rolling past the minimum genuinely
          adds to what the seed is made from -- there is no point at which an
@@ -546,15 +769,156 @@ const EntropyCore = (() => {
          a paste of something enormous. */
       extra: true,
       most: 500,
+      eventBits: LOG2(6),
       matches: 'COLDCARD, SeedSigner, Krux and Gordian all convert dice this way.',
       valid: /^[1-6]*$/,
       /* SHA-256 over the digits exactly as typed, then truncated. */
       entropy: (input, bytes) => sha256(utf8(input)).slice(0, bytes)
     },
+    dicezero: {
+      label: 'Dice, 6 as 0',
+      unit: 'roll',
+      faces: '1-6',
+      keep: /[^1-6]/g,
+      counts: { 12: 50, 24: 99 },
+      extra: true,
+      most: 500,
+      eventBits: LOG2(6),
+      matches: 'Keystone and the BIP39 HTML tool rewrite every 6 to a 0, then hash. Same hash as above, different digits going in.',
+      valid: /^[1-6]*$/,
+      entropy: (input, bytes) => sha256(utf8(sixToZero(input))).slice(0, bytes)
+    },
+    dicebits: {
+      label: 'Dice, bit table',
+      unit: 'roll',
+      faces: '1-6',
+      keep: /[^1-6]/g,
+      /* A roll is worth one or two bits depending on the face, so no fixed
+         count fills a seed. The fewest rolls that can do it is all-two-bit
+         faces, the most is all-one-bit faces. The page counts bits rather
+         than rolls for this method, and stops the moment there are enough:
+         the tool this follows keeps the last whole 32 bits, so letting the
+         count run past the target would quietly change which bits are used. */
+      variable: true,
+      bits: { 12: 128, 24: 256 },
+      counts: { 12: 64, 24: 128 },
+      extra: false,
+      most: 256,
+      eventBits: LOG2(6),
+      bitsOf: diceBits,
+      /* The last roll is worth one or two bits, so landing on the target
+         exactly is not always possible and overshooting by one is. */
+      slack: 1,
+      matches: 'The BIP39 HTML tool in raw mode. The rolls are read as bits and never hashed, so this and the hashing methods disagree on the same rolls.',
+      valid: /^[1-6]*$/,
+      entropy: (input, bytes) => tailBits(diceBits(input), bytes)
+    },
+    bitbox: {
+      label: 'Dice, BitBox lookup',
+      unit: 'entry',
+      faces: '1-4 for the dice, H or T for the coin',
+      keep: /[^1-4HT]/g,
+      /* Six entries per word -- five dice then the coin -- and 23 words are
+         rolled, so the count is exact and the shape of every group matters as
+         much as the total. Nothing here is hashed and there is no entropy
+         function: the table names the word outright. */
+      grouped: BITBOX_GROUP,
+      rolled: BITBOX_ROLLED,
+      lookup: true,
+      /* What may be entered at each position in a group, so the keypad can
+         grey out the rest rather than explaining the rule. */
+      allow: ['1234', '1234', '1234', '1234', '1234', 'HT'],
+      shape: BITBOX_GROUP_SHAPE,
+      indexOf: bitboxIndex,
+      wrong: 'each word needs five dice showing 1-4 then H or T',
+      counts: { 24: BITBOX_GROUP * BITBOX_ROLLED },
+      extra: false,
+      most: BITBOX_GROUP * BITBOX_ROLLED,
+      /* Five four-sided dice and a coin: 5 x log2(4) + 1 = 11 bits a word. */
+      groupBits: 11,
+      matches: 'The BitBox02 lookup table. Five dice and a coin name each word directly, with nothing hashed.',
+      valid: /^([1-4]{5}[HT])*$/
+    },
+    octahex: {
+      label: 'Octal and hex dice',
+      unit: 'entry',
+      faces: '1-8 for the octal die, 0-9 and A-F for the hex dice',
+      keep: /[^0-9A-F]/g,
+      grouped: 3,
+      rolled: 23,
+      lookup: true,
+      allow: ['12345678', '0123456789ABCDEF', '0123456789ABCDEF'],
+      shape: /^[1-8][0-9A-F]{2}$/,
+      indexOf: OCTAHEX_INDEX,
+      wrong: 'each word is one octal die showing 1-8 then two hex dice',
+      counts: { 24: 69 },
+      extra: false,
+      most: 69,
+      /* One octal die and two hex dice: 3 + 4 + 4 = 11 bits a word. */
+      groupBits: 11,
+      matches: 'The printed dictionary from entropy.page. Three dice are eleven bits, which is one word exactly, so nothing is hashed and nothing is wasted.',
+      valid: /^([1-8][0-9A-F]{2})*$/
+    },
+    cards: {
+      label: 'Cards, hash the draw',
+      unit: 'card',
+      /* Two characters per event, unlike every other method here. Everything
+         that counts entries goes through events(), which reads this. */
+      size: 2,
+      source: 'cards',
+      faces: 'a rank A, 2-9, T, J, Q or K then a suit C, D, H or S',
+      keep: /[^A2-9TJQKCDHS]/g,
+      deck: 52,
+      /* 25 cards carry 132.4 bits and 58 carry 259.3; one short of either and
+         the seed would be padded with nothing. Computed from cardEntropy
+         rather than rounded off a bits-per-card average. */
+      counts: { 12: 25, 24: 58 },
+      extra: true,
+      most: 104,
+      allow: [CARD_RANKS, CARD_SUITS],
+      shape: /^[A2-9TJQK][CDHS]$/,
+      wrong: 'each card is a rank then a suit, like AS or 7H',
+      matches: 'SHA-256 over the cards as drawn, the same way the dice methods hash rolls. Every card goes in whole, so nothing is wasted and no card is worth more than another.',
+      valid: /^([A2-9TJQK][CDHS])*$/,
+      entropy: (input, bytes) => sha256(utf8(input)).slice(0, bytes)
+    },
+    cardbits: {
+      label: 'Cards, BIP39 tool table',
+      unit: 'card',
+      size: 2,
+      source: 'cards',
+      faces: 'a rank A, 2-9, T, J, Q or K then a suit C, D, H or S',
+      keep: /[^A2-9TJQKCDHS]/g,
+      deck: 52,
+      /* Variable-length codes, so cards do not map to a fixed number of bits
+         and no card count is the right one -- the page counts bits here, the
+         same as the dice bit table, and stops on the target for the same
+         reason: this method keeps the LAST whole 32 bits. */
+      variable: true,
+      bits: { 12: 128, 24: 256 },
+      bitsOf: cardBits,
+      /* Card codes run two, four and five bits, so the last card can carry the
+         total up to four bits past the target. Holding cards to the dice
+         table's one-bit tolerance made this method unreachable: a draw sitting
+         on 126 bits jumps to 131 and was refused both ways, as too few and
+         then as too many. */
+      slack: 4,
+      counts: { 12: 26, 24: 52 },
+      extra: false,
+      most: 104,
+      allow: [CARD_RANKS, CARD_SUITS],
+      shape: /^[A2-9TJQK][CDHS]$/,
+      wrong: 'each card is a rank then a suit, like AS or 7H',
+      matches: 'The BIP39 HTML tool in card mode. Its codes run five, four and two bits long depending on the card, so the same draw fills a seed at a different point than hashing does.',
+      valid: /^([A2-9TJQK][CDHS])*$/,
+      entropy: (input, bytes) => tailBits(cardBits(input), bytes)
+    },
     coin: {
       label: 'Coin flips',
       unit: 'flip',
       faces: 'H or T',
+      keep: /[^HT]/g,
+      bitsPer: 'one bit',
       counts: { 12: 128, 24: 256 },
       /* No extras here, and the reason is worth knowing rather than working
          around. A flip is exactly one bit and the bits are packed straight in,
@@ -562,6 +926,7 @@ const EntropyCore = (() => {
          it would be read, counted, and then silently dropped, which is worse
          than refusing it. */
       extra: false,
+      eventBits: 1,
       matches: 'Heads is a 1 bit, tails a 0, packed in the order you flipped them.',
       valid: /^[HT]*$/,
       entropy: (input, bytes) => {
@@ -574,11 +939,37 @@ const EntropyCore = (() => {
     }
   };
 
-  const normalise = (method, raw) => {
-    const text = String(raw).toUpperCase().replace(/[^0-9A-Z]/g, '');
-    return method === 'coin'
-      ? text.replace(/[^HT]/g, '')
-      : text.replace(/[^1-6]/g, '');
+  /* The canonical form of an input: what gets hashed, what gets counted, and
+     what the field is rewritten to. Everything that is not a face of the
+     chosen method is dropped, so spacing and punctuation never reach a hash. */
+  const normalise = (method, raw) =>
+    String(raw).toUpperCase().replace(/[^0-9A-Z]/g, '').replace(METHODS[method].keep, '');
+
+  /* One entry per roll or flip. Every count, every statistic and every
+     progress reading goes through this rather than reading the string
+     directly, so what is counted is always what will be converted. */
+  const events = (method, raw) => {
+    const clean = normalise(method, raw);
+    const size = METHODS[method].size || 1;
+    if (size === 1) return [...clean];
+    /* A trailing half-entry -- a rank with no suit yet -- is not an event and
+       must not be counted as one, or the card being chosen right now would
+       show up in the total before it exists. */
+    const out = [];
+    for (let i = 0; i + size <= clean.length; i += size) out.push(clean.slice(i, i + size));
+    return out;
+  };
+
+  /* Estimated entropy of what has been entered, in bits. Not a quality score
+     and not what the seed is made of -- every method below hashes or packs its
+     input into a fixed-width seed. It answers a narrower question: how much
+     unpredictability the physical events themselves could have carried. */
+  const sourceEntropy = ({ method, input }) => {
+    const spec = METHODS[method];
+    const count = events(method, input).length;
+    if (spec.deck) return cardEntropy(count);
+    if (spec.grouped) return Math.floor(count / spec.grouped) * spec.groupBits;
+    return count * spec.eventBits;
   };
 
   /* ---- is this actually random? ------------------------------------------
@@ -609,9 +1000,61 @@ const EntropyCore = (() => {
      Every limit sits well past anything real randomness produced. Fabricated
      input is not close to these edges -- 99 identical rolls scores chi 495 and
      a run of 99 -- so the gap costs nothing in detection. */
+  /* The bit-table method rolls the same six-sided die as the hashing one, so
+     it is held to the same thresholds. The BitBox method is checked on its
+     dice alone: the coin column is a separate two-sided alphabet and mixing
+     the two into one frequency test would compare faces that were never in
+     competition. */
   const RULES = {
     dice: { alphabet: '123456', minDistinct: 4, maxRun: 15, maxChi: 55, minLz: 0.55 },
-    coin: { alphabet: 'HT', minDistinct: 2, maxRun: 34, maxChi: 40, minLz: 0.55 }
+    dicezero: { alphabet: '123456', minDistinct: 4, maxRun: 15, maxChi: 55, minLz: 0.55 },
+    dicebits: { alphabet: '123456', minDistinct: 4, maxRun: 15, maxChi: 55, minLz: 0.55 },
+    bitbox: { alphabet: '1234', minDistinct: 3, maxRun: 13, maxChi: 40, minLz: 0.5, select: (_, i) => i % 6 !== 5 },
+    /* Twenty faces over 60 rolls, so the thresholds sit in very different
+       places than the six-sided ones: a run of four is already remarkable, and
+       chi-squared has 19 degrees of freedom on an expected count of three.
+       Calibrated the same way as the others -- far enough into the tail that
+       real rolls are not refused. */
+    /* Judged on the hex dice alone. The octal die has eight faces where the
+       hex dice have sixteen, so counting them together would compare faces
+       that were never in competition -- 9 through F can only come from two of
+       the three dice. Same reasoning as the BitBox coin column. */
+    octahex: {
+      alphabet: '0123456789ABCDEF', minDistinct: 7, maxRun: 8, maxChi: 80, minLz: 0.5,
+      ordinal: f => parseInt(f, 16),
+      select: (_, i) => i % 3 !== 0
+    },
+    coin: { alphabet: 'HT', minDistinct: 2, maxRun: 34, maxChi: 40, minLz: 0.55 },
+    /* Cards break both of the general-purpose tests, so they are switched off
+       here rather than left in looking like cover they do not give.
+
+       Chi-squared is degenerate: drawn without replacement every card appears
+       once or not at all, so the statistic is a fixed function of how many
+       were drawn -- 27.000 for 25 cards, every time, for a real shuffle and a
+       sorted deck alike. LZ complexity is barely better. Over 40,000 simulated
+       shuffles the lowest score at 25 cards was 0.815, and a deck dealt in
+       order scores 0.815 too: with 52 symbols and 25 draws, every sequence
+       looks equally novel.
+
+       What does separate them is order. Three checks below, each calibrated
+       against 30,000 shuffles at 25, 40, 58 and 80 cards -- worst real value
+       in brackets, against the limit:
+         adjacent  [0.25]  vs 0.40   sorted or reversed decks run 0.50 to 1.00
+         same suit [0.63]  vs 0.80   dealt by suit runs 0.96 to 1.00
+         suit run  [10]    vs 13     a suit dealt whole is 13
+       A deck stepped through by rank instead -- AC AD AH AS 2C ... -- slips
+       past all three, and is caught by the step-period test every method
+       already shares. */
+    cards: {
+      alphabet: CARD_DECK, minDistinct: 2, maxRun: 3, maxChi: Infinity, minLz: 0,
+      ordinal: CARD_ORD,
+      maxAdjacent: 0.40, maxSameSuit: 0.80, maxSuitRun: 13
+    },
+    cardbits: {
+      alphabet: CARD_DECK, minDistinct: 2, maxRun: 3, maxChi: Infinity, minLz: 0,
+      ordinal: CARD_ORD,
+      maxAdjacent: 0.40, maxSameSuit: 0.80, maxSuitRun: 13
+    }
   };
 
   /* The smallest unit the whole string is built from: 6 for "123456123456",
@@ -660,24 +1103,57 @@ const EntropyCore = (() => {
      same length would reach, approximated as n / log_a(n). */
   const lzComplexity = (s, alphabet) => {
     const seen = new Set();
-    let phrase = '';
+    /* Phrases are built as token lists and keyed with a separator no face can
+       contain. Concatenating them as text would make the phrase "1","7" and
+       the phrase "17" the same key on a twenty-sided die. */
+    let phrase = [];
     for (const c of s) {
-      phrase += c;
-      if (!seen.has(phrase)) { seen.add(phrase); phrase = ''; }
+      phrase.push(c);
+      const key = phrase.join('\u001f');
+      if (!seen.has(key)) { seen.add(key); phrase = []; }
     }
     const ideal = s.length / (Math.log(s.length) / Math.log(alphabet.length));
     return seen.size / ideal;
   };
 
+  /* The step from one roll to the next.
+
+     Face counts can be perfectly flat while the sequence was still marched out
+     by hand. 1,1,1,2,2,2,3,3,3 up to twenty uses every face exactly three
+     times, never repeats as a whole, and sails past every test above --
+     distinct faces, chi-squared, period, run length and LZ complexity all call
+     it fine. Its derivative says 0,0,1 over and over.
+
+     Krux computes the same thing on its own rolls for the same reason. Only
+     defined where faces are numbers, so the coin never reaches it. */
+  /* A face only has a derivative if it has an order, and the order is not
+     always base ten: hex dice run 0 to F, where "A minus 9" is 1 and reading
+     them as decimal would leave the check switched off exactly where a
+     stepped sequence is easiest to write. Methods say how to value a face;
+     without one, plain digits are assumed and anything else is skipped. */
+  const derivative = (faces, ordinal) => {
+    const value = ordinal
+      || (faces.every(f => /^[0-9]+$/.test(f)) ? (f => Number(f)) : null);
+    if (!value) return [];
+    return faces.slice(1).map((v, i) => String(value(v) - value(faces[i])));
+  };
+
   const assessEntropy = ({ method, input }) => {
     const rules = RULES[method];
-    const s = normalise(method, input);
+    /* An array of faces, so that everything below counts rolls rather than
+       characters. `only` narrows it to the faces a rule actually judges --
+       the BitBox coin column is a separate alphabet and does not belong in a
+       frequency test against the dice. */
+    const all = events(method, input);
+    const s = rules.select ? all.filter(rules.select) : all;
     const unit = METHODS[method].unit;
     const distinct = new Set(s).size;
     const period = smallestPeriod(s);
     const run = longestRun(s);
     const chi = chiSquared(s, rules.alphabet);
     const lz = lzComplexity(s, rules.alphabet);
+    const steps = derivative(s, rules.ordinal);
+    const stepPeriod = steps.length ? smallestPeriod(steps) : 0;
     const failures = [];
 
     if (!s.length) return { ok: false, failures: [], stats: {} };
@@ -690,7 +1166,7 @@ const EntropyCore = (() => {
     if (period && period <= s.length / 3) {
       failures.push(period === 1
         ? `The same ${unit} repeats from beginning to end.`
-        : `"${s.slice(0, period)}" repeats over and over, so there are really only ${period} ${unit}s here, not ${s.length}.`);
+        : `"${s.slice(0, period).join('')}" repeats over and over, so there are really only ${period} ${unit}s here, not ${s.length}.`);
     }
     if (run >= rules.maxRun) {
       failures.push(`The same result appears ${run} times in a row. On fair ${unit}s that is rarer than one in a million.`);
@@ -702,7 +1178,32 @@ const EntropyCore = (() => {
       failures.push('The sequence is too regular — it follows a pattern rather than wandering the way real results do.');
     }
 
-    return { ok: !failures.length, failures, stats: { distinct, period, run, chi, lz, length: s.length } };
+    /* Only cards carry these, so every other method skips them untouched. */
+    if (rules.maxAdjacent && s.length > 1) {
+      const ord = s.map(rules.ordinal);
+      let adjacent = 0, sameSuit = 0, suitRun = 1, longestSuitRun = 1;
+      for (let i = 1; i < s.length; i++) {
+        if (Math.abs(ord[i] - ord[i - 1]) === 1) adjacent++;
+        if (s[i][1] === s[i - 1][1]) { sameSuit++; suitRun++; if (suitRun > longestSuitRun) longestSuitRun = suitRun; }
+        else suitRun = 1;
+      }
+      const pairs = s.length - 1;
+      if (adjacent / pairs > rules.maxAdjacent) {
+        failures.push('Card after card is the next one along in the deck. That is a deck being read, not shuffled.');
+      }
+      if (sameSuit / pairs > rules.maxSameSuit) {
+        failures.push('Nearly every card is the same suit as the one before it, so the deck was never mixed.');
+      }
+      if (longestSuitRun >= rules.maxSuitRun) {
+        failures.push(`${longestSuitRun} cards of the same suit came out in a row. A shuffled deck does not do that.`);
+      }
+    }
+
+    if (stepPeriod && stepPeriod <= steps.length / 3) {
+      failures.push(`The gap from each ${unit} to the next repeats in a fixed cycle. The faces themselves come out even, but they were stepped through in order rather than rolled.`);
+    }
+
+    return { ok: !failures.length, failures, stats: { distinct, period, run, chi, lz, stepPeriod, length: s.length } };
   };
 
   /* ---- the whole job, end to end ---------------------------------------- */
@@ -718,39 +1219,232 @@ const EntropyCore = (() => {
   const limits = (method, words) => {
     const spec = METHODS[method];
     const least = spec.counts[words];
+    if (spec.variable) return { least, most: spec.bits[words] };
     return { least, most: spec.extra ? spec.most : least };
   };
 
-  const deriveSeed = ({ method, input, words, wordlist }) => {
+  /* How far along the input is, in whatever unit the method actually measures.
+
+     Three different answers hide behind one question. The hashing and coin
+     methods count what you typed. The bit-table method counts bits, because
+     two inputs of the same length can be a long way apart. The BitBox method
+     counts finished words, because five dice and a coin are one unit of
+     progress and showing "17 of 138" tells a person nothing they can act on.
+
+     Returning the same shape for all of them keeps the page from growing a
+     branch per method every time it repaints. */
+  const progress = ({ method, input, words }) => {
     const spec = METHODS[method];
+    const clean = normalise(method, input);
+    const count = events(method, input).length;
+
+    if (spec.variable) {
+      const need = spec.bits[words];
+      const have = spec.bitsOf(clean).length;
+      /* Stopping the moment the count is reached leaves at most one bit of
+         overshoot, because the last roll was worth one or two. More than that
+         means rolls were pasted in past the target, and those are refused
+         rather than dropped -- the same rule the coin method follows, and for
+         the same reason: this method keeps the LAST whole 32 bits, so quietly
+         discarding the excess would change the wallet rather than trim it. */
+      return {
+        have, need, unit: 'bit', rolls: count,
+        ready: have >= need && have <= need + spec.slack,
+        over: have > need + spec.slack,
+        full: have >= need
+      };
+    }
+
+    if (spec.grouped) {
+      const need = spec.rolled;
+      const have = Math.floor(count / spec.grouped);
+      return {
+        have, need, unit: 'word', rolls: count,
+        ready: count === need * spec.grouped,
+        over: count > need * spec.grouped,
+        full: count >= need * spec.grouped
+      };
+    }
+
+    const { least, most } = limits(method, words);
+    return {
+      have: count, need: least, unit: spec.unit, rolls: count,
+      ready: count >= least && count <= most,
+      over: count > most, full: count >= most
+    };
+  };
+
+  /* The most this method will take, as a canonical string.
+
+     The keypad already stops at the ceiling, but the text box did not: typing
+     or pasting past the limit left a count the page would then refuse on
+     submit, which is a worse way to find out. Trimming at the point of entry
+     means what is on screen is always something that can be converted.
+
+     Each method reaches its ceiling differently -- a fixed count, whole groups
+     of six, or enough rolls to fill the bits -- so the trim has to ask the
+     method rather than slice a fixed length. */
+  const clamp = ({ method, input, words }) => {
+    const spec = METHODS[method];
+    const clean = normalise(method, input);
+
+    if (spec.variable) {
+      const need = spec.bits[words];
+      const size = spec.size || 1;
+      let bits = 0;
+      let i = 0;
+      while (i + size <= clean.length && bits < need) {
+        bits += spec.bitsOf(clean.slice(i, i + size)).length;
+        i += size;
+      }
+      return clean.slice(0, i);
+    }
+
+    if (spec.grouped) return clean.slice(0, spec.rolled * spec.grouped);
+
+    return clean.slice(0, limits(method, words).most * (spec.size || 1));
+  };
+
+  /* Which faces may legally come next. Only the BitBox method restricts it --
+     five dice and then a coin, over and over -- but the page asks every
+     method so the keypad has one rule to follow. */
+  const nextAllowed = (method, input) => {
+    const spec = METHODS[method];
+    if (!spec.allow) return null;
+    const clean = normalise(method, input);
+
+    /* Cards are the only source where what may come next depends on what came
+       before rather than only on the position: a card already face-up cannot
+       be drawn again from the same deck. Offering it and refusing it after the
+       tap would be the worse half of both options. */
+    if (spec.deck) {
+      const left = cardsLeft(clean);
+      if (clean.length % 2 === 0) return [...new Set(left.map(card => card[0]))].join('');
+      const rank = clean[clean.length - 1];
+      return left.filter(card => card[0] === rank).map(card => card[1]).join('');
+    }
+
+    return spec.allow[clean.length % (spec.grouped || spec.allow.length)];
+  };
+
+  /* ---- the BitBox02 draft ------------------------------------------------
+
+     23 words come straight out of the table. The 24th cannot: 23 words carry
+     253 bits, a 24-word seed is 256 bits of entropy plus an 8-bit checksum,
+     so the last word is 3 unrolled bits followed by a checksum over all of
+     them. Three free bits is eight endings, and the device shows exactly
+     those eight for you to pick from. Each one is a different wallet.
+
+     This returns all eight rather than choosing, because choosing is the
+     one part of the procedure that belongs to the person doing it. */
+  const lookupDraft = ({ method, input, wordlist }) => {
+    const spec = METHODS[method];
+    const clean = normalise(method, input);
+    const wanted = spec.rolled * spec.grouped;
+
+    if (clean.length !== wanted) {
+      throw new Error(`${wanted} entries needed for ${spec.rolled} words, ${clean.length} supplied`);
+    }
+
+
+    const indices = [];
+    for (let i = 0; i < wanted; i += spec.grouped) {
+      const group = clean.slice(i, i + spec.grouped);
+      if (!spec.shape.test(group)) {
+        throw new Error(`word ${i / spec.grouped + 1} is "${group}", and ${spec.wrong}`);
+      }
+      indices.push(spec.indexOf(group));
+    }
+
+    const rolledBits = indices.map(i => i.toString(2).padStart(11, '0')).join('');
+    const options = [];
+    for (let tail = 0; tail < 8; tail++) {
+      const entropy = bitsToBytes(rolledBits + tail.toString(2).padStart(3, '0'), 32);
+      options.push({
+        word: wordlist[tail * 256 + sha256(entropy)[0]],
+        entropy: hex(entropy)
+      });
+    }
+
+    return { words: indices.map(i => wordlist[i]), options };
+  };
+
+  /* The passphrase is not entropy and is deliberately not treated as any. It
+     changes the seed the words produce without changing the words, which is
+     exactly why a device can show the right recovery words and still hand back
+     an address this page does not predict. Getting it wrong here looks
+     identical to the device converting dice differently, so the page asks for
+     it rather than letting people chase a mismatch that was never one. */
+  /* The seed a set of words produces, plus the fingerprints either side of the
+     passphrase. Without one the two are the same and the second PBKDF2 run is
+     skipped. */
+  const seedOf = (mnemonic, passphrase) => {
+    const seed = mnemonicToSeed(mnemonic, passphrase);
+    const fingerprint = masterFingerprint(seed);
+    if (!passphrase) return { seed, fingerprint, baseFingerprint: fingerprint };
+    return { seed, fingerprint, baseFingerprint: masterFingerprint(mnemonicToSeed(mnemonic)) };
+  };
+
+  const deriveSeed = ({ method, input, words, wordlist, passphrase = '', choice = 0 }) => {
+    const spec = METHODS[method];
+
+    /* The lookup method never builds entropy and then reads words off it; the
+       table names the words and the entropy is what they imply. */
+    if (spec.lookup) {
+      const { words: rolled, options } = lookupDraft({ method, input, wordlist });
+      const picked = options[choice];
+      if (!picked) throw new Error('pick one of the eight endings for the last word');
+      const mnemonic = [...rolled, picked.word];
+      return { entropy: picked.entropy, mnemonic, options, ...seedOf(mnemonic, passphrase) };
+    }
+
     const { least, most } = limits(method, words);
     const clean = normalise(method, input);
-    if (clean.length < least) {
-      throw new Error(`${least} ${spec.unit}s needed, ${clean.length} supplied`);
-    }
-    if (clean.length > most) {
+    const count = events(method, input).length;
+
+    if (spec.variable) {
+      const need = spec.bits[words];
+      const have = spec.bitsOf(clean).length;
+      if (have < need) {
+        throw new Error(`${need} bits needed for ${words} words, and ${count} ${spec.unit}s gave ${have}`);
+      }
+      if (have > need + spec.slack) {
+        throw new Error(`${count} ${spec.unit}s carry ${have} bits, and ${need} is what a ${words}-word seed takes — remove the extra ${spec.unit}s rather than letting the page choose which to drop`);
+      }
+    } else if (count < least) {
+      throw new Error(`${least} ${spec.unit}s needed, ${count} supplied`);
+    } else if (count > most) {
       throw new Error(spec.extra
-        ? `${most} ${spec.unit}s is the most this accepts, and ${clean.length} were supplied`
-        : `exactly ${least} ${spec.unit}s are needed, and ${clean.length} were supplied`);
+        ? `${most} ${spec.unit}s is the most this accepts, and ${count} were supplied`
+        : `exactly ${least} ${spec.unit}s are needed, and ${count} were supplied`);
     }
+
     const entropy = spec.entropy(clean, words === 24 ? 32 : 16);
     const mnemonic = entropyToMnemonic(entropy, wordlist);
-    return { entropy: hex(entropy), mnemonic, seed: mnemonicToSeed(mnemonic) };
+    return { entropy: hex(entropy), mnemonic, ...seedOf(mnemonic, passphrase) };
   };
 
   const deriveAddresses = ({ seed, addressType, path }) => {
     const account = derive(masterKey(seed), path);
-    const encode = ADDRESS_TYPES[addressType].encode;
+    const type = ADDRESS_TYPES[addressType];
     const addressAt = branch =>
-      encode(compress(pointMul(toBigInt(ckdPriv(ckdPriv(account, branch), 0).key))));
+      type.encode(compress(pointMul(toBigInt(ckdPriv(ckdPriv(account, branch), 0).key))));
+    /* The account key, which is the thing a watch-only wallet actually wants:
+       it can derive every address below it and sign nothing. */
+    const xpub = encodeXpub(account);
+    const typed = encodeXpub(account, type.xpubVersion);
     return {
       receive: { path: `${path}/0/0`, address: addressAt(0) },
-      change: { path: `${path}/1/0`, address: addressAt(1) }
+      change: { path: `${path}/1/0`, address: addressAt(1) },
+      xpub,
+      /* Only present when the address type has a prefix of its own, so the
+         page can stay quiet rather than showing the same string twice. */
+      typedXpub: typed === xpub ? null : typed
     };
   };
 
-  const buildWallet = ({ method, input, words, addressType, path, wordlist }) => {
-    const { entropy, mnemonic, seed } = deriveSeed({ method, input, words, wordlist });
+  const buildWallet = ({ method, input, words, addressType, path, wordlist, passphrase = '', choice = 0 }) => {
+    const { entropy, mnemonic, seed } = deriveSeed({ method, input, words, wordlist, passphrase, choice });
     return { entropy, mnemonic, ...deriveAddresses({ seed, addressType, path }) };
   };
 
@@ -760,9 +1454,13 @@ const EntropyCore = (() => {
     hash160, hash256, taggedHash,
     pointMul, compress, base58check, segwitAddress, convertBits,
     entropyToMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
-    ADDRESS_TYPES, METHODS, accountPath, normalise,
+    encodeXpub, fingerprint, masterFingerprint, publicKeyOf, XPUB_VERSION,
+    ADDRESS_TYPES, METHODS, accountPath, normalise, events,
+    diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
+    cardBits, cardEntropy, cardsLeft, sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
+    progress, nextAllowed, clamp,
     deriveSeed, deriveAddresses, buildWallet, limits,
-    assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity
+    assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative
   };
 })();
 

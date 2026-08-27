@@ -44,8 +44,8 @@ const SUBSET_TAG = 'subset-20260825';
    site-refresh.js:1233 "bi bi-arrow-" + (up ? "up" : "down") + "-right"            */
 const DYNAMIC = ['bi-arrow-up-right', 'bi-arrow-down-right', 'bi-arrow-right'];
 
-const CSS_SOURCES = ['docs/assets/css/site-refresh.css', 'docs/assets/css/lab.css'];
-const CODE_SOURCES = ['docs/assets/js/site-refresh.js', 'docs/lab-probe.js',
+const CSS_SOURCES = ['docs/assets/css/site-refresh.css', 'docs/assets/css/block-demo.css'];
+const CODE_SOURCES = ['docs/assets/js/site-refresh.js', 'docs/block-probe.js',
                       'build/content.mjs', 'build/guides.mjs'];
 
 const read = f => { try { return readFileSync(f, 'utf8'); } catch { return ''; } };
