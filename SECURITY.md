@@ -108,6 +108,29 @@ shasum -a 256 entropy-offline.html                 (macOS, Linux)
 Compare the result against the published line. That one line is the only thing
 you need a network for; it can be fetched from anywhere, on any machine.
 
+### What that checksum does and does not prove
+
+It proves the file arrived intact. A truncated download, a proxy that rewrote
+something, a corrupted USB stick — all of those change the hash, and you will
+see it immediately.
+
+**It does not prove the file is genuine.** The checksum is served from the same
+place as the file it describes. Anyone who could replace one could replace the
+other, and you would compare a tampered file against a tampered hash and get a
+clean result. Same-origin checksums detect accidents, not adversaries.
+
+So for a wallet holding real money, do not stop at the hash:
+
+- Compare it against a copy fetched over a different network, on a different
+  device, or from the repository's commit history rather than the live site.
+- Read the file. It is one HTML document with no minification and no
+  dependencies, specifically so that reading it is possible.
+- Derive a phrase you already control and check that the tool reproduces it.
+
+If this project later publishes signed release tags or a signed manifest, that
+will be the stronger check, and this section will say so. Until it does, treat
+the published hash as an integrity check and nothing more.
+
 ## Using the tool safely
 
 For a wallet you intend to keep: download the file, verify the checksum, and

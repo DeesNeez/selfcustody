@@ -86,8 +86,12 @@ function autoFetched(html) {
 
   for (const m of findAll(html, /<link\b([^>]*)>/gi)) {
     const attrs = m[1];
+    /* rel carries a token list, not one value. Comparing the whole attribute
+       against a set meant rel="preload stylesheet" matched nothing and walked
+       past a real fetch. Any single fetching token is enough. */
     const rel = (attrs.match(/\brel\s*=\s*["']([^"']*)["']/i)?.[1] || '').toLowerCase().trim();
-    if (!FETCHING_LINK_RELS.has(rel)) continue;
+    const tokens = rel.split(/\s+/).filter(Boolean);
+    if (!tokens.some(token => FETCHING_LINK_RELS.has(token))) continue;
     add(attrs.match(/\bhref\s*=\s*["']([^"']*)["']/i)?.[1], `<link rel="${rel}">`);
   }
 
@@ -143,7 +147,20 @@ const originOf = url => url.match(/^(?:https?:)?\/\/[^/]+/i)?.[0].replace(/^\/\/
    ever dereferences xmlns="http://www.w3.org/2000/svg", and every inline SVG
    on the site carries one. Excluded rather than declared as an allowed
    origin, because calling it a permitted request would be false. */
-const NAMESPACE_ORIGINS = new Set(['https://www.w3.org']);
+const NAMESPACE_ORIGINS = new Set([
+  'https://www.w3.org',      /* xmlns on every inline SVG */
+  'https://schema.org'       /* JSON-LD @context; vocabulary identifier, not a URL to load */
+]);
+
+/* Our own origin. It appears in code for one reason: the offline build
+   rewrites its relative links to absolute ones, so a file saved to a USB stick
+   still has somewhere to point. Those are anchors -- following one is a
+   decision to leave the tool -- and the same string appears in canonical tags
+   and JSON-LD, which are metadata. None of it is fetched on load.
+
+   Declared rather than ignored, so that if something ever does call our own
+   origin automatically it still has to be written down here first. */
+const SELF_ORIGIN = 'https://selfcustody.ca';
 
 function scriptOrigins(text) {
   const found = new Set();
@@ -170,10 +187,34 @@ function localAssets(html, dir) {
   for (const m of html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']*)["']/gi)) add(m[1]);
   for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
     const rel = (m[0].match(/\brel\s*=\s*["']([^"']*)["']/i)?.[1] || '').toLowerCase();
-    if (rel !== 'stylesheet') continue;
+    if (!rel.split(/\s+/).includes('stylesheet')) continue;
     add(m[0].match(/\bhref\s*=\s*["']([^"']*)["']/i)?.[1]);
   }
   return out;
+}
+
+/* Local assets, plus anything they @import, to a fixed depth. Nothing on the
+   site uses @import today; this exists so that adding one does not quietly
+   move a stylesheet out of the guard's view. */
+function assetGraph(html, dir, depth = 4) {
+  const seen = new Set();
+  const queue = localAssets(html, dir).map(file => [file, depth]);
+
+  while (queue.length) {
+    const [file, left] = queue.shift();
+    if (seen.has(file)) continue;
+    seen.add(file);
+    if (left <= 0 || !/\.css$/i.test(file)) continue;
+
+    const css = readFileSync(file, 'utf8');
+    for (const m of css.matchAll(/@import\s+(?:url\()?\s*["']?([^"')\s]+)/gi)) {
+      const url = m[1];
+      if (/^(?:https?:|data:|\/\/)/i.test(url)) continue;
+      const next = join(dirname(file), url.split('?')[0]);
+      if (existsSync(next) && statSync(next).isFile()) queue.push([next, left - 1]);
+    }
+  }
+  return [...seen];
 }
 
 function checkFile(path, name) {
@@ -181,10 +222,35 @@ function checkFile(path, name) {
   const problems = [];
   const allowed = ALLOWED[name] || [];
 
+  /* Inline code gets the strict rule as well as linked code.
+
+     autoFetched below reads markup, where most external URLs are inert links,
+     so it only looks at the attributes that cause a request. That leniency is
+     right for markup and wrong for a script: the offline build is one file
+     with everything inlined, so a call written as fetchJSON("https://...") in
+     an inline block would meet only the lenient rule, in the build whose
+     entire claim is that it calls nothing. */
+  for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    /* Only executable blocks. A <script type="application/ld+json"> is data:
+       its URLs are vocabulary identifiers and canonical addresses, and a
+       browser parses them as strings rather than fetching them. Scanning it
+       with the code rule flagged schema.org on all 54 guide pages. */
+    const type = (m[1].match(/\btype\s*=\s*["']([^"']*)["']/i)?.[1] || '').toLowerCase();
+    if (type && !/(java|ecma)script$|^module$|^text\/js$/.test(type)) continue;
+
+    for (const origin of scriptOrigins(m[2])) {
+      if (origin === SELF_ORIGIN) continue;
+      if (!(origin in SHARED_SCRIPT_ORIGINS)) {
+        problems.push(`an inline script names ${origin}, which is not declared`);
+      }
+    }
+  }
+
   /* Everything the page loads is scanned by the stricter script rule. */
-  for (const asset of localAssets(html, dirname(path))) {
+  for (const asset of assetGraph(html, dirname(path))) {
     const where = relative('docs', asset).replace(/\\/g, '/');
     for (const origin of scriptOrigins(readFileSync(asset, 'utf8'))) {
+      if (origin === SELF_ORIGIN) continue;
       if (!(origin in SHARED_SCRIPT_ORIGINS)) {
         problems.push(`${where} names ${origin}, which is not declared`);
       }

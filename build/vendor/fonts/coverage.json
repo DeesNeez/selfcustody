@@ -115,7 +115,11 @@
     8221,
     8226,
     8230,
-    8322
+    8322,
+    8722,
+    8776,
+    8804,
+    8805
   ],
   "knownFallback": {
     "_comment": [
@@ -126,6 +130,7 @@
       "added to the subset because there is nothing upstream to subset."
     ],
     "codepoints": [
+      8202,
       8592,
       8594,
       10003,
@@ -136,6 +141,7 @@
       9830
     ],
     "names": {
+      "200A": "hair space; Open Sans has it, Jost does not, and a fallback space is indistinguishable",
       "2190": "left arrow, used in step-back links",
       "2192": "right arrow, used in link affordances and the pipeline diagram",
       "2713": "check mark, device/software feature matrices",
