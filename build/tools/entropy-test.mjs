@@ -551,7 +551,12 @@ export const VECTORS = [
 
      The keys are the BIP44/49/84/86 account keys for BIP39's all-zero test
      mnemonic, and 73c5da0a is that seed's master fingerprint, so every part of
-     each line traces back to a published vector rather than to this file. */
+     each line traces back to a published vector rather than to this file.
+
+     All five were then put through Bitcoin Core's own descriptors.py, from
+     test/functional/test_framework: descsum_create reproduces each string
+     exactly, and descsum_check accepts each one. So these are not merely
+     spec-conformant, they are what Core itself would write and would take. */
   ['descriptor: the checksum vector published in BIP380',
     () => C.withChecksum('raw(deadbeef)'), 'raw(deadbeef)#89f8spxm'],
   ['descriptor: a payload error changes the checksum',
