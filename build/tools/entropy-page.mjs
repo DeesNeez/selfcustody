@@ -259,12 +259,11 @@ ${FONTS.map(embedFont).join('\n')}
   .source-pick {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
   }
-  /* Picture left, words right. The label is left-aligned here where the other
-     rows centre theirs, because ragged-left text beside a fixed-width drawing
-     reads as two columns rather than as a caption that slipped. */
+  /* Picture then words, the pair centred as one group so the three cards read
+     as a row of matching things rather than three left-aligned lists. */
   .source-pick button {
-    display: flex; align-items: center; gap: 12px;
-    min-width: 0; text-align: left;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    min-width: 0;
   }
   .source-pick .seg-mark { flex: 0 0 auto; display: grid; place-items: center; }
   .source-pick .seg-mark svg {
@@ -2570,7 +2569,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 <fieldset class="setup-wide">
   <legend data-step="1"><span class="step-num">1. </span>Which entropy source?</legend>
   <div class="seg seg-even source-pick">${segment('source', [
-    { value: 'coin', label: 'Coins', sub: 'heads or tails', icon: ICON_COIN },
+    { value: 'coin', label: 'Coins', sub: 'heads or tails (binary)', icon: ICON_COIN },
     { value: 'dice', label: 'Dice', sub: 'six-sided, or octal and hex', icon: ICON_DICE },
     { value: 'cards', label: 'Cards', sub: 'a shuffled deck', icon: ICON_CARDS }
   ])}</div>
