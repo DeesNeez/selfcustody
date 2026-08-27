@@ -335,6 +335,24 @@ ${FONTS.map(embedFont).join('\n')}
   .endings strong { display: block; margin-bottom: 8px; color: #ffad4c; font-size: 1.02rem; }
   .endings p { margin: 0 0 16px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
   .ending-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  /* A hundred and twenty-eight of these is a wall rather than a list: stacked
+     one per column on a phone it ran to 2673px. Given a fixed height it becomes
+     a panel you scroll instead of a page you lose your place in. */
+  .ending-list.is-many {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    gap: 6px; max-height: 46vh; overflow-y: auto;
+    padding: 10px; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 11px;
+    background: rgba(0, 0, 0, 0.18);
+  }
+  .ending-list.is-many .ending { padding: 8px 10px; font-size: 0.82rem; }
+
+  /* The throw that picks this ending. */
+  .ending small {
+    display: block; margin-bottom: 3px;
+    color: var(--muted); font-size: 0.66rem; font-weight: 700; letter-spacing: .06em;
+  }
+  .ending[aria-pressed="true"] small { color: inherit; opacity: 0.75; }
+
   .ending {
     padding: 10px 16px; color: var(--ink); background: rgba(0, 0, 0, 0.28);
     border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 10px;
@@ -1282,7 +1300,14 @@ const ui = () => `
        with 12 words selected left the button highlighted for a length the
        method cannot produce. Asking the resulting method instead covers both
        ways in. */
-    if (C.METHODS[method()].lookup) state.words = 24;
+    /* Ask the method which lengths it has rather than assuming a lookup table
+       means 24. The BitBox table is published for 24 words only, so it does
+       still lock; the octal-and-hex dictionary works at either length, because
+       three dice are 11 bits and a word index is 11 bits whatever the seed
+       length happens to be. */
+    if (!C.METHODS[method()].counts[state.words]) {
+      state.words = Number(Object.keys(C.METHODS[method()].counts)[0]);
+    }
 
     if (group === 'source' || group === 'conversion' || group === 'dice' || group === 'cardconv') {
       /* Rolls, flips and lookup entries are different alphabets, so carrying
@@ -1321,9 +1346,8 @@ const ui = () => `
     $('conv-legend').textContent = askCards
       ? 'How should the cards become a seed?'
       : 'How does your device convert them?';
-    const locked = spec().lookup;
     document.querySelectorAll('[data-group="words"]').forEach(button => {
-      button.disabled = locked && button.dataset.value !== '24';
+      button.disabled = !spec().counts[Number(button.dataset.value)];
     });
     $('rolls-title').textContent =
       state.source === 'cards' ? 'Your draw'
@@ -1543,10 +1567,13 @@ const ui = () => `
     }
 
     if (info.lookup) {
-      $('need').textContent = info.rolled + (state.source === 'octahex'
+      const rolled = C.rolledWords(method(), state.words);
+      const endings = 1 << ((state.words === 24 ? 256 : 128) - rolled * 11);
+      $('need').textContent = rolled + (method() === 'octahex'
         ? ' throws of all three dice, ' : ' words of five dice and a coin, ')
-        + (info.rolled * info.grouped) + ' entries in all. The 24th word is not rolled — '
-        + 'it is mostly a checksum, so the page offers the eight valid endings once the rest are in.';
+        + (rolled * info.grouped) + ' entries in all. The last word is not rolled — '
+        + 'it is mostly a checksum, so the page offers the ' + endings
+        + ' valid endings once the rest are in.';
     } else if (info.variable) {
       $('need').textContent = state.words === 24 ? '256 bits for 24 words. A roll is worth one or two bits '
         + 'depending on the face — 1, 2, 3 and 6 give two, 4 and 5 give one — so the number of rolls '
@@ -1766,14 +1793,35 @@ const ui = () => `
     $('endings').hidden = false;
     /* Three unrolled bits is eight endings, and every method that reaches here
        gets them the same way. What differs is how you were told to choose. */
-    $('endings-note').textContent = state.source === 'octahex'
-      ? 'Your throws fix the first 23 words, which carry 253 bits. A 24-word phrase needs 256 plus an 8-bit checksum, so the last word is three bits you never rolled followed by a check over all of them \u2014 which leaves exactly eight endings. Throw the octal die once more and take that numbered option, counting from the left. Your COLDCARD, SeedSigner or Jade will offer the same eight.'
+    /* Ask the method, not the source. Both lookup tables sit under the dice
+       source now, so a source test cannot tell them apart and this note fell
+       through to the BitBox wording whenever the octal dice were chosen. */
+    $('endings-note').textContent = method() === 'octahex'
+      ? (state.words === 24
+        ? 'Your throws fix the first 23 words, which carry 253 bits. A 24-word phrase needs 256 plus an 8-bit checksum, so the last word is three bits you never rolled followed by a check over all of them \u2014 which leaves exactly eight endings. Throw the octal die once more and take that numbered option, counting from the left. Your COLDCARD, SeedSigner or Jade will offer the same eight.'
+        : 'Your throws fix the first 11 words, which carry 121 bits. A 12-word phrase needs 128 plus a 4-bit checksum, so the last word is seven bits you never rolled followed by a check over all of them \u2014 which leaves 128 endings rather than eight. Seven bits is one octal die and one hex die, so throw both and take the ending labelled with those two faces. Any of them is a real wallet, and every one is a different wallet.')
       : 'Your rolls fix the first 23 words, which carry 253 bits. A 24-word phrase needs 256 plus an 8-bit checksum, so the last word is three bits you never rolled followed by a check over all of them. That leaves exactly eight valid endings, and your BitBox02 shows you these same eight. Any one of them is a real wallet \u2014 they are different wallets, so pick the one your device showed you, or roll one more die and count 1 to 8.';
+    /* Label each ending with the throw that selects it, rather than leaving it
+       to be counted. Eight endings can be counted along a row; a hundred and
+       twenty-eight cannot, and "take the 93rd" is an instruction nobody should
+       be given. The free bits are exactly one octal die for a 24-word seed, and
+       an octal die plus a hex die for a 12-word one, so the label is simply
+       what those dice read. */
+    const octahex = method() === 'octahex';
+    const many = options.length > 8;
+    $('ending-list').classList.toggle('is-many', many);
+    const labelFor = i => !octahex ? String(i + 1)
+      : many ? String(Math.floor(i / 16) + 1) + String.fromCharCode(183) + (i % 16).toString(16).toUpperCase()
+      : String(i + 1);
+
     $('ending-list').replaceChildren(...options.map((option, i) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'ending';
-      button.textContent = option.word;
+      const tag = document.createElement('small');
+      tag.textContent = labelFor(i);
+      button.append(tag, document.createTextNode(option.word));
+      button.setAttribute('aria-label', 'Option ' + labelFor(i) + ': ' + option.word);
       button.setAttribute('aria-pressed', i === state.choice ? 'true' : 'false');
       button.addEventListener('click', () => {
         state.choice = i;

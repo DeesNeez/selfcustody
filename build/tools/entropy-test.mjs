@@ -353,10 +353,10 @@ export const VECTORS = [
      last three bits. The first of them is BIP39's own all-zero vector, which
      ties this table to the published standard rather than to itself. */
   ['bitbox: 23 rolled words from the first cell',
-    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST }).words.join(' '),
+    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), words: 24, wordlist: WORDLIST }).words.join(' '),
     'abandon '.repeat(22) + 'abandon'],
   ['bitbox: the eight endings offered for zero entropy',
-    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST })
+    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), words: 24, wordlist: WORDLIST })
       .options.map(o => o.word).join(' '),
     'art diesel false kite organ ready surface trouble'],
   ['bitbox: the first ending is the bip39 all-zero phrase',
@@ -365,7 +365,7 @@ export const VECTORS = [
     ABANDON_24],
   ['bitbox: every offered ending passes the bip39 checksum',
     () => {
-      const draft = C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST });
+      const draft = C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), words: 24, wordlist: WORDLIST });
       return draft.options.every((opt, i) => {
         const built = C.entropyToMnemonic(C.fromHex(opt.entropy), WORDLIST);
         return built.join(' ') === [...draft.words, opt.word].join(' ')
@@ -375,12 +375,12 @@ export const VECTORS = [
     }, 'all valid'],
   ['bitbox: a coin where a die belongs is refused', () => {
     try {
-      C.lookupDraft({ method: 'bitbox', input: 'H1111H' + '11111H'.repeat(22), wordlist: WORDLIST });
+      C.lookupDraft({ method: 'bitbox', input: 'H1111H' + '11111H'.repeat(22), words: 24, wordlist: WORDLIST });
       return 'accepted';
     } catch { return 'refused'; }
   }, 'refused'],
   ['bitbox: a short sequence is refused', () => {
-    try { C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    try { C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(22), words: 24, wordlist: WORDLIST }); return 'accepted'; }
     catch { return 'refused'; }
   }, 'refused'],
 
@@ -422,16 +422,56 @@ export const VECTORS = [
   }, '0 256'],
 
   ['octahex: 69 entries make 23 words',
-    () => [C.limits('octahex', 24).least, C.METHODS.octahex.rolled].join(' '), '69 23'],
+    () => [C.limits('octahex', 24).least, C.rolledWords('octahex', 24)].join(' '), '69 23'],
+
+  /* Both seed lengths, because three dice are 11 bits and a word index is 11
+     bits whatever the seed length is. How many endings the last word has
+     depends on how badly 11 divides the seed:
+
+       24 words   23 rolled = 253 bits, 256 wanted, 3 free  ->   8 endings
+       12 words   11 rolled = 121 bits, 128 wanted, 7 free  -> 128 endings
+
+     Independently confirmed against entropylab, which tabulates the same
+     three: 11/128, 17/32 and 23/8 for 12, 18 and 24 words. */
+  ['octahex: 33 entries make 11 words, for a 12-word seed',
+    () => [C.limits('octahex', 12).least, C.rolledWords('octahex', 12)].join(' '), '33 11'],
+  ['octahex: a 12-word seed leaves 128 endings',
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST }).options.length, 128],
+  ['octahex: a 24-word seed leaves 8 endings',
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST }).options.length, 8],
+  ['octahex: all 128 twelve-word endings pass the BIP39 checksum',
+    () => {
+      const draft = C.lookupDraft({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST });
+      /* Each option is rebuilt from its own entropy through BIP39, so the
+         checksum word has to fall out of the specification rather than being
+         taken on trust from the table that produced it.
+
+         Deliberately not through deriveSeed: that would run PBKDF2's 2048
+         rounds 128 times, and this suite is embedded in the page and runs on
+         load. The seed is not what is being checked here -- the last word is. */
+      const wrong = draft.options.filter(option => {
+        const rebuilt = C.entropyToMnemonic(C.fromHex(option.entropy), WORDLIST);
+        return rebuilt.length !== 12
+            || rebuilt[11] !== option.word
+            || rebuilt.slice(0, 11).join(' ') !== draft.words.join(' ');
+      });
+      return wrong.length;
+    }, 0],
+  ['octahex: 11 throws produce a 12-word phrase',
+    () => C.deriveSeed({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST, choice: 0 }).mnemonic.length, 12],
+  /* The BitBox table is published for 24 words only, so it must not gain a
+     12-word form by accident. */
+  ['bitbox: still 24 words only',
+    () => Object.keys(C.METHODS.bitbox.counts).join(','), '24'],
   ['octahex: 23 rolled words from the first cell',
-    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST }).words.join(' '),
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST }).words.join(' '),
     'abandon '.repeat(22) + 'abandon'],
   /* 23 words of the first cell is 253 zero bits, so the eight endings are the
      same eight the BitBox table offers for the same entropy, and the first of
      them is BIP39's published all-zero phrase. Two unrelated dice methods
      landing on the same standard vector is the check worth having. */
   ['octahex: the eight endings for zero entropy',
-    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST })
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST })
       .options.map(o => o.word).join(' '),
     'art diesel false kite organ ready surface trouble'],
   ['octahex: the first ending is the bip39 all-zero phrase',
@@ -441,19 +481,19 @@ export const VECTORS = [
   ['octahex: the octal die picks the ending', () => {
     /* The deck says to roll the octal die once more and take that option
        number, so face 1 is the first ending and face 8 the last. */
-    const draft = C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST });
+    const draft = C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST });
     return [draft.options[0].word, draft.options[7].word].join(' ');
   }, 'art trouble'],
   ['octahex: a 0 on the octal die is refused', () => {
-    try { C.lookupDraft({ method: 'octahex', input: '000' + '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    try { C.lookupDraft({ method: 'octahex', input: '000' + '100'.repeat(22), words: 24, wordlist: WORDLIST }); return 'accepted'; }
     catch { return 'refused'; }
   }, 'refused'],
   ['octahex: a 9 on the octal die is refused', () => {
-    try { C.lookupDraft({ method: 'octahex', input: '900' + '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    try { C.lookupDraft({ method: 'octahex', input: '900' + '100'.repeat(22), words: 24, wordlist: WORDLIST }); return 'accepted'; }
     catch { return 'refused'; }
   }, 'refused'],
   ['octahex: a short sequence is refused', () => {
-    try { C.lookupDraft({ method: 'octahex', input: '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    try { C.lookupDraft({ method: 'octahex', input: '100'.repeat(22), words: 24, wordlist: WORDLIST }); return 'accepted'; }
     catch { return 'refused'; }
   }, 'refused'],
   ['octahex: the keypad allows the octal die only in first place',
