@@ -49,14 +49,18 @@ jobs:
         working-directory: docs
         run: sha256sum -c entropy-offline.html.sha256
 
-      # A build on a clean checkout must reproduce exactly what is committed.
+      # A build on a clean checkout must leave the tree exactly as committed.
       # If this fails, either someone edited docs/ by hand or the build is not
       # deterministic -- and a non-deterministic build cannot have a meaningful
       # published checksum.
+      # --porcelain rather than `git diff`, because a diff says nothing about
+      # untracked files: a diagnostic written into the repo root by a stray
+      # script passes a diff check and then gets committed by the next `add -A`.
+      # That happened twice here before this line existed.
       - name: Generated files are current and reproducible
         run: |
-          if ! git diff --quiet; then
-            echo "::error::the build changed committed files -- run 'node build/render.mjs' and commit the result"
-            git --no-pager diff --stat
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::the build left the tree dirty -- run 'node build/render.mjs', commit generated output, and remove stray files"
+            git status --porcelain
             exit 1
           fi
