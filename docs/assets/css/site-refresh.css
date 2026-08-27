@@ -1,3 +1,33 @@
+/* ---- webfonts -----------------------------------------------------------
+
+   Served from this origin. They were loaded from Google's font CDN until
+   the Entropy Workshop made the cost of that obvious: its site build carried
+   the same font tags as every other page, so opening it from file:// -- the
+   thing you do after downloading it -- fetched three resources from Google
+   while the page said it was running offline.
+
+   One file per family, not one per weight: both are variable fonts, so the
+   wght axis covers every weight the site uses. Each is subset to the
+   characters that actually appear; see build/vendor/fonts/README.md for the
+   range and how to regenerate them.
+
+   swap, not block: these are same-origin and small, but a slow disk should
+   still show text in a fallback face rather than nothing at all. */
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../fonts/jost-latin.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url(../fonts/open-sans-latin.woff2) format("woff2");
+}
+
 :root {
   --sc-orange: #ff8a00;
   --sc-orange-dark: #d96f00;

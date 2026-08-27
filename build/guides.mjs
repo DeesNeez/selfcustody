@@ -779,11 +779,11 @@ const bip85Diagram = () => {
 
         ${drop(130)}${drop(360)}${drop(590)}
 
-        ${box(35, 186, 190, 58, "Everyday wallet", "index 0&#8242; &middot; 12 words")}
-        ${box(265, 186, 190, 58, "Savings wallet", "index 1&#8242; &middot; 24 words")}
-        ${box(495, 186, 190, 58, "Handed to a niece", "index 2&#8242; &middot; 12 words")}
+        ${box(35, 186, 190, 58, "Everyday wallet", "index 0' &middot; 12 words")}
+        ${box(265, 186, 190, 58, "Savings wallet", "index 1' &middot; 24 words")}
+        ${box(495, 186, 190, 58, "Handed to a niece", "index 2' &middot; 12 words")}
 
-        <text class="sc-dg-note" x="360" y="268" text-anchor="middle">&hellip; and index 3&#8242;, 4&#8242;, 5&#8242;, indefinitely, all from the same backup</text>
+        <text class="sc-dg-note" x="360" y="268" text-anchor="middle">&hellip; and index 3', 4', 5', indefinitely, all from the same backup</text>
 
         <rect class="sc-dg-panel sc-dg-panel-safe" x="1" y="288" width="718" height="72" rx="12"/>
         <text class="sc-dg-verdict sc-dg-verdict-safe" x="24" y="316">Derivation runs one way</text>
@@ -7617,7 +7617,7 @@ const guides = [
 
       ${checklist([
         "<strong>m</strong> &mdash; the master key derived from your seed. The root.",
-        "<strong>84'</strong> &mdash; the purpose, which in practice means the address type. 44&#8242; is legacy, 49&#8242; is wrapped SegWit, 84&#8242; is native SegWit, 86&#8242; is Taproot.",
+        "<strong>84'</strong> &mdash; the purpose, which in practice means the address type. 44' is legacy, 49' is wrapped SegWit, 84' is native SegWit, 86' is Taproot.",
         "<strong>0'</strong> &mdash; the coin. Zero is bitcoin.",
         "<strong>0'</strong> &mdash; the account number, so one seed can hold several separately-tracked wallets.",
         "<strong>0</strong> &mdash; the branch: 0 for addresses you hand out, 1 for change coming back to you.",
@@ -7626,7 +7626,7 @@ const guides = [
 
       <p>Change any one of those numbers and you land somewhere else entirely &mdash; a valid, empty wallet with no relationship to the one you were looking for. This is the same silent-failure shape as a mistyped <a href='passphrase-setup.html'>passphrase</a>: nothing errors, because nothing is wrong. You simply asked a different question and got its correct answer.</p>
 
-      ${callout("Why the address-type number matters most", "The purpose field is the one that bites people, because different wallets default to different values. A wallet that defaults to 84&#8242; restoring a seed created by a wallet defaulting to 44&#8242; will show nothing at all — the coins are sitting on the 44&#8242; branch, untouched, perfectly safe, and completely invisible until someone tells the software to look there.")}
+      ${callout("Why the address-type number matters most", "The purpose field is the one that bites people, because different wallets default to different values. A wallet that defaults to 84' restoring a seed created by a wallet defaulting to 44' will show nothing at all — the coins are sitting on the 44' branch, untouched, perfectly safe, and completely invisible until someone tells the software to look there.")}
 
       ${figureSlot({
         shot: "A bare winter tree photographed from directly beneath the trunk, branches splitting overhead into hundreds of forks against a flat pale sky.",
@@ -7677,7 +7677,7 @@ const guides = [
 
       ${checklist([
         "<strong>Stop.</strong> Do not re-enter the seed anywhere unusual, and do not type it into a website offering to help. A quiet empty wallet is not an emergency; a leaked seed is.",
-        "<strong>Check the address type.</strong> Try the other purpose values — 44&#8242;, 49&#8242;, 84&#8242;, 86&#8242;. Good software offers this as a dropdown during import.",
+        "<strong>Check the address type.</strong> Try the other purpose values — 44', 49', 84', 86'. Good software offers this as a dropdown during import.",
         "<strong>Check the account number.</strong> Some wallets create account 1 in situations where others use account 0.",
         "<strong>Raise the gap limit</strong> to several hundred and rescan.",
         "<strong>Ask whether a passphrase was ever set.</strong> A forgotten passphrase produces this exact symptom, and produces it permanently.",
