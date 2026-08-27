@@ -133,10 +133,18 @@ the published hash as an integrity check and nothing more.
 
 ## Using the tool safely
 
-For a wallet you intend to keep: download the file, verify the checksum, and
-open it on a machine that has never been online. For checking that a device
-converts the way you expect: use a disposable sequence and a test wallet you
-will wipe afterwards.
+**This tool is experimental and is meant for testing.** Do not rely on it to
+secure real bitcoin, and never test with funds you cannot afford to lose. Its
+cryptography is written from the specifications rather than taken from an
+audited library, which is what makes it readable end to end and also what makes
+it something to check rather than trust.
+
+Use it the way it is meant to be used: a disposable sequence, a wallet you will
+wipe afterwards, and a comparison against what your device produced.
+
+Even for that, download the file, verify the checksum, and open it from disk on
+a machine that has never been online. A sequence entered over a network is one
+you should treat as spent, whatever you intended it for.
 
 Never enter dice rolls, flips or cards that produced a wallet holding real funds
 into a copy of this page loaded over a network.

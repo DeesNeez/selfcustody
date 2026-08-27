@@ -1163,7 +1163,7 @@
 </noscript>
 
 <div class="banner security-brief">
-  <p><strong>Treat this tool like seed material.</strong> For a wallet you intend to keep, download and verify this file, then use it on a machine that has never been online. For a device check, use a disposable test wallet and wipe it afterward.</p>
+  <p><strong>Beta software.</strong> This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose. Use a disposable sequence and a wallet you will wipe afterwards.</p>
   <p class="critical-line"><strong class="critical">Never enter an existing recovery phrase into any page</strong> &mdash; including this one, which is why there is nowhere here to do it.</p>
 </div>
 
@@ -1171,7 +1171,7 @@
   <div class="download-copy">
     <div id="dl-served" hidden>
       <strong>Run it offline instead</strong>
-      <p>The entire tool is this one self-contained file: no external stylesheet, script, font, or network request. Put it on a USB stick and open it on an air-gapped machine before entering rolls for a wallet you intend to keep.</p>
+      <p>The entire tool is this one self-contained file: no external stylesheet, script, font, or network request. Put it on a USB stick and open it on an air-gapped machine, which is where any sequence worth checking belongs &mdash; even a test one.</p>
     </div>
     <div id="dl-local" hidden>
       <strong id="dl-local-head">You are already running the local copy</strong>
@@ -4323,7 +4323,7 @@ const EntropyCore = (() => {
     } else if (OFFLINE_BUILD) {
       $('dl-path').closest('p').hidden = true;
       $('dl-local-head').textContent = 'This is the file to keep';
-      $('dl-local-copy').textContent = 'You are reading it over a network, which is fine for a look around. Save it, check it against the published checksum below, and open it from disk on a machine that has never been online before entering rolls for a wallet you intend to keep.';
+      $('dl-local-copy').textContent = 'You are reading it over a network, which is fine for a look around. Save it, check it against the published checksum below, and open it from disk on a machine that has never been online before entering any sequence you care about.';
     }
     /* Chrome refuses <a download> when the page itself came from file://, so
        on a local copy of the site page the button cannot save anything -- it
