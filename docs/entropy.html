@@ -35,9 +35,9 @@
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4911" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4911" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4911" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4912" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260827-4912" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260827-4912" rel="stylesheet">
   <style>
 
   @font-face {
@@ -1650,7 +1650,7 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4911"></script>
+  <script src="assets/js/site-refresh.js?v=20260827-4912"></script>
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file
@@ -3816,14 +3816,12 @@ const EntropyCore = (() => {
     const info = spec();
     const bits = C.sourceEntropy({ method: method(), input });
     const target = state.words === 24 ? 256 : 128;
-    /* Shown past the target rather than pinned to it, because the reading is
-       honest about the source: a hundred rolls really do carry 258.5 bits.
-       What is not honest is leaving it there and letting a bar past full imply
-       that more rolls keep helping. A seed holds what it holds -- everything
-       above the target is hashed down into the same 256 bits. */
+    /* Left running past the target rather than pinned to it, because the
+       reading is honest about the source: a hundred rolls really do carry
+       258.5 bits. What that number must not imply is that the extra helps,
+       which is the note's job below. */
     const over = bits > target;
-    $('meter-val').textContent = bits.toFixed(1) + ' / ' + target + ' bits'
-      + (over ? ' — seed max ' + target : '');
+    $('meter-val').textContent = bits.toFixed(1) + ' / ' + target + ' bits';
     $('meter-fill').style.width = Math.min(100, bits / target * 100) + '%';
     $('meter-fill').classList.toggle('is-full', bits >= target);
 
@@ -3855,8 +3853,8 @@ const EntropyCore = (() => {
        would let someone roll another fifty in the belief they were buying
        something. They are not; they are choosing a different wallet. */
     if (over) {
-      $('meter-note').textContent += ' Past that, more ' + info.unit
-        + 's change which wallet you get but not how hard it is to guess.';
+      $('meter-note').textContent += ' The seed stops at ' + target + ' bits, so more '
+        + info.unit + 's change which wallet you get but not how hard it is to guess.';
     }
   }
 
