@@ -5586,6 +5586,263 @@ const guides = [
 
   /* ----------------------------------------------------------------- advanced */
   {
+    slug: "human-randomness",
+    category: "advanced",
+    products: [],
+    title: "Why you cannot think of a random number",
+    titleMark: "sc-die-mark",
+    summary: "Every wallet rests on one unguessable number, and the one tool that cannot produce it is the one you were born with. What people get wrong, how it has been measured, and what it cost the ones who tried.",
+    level: "beginner",
+    minutes: 12,
+    goals: ["learn", "harden"],
+    tags: ["Entropy", "Seed generation"],
+    icon: "bi-shuffle",
+    updated: "2026-08-26",
+    status: "published",
+    related: ["dice-entropy", "three-dice-seed", "what-not-to-normalize"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Think of a number between one and ten. Hold it for a second. You almost certainly did not pick one or ten, and there is a fair chance you picked seven &mdash; and whatever you chose, you did not choose it randomly. You chose it the way people choose, which is a different thing, and it is the reason every serious way of making a wallet takes the decision away from you.</p>
+
+      <p>A bitcoin wallet is one enormous number kept secret. Not a password that a company checks, not an account someone can lock &mdash; a number so large that nobody can search for it. Your recovery words are that number written so a human can copy it down. Everything you will ever own in that wallet hangs on it having been unguessable at the moment it was made.</p>
+
+      <p>Which raises an awkward question, because the obvious way to make a number nobody can guess is to think one up. That instinct is exactly backwards, and this is a guide about why.</p>
+
+      <h2><span class="sc-article-num">1</span>Try it first</h2>
+
+      <p>Rather than take any of this on trust, lose to a machine that has no idea who you are. It decides what you are going to press before you press it, and it is not clever: it remembers what you did the last few times you were in this position and bets you will do it again. That is the whole mechanism, and it is usually enough.</p>
+
+      <p>It cannot simply show you the guess &mdash; you would do the opposite and win every time, because in a game like this whoever moves second wins. So it seals the guess in a hash instead: you cannot unpick it, and it cannot wriggle out of it. Finish the round and it hands over the key, so you can recompute every commitment it made.</p>
+
+<div class="sc-rng-lab" id="sc-rng-lab">
+        <div class="sc-rng-head">
+          <div>
+            <span class="sc-rng-eyebrow"><i aria-hidden="true"></i> Pattern reader</span>
+            <h3>It has already guessed your next tap</h3>
+          </div>
+          <span class="sc-rng-private"><i aria-hidden="true"></i> Runs locally in your browser</span>
+        </div>
+        <p>Tap heads or tails as randomly as you can manage. Before each tap, the machine makes its guess and seals it as the code below. Once you choose, it reveals whether it read you correctly.</p>
+
+        <div class="sc-rng-console">
+          <div class="sc-rng-call-box">
+            <span>Next guess</span>
+            <div class="sc-rng-seal">
+              <i aria-hidden="true"></i>
+              <b data-rng-commit>&mdash;</b>
+            </div>
+            <small>Locked before you choose</small>
+          </div>
+
+          <div class="sc-rng-pad" data-rng-pad>
+            <button type="button" data-rng-face="H"><span class="sc-rng-coin" aria-hidden="true">H</span><span>Heads</span></button>
+            <button type="button" data-rng-face="T"><span class="sc-rng-coin" aria-hidden="true">T</span><span>Tails</span></button>
+          </div>
+          <p class="sc-rng-last" data-rng-last></p>
+        </div>
+
+        <div class="sc-rng-readout">
+          <div class="sc-rng-scoreline">
+            <span>Machine score</span>
+            <b data-rng-score>&ndash;</b>
+            <p data-rng-score-note></p>
+          </div>
+          <div class="sc-rng-unlock">
+            <div><span>Pattern breakdown</span><b data-rng-unlock>0 / 24 taps</b></div>
+            <div class="sc-rng-progress" aria-hidden="true"><i data-rng-progress></i></div>
+          </div>
+          <div class="sc-rng-strip" data-rng-strip aria-hidden="true"></div>
+        </div>
+
+        <div class="sc-rng-meta">
+          <b data-rng-count>0 taps</b>
+          <div>
+            <button type="button" data-rng-undo>Undo</button>
+            <button type="button" data-rng-reset>Start over</button>
+            <button type="button" data-rng-finish disabled>Finish and reveal</button>
+          </div>
+        </div>
+        <p class="sc-rng-tape" data-rng-tape></p>
+        <div class="sc-rng-result" data-rng-result hidden></div>
+        <div class="sc-rng-proof" data-rng-proof hidden></div>
+      </div>
+
+      <p>A coin would hold it to fifty percent, because a coin leaves nothing to remember. Most people cannot. Two numbers give them away, and both have exact answers for a real coin: how often you switch should be about half the time, because every gap between two flips is its own independent toss, and your longest streak of the same result should sit near six in sixty-four flips, because that is simply what happens.</p>
+
+      <p>It is worth sitting with why that guess has to be sealed rather than shown. The only reliable way to beat a predictor is to see its answer first &mdash; not to be random, just to be second. Take that away and there is nowhere to hide, because being contrary is a rule as much as being repetitive is, and either one is a pattern.</p>
+
+      <p>Most people switch closer to sixty percent of the time and stop their longest streak at three. Both errors come from the same place: a belief that randomness ought to look even.</p>
+
+      ${pullQuote("Randomness is lumpy. Evenness is the fingerprint of a person trying.")}
+
+      <h2><span class="sc-article-num">2</span>This has been measured for fifty years</h2>
+
+      <p>The machine above is not a modern trick either. Claude Shannon built one at Bell Labs in 1953 &mdash; a box that played matching pennies against whoever walked past, remembering only a couple of moves of history &mdash; and it beat people reliably enough that he wrote it up as <em>A Mind-Reading (?) Machine</em>. The joke in the question mark is that there is no mind reading involved. There is just a person who cannot stop repeating themselves and a machine with a good enough memory to notice.</p>
+
+      <p>The finding is old and it is not subtle. Wilhelm Wagenaar surveyed the literature on human random generation in 1972 and found the same distortions turning up in study after study, whichever way the task was framed: people alternate too much, avoid repeating themselves, and produce sequences far more balanced than chance would ever deliver. Later work has poked at it from every angle &mdash; changing the instructions, the pace, the alphabet, paying people, telling them exactly what they are doing wrong &mdash; and the bias does not go away. Knowing about it does not fix it.</p>
+
+      <p>Some of the specific habits are worth naming, because you can catch yourself doing them:</p>
+
+      <ul>
+        <li><strong>You avoid repeats.</strong> Having just written a 4, the next 4 feels illegitimate, so you write something else. A die has no such scruple.</li>
+        <li><strong>You spread things out.</strong> Asked for twenty numbers from one to six, people produce a suspiciously flat spread. Twenty real rolls are usually lopsided.</li>
+        <li><strong>You avoid the edges.</strong> One and ten feel like weak answers to "pick a number between one and ten", so they are picked less than their share.</li>
+        <li><strong>You reach for the same favourites.</strong> Seven does unreasonably well. So do odd numbers, and numbers that are not multiples of five.</li>
+        <li><strong>You think a streak owes you.</strong> After four heads, tails feels overdue. It is not. The coin has no memory, and neither does a die.</li>
+      </ul>
+
+      <p>None of this is stupidity. It is a mind doing what it is built for &mdash; finding and producing pattern &mdash; applied to the one job where pattern is the enemy.</p>
+
+      <h2><span class="sc-article-num">3</span>What it cost people who tried anyway</h2>
+
+      <p>For a while bitcoin let you do exactly the wrong thing. A brain wallet turned a passphrase you invented into a private key, with nothing else added. No file to lose, no metal plate to hide &mdash; the wallet lived in your head. It sounds elegant until you notice that anyone in the world can guess at it, forever, for free, without touching you or your computer.</p>
+
+      <p>Researchers went and counted the damage. A 2016 study checked around 300 billion candidate passphrases against the blockchain and found 884 brain wallets used between 2011 and 2015, holding about 1,806 BTC between them. <strong>All but 21 were emptied.</strong> Usually within a day of being funded, often within minutes &mdash; and by late 2013 the typical time to be drained was measured in minutes and seconds, because about a dozen automated bots were sitting there competing to be first.</p>
+
+      ${callout("The detail that should end the argument", "The same study found no evidence that people storing more bitcoin chose stronger passphrases. Having more to lose did not make anyone better at this. The people with real money on the line were as guessable as everyone else, because the limitation is not effort or care \u2014 it is that a human mind has no source of randomness in it.")}
+
+      <p>These were not careless people picking "password". They were choosing phrases they believed were obscure: song lyrics, private jokes, lines of scripture, sentences in other languages. Every one of them was reachable by a word list, because the space of things a person thinks of is unimaginably smaller than the space of things a coin can produce.</p>
+
+      <h2><span class="sc-article-num">4</span>The size of the gap</h2>
+
+      <p>It helps to see the numbers, because "not random enough" hides how enormous the shortfall is.</p>
+
+      <p>A 24-word recovery phrase carries 256 bits. That is not a big number written down, but it is roughly the count of atoms in the observable universe &mdash; a search nobody finishes, ever, with any machine that could be built. A 12-word phrase carries 128 bits, which is also never getting searched.</p>
+
+      <p>Now price the alternatives. Ninety-nine rolls of a six-sided die give 255.9 bits &mdash; just short of the 256 a 24-word seed holds, which is why some wallets ask for a hundredth roll and others hash the ninety-nine and call it done. Two hundred and fifty-six coin flips give 256 bits, one per flip. A thoroughly shuffled deck of cards is worth 225.6 bits all by itself, because the order it ended up in is one of 52 factorial possibilities, and dealing it out records that order. A memorable passphrase a person invents, by the estimates used in password research, tends to land somewhere in the twenties of bits &mdash; and the sequence you just tapped out above, however it scored, is worth less than the sixty-four bits it looks like, because your switching habit is itself information an attacker already has.</p>
+
+      <p>The gap between twenty-odd bits and 256 is not a matter of degree. One is a search that finishes while you make coffee. The other does not finish.</p>
+
+      ${pullQuote("A wallet is only as unguessable as the moment it was created. Nothing you do afterwards can add randomness that was never there.")}
+
+      <h2><span class="sc-article-num">5</span>So where does real randomness come from</h2>
+
+      <p>From physics, not from thought. Something has to actually happen in the world, with an outcome nothing recorded in advance.</p>
+
+      <p>It is worth being precise about what that means, because there are two different grades of it. A die is not actually random: it is a lump of plastic obeying ordinary mechanics, and a good enough measurement of the throw would tell you the face. It works because that measurement is impossible in practice &mdash; the outcome depends so violently on the starting conditions that nobody can know them well enough. That is chaos, not randomness, and for our purposes it is enough.</p>
+
+      <p>Then there is the other kind. A single atom of a radioactive isotope will decay at some point, and as far as physics can tell nothing whatsoever determines when. Not a hidden mechanism, not a variable nobody has measured yet &mdash; the timing appears to be indeterminate at the bottom. The half-life only describes what a vast number of them do on average; no fact about the individual atom is waiting to be discovered. That is randomness in the strongest sense available, and it is why serious hardware generators sample physical noise of this sort rather than anything a program computes.</p>
+
+      <p>Both beat you comfortably. The gap between a person and a die is far wider than the gap between a die and an atom.</p>
+
+      <p>Dice are the honest version of this and the reason people bother with them: you can watch the whole process, and there is no step where you are asked to decide anything. <a href="dice-entropy.html">Rolling your own entropy</a> covers doing it properly &mdash; and covers the trap this guide should make obvious, which is that the moment you re-roll a result for looking wrong, you have put your judgement back in charge and undone the point of the exercise. Six sixes is exactly as likely as any other six rolls. Write it down.</p>
+
+      <p>If you would rather see every step of the conversion too, <a href="three-dice-seed.html">three dice, one word</a> uses one octal and two hex dice to name each word directly, with nothing hashed.</p>
+
+      <p>Your hardware wallet's built-in generator is the other real option, and it is genuinely good &mdash; a dedicated circuit sampling physical noise, which is a far better randomness source than you are. The only thing it cannot do is let you watch. That is the whole trade: trust the sealed chip, or supply the randomness yourself from something you can see. Both are defensible. Inventing the number yourself is not.</p>
+
+      <h2><span class="sc-article-num">6</span>What to take away</h2>
+
+      <p>Not that you are bad at this. Everyone is, measurably, including the people who study it, and no amount of trying harder moves the needle.</p>
+
+      <p>What is worth carrying is the instinct to notice when a system is quietly asking you to be a random number generator &mdash; a passphrase you invent, a "memorable" seed, a set of rolls you tidied up because they looked wrong. In each case the fix is the same: hand the job to something physical, record whatever it says without editing, and check the result rather than trusting it.</p>
+
+      <p>The dice do not care what looks random. That is exactly why they are better at this than you are.</p>
+
+      <h2>Sources</h2>
+
+      <ul>
+        <li><a href="https://www.semanticscholar.org/paper/Generation-of-random-sequences-by-human-subjects:-A-Wagenaar/c0d41c4e93bf6e01e422339cfeca28e4c983ef9a" target="_blank" rel="noopener noreferrer">Wagenaar, W. A. (1972), "Generation of random sequences by human subjects: A critical survey of literature"</a>, <em>Psychological Bulletin</em> 77(2) &mdash; the survey that established the over-alternation and repeat-avoidance findings.</li>
+        <li><a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2023.1113654/full" target="_blank" rel="noopener noreferrer">Instruction effects on randomness in sequence generation</a> (<em>Frontiers in Psychology</em>, 2023) &mdash; recent work on how far changing the task moves the bias, which is: not far.</li>
+        <li><a href="https://www.cs.unm.edu/~vasek/papers/vasekfc16.pdf" target="_blank" rel="noopener noreferrer">Vasek, Bonneau, Castellucci, Keith and Moore (2016), "The Bitcoin Brain Drain"</a>, Financial Cryptography 2016 &mdash; the source of every brain wallet figure quoted above, including the drain times and the finding about larger balances.</li>
+        <li><a href="https://rclab.de/_media/shannon/mindreader_overview.pdf" target="_blank" rel="noopener noreferrer">Claude Shannon, "A Mind-Reading (?) Machine" (Bell Laboratories memorandum, 18 March 1953)</a> &mdash; the original of the guessing machine above, and still the clearest description of why it works.</li>
+        <li><a href="https://aaronsonoracle.com/" target="_blank" rel="noopener noreferrer">The Aaronson Oracle</a> &mdash; a modern version of the same demonstration, if you want to lose to a different implementation.</li>
+        <li><a href="https://www.lancaster.ac.uk/staff/towse/rgpage.html" target="_blank" rel="noopener noreferrer">John Towse's random generation resources</a> &mdash; methods and measures used in this area, for anyone who wants the underlying statistics.</li>
+      </ul>
+
+      <p>The panel above is a demonstration, not a test. A short round cannot establish anything about you in particular, and a fair coin beats it often enough that one good result proves nothing either. What it can do is let you watch a very small amount of memory anticipate you, using nothing but what you already typed &mdash; and the longer you play, the harder that is to dismiss.</p>`
+  },
+
+  {
+    slug: "three-dice-seed",
+    category: "advanced",
+    products: ["coldcard", "seedsigner", "jade"],
+    title: "Three dice, one word: rolling a seed you can read",
+    titleMark: "sc-die-mark",
+    summary: "One octal die and two hex dice throw exactly eleven bits \u2014 one recovery word, with nothing hashed and nothing to trust. The method, the arithmetic, and the one detail that quietly ruins it.",
+    level: "intermediate",
+    minutes: 14,
+    goals: ["setup", "harden", "learn"],
+    tags: ["Entropy", "Dice", "Seed generation"],
+    icon: "bi-dice-3",
+    updated: "2026-08-26",
+    status: "published",
+    related: ["dice-entropy", "seed-backup-metal", "recovery-test-drill"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">Rolling a six-sided die ninety-nine times and hashing the result works, but you cannot check it. You hand a column of digits to a machine and it hands back words, and the step in between is SHA-256 \u2014 which no one does in their head. There is a version of this where nothing is hidden, and it needs three dice.</p>
+
+      <p>The trick is to stop fighting the arithmetic. A recovery word is one of 2048, and 2048 is two to the eleventh, so a word is exactly eleven bits. A six-sided die cannot produce eleven bits neatly because six is not a power of two, which is why every six-sided method ends in a hash. Eight and sixteen <em>are</em> powers of two. An octal die is three bits. A hex die is four. One octal and two hex dice, thrown together, are 3 + 4 + 4 = 11.</p>
+
+      <p>One throw of three dice is one word. Not approximately, not after processing \u2014 the faces are the word.</p>
+
+      ${pullQuote("If the conversion needs a computer, you are trusting the computer. This one needs a printed page.")}
+
+      <h2><span class="sc-article-num">1</span>What you need</h2>
+
+      <p>Three dice: one eight-sided numbered 1 to 8, and two sixteen-sided numbered 0 to F. A printed dictionary that maps the three faces to a word. A pen and a worksheet. A cup to throw them in, so they tumble rather than getting placed. A hard flat surface, and a room with nothing electronic in it.</p>
+
+      <p>You also need a signing device \u2014 COLDCARD, SeedSigner and Jade all work \u2014 but only for the very last step, and not to generate anything. More on why below.</p>
+
+      <h2><span class="sc-article-num">2</span>The throw</h2>
+
+      <p>Shake all three dice in the cup and tip them out. Put the octal die on the left and the two hex dice beside it. It does not matter which hex die you put in the middle; they are identical and independent, so there is no ordering to preserve. What matters is that once they are in a row you read them left to right and write down all three characters.</p>
+
+      <p>That is one word. Look it up in the dictionary and write the word on the worksheet. Then do it again. You need <strong>23 of them</strong>.</p>
+
+      <p>Not 24 \u2014 and that is the part worth understanding rather than just following.</p>
+
+      <h2><span class="sc-article-num">3</span>Why the last word is not yours to choose</h2>
+
+      <p>A 24-word phrase is not 24 free words. It is 256 bits of secret plus an 8-bit checksum, and 24 &times; 11 = 264 = 256 + 8. Those eight checksum bits live in the last word, which is why the twenty-fourth word is mostly a verification digit rather than randomness. Your 23 throws are 253 bits. The last word carries the remaining three bits of secret, followed by a checksum computed over everything.</p>
+
+      <p>Three bits is eight possibilities. So there are exactly eight words that can legally finish your phrase, and which of the eight you pick is the last of your randomness \u2014 the checksum part is then forced.</p>
+
+      <p>Nobody computes a SHA-256 checksum with a pen. So this is the one step where the device earns its place: you enter your 23 words, it shows you the eight valid endings, and you throw the octal die one last time to choose between them. Faces 1 to 8, options one to eight. The device did not generate anything; it did arithmetic you could not do by hand, in front of you, on a wallet whose entropy you had already fixed.</p>
+
+      ${callout("Do it once as a rehearsal", `Run the whole procedure end to end on a wallet you will wipe immediately. The point is to find out that your dictionary printout is missing a page, or that your handwriting turns 8 into B, while it costs you nothing.`)}
+
+      <h2><span class="sc-article-num">4</span>The detail that quietly ruins it</h2>
+
+      <p>The octal die is numbered <strong>1 to 8</strong>, not 0 to 7.</p>
+
+      <p>This sounds like pedantry and is not. The dictionary is organised in eight blocks of 256 words, and the leading digit selects the block \u2014 but as a label, not as a multiplier. Block 1 is the first 256 words, so the dictionary opens at <code>100</code> for <em>abandon</em> and ends at <code>8FF</code> for <em>zoo</em>. Read the die as 0 to 7 and treat the digit as a multiplier, and every word lands 256 places from where it belongs.</p>
+
+      <p>Nothing would warn you. The phrase would still be 23 valid words, the device would still offer eight endings, and the wallet would still work perfectly \u2014 it would simply be a different wallet than the one your worksheet describes. You would only find out when you tried to restore from the sheet and arrived somewhere empty.</p>
+
+      <p>The safeguard costs nothing: use the printed dictionary as the authority and do not do the arithmetic yourself. The codes on the page already account for it.</p>
+
+      <h2><span class="sc-article-num">5</span>Check it before you trust it</h2>
+
+      <p>The whole appeal of this method is that no step requires trust, so the last thing to do is confirm the words you wrote are the words your dice actually chose. The <a href="../entropy.html" data-site-link>Entropy Workshop</a> takes the same three-character codes, does the same lookup, and shows you the phrase and the first addresses. Download it and run it offline; it fetches nothing and generates nothing.</p>
+
+      <p>If its words match your worksheet, your transcription is clean. If they do not, you have a copying error rather than a broken wallet \u2014 which is exactly the sort of thing you want to discover before funding it.</p>
+
+      ${pullQuote("Your recovery words are the backup. The worksheet full of dice codes is a receipt, not a key.")}
+
+      <h2><span class="sc-article-num">6</span>Is this better than 99 rolls?</h2>
+
+      <p>It is not more secure. Both give you 256 bits from dice you threw yourself, and neither can be improved on in that respect. What changes is how much you have to take on faith.</p>
+
+      <p>Hashing six-sided rolls is opaque, and the opacity has a real cost: as <a href="dice-entropy.html">rolling your own entropy</a> covers, wallets disagree about how to do it. Some hash the digits as written, some rewrite every 6 to a 0 first, some read the rolls as bits without hashing at all. The same column of rolls can produce completely unrelated wallets on two honest devices, and your notebook does not record which one you used.</p>
+
+      <p>The three-dice method has no such ambiguity, because there is no conversion to disagree about. A printed table says what each throw means. The price is buying two kinds of dice and printing a dictionary; the return is a procedure you can follow, check, and explain to someone else without saying "and then it hashes it".</p>
+
+      <p>If you already own six-sided dice and a device that accepts them, that method is fine and this one is not urgent. If you are drawn to this at all, it is probably because you want to see every step \u2014 and that instinct is the right one.</p>
+
+      <h2>Sources</h2>
+
+      <p>The method, the dice, the worksheet and the printed dictionary are the work of <a href="https://entropy.page/dice" target="_blank" rel="noopener noreferrer">D++ and Keysa's workshop</a> at entropy.page. The explanation above is ours; the procedure is theirs.</p>
+
+      <ul>
+        <li><a href="https://entropy.page/dice" target="_blank" rel="noopener noreferrer">entropy.page &mdash; Roll Your Own Seed Phrase</a> &mdash; the workshop, and where to get the dice and the printouts.</li>
+        <li><a href="https://entropy.page/files/dictionary.pdf" target="_blank" rel="noopener noreferrer">The BIP39 dictionary</a> &mdash; the lookup table itself, running 100 to 8FF. This is the one to print, and the authority on the codes.</li>
+        <li><a href="https://thesimplestbitcoinbook.net/wp-content/uploads/2023/09/Roll-Your-Own-Seed-Phrase-PDF.pdf" target="_blank" rel="noopener noreferrer">The slide deck</a> &mdash; the procedure step by step, and the arithmetic behind the three dice.</li>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki" target="_blank" rel="noopener noreferrer">BIP39</a> &mdash; the standard behind the wordlist and the checksum that fixes the last word.</li>
+      </ul>`
+  },
+
+  {
     slug: "dice-entropy",
     category: "advanced",
     products: ["coldcard", "seedsigner", "krux", "jade", "bitbox"],
@@ -5614,7 +5871,7 @@ const guides = [
         <span class="sc-die-mark" aria-hidden="true"></span>
         <div>
           <strong>Already rolled, and want to check the device converted them honestly?</strong>
-          <p><a href="../entropy.html">Entropy Workshop</a> turns a set of test rolls into the words and addresses they produce, so you can compare. It is a single file, usable in the browser or saved and run with the network off. <a href="#checking-the-conversion">The rules for using it safely</a> are further down and matter more than the tool does.</p>
+          <p><a href="../entropy.html">Entropy Workshop</a> turns a set of test rolls &mdash; or coin flips, or a shuffled deck &mdash; into the words and addresses they produce, so you can compare. It is a single file, usable in the browser or saved and run with the network off. <a href="#checking-the-conversion">The rules for using it safely</a> are further down and matter more than the tool does.</p>
         </div>
       </aside>
 
@@ -5726,7 +5983,7 @@ const guides = [
         "Anything that asks you to enter an existing recovery phrase to \"verify\" or \"validate\" it is stealing from you, however official it looks."
       ])}
 
-      ${callout("The tool for the job", `This site publishes one: <a href="../entropy.html">Entropy Workshop</a>. Enter your test rolls and it shows the words and first addresses they convert to, so you can compare them against what your device produced. It is a single file with nothing loaded from anywhere, so you can save it and run it on a machine that has never been online &mdash; and it deliberately cannot generate randomness or accept an existing recovery phrase, which is why it is safe to point you at.`)}
+      ${callout("The tool for the job", `This site publishes one: <a href="../entropy.html">Entropy Workshop</a>. Enter your test rolls, coin flips or drawn cards and it shows the words and first addresses they convert to, so you can compare them against what your device produced. It is a single file with nothing loaded from anywhere, so you can save it and run it on a machine that has never been online &mdash; and it deliberately cannot generate randomness or accept an existing recovery phrase, which is why it is safe to point you at.`)}
 
       <h2>Finishing up</h2>
 
@@ -7306,6 +7563,14 @@ const guides = [
 
       <p>Occasionally two miners find a block at nearly the same moment and the network briefly follows two tips. Within a block or so, one side gains work, the other is abandoned, and its transactions return to the mempool to be mined again. This is ordinary and self-correcting &mdash; and it is the concrete reason a single confirmation is good rather than final.</p>
 
+      <aside class="sc-tool-shortcut">
+        <span class="sc-shortcut-mark" aria-hidden="true"><i class="bi bi-box-seam"></i></span>
+        <div>
+          <strong>Watch one land, without waiting for one</strong>
+          <p>Blocks arrive about every ten minutes, which is a long time to sit looking at a page for the sake of an animation. The <a href="../block-demo.html">block confirmation simulator</a> fires one on demand so you can watch the pending block become the confirmed one and the rest of the strip shuffle down. The block it fires is invented and clearly marked as such &mdash; the prices, fees and network figures around it are the real live ones.</p>
+        </div>
+      </aside>
+
       <h2>The short version</h2>
 
       <p>A key that never moves signs a document that consumes specific earlier outputs. That document is gossiped to strangers, none of whom can accept or reject it on anyone else's behalf. It waits in a queue that has no owner, gets selected by a miner competing to guess a meaningless number, and is finally made real by your own computer independently checking every claim in the block that contains it.</p>
@@ -8686,11 +8951,12 @@ const renderGuideIndexNav = () => {
     const n = published.filter(g => g.category === cat.key).length;
     return `<li><a href="#${cat.key}">${cat.label} <span class="sc-guide-nav-count">${n}</span></a></li>`;
   }).join("");
-  /* The tool is not a guide category, and it sits below all of them on the
-     page. Without an entry here it is only reachable by scrolling past six
-     sections, which is how it ended up effectively hidden. Marked out rather
-     than blended in, because it is a different kind of thing. */
-  const tool = `<li><a class="is-tool" href="#entropy-workshop">Entropy Workshop</a></li>`;
+  /* The tools are not a guide category, and they sit below all of them on the
+     page. Without an entry here they are only reachable by scrolling past six
+     sections, which is how the first one ended up effectively hidden. Marked
+     out rather than blended in, because they are a different kind of thing --
+     you use them rather than read them. */
+  const tool = `<li><a class="is-tool" href="#entropy-workshop">Entropy</a></li>`;
   return `<nav class="sc-guide-nav" aria-label="Guide sections"><ul>${items}${tool}</ul></nav>`;
 };
 
@@ -8701,35 +8967,49 @@ const renderGuideIndexNav = () => {
    grid would both misfile it and bury it among forty siblings.
 
    The die face is the same mark the dice guide carries beside its title, so a
-   reader who has met one recognises the other. */
-const renderToolsBand = () => `
-    <section id="entropy-workshop" class="sc-section sc-section-dark">
+   reader who has met one recognises the other.
+
+   On the home page the same band runs with `home`, which is not a style
+   switch: a reader who arrived at guides.html has already chosen to read about
+   custody, and one who landed on the home page has chosen nothing yet. The
+   home copy therefore leads with checking a device you already own rather than
+   with producing entropy, and drops the objection-handling bullets, which
+   answer questions nobody has thought to ask that early. */
+const renderToolsBand = ({ home = false } = {}) => `
+    <section${home ? ' class="sc-section sc-home-tool-section"' : ' id="entropy-workshop" class="sc-section sc-section-dark"'}>
       <div class="container">
         <div class="sc-section-head">
-          <span class="sc-eyebrow">Interactive tool</span>
-          <h2>Test the method</h2>
-          <p>Use a disposable sequence to check how your device turns physical randomness into a wallet.</p>
+          <span class="sc-eyebrow">Entropy</span>
+          ${home
+            ? `<h2>Check the Dice Math</h2>
+          <p>Dice, coins or a shuffled deck &mdash; this shows you the words those events should have produced, and whether your device agrees.</p>`
+            : `<h2>Test the method</h2>
+          <p>Use a disposable sequence to check how your device turns physical randomness into a wallet.</p>`}
         </div>
         <div class="sc-tool-band">
           <span class="sc-die-mark" aria-hidden="true"></span>
           <div class="sc-tool-copy">
             <h2>Entropy Workshop</h2>
-            <p>Enter the rolls or flips you already made and see the recovery words and first addresses they convert to &mdash; then compare that against what your device showed you. If the two disagree, your device uses a different conversion, which is common and worth knowing before you trust a column of rolls as a backup.</p>
+            <p>Enter your dice rolls, coin flips or drawn cards and see the recovery words and first addresses they convert to &mdash; then compare that against what your device showed you. If the two disagree, your device uses a different conversion, which is common and worth knowing before you trust a column of rolls as a backup.</p>
             <ul class="sc-tool-facts">
-              <li>One file, with nothing loaded from anywhere</li>
+              ${home
+                ? `<li>Use it here, or save it and run it on a machine that has never been online</li>
+              <li>Generates no randomness, and has nowhere to type an existing phrase</li>`
+                : `<li>One file, with nothing loaded from anywhere</li>
               <li>Use it here, or save it and run it on a machine that has never been online</li>
               <li>Checks itself against the published BIP test vectors on load</li>
-              <li>Generates no randomness, and has nowhere to type an existing phrase</li>
+              <li>Generates no randomness, and has nowhere to type an existing phrase</li>`}
             </ul>
           </div>
           <div class="sc-tool-actions">
             <div class="sc-hero-actions">
               <a class="sc-btn sc-btn-primary" href="entropy.html"><span>Enter Workshop</span></a>
             </div>
-            <a class="sc-text-link" href="entropy.html" download="selfcustody-entropy-check.html" data-tool-download>Download the file <i class="bi bi-arrow-down-right"></i></a>
+            <a class="sc-text-link" href="entropy-offline.html" download="selfcustody-entropy-check.html" data-tool-download>Download the file <i class="bi bi-arrow-down-right"></i></a>
             <p>Use throwaway rolls, on a wallet you will wipe afterwards. <a href="guides/dice-entropy.html">Roll the dice</a> explains the procedure and the rules that matter more than the tool does.</p>
           </div>
         </div>
+        ${home ? '' : `<p class="sc-tool-aside">Also worth a minute: the <a href="guides/human-randomness.html#sc-rng-lab">guessing machine</a> in <em>Why you cannot think of a random number</em>. It calls your next tap before you make it and seals the guess so it cannot cheat, and it explains faster than any article can why nobody should invent their own randomness.</p>`}
       </div>
     </section>`;
 

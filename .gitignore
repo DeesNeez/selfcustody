@@ -27,3 +27,6 @@ docs/_contact-preview.html
 
 # macOS Finder metadata, at any level.
 .DS_Store
+
+# Local agent tooling (preview server config), not project config.
+.claude/
