@@ -16,6 +16,7 @@ import { createHash } from 'node:crypto';
 const SITE = 'docs/entropy.html';
 const OFFLINE = 'docs/entropy-offline.html';
 const SIDECAR = 'docs/entropy-offline.html.sha256';
+const CR = String.fromCharCode(13);
 
 const codeOnlyEarly = html => html
   .replace(/<!--[\s\S]*?-->/g, ' ')
@@ -47,6 +48,17 @@ export function assertWorkshop() {
     check(/entropy-offline\.html\s*$/.test(readFileSync(SIDECAR, 'utf8').trim()),
       'the sidecar does not name entropy-offline.html, so shasum -c cannot use it');
   }
+
+  /* ---- line endings ------------------------------------------------------
+     The artifact is hashed byte for byte, so its bytes must be the same
+     everywhere. entropy-core.js is checked out CRLF on Windows and LF
+     elsewhere and is inlined verbatim, which produced a mixed file: git
+     normalised the committed blob, and the published SHA-256 then described
+     the working copy rather than what GitHub served. Anyone following the
+     verify instructions got a mismatch and was right to distrust the file. */
+  check(!offline.includes(CR),
+    'the offline artifact contains carriage returns; git will rewrite it and the published checksum will not match what is served');
+  check(!site.includes(CR), 'the site build contains carriage returns');
 
   /* ---- the build flag ---------------------------------------------------
      One constant decides whether a page offers the download or the checksum
