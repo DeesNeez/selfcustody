@@ -641,6 +641,18 @@ ${FONTS.map(embedFont).join('\n')}
   }
 
 
+  /* Only ever seen with scripting off, so it cannot rely on anything the page
+     does at runtime. Styled like the security brief above it rather than as an
+     error: nothing has gone wrong, the page just cannot do its job. Red would
+     imply a fault to fix. */
+  .noscript-brief {
+    border-color: rgba(255, 138, 0, 0.4);
+    background: rgba(255, 138, 0, 0.07);
+  }
+  .noscript-brief p { margin: 0 0 10px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
+  .noscript-brief p:last-child { margin-bottom: 0; color: var(--muted); }
+  .noscript-brief strong { color: #ffad4c; }
+
   /* ---- the refusal dialog ----------------------------------------------
      A modal rather than an inline message, because this is the one thing on
      the page that must not be scrolled past. Red rather than the page's
@@ -1534,6 +1546,47 @@ const ui = () => `
     $('endings').hidden = true;
   }
 
+  /* Every element that ends up holding something derived from the entered
+     sequence, plus the two inputs and the cached seed.
+
+     hideResults() only sets hidden, which is right while someone is editing --
+     the answer comes back the moment they press the button again. It is not
+     enough when the page is being left: the words, the account key and the
+     addresses are all still in the document, and a back-navigation that
+     restores from the back/forward cache puts them straight back on screen,
+     for whoever is now sitting there.
+
+     This is best-effort, and the limit is worth stating plainly rather than
+     implying otherwise. It empties fields and detaches nodes, which is what a
+     page can do. It cannot erase memory: JavaScript strings are immutable, so
+     the old values persist until the garbage collector happens to reclaim
+     them, and nothing here can force that. Treat it as tidying the desk, not
+     shredding the paper. */
+  const SECRET_FIELDS = ['input', 'passphrase'];
+  const SECRET_TEXT = [
+    'words', 'entropy', 'ending-list',
+    'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
+    'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
+    'fp-base', 'fp-pass', 'fp-base-tag'
+  ];
+
+  function clearSensitiveState() {
+    for (const id of SECRET_FIELDS) {
+      const el = $(id);
+      if (el) el.value = '';
+    }
+    for (const id of SECRET_TEXT) {
+      const el = $(id);
+      if (!el) continue;
+      el.replaceChildren();
+      el.textContent = '';
+    }
+    state.seed = null;
+    state.seedKey = null;
+    state.choice = 0;
+    hideResults();
+  }
+
   function fail(message) {
     $('results').hidden = true;
     $('error').hidden = false;
@@ -1680,6 +1733,22 @@ const ui = () => `
 
   /* ---- wiring ---- */
 
+  /* Leaving the page, by any route -- navigation, closing the tab, the phone
+     going to another app and the page being discarded. pagehide fires where
+     unload does not on mobile, and unlike unload it does not prevent the page
+     entering the back/forward cache.
+
+     pageshow with persisted set means the browser restored a live page rather
+     than loading it again: the DOM comes back exactly as it was, results
+     included, which is the case that made this necessary.
+
+     Deliberately not visibilitychange. Switching apps to read the instructions
+     on a device screen, or to check a note, is a normal thing to do halfway
+     through entering ninety-nine rolls, and destroying that work would be a
+     bug of our own making rather than a safeguard. */
+  addEventListener('pagehide', clearSensitiveState);
+  addEventListener('pageshow', event => { if (event.persisted) clearSensitiveState(); });
+
   document.querySelectorAll('[data-group]').forEach(button => {
     button.addEventListener('click', () => onPick(button.dataset.group, button.dataset.value));
   });
@@ -1718,7 +1787,15 @@ const ui = () => `
     const back = size === 1 || current.length % size !== 0 ? 1 : size;
     setInput(current.slice(0, -back));
   });
-  $('clear').addEventListener('click', () => { clearFull(); wasFull = false; setInput(''); });
+  /* The button says "Clear all", and now it means it: the same path the page
+     uses when it is being left, so there is one definition of "cleared" rather
+     than two that can drift. */
+  $('clear').addEventListener('click', () => {
+    clearFull();
+    wasFull = false;
+    clearSensitiveState();
+    setInput('');
+  });
   $('go').addEventListener('click', derive);
   $('alarm-back').addEventListener('click', () => $('alarm').close());
   $('alarm-clear').addEventListener('click', () => {
@@ -1903,6 +1980,13 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 </section>
 
 <main class="wrap workspace">
+
+<noscript>
+  <div class="banner noscript-brief">
+    <p><strong>This tool needs JavaScript, and it is switched off.</strong> Everything here is arithmetic done in your browser &mdash; hashing the rolls, deriving the keys, checking the results against the published test vectors. None of it can run, so the controls below will not respond and no wallet can be shown.</p>
+    <p>Nothing is missing from the page and nothing failed to load; there is simply no server doing this work elsewhere, which is the property that makes the tool safe to use offline. Turn JavaScript on for this page, or open it in a browser where it is enabled.</p>
+  </div>
+</noscript>
 
 <div class="banner security-brief">
   <p><strong>Treat this tool like seed material.</strong> For a wallet you intend to keep, download and verify this file, then use it on a machine that has never been online. For a device check, use a disposable test wallet and wipe it afterward.</p>
@@ -2308,6 +2392,7 @@ export function renderEntropyOffline() {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src data:; img-src data:; form-action 'none'; base-uri 'none'">
+  <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
 <title>Entropy Workshop | SelfCustody.ca</title>
 <style>${styles()}</style>

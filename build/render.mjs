@@ -17,6 +17,7 @@ import { guides, publishedGuides, renderGuideBody } from './guides.mjs';
 import { renderEntropyOffline, renderEntropyEmbed } from './tools/entropy-page.mjs';
 import { assertNoUnexpectedFetches } from './tools/assert-no-fetch.mjs';
 import { assertGlyphCoverage } from './tools/assert-glyphs.mjs';
+import { assertWorkshop } from './tools/assert-workshop.mjs';
 import { createHash } from 'node:crypto';
 import { copyFileSync } from 'node:fs';
 
@@ -62,7 +63,7 @@ const FILES = {
 };
 
 const SITE = 'https://selfcustody.ca';
-const ASSET_VERSION = '20260827-4891';
+const ASSET_VERSION = '20260827-4892';
 const ASSET_QUERY = /(assets\/(?:vendor\/bootstrap-icons\/bootstrap-icons\.css|css\/(?:style|site-refresh)\.css|js\/site-refresh\.js)\?v=)[^"']+/g;
 
 /* The whole container block, anchored on the <noscript> that always follows it.
@@ -315,6 +316,20 @@ const entropySite = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- Before every stylesheet, script, font and image below, because a meta
+       CSP only governs what is fetched after it is parsed. Same shape as the
+       offline build's policy, loosened exactly where this build differs: it
+       has real files beside it, so 'self' where that one says none.
+
+       connect-src 'none' is the load-bearing line. This page has nothing to
+       send anywhere, and the shared site script that runs on every other page
+       does fetch (the glossary loads its terms) -- so the policy states that
+       on this page, that must not happen.
+
+       frame-ancestors is absent on purpose: meta CSP cannot enforce it. It
+       needs a response header, which GitHub Pages does not let us set. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device.">
   <title>Entropy Workshop | SelfCustody.ca</title>
@@ -457,3 +472,4 @@ console.log(`icon check: ${referenced.size} glyphs by name and ${referencedPoint
    no business fetching from, and the offline build may not fetch at all. */
 assertNoUnexpectedFetches('docs');
 assertGlyphCoverage('docs');
+assertWorkshop();
