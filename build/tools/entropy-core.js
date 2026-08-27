@@ -398,6 +398,29 @@ const EntropyCore = (() => {
     return base58check(out);
   };
 
+  /* The same 78 bytes with the private half in place of the public one: a
+     different version prefix, and the key written as 0x00 followed by the 32
+     private bytes so that both forms are the same length.
+
+     This is the spending key for the account. It is shown because the page
+     already shows the recovery words, which are strictly more powerful -- a
+     phrase rebuilds every account, an account xprv rebuilds one. Withholding
+     the lesser secret while printing the greater one would be theatre. */
+  const XPRV_VERSION = 0x0488ade4;
+
+  const encodeXprv = (node, version = XPRV_VERSION) => {
+    const out = new Uint8Array(78);
+    const view = new DataView(out.buffer);
+    view.setUint32(0, version, false);
+    out[4] = node.depth;
+    out.set(node.parentFingerprint, 5);
+    view.setUint32(9, node.index, false);
+    out.set(node.chainCode, 13);
+    out[45] = 0;
+    out.set(node.key, 46);
+    return base58check(out);
+  };
+
   /* ---- bech32 and bech32m ----------------------------------------------- */
 
   const BECH32 = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
@@ -598,6 +621,7 @@ const EntropyCore = (() => {
   const ADDRESS_TYPES = {
     legacy: {
       xpubVersion: 0x0488b21e, /* BIP32's own version bytes, and what every wallet understands. */
+      xprvVersion: 0x0488ade4,
       label: 'Legacy',
       prefix: '1',
       purpose: 44,
@@ -606,6 +630,7 @@ const EntropyCore = (() => {
     },
     nested: {
       xpubVersion: 0x049d7cb2, /* The SLIP-132 variant for nested SegWit. */
+      xprvVersion: 0x049d7878,
       label: 'Nested SegWit',
       prefix: '3',
       purpose: 49,
@@ -617,6 +642,7 @@ const EntropyCore = (() => {
     },
     native: {
       xpubVersion: 0x04b24746, /* The SLIP-132 variant for native SegWit. */
+      xprvVersion: 0x04b2430c,
       label: 'Native SegWit',
       prefix: 'bc1q',
       purpose: 84,
@@ -625,6 +651,7 @@ const EntropyCore = (() => {
     },
     taproot: {
       xpubVersion: 0x0488b21e, /* Taproot descriptors use plain xpub; there is no SLIP-132 prefix for it. */
+      xprvVersion: 0x0488ade4,
       label: 'Taproot',
       prefix: 'bc1p',
       purpose: 86,
@@ -1674,7 +1701,8 @@ const EntropyCore = (() => {
     hash160, hash256, taggedHash,
     pointMul, compress, base58check, segwitAddress, convertBits,
     entropyToMnemonic, checkMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
-    encodeXpub, fingerprint, masterFingerprint, publicKeyOf, XPUB_VERSION,
+    encodeXpub, encodeXprv, fingerprint, masterFingerprint, publicKeyOf,
+    XPUB_VERSION, XPRV_VERSION,
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
