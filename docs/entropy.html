@@ -35,9 +35,9 @@
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4898" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4898" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4898" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4899" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260827-4899" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260827-4899" rel="stylesheet">
   <style>
 
   @font-face {
@@ -289,6 +289,20 @@
     margin: 10px 0 0; padding: 9px 12px; border-radius: 9px;
     font-size: 0.82rem; line-height: 1.55;
   }
+  .sc-workshop /* The verdict and the opener sit on one line; the explanation takes its own
+     when opened. Laid out with flex rather than by setting display on the
+     <summary>: display:inline there stops the browser treating it as the
+     disclosure's summary at all, .sc-workshop and the first version of this shipped with
+     the "collapsed" text permanently visible underneath. */
+  .checksum-note{
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    column-gap: 10px; row-gap: 4px;
+  }
+  .sc-workshop .checksum-note b{ flex: 0 0 auto; font-weight: 700; }
+  .sc-workshop .checksum-more{ flex: 1 1 auto; min-width: 0; margin: 0; }
+  .sc-workshop .checksum-more[open]{ flex-basis: 100%; }
+  .sc-workshop .checksum-more summary{ color: inherit; opacity: .75; font-size: 0.8rem; font-weight: 400; }
+  .sc-workshop .checksum-more p{ margin: 7px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.6; }
   .sc-workshop .checksum-note.is-ok{
     color: #8be3c6; border: 1px solid rgba(53, 180, 138, 0.32); background: rgba(53, 180, 138, 0.07);
   }
@@ -1223,7 +1237,7 @@
         <span data-dl-label>Download</span>
       </a>
     </div>
-    <small data-dl-note>~270 KB &middot; no installer</small>
+    <small data-dl-note>~280 KB &middot; no installer</small>
   </div>
 </section>
 
@@ -1369,7 +1383,13 @@
 
   <h3>Recovery words</h3>
   <ol class="words" id="words"></ol>
-  <p class="checksum-note" id="checksum-note"></p>
+  <div class="checksum-note" id="checksum-note">
+    <b id="checksum-line"></b>
+    <details class="checksum-more" id="checksum-more">
+      <summary>What the last word is made of</summary>
+      <p id="checksum-detail"></p>
+    </details>
+  </div>
 
   <h3>First addresses</h3>
   <p class="hint" id="type-note"></p>
@@ -1596,7 +1616,7 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4898"></script>
+  <script src="assets/js/site-refresh.js?v=20260827-4899"></script>
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file
@@ -3873,7 +3893,8 @@ const EntropyCore = (() => {
   const SECRET_TEXT = [
     'words', 'entropy', 'ending-list',
     'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
-    'descriptor', 'descriptor-recv', 'descriptor-chng', 'checksum-note',
+    'descriptor', 'descriptor-recv', 'descriptor-chng',
+    'checksum-line', 'checksum-detail',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
     'fp-base', 'fp-pass', 'fp-base-tag'
   ];
@@ -4035,16 +4056,23 @@ const EntropyCore = (() => {
     const sum = C.checkMnemonic(state.seed.mnemonic, WORDLIST);
     const note = $('checksum-note');
     note.className = 'checksum-note' + (sum.ok ? ' is-ok' : ' is-bad');
-    note.textContent = sum.ok
-      ? 'Checksum verified. Word ' + sum.words + ' is ' + sum.freeBits
-        + ' bits of entropy followed by ' + sum.checksumBits + ' of checksum. '
-        + (spec().lookup
-          ? 'Those ' + sum.freeBits + ' are the bits you never rolled, which is the choice you made above; the '
-            + sum.checksumBits + ' are computed from everything else.'
-          : 'Hashing fixes all ' + sum.entropyBits + ' entropy bits, so those ' + sum.freeBits
-            + ' are already decided and exactly one word ' + sum.words + ' fits. A lookup table leaves them unrolled and does offer a list; a hash does not.')
-        + ' The checksum itself is never a choice — it is computed either way.'
-      : 'This phrase does not pass the BIP39 checksum, which should be impossible here. Do not use it.';
+    /* The verdict is the part worth reading every time; the arithmetic behind
+       it is worth reading once. Folded away rather than deleted, because the
+       question it answers -- why some methods offer a last word to pick and
+       others cannot -- is a real one that came up the moment the choice
+       existed. */
+    $('checksum-line').textContent = sum.ok
+      ? 'Checksum verified.'
+      : 'This phrase fails the BIP39 checksum. Do not use it.';
+    $('checksum-more').hidden = !sum.ok;
+    $('checksum-detail').textContent = 'Word ' + sum.words + ' is ' + sum.freeBits
+      + ' bits of entropy followed by ' + sum.checksumBits + ' of checksum. '
+      + (spec().lookup
+        ? 'Those ' + sum.freeBits + ' are the bits you never rolled, which is the choice you made above; the '
+          + sum.checksumBits + ' are computed from everything else.'
+        : 'Hashing fixes all ' + sum.entropyBits + ' entropy bits, so those ' + sum.freeBits
+          + ' are already decided and exactly one word ' + sum.words + ' fits. A lookup table leaves them unrolled and does offer a list; a hash does not.')
+      + ' The checksum itself is never a choice — it is computed either way.';
 
     $('words').replaceChildren(...state.seed.mnemonic.map((word, i) => {
       const li = document.createElement('li');
