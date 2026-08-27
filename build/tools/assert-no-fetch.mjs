@@ -51,12 +51,37 @@ const ALLOWED = {
    The Workshop is not an exception that needs listing: it loads the same
    script, and its CSP says connect-src 'none', so none of these can fire
    there whatever the script contains. */
-const SHARED_SCRIPT_ORIGINS = {
-  'https://mempool.space': 'blocks, fees and mempool state for the dashboard',
-  'https://api.kraken.com': 'spot price for the dashboard',
-  'https://api.alternative.me': 'fear and greed index for the dashboard',
-  'https://api.frankfurter.dev': 'USD to CAD, so the price can be shown in local currency',
-  'https://btclexicon.com': 'the glossary term list'
+/* Which local script may name which external origin, and why.
+
+   Permission belongs to a file, not to an origin in the abstract. A single
+   allowlist applied to every asset meant a stylesheet could carry
+   background-image: url("https://api.kraken.com/pixel") and pass, because an
+   API was permitted somewhere else entirely -- a real automatic request, waved
+   through. Any file not listed here may name no external origin at all.
+
+   The rule for a script is deliberately blunter than for markup: every origin
+   it names must be declared, whether or not the guard can see a call. Real
+   code builds URLs in variables and wraps its own fetch helper, and matching
+   only literals inside fetch() missed every one of the dashboard's. The cost
+   is that a URL in a comment also has to be written down, which is a line of
+   documentation rather than a defect.
+
+   Every endpoint below is a public read-only one, called with no key and no
+   identifier attached. */
+const SCRIPT_ORIGINS = {
+  'assets/js/site-refresh.js': {
+    'https://mempool.space': 'blocks, fees and mempool state for the dashboard',
+    'https://api.kraken.com': 'spot price for the dashboard',
+    'https://api.alternative.me': 'fear and greed index for the dashboard',
+    'https://api.frankfurter.dev': 'USD to CAD, so the price can be shown in local currency',
+    'https://btclexicon.com': 'the glossary term list'
+  },
+  /* Instrumentation for block-demo.html, which is not part of the site proper.
+     It wraps fetch to fake a confirmation on demand and never calls out itself;
+     the origin appears in a comment naming the endpoint it intercepts. */
+  'block-probe.js': {
+    'https://mempool.space': 'named in a comment describing the request it wraps'
+  }
 };
 
 /* Every element attribute that makes the browser fetch without being clicked.
@@ -217,6 +242,42 @@ function assetGraph(html, dir, depth = 4) {
   return [...seen];
 }
 
+/* One asset, under the rule that fits what it is.
+
+   The shared script is the one file permitted to reach the declared APIs,
+   because it is the one file that calls them. Any other asset gets no
+   exemption: a stylesheet has no business naming an external origin, and a
+   CSS url() is a fetch the moment the rule matches.
+
+   Scanned once for the whole site rather than once per page that links it.
+   The first version of this ran inside the per-page loop, so a single bad line
+   in site-refresh.css reported itself seventy times -- which buries the one
+   other thing a build failure might also be telling you. */
+function checkAsset(file) {
+  const where = relative('docs', file).replace(/\\/g, '/');
+  const body = readFileSync(file, 'utf8');
+  const permitted = SCRIPT_ORIGINS[where] || {};
+  const problems = [];
+
+  for (const origin of scriptOrigins(body)) {
+    if (origin === SELF_ORIGIN) continue;
+    if (origin in permitted) continue;
+    problems.push(SCRIPT_ORIGINS[where]
+      ? `${where} names ${origin}, which is not declared for it`
+      : `${where} names ${origin}, and no external origin is declared for this file`);
+  }
+
+  /* A stylesheet's own fetching surfaces, which the markup pass never sees
+     because it only reads the page. */
+  if (/\.css$/i.test(file)) {
+    for (const { url, why } of autoFetched(body)) {
+      const origin = originOf(url);
+      if (origin && origin !== SELF_ORIGIN) problems.push(`${where}: ${why} -> ${url}`);
+    }
+  }
+  return problems;
+}
+
 function checkFile(path, name) {
   const html = readFileSync(path, 'utf8');
   const problems = [];
@@ -242,17 +303,6 @@ function checkFile(path, name) {
       if (origin === SELF_ORIGIN) continue;
       if (!(origin in SHARED_SCRIPT_ORIGINS)) {
         problems.push(`an inline script names ${origin}, which is not declared`);
-      }
-    }
-  }
-
-  /* Everything the page loads is scanned by the stricter script rule. */
-  for (const asset of assetGraph(html, dirname(path))) {
-    const where = relative('docs', asset).replace(/\\/g, '/');
-    for (const origin of scriptOrigins(readFileSync(asset, 'utf8'))) {
-      if (origin === SELF_ORIGIN) continue;
-      if (!(origin in SHARED_SCRIPT_ORIGINS)) {
-        problems.push(`${where} names ${origin}, which is not declared`);
       }
     }
   }
@@ -284,10 +334,18 @@ function walk(dir, out = []) {
 
 export function assertNoUnexpectedFetches(root = 'docs') {
   const failures = [];
+  const assets = new Set();
+
   for (const file of walk(root)) {
     const name = relative(root, file).replace(/\\/g, '/');
     const problems = checkFile(file, name.split('/').pop());
     if (problems.length) failures.push([name, problems]);
+    for (const asset of assetGraph(readFileSync(file, 'utf8'), dirname(file))) assets.add(asset);
+  }
+
+  for (const asset of [...assets].sort()) {
+    const problems = checkAsset(asset);
+    if (problems.length) failures.push([relative(root, asset).replace(/\\/g, '/'), problems]);
   }
 
   if (failures.length) {
@@ -296,9 +354,9 @@ export function assertNoUnexpectedFetches(root = 'docs') {
       console.error(`  ${name}`);
       for (const p of problems) console.error(`     ${p}`);
     }
-    console.error('\nIf a request is intentional, add its origin to ALLOWED (page markup)');
-    console.error('or SHARED_SCRIPT_ORIGINS (shared script) in');
-    console.error('build/tools/assert-no-fetch.mjs, with a reason beside it.\n');
+    console.error('\nIf a request is intentional, declare it in build/tools/assert-no-fetch.mjs');
+    console.error('with a reason beside it: ALLOWED for a page\'s own markup, SCRIPT_ORIGINS');
+    console.error('for a script, keyed by the file allowed to reach it.\n');
     process.exit(1);
   }
 

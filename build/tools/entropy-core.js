@@ -756,7 +756,17 @@ const EntropyCore = (() => {
       throw new Error('a descriptor branch is 0 for receiving or 1 for change');
     }
     const branches = branch === null ? '<0;1>' : String(branch);
-    const key = `[${String(fingerprint).toLowerCase()}/${descriptorOrigin(path)}]${xpub}/${branches}/*`;
+
+    /* A root path derives nothing, so there is no path to write after the
+       fingerprint -- and BIP380 has a form for exactly that: [fingerprint]
+       with no slash. Joining unconditionally produced "[deadbeef/]", which is
+       not valid origin syntax and which the checksum then blessed. That is the
+       same failure the path canonicalisation was meant to end: a malformed
+       string wearing a valid checksum, so the one signal a reader has that the
+       line survived transcription says yes to a line no wallet will parse. */
+    const origin = descriptorOrigin(path);
+    const source = `[${String(fingerprint).toLowerCase()}${origin ? '/' + origin : ''}]`;
+    const key = `${source}${xpub}/${branches}/*`;
     return withChecksum(script(key));
   };
 

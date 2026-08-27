@@ -1188,6 +1188,20 @@ const selfTest = () => `
       () => WORDLIST[C.METHODS.octahex.indexOf('100')], 'abandon'],
     ['Octal and hex dictionary, last cell',
       () => WORDLIST[C.METHODS.octahex.indexOf('8FF')], 'zoo'],
+    /* The 12-word branch of the dictionary method, which the 24-word vectors
+       above do not touch: a different rolled-word count, a different number of
+       free bits, a 4-bit checksum instead of 8, and a different last-word
+       index. Eleven throws of the first cell are 121 zero bits, and ending
+       zero adds seven more, so the entropy is 128 zeros -- which BIP39
+       publishes the phrase for. */
+    ['Octal and hex, 11 throws make BIP39\u2019s all-zero 12-word phrase',
+      () => C.deriveSeed({ method: 'octahex', input: '100'.repeat(11), words: 12,
+                           wordlist: WORDLIST, choice: 0 }).mnemonic.join(' '),
+      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'],
+    ['Octal and hex, 12 words leave 128 endings and 24 leave 8',
+      () => [C.lookupDraft({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST }).options.length,
+             C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST }).options.length].join(),
+      '128,8'],
     ['Dice bit table codes', () => C.diceBits('123456'), '0110110100'],
     ['Dice with 6 as 0', () => C.hex(C.METHODS.dicezero.entropy('123456', 16)),
       C.hex(C.sha256(C.utf8('123450')).slice(0, 16))],
@@ -1333,6 +1347,13 @@ const ui = () => `
     if (!C.METHODS[method()].counts[state.words]) {
       state.words = Number(Object.keys(C.METHODS[method()].counts)[0]);
     }
+
+    /* The chosen ending belongs to a particular seed length. A 12-word draw
+       offers 128 of them and a 24-word one offers 8, so a choice made at 12
+       can point past the end of the 24-word list -- and the picker only appears
+       once enough throws are in, which meant the page could sit in a state it
+       could not derive from and offered no way back. */
+    if (group === 'words') state.choice = 0;
 
     if (group === 'source' || group === 'conversion' || group === 'dice' || group === 'cardconv') {
       /* Rolls, flips and lookup entries are different alphabets, so carrying
@@ -1494,7 +1515,7 @@ const ui = () => `
        most" over a box holding 500 was simply wrong. */
     const ceiling = C.limits(method(), state.words).most;
     el.textContent = info.lookup
-      ? 'That is all ' + info.rolled + ' words. Any more would not fit the phrase.'
+      ? 'That is all ' + C.rolledWords(method(), state.words) + ' words. Any more would not fit the phrase.'
       : info.variable
         ? 'That is ' + at.need + ' bits, a ' + state.words + '-word seed exactly. Further rolls would be dropped rather than used.'
         : info.extra
@@ -1510,10 +1531,17 @@ const ui = () => `
     $('cap-notice').hidden = true;
   }
 
+  /* Every programmatic write to the field goes through here -- the keypad, the
+     undo button, clearing -- so this is where the cache has to be dropped.
+     It only called hideResults(), which leaves the seed and any queued
+     derivation alive: tapping a key after a result was on screen changed the
+     input while the cached wallet stayed valid in memory. render()'s key check
+     stopped it reaching the screen, but a cache that is wrong is not something
+     to keep around and rely on one guard to catch. */
   function setInput(value) {
     $('input').value = value;
+    invalidateDerivedState();
     paintCount();
-    hideResults();
   }
 
   function press(value) {
@@ -2052,9 +2080,12 @@ const ui = () => `
   });
   $('go').addEventListener('click', derive);
   $('alarm-back').addEventListener('click', () => $('alarm').close());
+  /* "Clear and start again" after a refusal. The full clear, not just the
+     field: the passphrase and anything already derived belong to the sequence
+     being abandoned. */
   $('alarm-clear').addEventListener('click', () => {
     $('alarm').close();
-    setInput('');
+    clearSensitiveState();
     $('input').focus();
   });
 
@@ -2510,7 +2541,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   </div>
 
   <div class="xpub-box descriptor-box">
-    <div class="label"><span>Watch-only descriptor</span><code>BIP380 &middot; BIP389</code></div>
+    <div class="label"><span>Watch-only descriptor</span><code><a href="https://github.com/bitcoin/bips/blob/master/bip-0380.mediawiki" target="_blank" rel="noopener noreferrer">BIP380</a> &middot; <a href="https://github.com/bitcoin/bips/blob/master/bip-0389.mediawiki" target="_blank" rel="noopener noreferrer">BIP389</a></code></div>
     <p id="descriptor"></p>
     <p class="xpub-note">The same account key, written the way a wallet wants to be given it. It names the script type, so it cannot be imported as the wrong address type &mdash; the mistake that makes a restored wallet look empty. Sparrow, Bitcoin Core and most coordinators take this line directly.</p>
     <p class="xpub-note">The <code>&lt;0;1&gt;</code> covers receiving and change together, and the eight characters after the <code>#</code> are a checksum over everything before them, so a wallet can tell you that you mistyped rather than watching the wrong account in silence. It still contains no private key and can sign nothing.</p>
@@ -2551,7 +2582,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   <div class="body">
     <p>Every routine here is written from the published specifications rather than pulled from a library, so that the file can be read end to end. Hand-written cryptography can be subtly wrong, so on load the page runs the official test vectors and refuses to produce anything if they do not pass:</p>
     <ul class="vectors" id="vectors"></ul>
-    <p>The values come from FIPS 180-4, RFC 4231, and the test vectors published in BIP32, BIP39, BIP84 and BIP86. None was produced by running this code.</p>
+    <p>The values come from FIPS 180-4, RFC 4231, BIP380, and the test vectors published in BIP32, BIP39, BIP84 and BIP86. None was produced by running this code.</p>
   </div>
 </details>
 
