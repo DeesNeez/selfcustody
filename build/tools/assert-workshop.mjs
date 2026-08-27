@@ -76,8 +76,8 @@ export function assertWorkshop() {
     check(/selftest/.test(html), `the ${name} build has no self-test element`);
     const block = html.slice(html.indexOf('VECTORS = ['));
     const vectors = (block.match(/\n\s*\['[^']+',\s*\(\)/g) || []).length;
-    check(vectors >= 24,
-      `the ${name} build embeds ${vectors} self-test vectors; it should carry at least 24`);
+    check(vectors >= 26,
+      `the ${name} build embeds ${vectors} self-test vectors; it should carry at least 26`);
 
     /* A count is not coverage. These four are named because each guards
        something no other vector touches: the wordlist beyond the handful of
@@ -87,7 +87,12 @@ export function assertWorkshop() {
       'BIP39 wordlist, official English list',
       'BIP39 wordlist, 2048 unique words in order',
       'Descriptor checksum, BIP380 published vector',
-      'Watch-only descriptor, BIP84 account'
+      'Watch-only descriptor, BIP84 account',
+      /* The 12-word branch of the dictionary method. The suite covers it, but
+         the suite is not what ships -- the page embeds its own vectors, and
+         until this was listed the branch a reader would actually exercise had
+         none. */
+      'Octal and hex, 11 throws make BIP39\u2019s all-zero 12-word phrase'
     ]) {
       check(html.includes(vector),
         `the ${name} build does not embed the "${vector}" self-test vector`);
@@ -102,6 +107,8 @@ export function assertWorkshop() {
       `the ${name} build does not clear on pageshow, so a restored page can come back with its results`);
     check(!/addEventListener\('visibilitychange'/.test(html),
       `the ${name} build clears on visibilitychange, which would destroy work when someone switches apps mid-roll`);
+    check(/\$\('passphrase'\)\.addEventListener\('input',\s*\(\)\s*=>\s*\{\s*invalidateDerivedState\(\);\s*paintCount\(\);/s.test(html),
+      `the ${name} build cancels derivation on passphrase edits without restoring the Derive button`);
     check(/<noscript>/.test(html),
       `the ${name} build has no noscript notice; with scripting off it is a page of dead controls`);
     check(/name="referrer" content="no-referrer"/.test(html),

@@ -119,7 +119,11 @@ place as the file it describes. Anyone who could replace one could replace the
 other, and you would compare a tampered file against a tampered hash and get a
 clean result. Same-origin checksums detect accidents, not adversaries.
 
-So for a wallet holding real money, do not stop at the hash:
+The tool is for testing rather than for securing real bitcoin, so this matters
+less than it would otherwise. It still matters: a tampered copy could report a
+wrong phrase for a device you were checking, and send you looking for a fault
+in the device. If a result is going to change what you believe about a wallet,
+do not stop at the hash:
 
 - Compare it against a copy fetched over a different network, on a different
   device, or from the repository's commit history rather than the live site.
@@ -133,10 +137,19 @@ the published hash as an integrity check and nothing more.
 
 ## Using the tool safely
 
-For a wallet you intend to keep: download the file, verify the checksum, and
-open it on a machine that has never been online. For checking that a device
-converts the way you expect: use a disposable sequence and a test wallet you
-will wipe afterwards.
+**This tool is experimental and is meant for testing.** Do not rely on it to
+secure real bitcoin, and never test with funds you cannot afford to lose. Its
+cryptography is written from the specifications rather than taken from an
+audited library, which is what makes it readable end to end and also what makes
+it something to check rather than trust.
+
+Use it the way it is meant to be used: a test sequence rather than the rolls
+behind a wallet you use, a wallet holding nothing that you wipe afterwards, and
+a comparison against what your device produced.
+
+Even for that, download the file, verify the checksum, and open it from disk on
+a machine that has never been online. A sequence entered over a network is one
+you should treat as spent, whatever you intended it for.
 
 Never enter dice rolls, flips or cards that produced a wallet holding real funds
 into a copy of this page loaded over a network.
