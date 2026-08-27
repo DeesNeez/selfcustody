@@ -259,11 +259,13 @@ ${FONTS.map(embedFont).join('\n')}
   .source-pick {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
   }
-  /* Picture then words, the pair centred as one group so the three cards read
-     as a row of matching things rather than three left-aligned lists. */
+  /* Picture left, words right, both against the left edge. Centring the pair
+     was tried and looked worse: with three labels of different lengths the
+     drawings land at three different offsets, so the row loses the vertical
+     line the eye follows down the left of the cards. */
   .source-pick button {
-    display: flex; align-items: center; justify-content: center; gap: 12px;
-    min-width: 0;
+    display: flex; align-items: center; gap: 12px;
+    min-width: 0; text-align: left;
   }
   .source-pick .seg-mark { flex: 0 0 auto; display: grid; place-items: center; }
   .source-pick .seg-mark svg {
