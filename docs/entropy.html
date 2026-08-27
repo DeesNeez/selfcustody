@@ -35,9 +35,9 @@
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4904" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4904" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4904" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4905" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260827-4905" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260827-4905" rel="stylesheet">
   <style>
 
   @font-face {
@@ -1268,7 +1268,7 @@
 <section class="workbench" aria-label="Entropy conversion controls">
 <div class="setup-grid">
 <fieldset class="setup-wide">
-  <legend data-step="1"><span class="step-num">1. </span>What did you use?</legend>
+  <legend data-step="1"><span class="step-num">1. </span>Which entropy source?</legend>
   <div class="seg seg-even source-pick">
             <button type="button" data-group="source" data-value="coin" aria-pressed="false">Coins<small>heads or tails</small></button>
             <button type="button" data-group="source" data-value="dice" aria-pressed="false">Dice<small>six-sided, or octal and hex</small></button>
@@ -1283,7 +1283,7 @@
 </fieldset>
 
 <fieldset class="setup-wide" id="step-conversion">
-  <legend data-step="2"><span class="step-num">2. </span><span id="conv-legend">How does your device convert them?</span></legend>
+  <legend data-step="2"><span class="step-num">2. </span><span id="conv-legend">Which conversion method?</span></legend>
   <div class="seg seg-tall" id="conv-dice">
             <button type="button" data-group="conversion" data-value="dice" aria-pressed="false">Hash the rolls<small>COLDCARD, SeedSigner, Krux</small></button>
             <button type="button" data-group="conversion" data-value="dicezero" aria-pressed="false">Hash, 6 as 0<small>Keystone, BIP39 tool</small></button>
@@ -1631,7 +1631,7 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4904"></script>
+  <script src="assets/js/site-refresh.js?v=20260827-4905"></script>
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file
@@ -3578,9 +3578,12 @@ const EntropyCore = (() => {
     $('conv-dice').hidden = !askDice;
     $('conv-cards').hidden = !askCards;
     $('dice-kind').hidden = state.source !== 'dice';
-    $('conv-legend').textContent = askCards
-      ? 'How should the cards become a seed?'
-      : 'How does your device convert them?';
+    /* One wording for both. The dice branch used to ask how your device
+       converts and the card branch how the cards become a seed, which made the
+       legend change under the reader for a control that does the same job
+       either way -- and the hint below already names the devices each method
+       belongs to. */
+    $('conv-legend').textContent = 'Which conversion method?';
     document.querySelectorAll('[data-group="words"]').forEach(button => {
       button.disabled = !spec().counts[Number(button.dataset.value)];
     });

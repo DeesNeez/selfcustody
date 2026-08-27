@@ -1403,9 +1403,12 @@ const ui = () => `
     $('conv-dice').hidden = !askDice;
     $('conv-cards').hidden = !askCards;
     $('dice-kind').hidden = state.source !== 'dice';
-    $('conv-legend').textContent = askCards
-      ? 'How should the cards become a seed?'
-      : 'How does your device convert them?';
+    /* One wording for both. The dice branch used to ask how your device
+       converts and the card branch how the cards become a seed, which made the
+       legend change under the reader for a control that does the same job
+       either way -- and the hint below already names the devices each method
+       belongs to. */
+    $('conv-legend').textContent = 'Which conversion method?';
     document.querySelectorAll('[data-group="words"]').forEach(button => {
       button.disabled = !spec().counts[Number(button.dataset.value)];
     });
@@ -2421,7 +2424,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 <section class="workbench" aria-label="Entropy conversion controls">
 <div class="setup-grid">
 <fieldset class="setup-wide">
-  <legend data-step="1"><span class="step-num">1. </span>What did you use?</legend>
+  <legend data-step="1"><span class="step-num">1. </span>Which entropy source?</legend>
   <div class="seg seg-even source-pick">${segment('source', [
     { value: 'coin', label: 'Coins', sub: 'heads or tails' },
     { value: 'dice', label: 'Dice', sub: 'six-sided, or octal and hex' },
@@ -2438,7 +2441,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 </fieldset>
 
 <fieldset class="setup-wide" id="step-conversion">
-  <legend data-step="2"><span class="step-num">2. </span><span id="conv-legend">How does your device convert them?</span></legend>
+  <legend data-step="2"><span class="step-num">2. </span><span id="conv-legend">Which conversion method?</span></legend>
   <div class="seg seg-tall" id="conv-dice">${segment('conversion', [
     { value: 'dice', label: 'Hash the rolls', sub: 'COLDCARD, SeedSigner, Krux' },
     { value: 'dicezero', label: 'Hash, 6 as 0', sub: 'Keystone, BIP39 tool' },
