@@ -577,6 +577,104 @@ const EntropyCore = (() => {
   const accountPath = (type, account = 0) =>
     `m/${ADDRESS_TYPES[type].purpose}'/0'/${account}'`;
 
+  /* ---- the watch-only descriptor ----------------------------------------
+
+     One line that tells a wallet everything it needs to watch this account and
+     nothing it would need to spend from it. Sparrow, Bitcoin Core and most
+     coordinators take it directly, which saves a reader picking an address
+     type from a menu and hoping it matches the key they pasted -- the
+     descriptor states the script type, so it cannot be mismatched.
+
+     Three things make it a descriptor rather than just a key.
+
+     The script type is a function around the key: wpkh for native segwit,
+     sh(wpkh(...)) for nested, pkh for legacy, tr for taproot. This is why the
+     canonical xpub is used and never the ypub/zpub form -- SLIP-132 prefixes
+     say the same thing a second time, in a dialect Core does not read, and a
+     descriptor carrying both could disagree with itself.
+
+     The origin -- [fingerprint/84h/0h/0h] -- says which master key this came
+     from and where it sits, so a signer can recognise its own key later.
+
+     The multipath suffix /<0;1>/* is BIP389: receive and change in one
+     expression, rather than importing two descriptors and hoping they were
+     kept in step. */
+
+  /* BIP380. The character set is written in three groups of 32 so that a
+     change to a character's position within its group, or to its group,
+     affects one symbol rather than several -- which is what lets this catch
+     the transcription errors people actually make. */
+  const DESC_INPUT_CHARSET =
+    "0123456789()[],'/*abcdefgh@:$%{}IJKLMNOPQRSTUVWXYZ&+-.;<=>?!^_|~ijklmnopqrstuvwxyzABCDEFGH`#\"\\ ";
+  const DESC_CHECKSUM_CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+  /* 40-bit constants, so the arithmetic runs in BigInt. Doing this in Numbers
+     would silently lose the top bits past 2^53. */
+  const DESC_GENERATOR = [0xf5dee51989n, 0xa9fdca3312n, 0x1bab10e32dn, 0x3706b1677an, 0x644d626ffdn];
+
+  const descPolymod = symbols => {
+    let chk = 1n;
+    for (const value of symbols) {
+      const top = chk >> 35n;
+      chk = ((chk & 0x7ffffffffn) << 5n) ^ BigInt(value);
+      for (let i = 0n; i < 5n; i++) {
+        if ((top >> i) & 1n) chk ^= DESC_GENERATOR[Number(i)];
+      }
+    }
+    return chk;
+  };
+
+  const descExpand = text => {
+    const groups = [];
+    const symbols = [];
+    for (const ch of text) {
+      const v = DESC_INPUT_CHARSET.indexOf(ch);
+      if (v < 0) throw new Error(`"${ch}" cannot appear in a descriptor`);
+      symbols.push(v & 31);
+      groups.push(v >> 5);
+      if (groups.length === 3) {
+        symbols.push(groups[0] * 9 + groups[1] * 3 + groups[2]);
+        groups.length = 0;
+      }
+    }
+    if (groups.length === 1) symbols.push(groups[0]);
+    else if (groups.length === 2) symbols.push(groups[0] * 3 + groups[1]);
+    return symbols;
+  };
+
+  const descriptorChecksum = text => {
+    const chk = descPolymod([...descExpand(text), 0, 0, 0, 0, 0, 0, 0, 0]) ^ 1n;
+    let out = '';
+    for (let i = 0n; i < 8n; i++) {
+      out += DESC_CHECKSUM_CHARSET[Number((chk >> (5n * (7n - i))) & 31n)];
+    }
+    return out;
+  };
+
+  const withChecksum = text => `${text}#${descriptorChecksum(text)}`;
+
+  /* m/84'/0'/0' as descriptors write it: no leading m, and h for hardened.
+     Both h and ' are legal; h is the one that survives a shell, a JSON file
+     and a copy-paste into a terminal without being eaten as a quote. */
+  const descriptorOrigin = path =>
+    String(path).replace(/^m\//i, '').replace(/'/g, 'h');
+
+  const DESCRIPTOR_SCRIPT = {
+    legacy: key => `pkh(${key})`,
+    nested: key => `sh(wpkh(${key}))`,
+    native: key => `wpkh(${key})`,
+    taproot: key => `tr(${key})`
+  };
+
+  /* The public half of an account, as a wallet should be given it. Takes the
+     canonical xpub deliberately: see the note above. */
+  const watchOnlyDescriptor = ({ addressType, fingerprint, path, xpub, multipath = true }) => {
+    const script = DESCRIPTOR_SCRIPT[addressType];
+    if (!script) throw new Error(`no descriptor form for ${addressType}`);
+    const branches = multipath ? '<0;1>' : '0';
+    const key = `[${String(fingerprint).toLowerCase()}/${descriptorOrigin(path)}]${xpub}/${branches}/*`;
+    return withChecksum(script(key));
+  };
+
   /* ---- entropy from what the user rolled or flipped ---------------------
 
      Two different jobs, so two different treatments, and the difference is not
@@ -1455,6 +1553,7 @@ const EntropyCore = (() => {
     pointMul, compress, base58check, segwitAddress, convertBits,
     entropyToMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
     encodeXpub, fingerprint, masterFingerprint, publicKeyOf, XPUB_VERSION,
+    descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
     cardBits, cardEntropy, cardsLeft, sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,

@@ -309,6 +309,10 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .xpub-box .label b { color: #ffad4c; }
   .xpub-box #xpub-alt-row { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+  /* One long unbroken token with punctuation the browser will happily break
+     at the wrong place, so it wraps anywhere rather than pushing the panel
+     wide. Same treatment the account key already gets. */
+  .descriptor-box #descriptor { overflow-wrap: anywhere; word-break: break-all; }
   .xpub-note {
     font-family: inherit !important; color: var(--muted) !important;
     font-size: 0.85rem !important; margin-top: 12px !important; word-break: normal !important;
@@ -1565,7 +1569,7 @@ const ui = () => `
   const SECRET_FIELDS = ['input', 'passphrase'];
   const SECRET_TEXT = [
     'words', 'entropy', 'ending-list',
-    'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
+    'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label', 'descriptor',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
     'fp-base', 'fp-pass', 'fp-base-tag'
   ];
@@ -1704,6 +1708,15 @@ const ui = () => `
        for when it says "import your xpub". It cannot spend. */
     $('xpub-path').textContent = path;
     $('xpub').textContent = addresses.xpub;
+    /* Built from the canonical xpub, never the ypub/zpub form: the script
+       type is already stated by the descriptor function, and a SLIP-132
+       prefix would say it a second time in a dialect Core does not read. */
+    $('descriptor').textContent = C.watchOnlyDescriptor({
+      addressType: state.addressType,
+      fingerprint: C.masterFingerprint(state.seed.seed),
+      path,
+      xpub: addresses.xpub
+    });
     $('xpub-alt-row').hidden = !addresses.typedXpub;
     $('xpub-slip').hidden = !addresses.typedXpub;
     if (addresses.typedXpub) {
@@ -2203,6 +2216,13 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <p class="xpub-note" id="xpub-slip" hidden>Some wallets show the same key with a prefix naming the address type. The two strings above are the same key with different version bytes, so a wallet showing one and a device showing the other do not disagree.</p>
   </div>
 
+  <div class="xpub-box descriptor-box">
+    <div class="label"><span>Watch-only descriptor</span><code>BIP380 &middot; BIP389</code></div>
+    <p id="descriptor"></p>
+    <p class="xpub-note">The same account key, written the way a wallet wants to be given it. It names the script type, so it cannot be imported as the wrong address type &mdash; the mistake that makes a restored wallet look empty. Sparrow, Bitcoin Core and most coordinators take this line directly.</p>
+    <p class="xpub-note">The <code>&lt;0;1&gt;</code> covers receiving and change together, and the eight characters after the <code>#</code> are a checksum over everything before them, so a wallet can tell you that you mistyped rather than watching the wrong account in silence. It still contains no private key and can sign nothing.</p>
+  </div>
+
   <details>
     <summary>Show the raw entropy</summary>
     <div class="body">
@@ -2344,7 +2364,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       </ul>
     </div>
 
-    <p>Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and by <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench by Miguel Medeiros</a>, where the three sources side by side, the running estimate of how much entropy you have built, and drawing from a shuffled deck were all done first.</p>
+    <p>Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
   </div>
