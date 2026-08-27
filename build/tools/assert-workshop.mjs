@@ -17,6 +17,10 @@ const SITE = 'docs/entropy.html';
 const OFFLINE = 'docs/entropy-offline.html';
 const SIDECAR = 'docs/entropy-offline.html.sha256';
 
+const codeOnlyEarly = html => html
+  .replace(/<!--[\s\S]*?-->/g, ' ')
+  .replace(/\/\*[\s\S]*?\*\//g, ' ');
+
 export function assertWorkshop() {
   const problems = [];
   const check = (ok, message) => { if (!ok) problems.push(message); };
@@ -98,6 +102,30 @@ export function assertWorkshop() {
     "the offline build's CSP does not start from default-src 'none'");
   check(/connect-src 'none'/.test(site),
     "the site build's CSP does not forbid connect-src; this page has nothing to send anywhere");
+
+  /* navigator.onLine is allowed in one direction only, and this checks that
+     structurally rather than by reading the copy.
+
+     A page cannot see an air gap. A disabled adapter, a sleeping radio and a
+     machine with no card look identical through that flag, and only one of
+     them is what the security brief asks for. So the flag may be read to
+     WARN -- `navigator.onLine === true` -- and never in the negative, where
+     the only thing it could produce is false reassurance.
+
+     A first attempt at this grepped the rendered text for phrases like
+     "air-gapped", and failed on both builds. What it had found was the
+     download panel telling the reader to PUT the file on an air-gapped
+     machine, and the noscript notice describing the tool as safe to use
+     offline. Both are instructions, not claims about the reader's current
+     state -- prose read as if it were code, for the third time in these
+     guards. Hence: check the comparison, not the copy. */
+  for (const [name, html] of [['site', site], ['offline', offline]]) {
+    const uses = [...codeOnlyEarly(html).matchAll(/navigator\.onLine\s*(===\s*true)?/g)];
+    const negative = uses.filter(m => !m[1]);
+    check(negative.length === 0,
+      `the ${name} build reads navigator.onLine somewhere other than a "=== true" test; ` +
+      'it may warn when a network appears present and must never claim the absence of one');
+  }
 
   /* The one thing the tool must never grow.
 
