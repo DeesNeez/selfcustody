@@ -1771,9 +1771,16 @@ const ui = () => `
        and makes no claim about the machine. */
     const offline = isOffline();
     const where = $('where');
-    where.className = offline ? 'good' : 'warn';
+    /* Deliberately not a green "safe" state. The old badge said "this copy is
+       running offline" in the same green as the passing self-test, which was
+       two mistakes at once: it read as an all-clear, and it was not even true
+       -- the site build was fetching three resources from Google Fonts while
+       saying it. Those are gone now, so the honest claim is about the file
+       rather than the machine: it needs no network. Whether the machine has
+       one is not something a page can see. */
+    where.className = offline ? '' : 'warn';
     where.textContent = offline
-      ? 'Local file \\u2014 this copy is running offline'
+      ? 'Opened from a local file \\u2014 this tool requires no network requests'
       : 'Loaded over a network \\u2014 this copy is online';
     /* Which panel to show is a question about the file, not the protocol.
        The site page always offers the download, because it is never the thing

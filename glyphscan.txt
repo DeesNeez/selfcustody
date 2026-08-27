@@ -1,0 +1,7 @@
+pages scanned: 70
+distinct characters outside the vendored subset: 4
+
+  U+00A9  x67      address-types.html, air-gapped-psbt-workflow.html, bip85-child-seeds.html +64 more
+  U+2713  x2       devices.html, software.html
+  U+25D0  x2       devices.html, software.html
+  U+00E9  x1       double-spend-problem.html
