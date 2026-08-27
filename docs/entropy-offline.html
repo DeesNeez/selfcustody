@@ -204,6 +204,43 @@
      two-way choice, or the names wrap mid-word. */
   .seg-tall button { min-width: 152px; }
 
+  /* A grid rather than the flex row the other steps use, because a drawing
+     plus two lines of text needs a width that flex-wrap cannot promise: at
+     700px these went two-across-then-one, the odd card stretched to full
+     width. Three equal tracks or one, nothing in between, and grid equalises
+     the heights when the longest label takes a second line. */
+  .source-pick {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+  }
+  /* Picture left, words right. The label is left-aligned here where the other
+     rows centre theirs, because ragged-left text beside a fixed-width drawing
+     reads as two columns rather than as a caption that slipped. */
+  .source-pick button {
+    display: flex; align-items: center; gap: 12px;
+    min-width: 0; text-align: left;
+  }
+  .source-pick .seg-mark { flex: 0 0 auto; display: grid; place-items: center; }
+  .source-pick .seg-mark svg {
+    display: block; width: 30px; height: 30px;
+    opacity: 0.62; transition: opacity 0.15s ease;
+  }
+  /* Dimmed until the option is under consideration, so three drawings at rest
+     do not compete with the step legend above them. */
+  .source-pick button:hover .seg-mark svg,
+  .source-pick button[aria-pressed="true"] .seg-mark svg { opacity: 1; }
+  .source-pick .seg-body { min-width: 0; }
+  /* Three from the site's own four-dot mark: the coin gold, the die bone, the
+     card the same red the suit keys use. */
+  .source-pick button[data-value="coin"] .seg-mark { color: #ffa933; }
+  .source-pick button[data-value="dice"] .seg-mark { color: #e9dcc0; }
+  .source-pick button[data-value="cards"] .seg-mark { color: #ff7a6b; }
+  /* Below this a third of the row leaves about 90px for the words, which puts
+     "six-sided, or octal and hex" on three lines beside a 30px drawing. One
+     per row instead: the full width, the picture still on the left. */
+  @media (max-width: 720px) {
+    .source-pick { grid-template-columns: minmax(0, 1fr); }
+  }
+
   .opt {
     margin-left: 8px; padding: 2px 7px; border-radius: 999px;
     background: rgba(255, 255, 255, 0.07); color: var(--muted);
@@ -449,6 +486,15 @@
   }
   .meter-track i.is-full { background: linear-gradient(90deg, #4fb477, #6ede9a); }
   .meter-note { margin: 8px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.55; }
+  /* Its own line and its own colour, because it only appears when someone has
+     gone past the target and is the one thing on the meter they need to read.
+     Block rather than inline: trailing a fourth sentence onto grey body text
+     is how a caution gets skimmed. */
+  .meter-cap {
+    display: block; margin-top: 8px; padding: 7px 11px; border-radius: 8px;
+    border: 1px solid rgba(255, 138, 0, 0.34); background: rgba(255, 138, 0, 0.1);
+    color: #ffc07f; font-weight: 700;
+  }
   @media (prefers-reduced-motion: reduce) { .meter-track i { transition: none; } }
 
   /* The dice source has two kinds behind it; the toggle only appears once the
@@ -1025,6 +1071,17 @@
   .workbench .setup-grid legend::before { left: 14px; top: 15px; width: 34px; height: 34px; border-radius: 10px; }
   .workbench .setup-grid .setup-wide { grid-column: 1 / -1; }
   .workbench .setup-grid .seg button { min-height: 52px; }
+  /* Taller than the rest of the row above, because these three carry a drawing
+     as well as two lines of text and 52 leaves the picture crowding the words.
+     It sits here rather than with the other source-pick rules because the line
+     above is weighted .workbench .setup-grid and a bare .source-pick cannot
+     reach it -- matching the weight and following it is what makes it apply. */
+  .workbench .setup-grid .source-pick button { min-height: 90px; }
+  @media (max-width: 720px) {
+    /* One per row down here. Three at 90 push step 2 off the first screen and
+       buy nothing: stacked, the words already have the full width. */
+    .workbench .setup-grid .source-pick button { min-height: 0; }
+  }
   .workbench .address-options {
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
   }
@@ -1228,9 +1285,27 @@
 <fieldset class="setup-wide">
   <legend data-step="1"><span class="step-num">1. </span>Which entropy source?</legend>
   <div class="seg seg-even source-pick">
-            <button type="button" data-group="source" data-value="coin" aria-pressed="false">Coins<small>heads or tails</small></button>
-            <button type="button" data-group="source" data-value="dice" aria-pressed="false">Dice<small>six-sided, or octal and hex</small></button>
-            <button type="button" data-group="source" data-value="cards" aria-pressed="false">Cards<small>a shuffled deck</small></button></div>
+            <button type="button" data-group="source" data-value="coin" aria-pressed="false"><span class="seg-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M5 13.4v4.6a11 5.2 0 0 0 22 0v-4.6"/>
+    <ellipse cx="16" cy="13.4" rx="11" ry="5.2"/>
+    <ellipse cx="16" cy="13.4" rx="4.5" ry="2.1" opacity=".55"/></svg></span><span class="seg-body">Coins<small>heads or tails</small></span></button>
+            <button type="button" data-group="source" data-value="dice" aria-pressed="false"><span class="seg-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <g transform="rotate(-9 16 16)">
+      <rect x="5.5" y="5.5" width="21" height="21" rx="5.4"/>
+      <g fill="currentColor" stroke="none">
+        <circle cx="11.2" cy="11.2" r="1.85"/><circle cx="20.8" cy="11.2" r="1.85"/>
+        <circle cx="16" cy="16" r="1.85"/>
+        <circle cx="11.2" cy="20.8" r="1.85"/><circle cx="20.8" cy="20.8" r="1.85"/>
+      </g>
+    </g></svg></span><span class="seg-body">Dice<small>six-sided, or octal and hex</small></span></button>
+            <button type="button" data-group="source" data-value="cards" aria-pressed="false"><span class="seg-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <g transform="rotate(10 16 16)">
+      <rect x="9" y="4.4" width="14" height="23.2" rx="3"/>
+      <path d="M16 11.3l3.5 4.7-3.5 4.7-3.5-4.7z" fill="currentColor" stroke="none"/>
+    </g></svg></span><span class="seg-body">Cards<small>a shuffled deck</small></span></button></div>
   <div class="sub-pick" id="dice-kind" hidden>
     <span>Which dice?</span>
     <div class="seg">
@@ -1310,7 +1385,7 @@
       <b id="meter-val"></b>
     </div>
     <div class="meter-track"><i id="meter-fill"></i></div>
-    <p class="meter-note" id="meter-note"></p>
+    <p class="meter-note" id="meter-note"><span id="meter-note-base"></span><span class="meter-cap" id="meter-cap" hidden></span></p>
   </div>
 </fieldset>
 
@@ -3447,7 +3522,10 @@ const EntropyCore = (() => {
     dice: 'd6',          /* 'd6' | 'octahex'  -- which dice, when source is dice */
     conversion: 'dice',  /* which device convention, for a six-sided die */
     cardconv: 'cards',   /* 'cards' | 'cardbits' */
-    words: 24,
+    /* The shorter seed is the one most people are choosing between these
+       days, and it is the cheaper thing to try: 50 rolls rather than 99. The
+       24-word option is one tap away for anyone who wants it. */
+    words: 12,
     addressType: 'native',
     pathEdited: false,
     choice: 0,         /* which of the eight endings, lookup method only */
@@ -3746,7 +3824,7 @@ const EntropyCore = (() => {
     $('meter-fill').classList.toggle('is-full', bits >= target);
 
     const drawn = C.events(method(), input).length;
-    $('meter-note').textContent =
+    $('meter-note-base').textContent =
       info.deck
         ? (() => {
             const left = C.cardsLeft(C.normalise(method(), input)).length;
@@ -3772,10 +3850,11 @@ const EntropyCore = (() => {
        entropy that lands nowhere. Keeping the count climbing without saying so
        would let someone roll another fifty in the belief they were buying
        something. They are not; they are choosing a different wallet. */
-    if (over) {
-      $('meter-note').textContent += ' The seed stops at ' + target + ' bits, so more '
-        + info.unit + 's change which wallet you get but not how hard it is to guess.';
-    }
+    $('meter-cap').hidden = !over;
+    $('meter-cap').textContent = over
+      ? 'The seed stops at ' + target + ' bits, so more ' + info.unit
+        + 's change which wallet you get but not how hard it is to guess.'
+      : '';
   }
 
   function paintCount() {

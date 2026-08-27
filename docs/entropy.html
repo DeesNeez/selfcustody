@@ -35,9 +35,9 @@
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4912" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4912" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4912" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4918" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260827-4918" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260827-4918" rel="stylesheet">
   <style>
 
   @font-face {
@@ -87,19 +87,19 @@
 
   .sc-workshop .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 28px; }
 
-  .sc-workshop /* ---- site chrome ------------------------------------------------------
-     Rebuilt here rather than shared with the rest of the site, .sc-workshop because a
+  /* ---- site chrome ------------------------------------------------------
+     Rebuilt here rather than shared with the rest of the site, because a
      <link> to site-refresh.css would leave the downloaded copy unstyled the
-     moment it is opened offline. Same tokens, .sc-workshop same shapes, .sc-workshop one file. */
+     moment it is opened offline. Same tokens, same shapes, one file. */
 
   /* ---- the file banner --------------------------------------------------
 
-     What sits at the top of the downloaded copy, .sc-workshop in place of the site header
+     What sits at the top of the downloaded copy, in place of the site header
      that used to be drawn here. A navigation bar in this file was always a
-     small lie: its links only resolve with a connection, .sc-workshop and this file exists
+     small lie: its links only resolve with a connection, and this file exists
      to be useful without one. What an air-gapped reader needs instead is to
-     know what they are holding, .sc-workshop so that is what it says. */
-  .file-banner{
+     know what they are holding, so that is what it says. */
+  .sc-workshop .file-banner{
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     background: #0d0d0e;
   }
@@ -123,10 +123,10 @@
   }
 
 
-  .sc-workshop /* ---- hero -------------------------------------------------------------
-     The same shape the guide pages open with: cleared header, .sc-workshop display-size
-     heading, .sc-workshop lead, .sc-workshop then the badges. */
-  .hero{
+  /* ---- hero -------------------------------------------------------------
+     The same shape the guide pages open with: cleared header, display-size
+     heading, lead, then the badges. */
+  .sc-workshop .hero{
     min-height: 420px;
     display: flex; align-items: center;
     padding: 108px 0 46px;
@@ -135,32 +135,32 @@
       radial-gradient(circle at 88% 10%, rgba(255, 138, 0, 0.15), transparent 32rem),
       linear-gradient(135deg, #1f1f1e, #292825);
   }
-  .sc-workshop /* The 108px above clears the site's fixed header, .sc-workshop which the downloaded copy
-     does not have -- its banner is a short static bar. Left alone, .sc-workshop that
+  /* The 108px above clears the site's fixed header, which the downloaded copy
+     does not have -- its banner is a short static bar. Left alone, that
      padding becomes a band of empty space above the breadcrumb. */
   /* min-height plus align-items:center was the real culprit: with the hero
-     taller than its contents, .sc-workshop centring pushed the breadcrumb down however
-     small the padding got. Sized to its content instead, .sc-workshop so the padding is
+     taller than its contents, centring pushed the breadcrumb down however
+     small the padding got. Sized to its content instead, so the padding is
      the whole story. */
-  .is-offline-copy .hero{ min-height: auto; padding-top: 40px; padding-bottom: 40px; }
+  .sc-workshop .is-offline-copy .hero{ min-height: auto; padding-top: 40px; padding-bottom: 40px; }
   @media (max-width: 820px) {
     .sc-workshop .is-offline-copy .hero{ padding-top: 30px; padding-bottom: 32px; }
   }
 
   .sc-workshop .crumb{ display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 700; }
-  .sc-workshop /* Links default to the accent instead of the browser's blue. Every context
-     below used to set its own colour, .sc-workshop so any link added somewhere new arrived
+  /* Links default to the accent instead of the browser's blue. Every context
+     below used to set its own colour, so any link added somewhere new arrived
      unstyled and close to unreadable on this background -- twice. Class rules
      still win where a context wants something else. */
-  a{ color: var(--orange); }
+  .sc-workshop a{ color: var(--orange); }
 
-  .sc-workshop /* An author display rule beats the browser's [hidden]{ display: none }, .sc-workshop so
+  /* An author display rule beats the browser's [hidden] { display: none }, so
      anything given display:grid or display:flex keeps rendering after the
      script hides it. That has now caught the download panel and the
-     fingerprint arrow, .sc-workshop both of which stayed on screen while their hidden
-     attribute was correctly set -- invisible in the markup, .sc-workshop obvious on screen.
-     One guard, .sc-workshop rather than remembering it rule by rule. */
-  [hidden]{ display: none !important; }
+     fingerprint arrow, both of which stayed on screen while their hidden
+     attribute was correctly set -- invisible in the markup, obvious on screen.
+     One guard, rather than remembering it rule by rule. */
+  .sc-workshop [hidden]{ display: none !important; }
 
   .sc-workshop .crumb a{ color: var(--ink-soft); text-decoration: none; }
   .sc-workshop .crumb a:hover{ color: var(--orange); }
@@ -220,13 +220,50 @@
   .sc-workshop .seg button small{ display: block; font-weight: 600; font-size: 0.75rem; color: var(--muted); }
   .sc-workshop .seg button[aria-pressed="true"] small{ color: #ffc07f; }
   .sc-workshop .seg button:disabled{ opacity: 0.35; cursor: not-allowed; }
-  .sc-workshop /* Equal shares rather than sized to their text, .sc-workshop so a longer label does not
+  /* Equal shares rather than sized to their text, so a longer label does not
      make one option look like the important one. */
-  .seg-even button{ flex: 1 1 0; }
+  .sc-workshop .seg-even button{ flex: 1 1 0; }
   .sc-workshop .seg button:disabled:hover{ border-color: rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.03); }
-  .sc-workshop /* Four conversions with device names under them need more room than a
-     two-way choice, .sc-workshop or the names wrap mid-word. */
-  .seg-tall button{ min-width: 152px; }
+  /* Four conversions with device names under them need more room than a
+     two-way choice, or the names wrap mid-word. */
+  .sc-workshop .seg-tall button{ min-width: 152px; }
+
+  /* A grid rather than the flex row the other steps use, because a drawing
+     plus two lines of text needs a width that flex-wrap cannot promise: at
+     700px these went two-across-then-one, the odd card stretched to full
+     width. Three equal tracks or one, nothing in between, and grid equalises
+     the heights when the longest label takes a second line. */
+  .sc-workshop .source-pick{
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+  }
+  /* Picture left, words right. The label is left-aligned here where the other
+     rows centre theirs, because ragged-left text beside a fixed-width drawing
+     reads as two columns rather than as a caption that slipped. */
+  .sc-workshop .source-pick button{
+    display: flex; align-items: center; gap: 12px;
+    min-width: 0; text-align: left;
+  }
+  .sc-workshop .source-pick .seg-mark{ flex: 0 0 auto; display: grid; place-items: center; }
+  .sc-workshop .source-pick .seg-mark svg{
+    display: block; width: 30px; height: 30px;
+    opacity: 0.62; transition: opacity 0.15s ease;
+  }
+  /* Dimmed until the option is under consideration, so three drawings at rest
+     do not compete with the step legend above them. */
+  .sc-workshop .source-pick button:hover .seg-mark svg,
+  .sc-workshop .source-pick button[aria-pressed="true"] .seg-mark svg{ opacity: 1; }
+  .sc-workshop .source-pick .seg-body{ min-width: 0; }
+  /* Three from the site's own four-dot mark: the coin gold, the die bone, the
+     card the same red the suit keys use. */
+  .sc-workshop .source-pick button[data-value="coin"] .seg-mark{ color: #ffa933; }
+  .sc-workshop .source-pick button[data-value="dice"] .seg-mark{ color: #e9dcc0; }
+  .sc-workshop .source-pick button[data-value="cards"] .seg-mark{ color: #ff7a6b; }
+  /* Below this a third of the row leaves about 90px for the words, which puts
+     "six-sided, or octal and hex" on three lines beside a 30px drawing. One
+     per row instead: the full width, the picture still on the left. */
+  @media (max-width: 720px) {
+    .sc-workshop .source-pick{ grid-template-columns: minmax(0, 1fr); }
+  }
 
   .sc-workshop .opt{
     margin-left: 8px; padding: 2px 7px; border-radius: 999px;
@@ -235,14 +272,14 @@
     vertical-align: middle;
   }
 
-  .sc-workshop /* ---- the account key --------------------------------------------------
+  /* ---- the account key --------------------------------------------------
      Sits below the addresses because it is the same information at a
-     different altitude: the addresses are two leaves, .sc-workshop this is the branch they
-     hang off. Wrapped rather than scrolled, .sc-workshop since people copy it by hand as
+     different altitude: the addresses are two leaves, this is the branch they
+     hang off. Wrapped rather than scrolled, since people copy it by hand as
      often as by button. */
-  /* The wallet's identity, .sc-workshop so it sits above the words rather than below the
+  /* The wallet's identity, so it sits above the words rather than below the
      addresses: it is the first thing to compare against the device. */
-  .fingerprint{
+  .sc-workshop .fingerprint{
     margin: 26px 0 22px; padding: 18px 18px 16px;
     border: 1px solid rgba(255, 138, 0, 0.28); border-radius: 12px;
     background: rgba(255, 138, 0, 0.05);
@@ -253,10 +290,10 @@
   }
   .sc-workshop .fp-row{ display: flex; align-items: flex-start; gap: 6px 14px; flex-wrap: wrap; }
   .sc-workshop .fp-cell{ display: flex; align-items: baseline; gap: 10px; }
-  .sc-workshop /* An author display rule beats the browser's [hidden]{ display: none }, .sc-workshop so
+  /* An author display rule beats the browser's [hidden] { display: none }, so
      the arrow half needs to opt back out explicitly. Without this it shows the
      same fingerprint twice whenever there is no passphrase. */
-  .fp-cell[hidden]{ display: none; }
+  .sc-workshop .fp-cell[hidden]{ display: none; }
   .sc-workshop .fp-row b{
     color: #ffad4c; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.08em;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -287,12 +324,12 @@
     margin: 10px 0 0; padding: 9px 12px; border-radius: 9px;
     font-size: 0.82rem; line-height: 1.55;
   }
-  .sc-workshop /* The verdict and the opener sit on one line; the explanation takes its own
+  /* The verdict and the opener sit on one line; the explanation takes its own
      when opened. Laid out with flex rather than by setting display on the
      <summary>: display:inline there stops the browser treating it as the
-     disclosure's summary at all, .sc-workshop and the first version of this shipped with
+     disclosure's summary at all, and the first version of this shipped with
      the "collapsed" text permanently visible underneath. */
-  .checksum-note{
+  .sc-workshop .checksum-note{
     display: flex; flex-wrap: wrap; align-items: baseline;
     column-gap: 10px; row-gap: 4px;
   }
@@ -309,18 +346,18 @@
   }
 
   .sc-workshop .xpub-box #xpub-alt-row{ margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
-  .sc-workshop /* One long unbroken token with punctuation the browser will happily break
-     at the wrong place, .sc-workshop so it wraps anywhere rather than pushing the panel
+  /* One long unbroken token with punctuation the browser will happily break
+     at the wrong place, so it wraps anywhere rather than pushing the panel
      wide. Same treatment the account key already gets. */
-  .descriptor-box #descriptor{ overflow-wrap: anywhere; word-break: break-all; }
-  .sc-workshop /* Sits directly under the recovery words rather than behind a fold. The
-     words are the more powerful secret -- they rebuild every account, .sc-workshop where
+  .sc-workshop .descriptor-box #descriptor{ overflow-wrap: anywhere; word-break: break-all; }
+  /* Sits directly under the recovery words rather than behind a fold. The
+     words are the more powerful secret -- they rebuild every account, where
      this rebuilds one -- so hiding the lesser value while printing the greater
      one above it would be theatre. Tinted in the warning colour instead,
-     .sc-workshop because it is the one value on this page that spends.
-     A modifier on .xpub-box, .sc-workshop not its own panel, .sc-workshop so the two key boxes cannot
-     drift apart. Equal specificity, .sc-workshop so these win on source order. */
-  .xprv-box{ border-color: rgba(255, 138, 0, 0.28); background: rgba(255, 138, 0, 0.05); }
+     because it is the one value on this page that spends.
+     A modifier on .xpub-box, not its own panel, so the two key boxes cannot
+     drift apart. Equal specificity, so these win on source order. */
+  .sc-workshop .xprv-box{ border-color: rgba(255, 138, 0, 0.28); background: rgba(255, 138, 0, 0.05); }
   .sc-workshop .xprv-box .label span{ color: #ffad4c; }
   .sc-workshop .xprv-box #xprv-alt-row{ margin-top: 14px; }
   .sc-workshop .descriptor-split{ margin-top: 14px; }
@@ -333,11 +370,11 @@
     font-size: 0.85rem !important; margin-top: 12px !important; word-break: normal !important;
   }
 
-  .sc-workshop /* ---- the eight endings ------------------------------------------------
+  /* ---- the eight endings ------------------------------------------------
      Only the lookup method reaches this. It sits between the button and the
-     results because it is a step, .sc-workshop not an outcome: nothing downstream is a
+     results because it is a step, not an outcome: nothing downstream is a
      wallet until one of these is chosen. */
-  .endings{
+  .sc-workshop .endings{
     margin-top: 22px; padding: 20px 22px;
     border: 1px solid rgba(255, 138, 0, 0.3); border-radius: 14px;
     background: rgba(255, 138, 0, 0.05);
@@ -345,10 +382,10 @@
   .sc-workshop .endings strong{ display: block; margin-bottom: 8px; color: #ffad4c; font-size: 1.02rem; }
   .sc-workshop .endings p{ margin: 0 0 16px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
   .sc-workshop .ending-list{ display: flex; flex-wrap: wrap; gap: 8px; }
-  .sc-workshop /* A hundred and twenty-eight of these is a wall rather than a list: stacked
+  /* A hundred and twenty-eight of these is a wall rather than a list: stacked
      one per column on a phone it ran to 2673px. Given a fixed height it becomes
      a panel you scroll instead of a page you lose your place in. */
-  .ending-list.is-many{
+  .sc-workshop .ending-list.is-many{
     display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
     gap: 6px; max-height: 46vh; overflow-y: auto;
     padding: 10px; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 11px;
@@ -356,8 +393,8 @@
   }
   .sc-workshop .ending-list.is-many .ending{ padding: 8px 10px; font-size: 0.82rem; }
 
-  .sc-workshop /* The throw that picks this ending. */
-  .ending small{
+  /* The throw that picks this ending. */
+  .sc-workshop .ending small{
     display: block; margin-bottom: 3px;
     color: var(--muted); font-size: 0.66rem; font-weight: 700; letter-spacing: .06em;
   }
@@ -392,19 +429,19 @@
   }
   .sc-workshop .path-row button:hover{ border-color: rgba(255, 138, 0, 0.45); }
 
-  .sc-workshop /* ---- the keypad -------------------------------------------------------
-     Ninety-nine entries is a lot to type without a slip, .sc-workshop and a slip here is
-     not a typo -- it is a different wallet. Big targets, .sc-workshop an undo, .sc-workshop and a count
+  /* ---- the keypad -------------------------------------------------------
+     Ninety-nine entries is a lot to type without a slip, and a slip here is
+     not a typo -- it is a different wallet. Big targets, an undo, and a count
      that never lets you overshoot. Typing still works; this is the easier way
-     in, .sc-workshop not the only one. */
-  .pad{
+     in, not the only one. */
+  .sc-workshop .pad{
     display: grid; gap: 8px; margin-bottom: 8px;
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
   .sc-workshop .pad[data-method="coin"]{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .sc-workshop /* Twenty keys. Five across keeps them square-ish at this width and puts
-     1-20 in four tidy rows, .sc-workshop which is easier to find a face in than six. */
-  .pad[data-method="octahex"]{ grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  /* Twenty keys. Five across keeps them square-ish at this width and puts
+     1-20 in four tidy rows, which is easier to find a face in than six. */
+  .sc-workshop .pad[data-method="octahex"]{ grid-template-columns: repeat(8, minmax(0, 1fr)); }
   .sc-workshop .pad[data-method="octahex"] .key{ padding: 13px 6px; font-size: 1.15rem; }
   @media (max-width: 560px) {
     .sc-workshop .pad[data-method="octahex"]{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -438,21 +475,21 @@
     .sc-workshop .key{ padding: 18px 8px; font-size: 1.5rem; }
   }
 
-  .sc-workshop /* Says why entry stopped. role="status" rather than an alert: it is
-     information, .sc-workshop not an error, .sc-workshop and it should not interrupt anyone using a
+  /* Says why entry stopped. role="status" rather than an alert: it is
+     information, not an error, and it should not interrupt anyone using a
      screen reader mid-roll. */
-  .cap-notice{
+  .sc-workshop .cap-notice{
     margin: 8px 0 0; padding: 9px 12px;
     border: 1px solid rgba(255, 138, 0, 0.35); border-radius: 9px;
     background: rgba(255, 138, 0, 0.08);
     color: #ffad4c; font-size: 0.85rem; line-height: 1.5;
   }
 
-  .sc-workshop /* The entropy meter. Deliberately quieter than the roll counter beside it:
-     the counter says whether the page will accept the input, .sc-workshop which is the
-     actionable fact, .sc-workshop while this says how much the input could be worth, .sc-workshop which
+  /* The entropy meter. Deliberately quieter than the roll counter beside it:
+     the counter says whether the page will accept the input, which is the
+     actionable fact, while this says how much the input could be worth, which
      is the interesting one. */
-  .meter{ margin-top: 14px; }
+  .sc-workshop .meter{ margin-top: 14px; }
   .sc-workshop .meter-head{
     display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
     margin-bottom: 7px; color: var(--muted); font-size: 0.78rem;
@@ -473,16 +510,25 @@
   }
   .sc-workshop .meter-track i.is-full{ background: linear-gradient(90deg, #4fb477, #6ede9a); }
   .sc-workshop .meter-note{ margin: 8px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.55; }
+  /* Its own line and its own colour, because it only appears when someone has
+     gone past the target and is the one thing on the meter they need to read.
+     Block rather than inline: trailing a fourth sentence onto grey body text
+     is how a caution gets skimmed. */
+  .sc-workshop .meter-cap{
+    display: block; margin-top: 8px; padding: 7px 11px; border-radius: 8px;
+    border: 1px solid rgba(255, 138, 0, 0.34); background: rgba(255, 138, 0, 0.1);
+    color: #ffc07f; font-weight: 700;
+  }
   @media (prefers-reduced-motion: reduce) { .sc-workshop .meter-track i{ transition: none; } }
 
-  .sc-workshop /* The dice source has two kinds behind it; the toggle only appears once the
-     dice card is chosen, .sc-workshop so the first row stays three even choices.
+  /* The dice source has two kinds behind it; the toggle only appears once the
+     dice card is chosen, so the first row stays three even choices.
 
      The question sits on its own line above the pair rather than inline beside
-     them. Set alongside, .sc-workshop at the size a hint is set, .sc-workshop it read as a caption on
+     them. Set alongside, at the size a hint is set, it read as a caption on
      the buttons instead of a question about them -- and it is a real choice,
-     .sc-workshop not an aside: the two dice go to different wallets. */
-  .sub-pick{
+     not an aside: the two dice go to different wallets. */
+  .sc-workshop .sub-pick{
     display: grid; gap: 10px;
     margin-top: 17px; padding-top: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.09);
@@ -491,16 +537,16 @@
     color: #fff; font-family: "Jost", sans-serif; font-size: 1rem; font-weight: 700;
   }
 
-  .sc-workshop /* Red suits red, .sc-workshop black suits the ordinary key colour -- the one place on the
+  /* Red suits red, black suits the ordinary key colour -- the one place on the
      pad where the glyph carries meaning the letter does not. */
-  .key[data-suit="H"], .sc-workshop .key[data-suit="D"]{ color: #ff7a6b; }
-  .sc-workshop /* The glyph is the label here, .sc-workshop so it gets the room a face value would. */
-  .key[data-suit]{ padding-left: 4px; padding-right: 4px; font-size: 1.95rem; line-height: 1; }
-  .sc-workshop /* "DIAMONDS" is three characters longer than any other name on the pad and
-     was the one that did not fit: 66px of text in a 53px box, .sc-workshop painting out
+  .sc-workshop .key[data-suit="H"], .sc-workshop .key[data-suit="D"]{ color: #ff7a6b; }
+  /* The glyph is the label here, so it gets the room a face value would. */
+  .sc-workshop .key[data-suit]{ padding-left: 4px; padding-right: 4px; font-size: 1.95rem; line-height: 1; }
+  /* "DIAMONDS" is three characters longer than any other name on the pad and
+     was the one that did not fit: 66px of text in a 53px box, painting out
      past the key's own edge. The tracking goes and the size comes down until
      the longest name fits the narrowest key. */
-  .key[data-suit] small{ letter-spacing: 0; font-size: 0.54rem; }
+  .sc-workshop .key[data-suit] small{ letter-spacing: 0; font-size: 0.54rem; }
   .sc-workshop .pad[data-method="cards"], .sc-workshop .pad[data-method="cardbits"]{
     grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
   }
@@ -525,13 +571,13 @@
     color: #ff9d8a; font-size: 0.92rem;
   }
 
-  .sc-workshop /* Shown either way, .sc-workshop saying different things: served, .sc-workshop it offers the download;
+  /* Shown either way, saying different things: served, it offers the download;
      from a local file it confirms which file you are running and keeps the
-     checksum check, .sc-workshop which is the one moment that check is genuinely useful.
-     It sits above the controls rather than below the results, .sc-workshop because whether
+     checksum check, which is the one moment that check is genuinely useful.
+     It sits above the controls rather than below the results, because whether
      to run this online or offline is a decision you want to make before you
-     start typing rolls in, .sc-workshop not after. */
-  .download{
+     start typing rolls in, not after. */
+  .sc-workshop .download{
     display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px;
     align-items: center;
     margin: 0 0 38px; padding: 21px 22px; border-radius: 16px;
@@ -539,12 +585,12 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
-  .sc-workshop /* Without this the grid item keeps its default min-width:auto, .sc-workshop which is the
-     intrinsic width of the widest thing inside it -- the verify commands, .sc-workshop set
+  /* Without this the grid item keeps its default min-width:auto, which is the
+     intrinsic width of the widest thing inside it -- the verify commands, set
      in white-space:pre. The item then refuses to shrink and pushes the whole
-     page into a horizontal scroll on a phone, .sc-workshop rather than letting the <pre>
+     page into a horizontal scroll on a phone, rather than letting the <pre>
      scroll inside itself as intended. */
-  .download-copy{ min-width: 0; }
+  .sc-workshop .download-copy{ min-width: 0; }
   .sc-workshop .download-copy strong{ display: block; margin-bottom: 9px; color: #fff; font-family: "Jost", sans-serif; font-size: 1.25rem; }
   .sc-workshop .download-copy p{ margin: 0 0 10px; color: var(--ink-soft); font-size: 0.9rem; }
   .sc-workshop .download-copy .verify{ margin: 0 0 6px; color: var(--muted); font-size: 0.85rem; }
@@ -566,14 +612,14 @@
   }
   .sc-workshop .download-copy pre span{ color: var(--muted); }
 
-  .sc-workshop /* The two commands and the platform each one belongs to. This was a single
+  /* The two commands and the platform each one belongs to. This was a single
      <pre> with the labels pushed right by literal spaces: inside white-space:
-     pre that placed them beyond the block's own scroll edge, .sc-workshop so on a phone the
+     pre that placed them beyond the block's own scroll edge, so on a phone the
      reader got two near-identical hash commands and neither label -- the one
      part that says which is which was the part that could not be seen. As grid
-     cells they stay in the layout, .sc-workshop and wrap under their command rather than
+     cells they stay in the layout, and wrap under their command rather than
      off the side of it. */
-  .verify-cmds{
+  .sc-workshop .verify-cmds{
     display: grid; grid-template-columns: minmax(0, 1fr) auto;
     gap: 4px 14px; align-items: baseline;
     margin: 0 0 10px; padding: 10px 12px;
@@ -611,13 +657,13 @@
 
   .sc-workshop .download-action{ display: grid; gap: 8px; justify-items: center; min-width: 205px; }
 
-  .sc-workshop /* On the hub, .sc-workshop the visible border around "Enter Workshop" is not the button's
+  /* On the hub, the visible border around "Enter Workshop" is not the button's
      own -- its gradient border-box ring is too close in colour to read clearly
-     on its own, .sc-workshop same problem as here. What actually reads as a border is the
-     dark translucent frame the button sits inside, .sc-workshop .sc-hero-actions on that
+     on its own, same problem as here. What actually reads as a border is the
+     dark translucent frame the button sits inside, .sc-hero-actions on that
      page. Copied here as .dl-frame so the two match by construction rather
      than by eye. */
-  .dl-frame{
+  .sc-workshop .dl-frame{
     display: flex; width: 100%;
     padding: 6px;
     background: rgba(8, 9, 11, 0.62);
@@ -626,12 +672,12 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 46px rgba(0, 0, 0, 0.34);
   }
 
-  .sc-workshop /* Same skin as the hub's "Enter Workshop" button (gradient border, glow, a
+  /* Same skin as the hub's "Enter Workshop" button (gradient border, glow, a
      shine sweep on hover) rather than the flat single-color fill this used to
      have. Downloading this file is arguably the main action on this page --
      it deserves the same weight as the button pointing at it from the hub,
-     .sc-workshop not a plainer one once you actually arrive. */
-  .dl{
+     not a plainer one once you actually arrive. */
+  .sc-workshop .dl{
     display: inline-flex; align-items: center; justify-content: center; gap: 9px;
     position: relative; isolation: isolate; overflow: hidden;
     width: 100%; padding: 15px 20px; white-space: nowrap;
@@ -666,8 +712,8 @@
     transition: transform 0.72s cubic-bezier(0.2, 0.72, 0.22, 1), opacity 0.18s ease;
   }
   .sc-workshop .dl:hover::after{ opacity: 1; transform: skewX(-18deg) translateX(700%); }
-  .sc-workshop /* Keep the white icon and label above the moving highlight. */
-  .dl > *{ position: relative; z-index: 2; }
+  /* Keep the white icon and label above the moving highlight. */
+  .sc-workshop .dl > *{ position: relative; z-index: 2; }
   .sc-workshop .dl:focus-visible{
     color: #fff; text-decoration: none; text-shadow: none;
     outline: 2px solid #fff; outline-offset: 3px;
@@ -682,11 +728,11 @@
   }
 
 
-  .sc-workshop /* Only ever seen with scripting off, .sc-workshop so it cannot rely on anything the page
+  /* Only ever seen with scripting off, so it cannot rely on anything the page
      does at runtime. Styled like the security brief above it rather than as an
-     error: nothing has gone wrong, .sc-workshop the page just cannot do its job. Red would
+     error: nothing has gone wrong, the page just cannot do its job. Red would
      imply a fault to fix. */
-  .noscript-brief{
+  .sc-workshop .noscript-brief{
     border-color: rgba(255, 138, 0, 0.4);
     background: rgba(255, 138, 0, 0.07);
   }
@@ -694,11 +740,11 @@
   .sc-workshop .noscript-brief p:last-child{ margin-bottom: 0; color: var(--muted); }
   .sc-workshop .noscript-brief strong{ color: #ffad4c; }
 
-  .sc-workshop /* ---- the refusal dialog ----------------------------------------------
-     A modal rather than an inline message, .sc-workshop because this is the one thing on
+  /* ---- the refusal dialog ----------------------------------------------
+     A modal rather than an inline message, because this is the one thing on
      the page that must not be scrolled past. Red rather than the page's
-     orange: everything else here warns, .sc-workshop this one stops. */
-  .alarm{
+     orange: everything else here warns, this one stops. */
+  .sc-workshop .alarm{
     width: min(560px, calc(100vw - 32px));
     padding: 26px 28px; color: var(--ink);
     background: #201a18;
@@ -763,20 +809,20 @@
   .sc-workshop summary{ cursor: pointer; color: var(--ink-soft); font-size: 0.9rem; font-weight: 700; }
   .sc-workshop details .body{ margin-top: 12px; color: var(--muted); font-size: 0.88rem; }
   .sc-workshop details code{ color: var(--ink-soft); word-break: break-all; }
-  .sc-workshop /* Every link in a disclosure, .sc-workshop not only the ones inside .src-list -- the
+  /* Every link in a disclosure, not only the ones inside .src-list -- the
      loose paragraphs around the lists were falling back to the browser's
-     default blue, .sc-workshop which is close to unreadable on this background. */
-  details .body a{ color: var(--orange); text-decoration: none; }
+     default blue, which is close to unreadable on this background. */
+  .sc-workshop details .body a{ color: var(--orange); text-decoration: none; }
 
-  .sc-workshop /* ---- sources ----------------------------------------------------------
+  /* ---- sources ----------------------------------------------------------
      Every claim this page makes about a device is someone else's published
-     document, .sc-workshop and a reader who cannot get from the claim to that document is
+     document, and a reader who cannot get from the claim to that document is
      being asked for exactly the faith this tool exists to remove. */
-  .src-group{ margin: 20px 0 0; }
-  .sc-workshop /* Ruled, .sc-workshop because these two headings are the only thing separating one list
+  .sc-workshop .src-group{ margin: 20px 0 0; }
+  /* Ruled, because these two headings are the only thing separating one list
      of sources from the next and small uppercase text alone did not read as a
      divider. */
-  .src-group h3{
+  .sc-workshop .src-group h3{
     margin: 0 0 12px; padding-bottom: 8px;
     border-bottom: 1px solid rgba(255, 138, 0, 0.35);
     color: #ffad4c;
@@ -789,10 +835,10 @@
   }
   .sc-workshop .src-list li:first-child{ border-top: 0; }
   .sc-workshop .src-list b{ color: var(--ink-soft); font-size: 0.84rem; }
-  .sc-workshop /* Everything above is a citation for something on the page; the two lines
-     below are not, .sc-workshop so they are separated from the list rather than reading as
+  /* Everything above is a citation for something on the page; the two lines
+     below are not, so they are separated from the list rather than reading as
      the end of it. */
-  .src-tail{
+  .sc-workshop .src-tail{
     margin-top: 22px; padding-top: 18px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
@@ -803,16 +849,16 @@
     .sc-workshop .src-list li{ grid-template-columns: minmax(0, 1fr); }
   }
 
-  .sc-workshop /* ---- site footer ------------------------------------------------------ */
+  /* ---- site footer ------------------------------------------------------ */
 
   /* ---- the file footer ---------------------------------------------------
 
      The site footer used to be redrawn here: a grid of links to Devices,
-     .sc-workshop Software, .sc-workshop Exchanges and the rest, .sc-workshop none of which resolve on a machine with
+     Software, Exchanges and the rest, none of which resolve on a machine with
      no network. This replaces it with the two things that do matter when you
-     are holding a file offline -- how to prove it is the published one, .sc-workshop and
+     are holding a file offline -- how to prove it is the published one, and
      the warning that outranks everything else on the page. */
-  .file-footer{
+  .sc-workshop .file-footer{
     margin-top: 40px; padding: 34px 0 30px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: #0d0d0e;
@@ -835,41 +881,41 @@
               color: var(--muted); font-size: 0.85rem; }
   .sc-workshop .colophon a{ color: var(--orange); }
 
-  .sc-workshop /* The site answers this width with a hamburger menu, .sc-workshop which needs a script and
+  /* The site answers this width with a hamburger menu, which needs a script and
      a focus trap to do properly. For a single leaf page the honest version is
-     smaller: stop pinning the header, .sc-workshop let it scroll away, .sc-workshop and give the four
-     links their own scrollable strip. Nothing is hidden behind a control, .sc-workshop and
+     smaller: stop pinning the header, let it scroll away, and give the four
+     links their own scrollable strip. Nothing is hidden behind a control, and
      the hero gets the screen back. */
-  @media (max-width: 620px){
-    .site-header { position: static; padding: 14px 0; backdrop-filter: none; }
-    .header-inner { flex-wrap: wrap; justify-content: center; gap: 12px; }
-    .brand { font-size: 21px; margin-right: 0; }
-    .brand-mark { width: 60px; height: 21px; }
-    .brand-domain { height: 15px; margin-bottom: 8px; font-size: 11px; }
+  @media (max-width: 620px) {
+    .sc-workshop .site-header{ position: static; padding: 14px 0; backdrop-filter: none; }
+    .sc-workshop .header-inner{ flex-wrap: wrap; justify-content: center; gap: 12px; }
+    .sc-workshop .brand{ font-size: 21px; margin-right: 0; }
+    .sc-workshop .brand-mark{ width: 60px; height: 21px; }
+    .sc-workshop .brand-domain{ height: 15px; margin-bottom: 8px; font-size: 11px; }
 
-    .site-nav {
+    .sc-workshop .site-nav{
       width: 100%; gap: 2px; overflow-x: auto;
       justify-content: center;
       scrollbar-width: none; -ms-overflow-style: none;
     }
-    .site-nav::-webkit-scrollbar { display: none; }
-    .site-nav a { padding: 7px 10px; font-size: 0.84rem; white-space: nowrap; }
+    .sc-workshop .site-nav::-webkit-scrollbar{ display: none; }
+    .sc-workshop .site-nav a{ padding: 7px 10px; font-size: 0.84rem; white-space: nowrap; }
 
-    .hero { padding: 30px 0 34px; }
-    .footer-grid { grid-template-columns: 1fr; }
+    .sc-workshop .hero{ padding: 30px 0 34px; }
+    .sc-workshop .footer-grid{ grid-template-columns: 1fr; }
   }
 
-  .sc-workshop /* Same background as every guide article's hero (.sc-guide-head in the main
+  /* Same background as every guide article's hero (.sc-guide-head in the main
      site stylesheet) -- one soft orange glow top-right over a plain diagonal
      dark panel. The earlier version of this page had two radial gradients (an
      orange one and a --success green one) plus a pixel-grid overlay and a ringed
-     circle bleeding off the corner; none of that exists on a guide page, .sc-workshop and
-     next to the rest of the site it read as a different, .sc-workshop over-decorated
+     circle bleeding off the corner; none of that exists on a guide page, and
+     next to the rest of the site it read as a different, over-decorated
      product rather than a page of this one -- so both are folded into the one
-     .hero rule above instead of layered as a second, .sc-workshop later-loaded override.
+     .hero rule above instead of layered as a second, later-loaded override.
      .wrap's widened measure for the two-column shell is folded into its one
      rule the same way. */
-  .hero-shell{
+  .sc-workshop .hero-shell{
     display: block; width: 100%;
   }
   .sc-workshop .hero-heading{
@@ -921,14 +967,14 @@
     box-shadow: 0 0 0 3px rgba(142, 136, 126, 0.12);
   }
   .sc-workshop .hero .status li.good::before{ background: var(--success); box-shadow: 0 0 0 3px rgba(53, 180, 138, 0.15), 0 0 12px rgba(53, 180, 138, 0.7); }
-  .sc-workshop /* The one badge worth catching an eye. Being online is not dangerous here --
+  /* The one badge worth catching an eye. Being online is not dangerous here --
      there is nothing to type that could leak a wallet -- but it is the fact
-     that decides whether this session suits a wallet worth anything, .sc-workshop and a
+     that decides whether this session suits a wallet worth anything, and a
      still amber dot beside a still green one is easy to read straight past.
 
-     Only the online state moves. The offline state is reassurance, .sc-workshop and
+     Only the online state moves. The offline state is reassurance, and
      reassurance that flashes stops reassuring. */
-  .hero .status li.warn::before{
+  .sc-workshop .hero .status li.warn::before{
     background: var(--orange);
     box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.15), 0 0 12px rgba(255, 138, 0, 0.7);
     animation: status-ping 2.6s ease-out infinite;
@@ -943,9 +989,9 @@
   }
   .sc-workshop .hero .status li.bad::before{ background: var(--danger); }
 
-  .sc-workshop /* The same four-pip die used beside the Roll the dice guide title. Kept as
+  /* The same four-pip die used beside the Roll the dice guide title. Kept as
      an inline SVG so the standalone download still fetches nothing. */
-  .guide-die-mark{
+  .sc-workshop .guide-die-mark{
     display: block; width: 50px; height: 50px; border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 13px;
     background-image:
@@ -985,12 +1031,12 @@
   .sc-workshop .workbench-intro{ display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; margin: 0 0 16px; }
   .sc-workshop .workbench-intro .eyebrow{ margin-bottom: 9px; }
   .sc-workshop .workbench-intro h2{ margin: 0 0 7px; color: #fff; font-size: clamp(1.7rem, 3vw, 2.35rem); line-height: 1.15; }
-  .sc-workshop /* Capped, .sc-workshop because the column runs to 853px and lines that long are hard to
+  /* Capped, because the column runs to 853px and lines that long are hard to
      track back to the start -- measured at 123 characters unconstrained,
-     .sc-workshop against the 92 this gives. It used to look truncated only because the
-     sentence was long enough to need four lines; shortened, .sc-workshop it fills the
+     against the 92 this gives. It used to look truncated only because the
+     sentence was long enough to need four lines; shortened, it fills the
      measure and the raggedness goes with it. */
-  .workbench-intro p{ max-width: 650px; margin: 0; color: var(--muted); font-size: 0.92rem; }
+  .sc-workshop .workbench-intro p{ max-width: 650px; margin: 0; color: var(--muted); font-size: 0.92rem; }
   .sc-workshop .step-map{ display: flex; align-items: center; gap: 5px; padding-bottom: 6px; color: #777168; font-size: 0.7rem; font-weight: 800; letter-spacing: .08em; }
   .sc-workshop .step-map b{ display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid rgba(255, 138, 0, .32); border-radius: 50%; color: #ffad4c; }
   .sc-workshop .step-map i{ width: 11px; height: 1px; background: rgba(255,255,255,.12); }
@@ -1008,14 +1054,14 @@
     width: 37px; height: 37px; color: #ffad4c; border: 1px solid rgba(255,138,0,.4); border-radius: 11px;
     background: rgba(255,138,0,.075); font: 800 0.82rem/1 "Open Sans", sans-serif;
   }
-  .sc-workshop /* Every following sibling, .sc-workshop not only the first. The legend is floated full
-     width, .sc-workshop so whatever comes after it has to clear that float -- and with
+  /* Every following sibling, not only the first. The legend is floated full
+     width, so whatever comes after it has to clear that float -- and with
       only the first sibling did. Both conversion rows live in this
-     fieldset and only one is shown at a time, .sc-workshop so when the dice row was
-     hidden the card row was no longer the first sibling, .sc-workshop never cleared, .sc-workshop and
+     fieldset and only one is shown at a time, so when the dice row was
+     hidden the card row was no longer the first sibling, never cleared, and
      was laid out beside the floated legend: a zero-width strip at the right
      edge with its buttons spilling off the page. */
-  .workbench legend ~ *{ clear: both; }
+  .sc-workshop .workbench legend ~ *{ clear: both; }
   .sc-workshop .workbench .seg{ gap: 10px; }
   .sc-workshop .workbench .seg button{ min-height: 58px; border-radius: 12px; }
   .sc-workshop .workbench .seg button[aria-pressed="true"]{
@@ -1049,6 +1095,17 @@
   .sc-workshop .workbench .setup-grid legend::before{ left: 14px; top: 15px; width: 34px; height: 34px; border-radius: 10px; }
   .sc-workshop .workbench .setup-grid .setup-wide{ grid-column: 1 / -1; }
   .sc-workshop .workbench .setup-grid .seg button{ min-height: 52px; }
+  /* Taller than the rest of the row above, because these three carry a drawing
+     as well as two lines of text and 52 leaves the picture crowding the words.
+     It sits here rather than with the other source-pick rules because the line
+     above is weighted .workbench .setup-grid and a bare .source-pick cannot
+     reach it -- matching the weight and following it is what makes it apply. */
+  .sc-workshop .workbench .setup-grid .source-pick button{ min-height: 90px; }
+  @media (max-width: 720px) {
+    /* One per row down here. Three at 90 push step 2 off the first screen and
+       buy nothing: stacked, the words already have the full width. */
+    .sc-workshop .workbench .setup-grid .source-pick button{ min-height: 0; }
+  }
   .sc-workshop .workbench .address-options{
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
   }
@@ -1071,14 +1128,14 @@
   .sc-workshop > details[open]{ border-color: rgba(255,138,0,.25); }
   .sc-workshop > details summary{ color: var(--ink); }
 
-  .sc-workshop /* Reads as one of the three disclosures at the foot of the page rather
+  /* Reads as one of the three disclosures at the foot of the page rather
      than as a panel of its own. It used to be a bordered card with its own
-     gradient, .sc-workshop an orange rule down the side and a chevron, .sc-workshop which set it apart
+     gradient, an orange rule down the side and a chevron, which set it apart
      from "How this page was checked" and "Sources" for no reason a reader
      could act on -- all three are the same kind of thing. It keeps the orange
      summary so it is still the one that answers a question rather than
      listing references. */
-  .method-note summary{ color: #ffad4c; }
+  .sc-workshop .method-note summary{ color: #ffad4c; }
 
   @media (max-width: 820px) {
     .sc-workshop .hero{ min-height: auto; padding: 108px 0 44px; }
@@ -1108,19 +1165,19 @@
     .sc-workshop .workbench fieldset{ padding: 23px 0 24px 0; }
     .sc-workshop .workbench .setup-grid fieldset{ padding: 18px 14px; }
     .sc-workshop .workbench legend{ padding-left: 60px; min-height: 37px; display: flex; align-items: center; }
-    .sc-workshop /* left:0 put the badge exactly on the card's border -- measured at a zero
-       gap, .sc-workshop so it read as overlapping it. Inset far enough to sit inside the
-       box, .sc-workshop with the heading moved to match. */
-    .workbench legend::before, .sc-workshop .workbench .setup-grid legend::before{ left: 13px; top: 16px; }
+    /* left:0 put the badge exactly on the card's border -- measured at a zero
+       gap, so it read as overlapping it. Inset far enough to sit inside the
+       box, with the heading moved to match. */
+    .sc-workshop .workbench legend::before, .sc-workshop .workbench .setup-grid legend::before{ left: 13px; top: 16px; }
     .sc-workshop .workbench .results{ padding: 21px 16px; }
     .sc-workshop .path-row{ flex-direction: column; }
     .sc-workshop .path-row button{ width: 100%; }
   }
 
-  .sc-workshop /* Space below as well as above. The list is two dozen monospace lines and
-     the sentence naming their sources ran straight on from the last one, .sc-workshop so it
+  /* Space below as well as above. The list is two dozen monospace lines and
+     the sentence naming their sources ran straight on from the last one, so it
      read as a 25th entry rather than as a note about the whole list. */
-  .vectors{ margin: 10px 0 20px; padding: 0; list-style: none; font-family: ui-monospace, monospace; font-size: 0.78rem; }
+  .sc-workshop .vectors{ margin: 10px 0 20px; padding: 0; list-style: none; font-family: ui-monospace, monospace; font-size: 0.78rem; }
   .sc-workshop .vectors li{ padding: 2px 0; }
   .sc-workshop .vectors li::before{ content: "ok  "; color: var(--success); }
   .sc-workshop .vectors li.bad::before{ content: "FAIL "; color: var(--danger); }
@@ -1278,9 +1335,27 @@
 <fieldset class="setup-wide">
   <legend data-step="1"><span class="step-num">1. </span>Which entropy source?</legend>
   <div class="seg seg-even source-pick">
-            <button type="button" data-group="source" data-value="coin" aria-pressed="false">Coins<small>heads or tails</small></button>
-            <button type="button" data-group="source" data-value="dice" aria-pressed="false">Dice<small>six-sided, or octal and hex</small></button>
-            <button type="button" data-group="source" data-value="cards" aria-pressed="false">Cards<small>a shuffled deck</small></button></div>
+            <button type="button" data-group="source" data-value="coin" aria-pressed="false"><span class="seg-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M5 13.4v4.6a11 5.2 0 0 0 22 0v-4.6"/>
+    <ellipse cx="16" cy="13.4" rx="11" ry="5.2"/>
+    <ellipse cx="16" cy="13.4" rx="4.5" ry="2.1" opacity=".55"/></svg></span><span class="seg-body">Coins<small>heads or tails</small></span></button>
+            <button type="button" data-group="source" data-value="dice" aria-pressed="false"><span class="seg-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <g transform="rotate(-9 16 16)">
+      <rect x="5.5" y="5.5" width="21" height="21" rx="5.4"/>
+      <g fill="currentColor" stroke="none">
+        <circle cx="11.2" cy="11.2" r="1.85"/><circle cx="20.8" cy="11.2" r="1.85"/>
+        <circle cx="16" cy="16" r="1.85"/>
+        <circle cx="11.2" cy="20.8" r="1.85"/><circle cx="20.8" cy="20.8" r="1.85"/>
+      </g>
+    </g></svg></span><span class="seg-body">Dice<small>six-sided, or octal and hex</small></span></button>
+            <button type="button" data-group="source" data-value="cards" aria-pressed="false"><span class="seg-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <g transform="rotate(10 16 16)">
+      <rect x="9" y="4.4" width="14" height="23.2" rx="3"/>
+      <path d="M16 11.3l3.5 4.7-3.5 4.7-3.5-4.7z" fill="currentColor" stroke="none"/>
+    </g></svg></span><span class="seg-body">Cards<small>a shuffled deck</small></span></button></div>
   <div class="sub-pick" id="dice-kind" hidden>
     <span>Which dice?</span>
     <div class="seg">
@@ -1360,7 +1435,7 @@
       <b id="meter-val"></b>
     </div>
     <div class="meter-track"><i id="meter-fill"></i></div>
-    <p class="meter-note" id="meter-note"></p>
+    <p class="meter-note" id="meter-note"><span id="meter-note-base"></span><span class="meter-cap" id="meter-cap" hidden></span></p>
   </div>
 </fieldset>
 
@@ -1650,7 +1725,7 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4912"></script>
+  <script src="assets/js/site-refresh.js?v=20260827-4918"></script>
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file
@@ -3527,7 +3602,10 @@ const EntropyCore = (() => {
     dice: 'd6',          /* 'd6' | 'octahex'  -- which dice, when source is dice */
     conversion: 'dice',  /* which device convention, for a six-sided die */
     cardconv: 'cards',   /* 'cards' | 'cardbits' */
-    words: 24,
+    /* The shorter seed is the one most people are choosing between these
+       days, and it is the cheaper thing to try: 50 rolls rather than 99. The
+       24-word option is one tap away for anyone who wants it. */
+    words: 12,
     addressType: 'native',
     pathEdited: false,
     choice: 0,         /* which of the eight endings, lookup method only */
@@ -3826,7 +3904,7 @@ const EntropyCore = (() => {
     $('meter-fill').classList.toggle('is-full', bits >= target);
 
     const drawn = C.events(method(), input).length;
-    $('meter-note').textContent =
+    $('meter-note-base').textContent =
       info.deck
         ? (() => {
             const left = C.cardsLeft(C.normalise(method(), input)).length;
@@ -3852,10 +3930,11 @@ const EntropyCore = (() => {
        entropy that lands nowhere. Keeping the count climbing without saying so
        would let someone roll another fifty in the belief they were buying
        something. They are not; they are choosing a different wallet. */
-    if (over) {
-      $('meter-note').textContent += ' The seed stops at ' + target + ' bits, so more '
-        + info.unit + 's change which wallet you get but not how hard it is to guess.';
-    }
+    $('meter-cap').hidden = !over;
+    $('meter-cap').textContent = over
+      ? 'The seed stops at ' + target + ' bits, so more ' + info.unit
+        + 's change which wallet you get but not how hard it is to guess.'
+      : '';
   }
 
   function paintCount() {
