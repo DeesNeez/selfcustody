@@ -41,6 +41,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://selfcustody.ca/entropy.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://selfcustody.ca/contact.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
@@ -234,6 +239,18 @@
   <url>
     <loc>https://selfcustody.ca/guides/exchange-account-security.html</loc>
     <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/human-randomness.html</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://selfcustody.ca/guides/three-dice-seed.html</loc>
+    <lastmod>2026-08-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

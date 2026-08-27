@@ -6054,10 +6054,19 @@ body.site-refresh .navbar .sc-nav-submenu a.active {
    it and an orange resting colour (rather than the plain white the six
    category links share) say so before a reader ever opens the link, the same
    distinction the hub's own nav strip already makes for it there. */
+/* The divider now belongs to the group label rather than to each tool, so a
+   second tool does not draw a second line through the middle of the list. */
 body.site-refresh .navbar .sc-nav-tool-item {
   margin-top: 6px;
   padding-top: 6px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* The second tool sits directly under the first, so the divider above the
+   group is not repeated between them. */
+body.site-refresh .navbar .sc-nav-tool-item.is-paired {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 
 body.site-refresh .navbar .sc-nav-submenu a.sc-nav-tool-link {
@@ -6121,6 +6130,11 @@ body.site-refresh .navbar .sc-nav-submenu a.sc-nav-tool-link {
     margin-top: 4px;
     padding-top: 8px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  body.site-refresh .navbar-mobile .sc-nav-tool-item.is-paired {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
   }
 
   body.site-refresh .navbar-mobile .sc-nav-submenu a.sc-nav-tool-link {
@@ -12754,6 +12768,7 @@ body[data-page="home"] .sc-home-compare-card .sc-text-link {
 body[data-page="home"] .sc-home-explore-section,
 body[data-page="home"] .sc-home-safe-path-section,
 body[data-page="home"] .sc-home-featured-section,
+body[data-page="home"] .sc-home-tool-section,
 body[data-page="home"] .sc-home-trust-section {
   position: relative;
   isolation: isolate;
@@ -12765,6 +12780,27 @@ body[data-page="home"] .sc-home-trust-section {
 body[data-page="home"] .sc-home-explore-section {
   padding-top: 32px;
   background: #08090b;
+}
+
+/* The Entropy Workshop band, which runs on guides.html as a .sc-section-dark:
+   paper-grey with an orange bloom behind it, so it reads as a panel set into a
+   page of lighter sections. The home page is the other way round -- every
+   section is already #08090b -- so that treatment arrived as a lighter slab
+   with its own glow, the one band on the page that looked pasted on. Here it
+   takes the same ground and the same rhythm as the sections either side of it
+   (76px matching .sc-home-trust-section below; the shared rule above supplies
+   the ground and 68px under 991px), and lets the band's own card carry the
+   contrast instead of the section behind it. */
+body[data-page="home"] .sc-home-tool-section {
+  padding-top: 76px;
+  padding-bottom: 76px;
+}
+
+/* .sc-section-dark centres this wrapper; keep that here rather than inherit a
+   start-aligned button from .sc-tool-actions. */
+body[data-page="home"] .sc-home-tool-section .sc-hero-actions {
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .sc-home-section-word {
@@ -13597,6 +13633,7 @@ body[data-page="home"] .sc-home-help-section {
   body[data-page="home"] .sc-home-safe-path-section,
   body[data-page="home"] .sc-home-compare-section,
   body[data-page="home"] .sc-home-featured-section,
+  body[data-page="home"] .sc-home-tool-section,
   body[data-page="home"] .sc-home-trust-section {
     padding-top: 68px;
     padding-bottom: 68px;
@@ -13687,4 +13724,452 @@ body[data-page="home"] .sc-home-help-section {
   .sc-home-compare-card {
     min-height: 0;
   }
+}
+
+/* ---- the randomness self-test -------------------------------------------
+   In the "why humans are bad at entropy" guide. Sits inside the article as a
+   panel rather than a figure, because it is something to do rather than
+   something to look at. */
+.sc-rng-lab {
+  position: relative;
+  scroll-margin-top: 96px;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 38px 0;
+  padding: 28px;
+  border: 1px solid rgba(255, 138, 0, 0.34);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(255, 138, 0, 0.15), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(65, 184, 145, 0.08), transparent 35%),
+    linear-gradient(145deg, #211d18 0%, #151515 58%, #121414 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 22px 50px rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.78);
+}
+.sc-rng-lab::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, #ff8a00, rgba(255, 138, 0, 0.15) 58%, transparent);
+}
+.sc-rng-lab > * { position: relative; z-index: 1; }
+.sc-rng-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+.sc-rng-head h3 {
+  margin: 5px 0 0;
+  color: #fff;
+  font-size: clamp(1.32rem, 2.8vw, 1.72rem);
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+}
+.sc-rng-eyebrow,
+.sc-rng-private {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.sc-rng-eyebrow { color: #ff9d32; }
+.sc-rng-eyebrow i,
+.sc-rng-private i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+}
+.sc-rng-private {
+  flex: 0 0 auto;
+  margin-top: 3px;
+  padding: 8px 10px;
+  border: 1px solid rgba(80, 201, 158, 0.22);
+  border-radius: 999px;
+  background: rgba(80, 201, 158, 0.065);
+  color: #75d4b0;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+.sc-rng-lab > p {
+  max-width: 660px;
+  margin: 0 0 22px;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+.sc-rng-console {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.72fr) minmax(0, 1.28fr);
+  gap: 12px;
+}
+.sc-rng-call-box {
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  padding: 20px 16px;
+  border: 1px solid rgba(255, 138, 0, 0.3);
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255, 138, 0, 0.09), rgba(255, 138, 0, 0.025)),
+    rgba(5, 5, 5, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  text-align: center;
+}
+.sc-rng-call-box > span,
+.sc-rng-call-box small,
+.sc-rng-scoreline > span,
+.sc-rng-unlock span {
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.sc-rng-call-box > span { color: rgba(255, 255, 255, 0.58); }
+.sc-rng-call-box small { margin-top: 10px; color: rgba(255, 255, 255, 0.4); letter-spacing: 0.055em; }
+.sc-rng-seal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 11px;
+  color: #ff9d32;
+}
+.sc-rng-seal > i {
+  position: relative;
+  width: 16px;
+  height: 13px;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  opacity: 0.85;
+}
+.sc-rng-seal > i::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  bottom: 9px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-bottom: 0;
+  border-radius: 7px 7px 0 0;
+}
+.sc-rng-call-box b {
+  color: #ff9d32;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.03rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.035em;
+}
+.sc-rng-call-box b.is-blind { opacity: 0.52; }
+.sc-rng-call-box b.is-blind::after,
+.sc-rng-call-box b.is-coin::after {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.sc-rng-call-box b.is-blind::after { content: " · blind"; }
+.sc-rng-call-box b.is-coin { color: rgba(255, 255, 255, 0.58); }
+.sc-rng-call-box b.is-coin::after { content: " · coin flip"; }
+.sc-rng-pad {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.sc-rng-pad button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 102px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.055);
+  color: #fff;
+  font: inherit;
+  font-size: 1.06rem;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  transition: transform 0.12s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.sc-rng-pad button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(255, 138, 0, 0.48);
+  background: rgba(255, 138, 0, 0.09);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.19), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.sc-rng-pad button:active:not(:disabled) { transform: translateY(0) scale(0.985); }
+.sc-rng-pad button:focus-visible { outline: 2px solid #ff9d32; outline-offset: 3px; }
+.sc-rng-pad button:disabled { opacity: 0.35; cursor: not-allowed; }
+.sc-rng-coin {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, #f4f1eb 0%, #bbb8b1 40%, #68655f 100%);
+  color: #171717;
+  font-size: 1.05rem;
+  font-weight: 900;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.72), inset 0 -4px 7px rgba(0,0,0,.34), 0 5px 12px rgba(0,0,0,.28);
+}
+.sc-rng-last {
+  min-height: 36px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.18);
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.85rem;
+  font-weight: 750;
+  text-align: center;
+}
+.sc-rng-last:empty::before { content: "Choose a side to reveal the sealed guess"; font-weight: 600; }
+.sc-rng-last.is-hit { border-color: rgba(255, 138, 0, 0.25); color: #ffad52; }
+.sc-rng-last.is-miss { border-color: rgba(80, 201, 158, 0.18); color: #89d7ba; opacity: 1; }
+.sc-rng-readout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(220px, 0.88fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.sc-rng-scoreline,
+.sc-rng-unlock {
+  min-width: 0;
+  padding: 15px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 13px;
+  background: rgba(0, 0, 0, 0.18);
+}
+.sc-rng-scoreline > span,
+.sc-rng-unlock span { color: rgba(255, 255, 255, 0.47); }
+.sc-rng-scoreline b {
+  display: block;
+  margin-top: 2px;
+  color: #fff;
+  font-size: 1.22rem;
+  font-variant-numeric: tabular-nums;
+}
+.sc-rng-scoreline p { margin: 5px 0 0; color: rgba(255, 255, 255, 0.58); font-size: 0.8rem; line-height: 1.45; }
+.sc-rng-unlock > div:first-child { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sc-rng-unlock b { color: #fff; font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+.sc-rng-progress {
+  overflow: hidden;
+  height: 6px;
+  margin-top: 17px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.sc-rng-progress i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff8a00, #ffbd68);
+  box-shadow: 0 0 12px rgba(255, 138, 0, 0.45);
+  transition: width 0.2s ease;
+}
+.sc-rng-unlock.is-ready .sc-rng-progress i { background: linear-gradient(90deg, #49b98e, #8be1c1); box-shadow: 0 0 12px rgba(73,185,142,.4); }
+.sc-rng-strip {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 8px;
+  padding: 0 2px;
+}
+.sc-rng-strip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.13);
+}
+.sc-rng-strip i.is-hit { background: #ff9d32; box-shadow: 0 0 7px rgba(255, 138, 0, 0.34); }
+.sc-rng-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 15px;
+}
+.sc-rng-meta > b { color: rgba(255, 255, 255, 0.54); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+.sc-rng-meta > div { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.sc-rng-meta button {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.82);
+  font: inherit;
+  font-size: 0.77rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.sc-rng-meta button:hover:not(:disabled) { border-color: rgba(255, 138, 0, 0.38); background: rgba(255, 138, 0, 0.08); }
+.sc-rng-meta button:disabled { opacity: 0.28; cursor: not-allowed; }
+.sc-rng-meta button[data-rng-finish] { border-color: rgba(255, 138, 0, 0.42); background: rgba(255, 138, 0, 0.11); color: #ffc078; }
+.sc-rng-meta button[data-rng-finish]:disabled { border-color: rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); color: rgba(255,255,255,.5); }
+.sc-rng-tape {
+  min-height: 40px;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.085);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.12);
+  color: rgba(255, 255, 255, 0.56);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  word-break: break-all;
+}
+.sc-rng-tape:empty::before { content: "Your H / T sequence will appear here"; color: rgba(255,255,255,.28); font-family: inherit; letter-spacing: .03em; }
+.sc-rng-result { margin-top: 20px; }
+.sc-rng-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: 4px 14px;
+  padding: 15px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.095);
+}
+.sc-rng-row b { color: #fff; font-size: 0.93rem; }
+.sc-rng-mine { color: #ffad52; font-weight: 800; font-variant-numeric: tabular-nums; }
+.sc-rng-fair { color: rgba(255, 255, 255, 0.54); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.sc-rng-row p { grid-column: 1 / -1; margin: 3px 0 0; color: rgba(255, 255, 255, 0.61); font-size: 0.84rem; line-height: 1.55; }
+.sc-rng-verdict {
+  margin: 16px 0 0;
+  padding: 15px 16px;
+  border: 1px solid rgba(255, 138, 0, 0.2);
+  border-radius: 11px;
+  background: rgba(255, 138, 0, 0.085);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.sc-rng-proof { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.sc-rng-proof p { margin: 0 0 8px; color: rgba(255,255,255,.68); font-size: 0.85rem; line-height: 1.55; }
+/* The run of guesses, for checking against the commitments on screen. Set in
+   the same mono as the salt and the command above it -- it is data, read a
+   character at a time, not prose -- and allowed to break mid-token, which a
+   single 300-character word otherwise never does. */
+.sc-rng-check code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.sc-rng-proof pre {
+  margin: 0 0 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.24);
+  color: rgba(255,255,255,.72);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.73rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+@media (max-width: 680px) {
+  .sc-rng-lab { padding: 21px 18px; border-radius: 17px; }
+  .sc-rng-head { display: block; }
+  .sc-rng-private { margin-top: 12px; }
+  .sc-rng-console,
+  .sc-rng-readout { grid-template-columns: 1fr; }
+  .sc-rng-call-box { grid-row: auto; min-height: 124px; }
+  .sc-rng-last { grid-column: auto; }
+  .sc-rng-strip { grid-column: auto; }
+  .sc-rng-meta { align-items: flex-start; flex-direction: column; }
+  .sc-rng-meta > div { justify-content: flex-start; }
+  .sc-rng-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .sc-rng-fair { grid-column: 2; }
+}
+@media (max-width: 430px) {
+  .sc-rng-pad button { min-height: 88px; padding: 12px 8px; gap: 8px; font-size: .94rem; }
+  .sc-rng-coin { width: 42px; height: 42px; flex-basis: 42px; }
+  .sc-rng-meta > div { width: 100%; }
+  .sc-rng-meta button[data-rng-finish] { flex: 1 1 100%; }
+}
+
+/* The method comparison on the Randomness Lab. Wide by nature, so it scrolls
+   inside its own box rather than pushing the page sideways. */
+.sc-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.sc-method-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.sc-method-table th,
+.sc-method-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  vertical-align: top;
+}
+.sc-method-table thead th {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  border-bottom-width: 2px;
+}
+.sc-method-table tbody th { font-weight: 700; }
+.sc-method-table tbody tr:last-child th,
+.sc-method-table tbody tr:last-child td { border-bottom: 0; }
+.sc-table-note { margin-top: 14px; font-size: 0.9rem; opacity: 0.85; }
+.sc-narrow { max-width: 780px; }
+.sc-lead-note { font-size: 1rem; line-height: 1.7; opacity: 0.9; }
+/* Second tool on the guides hub band: a footnote to the first, not a rival. */
+.sc-tool-aside {
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+.sc-tool-aside a { color: #ffc07f; }
+
+/* Shortcut asides that point at something other than the dice tools, so they
+   want an icon rather than the die face. Same footprint as .sc-die-mark. */
+.sc-tool-shortcut .sc-shortcut-mark {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(152deg, #23262c 0%, #101318 46%, #06070a 100%);
+  color: #ffc07f;
+  font-size: 18px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -5px 9px rgba(0, 0, 0, 0.5),
+    0 3px 8px rgba(0, 0, 0, 0.42);
 }

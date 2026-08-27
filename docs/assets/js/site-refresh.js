@@ -1585,7 +1585,7 @@
         clearTimeout(reset);
         if (taps >= 5) {
           taps = 0;
-          window.location.href = "lab-demo.html";
+          window.location.href = "block-demo.html";
           return;
         }
         reset = setTimeout(() => { taps = 0; }, 1000);
@@ -3399,6 +3399,34 @@
     const state = { terms: [], query: "", letter: "all" };
     const localTerms = [
       {
+        id: "account_path",
+        title: "Account path",
+        definition: "The first three steps of a derivation path \u2014 m/84'/0'/0' \u2014 naming the script type, the coin, and which account. Everything a wallet shows you hangs below it: receiving addresses on one branch, change on another. It is the level an extended public key is normally exported from, so a wallet can watch a whole account without being handed anything that spends.",
+        example: "One seed can hold several accounts \u2014 m/84'/0'/0' and m/84'/0'/1' share recovery words but behave as separate wallets with separate balances.",
+        categories: ["Wallets", "Recovery", "Technical"]
+      },
+      {
+        id: "derivation_path",
+        title: "Derivation path",
+        definition: "The route from a wallet's master key down to one particular key, written as numbers separated by slashes \u2014 m/84'/0'/0'/0/0. Each step picks a child key, so one seed produces completely different addresses depending on the path taken. A wallet restored on the wrong path looks empty even though the recovery words were right.",
+        example: "Native SegWit wallets normally use m/84'/0'/0', so software expecting m/44'/0'/0' derives none of the same addresses from the same words.",
+        categories: ["Wallets", "Recovery", "Technical"]
+      },
+      {
+        id: "xprv",
+        title: "xprv",
+        definition: "An extended private key: a private key packaged with the chain code needed to derive every key beneath it. Whoever holds one can spend everything in that part of the wallet, so it should never be exported, photographed, or typed into software. Its public counterpart, the xpub, derives the same addresses but cannot spend from them.",
+        example: "Software that offers to export an xprv is offering the whole wallet \u2014 including every address it has not generated yet.",
+        categories: ["Wallets", "Security", "Technical"]
+      },
+      {
+        id: "master_fingerprint",
+        title: "Master fingerprint",
+        definition: "Eight hexadecimal characters identifying which wallet a device is holding, taken from a hash of the wallet's master public key. It reveals nothing that could spend, and appears in descriptors and partly signed transactions to record which key signed or still has to. Because it comes from the seed, adding a BIP39 passphrase changes it \u2014 which is how you confirm a passphrase was entered the way you meant.",
+        example: "A multisig coordinator lists each cosigner by master fingerprint, so a 2-of-3 shows three eight-character identifiers rather than three extended public keys.",
+        categories: ["Wallets", "Multisig", "Recovery", "Technical"]
+      },
+      {
         id: "descriptor",
         title: "Wallet descriptor",
         definition: "A structured description of a Bitcoin wallet's public keys, derivation paths, script type, and spending policy. Also called an output descriptor, it lets compatible software reconstruct addresses and coordinate or watch the wallet without containing the private keys required to spend.",
@@ -3636,4 +3664,368 @@
         count.textContent = "Glossary unavailable";
       });
   }
+  /* ---- the mind reader ----------------------------------------------------
+
+     In the "why humans are bad at entropy" guide. It calls your next tap
+     before you make it, and has to prove it did so without letting you use the
+     call against it. Those two requirements fight each other, and the fight is
+     the interesting part.
+
+     Showing the guess outright fails. Matching pennies is a game where whoever
+     moves second wins: anyone who simply does the opposite of a visible call is
+     right every single time, and no cleverness in the model fixes that --
+     playing randomly does not even help, because the contrarian is still
+     reading the final answer before choosing. Shannon's 1953 machine at Bell
+     Labs sidestepped it by revealing simultaneously, which a web page cannot.
+
+     So the guess is committed instead of shown. Before each tap you get a
+     truncated SHA-256 of a secret salt, the tap number and the predicted face.
+     You cannot invert it, so you cannot play against it; the moment you tap,
+     the face is revealed. At the end the salt is published and every one of
+     the sixty-four commitments can be recomputed by hand. It cannot have moved
+     second, and you could not move second either.
+
+     The model itself is deliberately dumb, and old: for each of the last one,
+     two and three taps, remember what the person did next, and bet they do it
+     again. Everything it knows, you typed. */
+  const mindReader = document.getElementById("sc-rng-lab");
+  if (mindReader) {
+    const MINIMUM = 24;   /* taps before the breakdown means anything */
+    const MAXIMUM = 300;  /* and where the round ends whether you like it or not */
+    const DEPTH = 3;      /* longest run of history used as context */
+    const CONFIDENT = 2;  /* sightings of a context before it is trusted */
+    const SHOWN = 12;     /* hex digits of each commitment put on screen */
+
+    const flips = [];
+    const marks = [];     /* true where the machine called it right */
+    const called = [];    /* what it actually predicted, revealed as you go */
+    const seen = new Map();
+    let call = null;      /* the standing prediction, already committed to */
+    let salt = null;
+    /* There is no tap limit -- the machine only gets better the longer you go,
+       and telling someone to keep going while refusing further taps was the
+       previous version's fib. What ends a round is asking for the proof.
+
+       Which is also why the salt cannot be published until then: knowing it
+       lets anyone hash both faces for the next index and see which one matches
+       the sealed value on screen. Revealing mid-round would hand over exactly
+       the advantage the commitment exists to withhold.
+
+       There is still a ceiling, at a few hundred. Long before it the point has
+       been made, and a counter that never stops is an invitation to sit there
+       proving something to a web page. */
+    let finished = false;
+
+    const pad = mindReader.querySelector("[data-rng-pad]");
+    const tape = mindReader.querySelector("[data-rng-tape]");
+    const count = mindReader.querySelector("[data-rng-count]");
+    const result = mindReader.querySelector("[data-rng-result]");
+    const undo = mindReader.querySelector("[data-rng-undo]");
+    const reset = mindReader.querySelector("[data-rng-reset]");
+    const commitEl = mindReader.querySelector("[data-rng-commit]");
+    const lastEl = mindReader.querySelector("[data-rng-last]");
+    const scoreEl = mindReader.querySelector("[data-rng-score]");
+    const scoreNote = mindReader.querySelector("[data-rng-score-note]");
+    const strip = mindReader.querySelector("[data-rng-strip]");
+    const proof = mindReader.querySelector("[data-rng-proof]");
+    const finish = mindReader.querySelector("[data-rng-finish]");
+    const unlock = mindReader.querySelector("[data-rng-unlock]");
+    const progress = mindReader.querySelector("[data-rng-progress]");
+    const unlockWrap = mindReader.querySelector(".sc-rng-unlock");
+
+    const canCommit = !!(window.crypto && crypto.getRandomValues && crypto.subtle);
+
+    const toHex = bytes => [...new Uint8Array(bytes)]
+      .map(byte => byte.toString(16).padStart(2, "0")).join("");
+
+    const sha256Hex = text =>
+      crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)).then(toHex);
+
+    /* salt : index : face -- the index is in there so two identical predictions
+       do not produce the same commitment and give the game away. */
+    const preimage = (index, face) => salt + ":" + index + ":" + face;
+
+    const longestRun = list => {
+      let best = 0;
+      let run = 0;
+      for (let i = 0; i < list.length; i++) {
+        run = i && list[i] === list[i - 1] ? run + 1 : 1;
+        if (run > best) best = run;
+      }
+      return best;
+    };
+
+    const stats = list => {
+      const switches = list.filter((face, i) => i && face !== list[i - 1]).length;
+      return {
+        switchRate: list.length > 1 ? Math.round((switches / (list.length - 1)) * 100) : 0,
+        run: longestRun(list),
+        heads: list.filter(face => face === "H").length
+      };
+    };
+
+    /* The longest streak a fair coin gives grows with the number of tosses --
+       roughly log2(n), which is where the familiar "about 6 in 64" comes from.
+       Quoted from the actual count rather than pinned to 64, now that a round
+       can run as long as someone is willing to keep tapping. */
+    const expectedRun = n => Math.max(2, Math.round(Math.log2(n)));
+
+    /* Longest context first, shortest last. A three-tap context is a sharper
+       read when it has been seen before; a one-tap context is nearly always
+       available. Below that there is nothing to go on and it says so. */
+    const predict = () => {
+      for (let k = Math.min(DEPTH, flips.length); k >= 1; k--) {
+        const tally = seen.get(flips.slice(-k).join(""));
+        if (!tally) continue;
+        if (tally.H + tally.T < CONFIDENT || tally.H === tally.T) continue;
+        return { face: tally.H > tally.T ? "H" : "T", basis: k };
+      }
+      const heads = flips.filter(face => face === "H").length;
+      if (flips.length >= 4 && heads * 2 !== flips.length) {
+        return { face: heads * 2 > flips.length ? "H" : "T", basis: 0 };
+      }
+      return { face: Math.random() < 0.5 ? "H" : "T", basis: -1 };
+    };
+
+    /* Every context ending at the tap just made now knows what followed it. */
+    const learn = face => {
+      for (let k = 1; k <= DEPTH; k++) {
+        if (flips.length < k) break;
+        const key = flips.slice(-k).join("");
+        const tally = seen.get(key) || { H: 0, T: 0 };
+        tally[face] += 1;
+        seen.set(key, tally);
+      }
+    };
+
+    const row = (label, yours, fair, note) => {
+      const wrap = document.createElement("div");
+      wrap.className = "sc-rng-row";
+      const name = document.createElement("b");
+      name.textContent = label;
+      const mine = document.createElement("span");
+      mine.className = "sc-rng-mine";
+      mine.textContent = yours;
+      const theirs = document.createElement("span");
+      theirs.className = "sc-rng-fair";
+      theirs.textContent = "fair coin: " + fair;
+      const why = document.createElement("p");
+      why.textContent = note;
+      wrap.append(name, mine, theirs, why);
+      return wrap;
+    };
+
+    const paintStrip = () => {
+      strip.replaceChildren(...marks.map(hit => {
+        const dot = document.createElement("i");
+        dot.className = hit ? "is-hit" : "is-miss";
+        dot.title = hit ? "guessed right" : "guessed wrong";
+        return dot;
+      }));
+    };
+
+    const paintLast = () => {
+      if (!called.length) {
+        lastEl.textContent = "";
+        lastEl.className = "sc-rng-last";
+        return;
+      }
+      const face = called[called.length - 1] === "H" ? "heads" : "tails";
+      const hit = marks[marks.length - 1];
+      lastEl.textContent = "It said " + face + " — " + (hit ? "right" : "wrong");
+      lastEl.className = "sc-rng-last " + (hit ? "is-hit" : "is-miss");
+    };
+
+    /* Commit to the next call. Async because a real hash is, so the pad stays
+       disabled for the instant between deciding and being able to prove it. */
+    const commitNext = () => {
+      if (finished) {
+        call = null;
+        commitEl.textContent = "—";
+        return Promise.resolve();
+      }
+      call = predict();
+      if (!canCommit) {
+        commitEl.textContent = "unavailable";
+        return Promise.resolve();
+      }
+      const index = flips.length;
+      const face = call.face;
+      return sha256Hex(preimage(index, face))
+        .then(digest => { commitEl.textContent = digest.slice(0, SHOWN) + "…"; })
+        .catch(() => { commitEl.textContent = "unavailable"; });
+    };
+
+    const paintScore = () => {
+      const hits = marks.filter(Boolean).length;
+      if (!marks.length) {
+        scoreEl.textContent = "–";
+        scoreNote.textContent = "It has to watch a few taps before it has anything to go on.";
+        return;
+      }
+      const pct = Math.round((hits / marks.length) * 100);
+      scoreEl.textContent = hits + " of " + marks.length + " (" + pct + "%)";
+      const more = finished ? "" : " Keep going — it only gets better at this, up to " + MAXIMUM + ".";
+      if (marks.length < 12) {
+        scoreNote.textContent = "Still warming up — the first several are little better than guesses." + more;
+      } else if (pct >= 60) {
+        scoreNote.textContent = "A coin would give it about half. It is reading you." + more;
+      } else if (pct >= 53) {
+        scoreNote.textContent = "Ahead of the 50% a coin would give it, which is already more than it should manage." + more;
+      } else {
+        scoreNote.textContent = "Holding it near 50%, which is what a coin would do." + (finished ? "" : " People usually slip eventually.") + more;
+      }
+    };
+
+    const showProof = () => {
+      if (!proof || !canCommit || !salt) return;
+      proof.replaceChildren();
+      const lead = document.createElement("p");
+      lead.textContent = "Every guess above was committed before you tapped. Here is the salt those commitments were built from, published now that it can no longer help you:";
+      const saltEl = document.createElement("pre");
+      saltEl.textContent = salt;
+      const how = document.createElement("p");
+      how.textContent = "Its first guess was " + (called[0] === "H" ? "heads" : "tails") + ", so this reproduces the first commitment shown on screen — sha256sum works in place of shasum:";
+      const cmd = document.createElement("pre");
+      cmd.textContent = "printf %s '" + preimage(0, called[0]) + "' | shasum -a 256";
+      /* The run is one unbroken token, so it needs its own element to wrap
+         inside -- left in the sentence it ran several hundred characters past
+         the panel and out over the article. */
+      const all = document.createElement("p");
+      all.className = "sc-rng-check";
+      all.textContent = "The full run of guesses, in order:";
+      const run = document.createElement("code");
+      run.textContent = called.join("");
+      all.append(" ", run);
+      proof.append(lead, saltEl, how, cmd, all);
+      proof.hidden = false;
+    };
+
+    const paint = () => {
+      count.textContent = flips.length + (flips.length === 1 ? " tap" : " taps");
+      tape.textContent = flips.join("");
+      if (unlock) {
+        const ready = flips.length >= MINIMUM;
+        unlock.textContent = ready ? "Unlocked" : flips.length + " / " + MINIMUM + " taps";
+        if (unlockWrap) unlockWrap.classList.toggle("is-ready", ready);
+        if (progress) progress.style.width = Math.min(100, (flips.length / MINIMUM) * 100) + "%";
+      }
+      undo.disabled = flips.length === 0 || finished;
+      reset.disabled = flips.length === 0;
+      pad.querySelectorAll("button").forEach(button => { button.disabled = finished; });
+      if (finish) {
+        finish.disabled = flips.length < MINIMUM || finished;
+        finish.textContent = finished ? "Revealed" : "Finish and reveal";
+      }
+      paintStrip();
+      paintScore();
+      paintLast();
+
+      if (flips.length < MINIMUM) {
+        result.hidden = true;
+        if (proof) proof.hidden = true;
+        return;
+      }
+
+      const mine = stats(flips);
+      const hits = marks.filter(Boolean).length;
+      const pct = Math.round((hits / marks.length) * 100);
+
+      const verdict = document.createElement("p");
+      verdict.className = "sc-rng-verdict";
+      /* Hedged on purpose. Sixty-four taps is a small sample and a fair player
+         beats this often enough that one good round proves nothing about a
+         person; the claim worth making is about people in aggregate, which is
+         what the research supports. */
+      if (pct >= 60) {
+        verdict.textContent = "It has called " + pct + "% of your taps from nothing but the taps before them, committing to each guess before you made it. A coin would have given it half. Whatever you are doing to feel random, you are doing it repeatedly.";
+      } else if (pct >= 53) {
+        verdict.textContent = "It is running at " + pct + "%, ahead of the half a coin would have given it. Not a rout, but it has found something to hold on to — and it only ever saw your own taps.";
+      } else {
+        verdict.textContent = "You are holding it to " + pct + "%, which is about what a coin manages, and that is a genuinely good result. Worth noticing the cost: " + flips.length + " taps of concentrated effort, for fewer bits than a single throw of three dice. This is not a way to make a wallet.";
+      }
+
+      result.replaceChildren(
+        row("How often you switched", mine.switchRate + "%", "50%",
+          "Every place where one flip meets the next is its own coin toss, so a fair coin changes about half the time. People switch far more — alternating feels random, and repeating feels like a mistake. It is also the easiest habit for the machine above to spot."),
+        row("Longest streak", String(mine.run) + " in a row", "about " + expectedRun(flips.length),
+          "A fair coin's longest streak grows with the number of tosses — roughly six in 64, seven in 128. Most people stop themselves at three, because a longer one starts to feel wrong."),
+        row("Heads", mine.heads + " of " + flips.length, "about " + Math.round(flips.length / 2),
+          "This is the one people do get right — and the one that matters least. Balancing the totals is easy and says almost nothing about whether the order was random."),
+        verdict
+      );
+      result.hidden = false;
+      if (finished) showProof();
+    };
+
+    const newSalt = () => {
+      if (!canCommit) { salt = null; return; }
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      salt = toHex(bytes);
+    };
+
+    pad.addEventListener("click", event => {
+      const button = event.target.closest("button[data-rng-face]");
+      if (!button || finished) return;
+      const face = button.dataset.rngFace;
+      if (finished) return;
+      if (call) {
+        marks.push(call.face === face);
+        called.push(call.face);
+      }
+      learn(face);
+      flips.push(face);
+      /* The ceiling ends the round on its own, which also unseals the salt --
+         there is nothing left to commit to. */
+      if (flips.length >= MAXIMUM) finished = true;
+      commitNext();
+      paint();
+    });
+
+    undo.addEventListener("click", () => {
+      if (finished) return;
+      /* The model is rebuilt from what is left rather than unwound, because
+         un-learning a tap correctly is fiddlier than counting the rest again. */
+      flips.pop();
+      marks.pop();
+      called.pop();
+      const kept = flips.slice();
+      flips.length = 0;
+      seen.clear();
+      kept.forEach(face => { learn(face); flips.push(face); });
+      commitNext();
+      paint();
+    });
+
+    reset.addEventListener("click", () => {
+      flips.length = 0;
+      marks.length = 0;
+      called.length = 0;
+      seen.clear();
+      finished = false;
+      if (proof) proof.hidden = true;
+      newSalt();
+      commitNext();
+      paint();
+    });
+
+    /* Ending the round is what unlocks the salt, and it is the only thing that
+       does. Until this is pressed the machine is still committing to guesses,
+       so publishing would be handing over the next answer. */
+    if (finish) {
+      finish.addEventListener("click", () => {
+        if (flips.length < MINIMUM || finished) return;
+        finished = true;
+        commitNext();
+        paint();
+      });
+    }
+
+    newSalt();
+    commitNext();
+    paint();
+  }
+
+
 })();

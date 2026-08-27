@@ -243,6 +243,8 @@ const currentYear = new Date().getFullYear();
           </div>
         </section>
 
+        ${renderToolsBand({ home: true })}
+
         <section class="sc-section sc-section-muted sc-home-trust-section">
           <div class="container">
             <div class="sc-home-trust-head">
@@ -1855,15 +1857,17 @@ const currentYear = new Date().getFullYear();
             return `<li><a href="${target}">${cat.label}</a></li>`;
           })
           .join("\n            ");
-        /* The offline entropy tool is not a guide category -- it is a
-           standalone page, not a section of guides.html -- so it is appended
-           after the category loop rather than folded into it, set apart by
-           its own divider and colour, and points straight at entropy.html
-           rather than the hub band that promotes it. From any other page on
-           the site, guides.html#entropy-workshop would mean landing on the
-           hub and scrolling past six sections to reach a band whose only job
-           is to link to the real page; going straight there skips that. */
-        const toolItem = `<li class="sc-nav-tool-item"><a class="sc-nav-tool-link" href="${base}entropy.html">Entropy Workshop</a></li>`;
+        /* The two entropy tools are not guide categories -- the items above are
+           anchors into guides.html, these are standalone pages -- so they are
+           appended after the loop, set apart by a divider and their own colour
+           because they are a different kind of thing: you use them rather than
+           read them.
+
+           They point straight at the pages rather than at the band on
+           guides.html that promotes them. From anywhere else on the site,
+           following that band would mean landing on the hub and scrolling past
+           six sections to reach a link to the real page. */
+        const entropyGroup = `<li class="sc-nav-tool-item"><a class="sc-nav-tool-link" href="${base}entropy.html">Entropy Workshop</a></li>`;
         /* Same shape as Compare: the label only opens the list. The hub
            itself is still one click away as "Start here", the first item
            in the list, so nothing needs the label to be a link too. */
@@ -1873,7 +1877,7 @@ const currentYear = new Date().getFullYear();
           </button>
           <ul class="sc-nav-submenu">
             ${items}
-            ${toolItem}
+            ${entropyGroup}
           </ul>
         </li>`;
       }

@@ -39,6 +39,7 @@ url("./fonts/bootstrap-icons.woff?subset-20260825") format("woff");
 .bi-currency-bitcoin::before { content: "\f635"; }
 .bi-diagram-2::before { content: "\f2ec"; }
 .bi-diagram-3::before { content: "\f2ee"; }
+.bi-dice-3::before { content: "\f2f7"; }
 .bi-emoji-neutral::before { content: "\f323"; }
 .bi-envelope::before { content: "\f32f"; }
 .bi-exclamation-triangle-fill::before { content: "\f33a"; }

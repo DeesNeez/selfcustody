@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="One octal die and two hex dice throw exactly eleven bits — one recovery word, with nothing hashed and nothing to trust. The method, the arithmetic, and the one detail that quietly ruins it.">
+  <title>Three dice, one word: rolling a seed you can read | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/three-dice-seed.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Three dice, one word: rolling a seed you can read | SelfCustody.ca">
+  <meta property="og:description" content="One octal die and two hex dice throw exactly eleven bits — one recovery word, with nothing hashed and nothing to trust. The method, the arithmetic, and the one detail that quietly ruins it.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/three-dice-seed.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4888" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260827-4888" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260827-4888" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Three dice, one word: rolling a seed you can read","description":"One octal die and two hex dice throw exactly eleven bits — one recovery word, with nothing hashed and nothing to trust. The method, the arithmetic, and the one detail that quietly ruins it.","url":"https://selfcustody.ca/guides/three-dice-seed.html","datePublished":"2026-08-26","dateModified":"2026-08-26","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/three-dice-seed.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+            <li class="sc-nav-tool-item"><a class="sc-nav-tool-link" href="../entropy.html">Entropy Workshop</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#advanced">Techniques</a>
+        </nav>
+        <span class="sc-eyebrow">Advanced techniques</span>
+        <div class="sc-guide-title-row"><span class="sc-die-mark" aria-hidden="true"></span><h1>Three dice, one word: rolling a seed you can read</h1></div>
+        <p class="sc-lead">One octal die and two hex dice throw exactly eleven bits — one recovery word, with nothing hashed and nothing to trust. The method, the arithmetic, and the one detail that quietly ruins it.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-intermediate">Intermediate</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 14 minutes</span>
+          <span>Updated Aug 26, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-entropy">Entropy</a><span class="sc-tag">Dice</span><span class="sc-tag">Seed generation</span></div>
+        <p class="sc-guide-product-links"><a class="sc-text-link" href="../devices.html#coldcard">About COLDCARD <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#seedsigner">About SeedSigner <i class="bi bi-arrow-right"></i></a><a class="sc-text-link" href="../devices.html#jade">About Blockstream Jade <i class="bi bi-arrow-right"></i></a></p>
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">Rolling a six-sided die ninety-nine times and hashing the result works, but you cannot check it. You hand a column of digits to a machine and it hands back words, and the step in between is SHA-256 — which no one does in their head. There is a version of this where nothing is hidden, and it needs three dice.</p>
+
+      <p>The trick is to stop fighting the arithmetic. A recovery word is one of 2048, and 2048 is two to the eleventh, so a word is exactly eleven bits. A six-sided die cannot produce eleven bits neatly because six is not a power of two, which is why every six-sided method ends in a hash. Eight and sixteen <em>are</em> powers of two. An octal die is three bits. A hex die is four. One octal and two hex dice, thrown together, are 3 + 4 + 4 = 11.</p>
+
+      <p>One throw of three dice is one word. Not approximately, not after processing — the faces are the word.</p>
+
+      <blockquote class="sc-pull-quote"><p>If the conversion needs a computer, you are trusting the computer. This one needs a printed page.</p></blockquote>
+
+      <h2><span class="sc-article-num">1</span>What you need</h2>
+
+      <p>Three dice: one eight-sided numbered 1 to 8, and two sixteen-sided numbered 0 to F. A printed dictionary that maps the three faces to a word. A pen and a worksheet. A cup to throw them in, so they tumble rather than getting placed. A hard flat surface, and a room with nothing electronic in it.</p>
+
+      <p>You also need a signing device — COLDCARD, SeedSigner and Jade all work — but only for the very last step, and not to generate anything. More on why below.</p>
+
+      <h2><span class="sc-article-num">2</span>The throw</h2>
+
+      <p>Shake all three dice in the cup and tip them out. Put the octal die on the left and the two hex dice beside it. It does not matter which hex die you put in the middle; they are identical and independent, so there is no ordering to preserve. What matters is that once they are in a row you read them left to right and write down all three characters.</p>
+
+      <p>That is one word. Look it up in the dictionary and write the word on the worksheet. Then do it again. You need <strong>23 of them</strong>.</p>
+
+      <p>Not 24 — and that is the part worth understanding rather than just following.</p>
+
+      <h2><span class="sc-article-num">3</span>Why the last word is not yours to choose</h2>
+
+      <p>A 24-word phrase is not 24 free words. It is 256 bits of secret plus an 8-bit checksum, and 24 &times; 11 = 264 = 256 + 8. Those eight checksum bits live in the last word, which is why the twenty-fourth word is mostly a verification digit rather than randomness. Your 23 throws are 253 bits. The last word carries the remaining three bits of secret, followed by a checksum computed over everything.</p>
+
+      <p>Three bits is eight possibilities. So there are exactly eight words that can legally finish your phrase, and which of the eight you pick is the last of your randomness — the checksum part is then forced.</p>
+
+      <p>Nobody computes a SHA-256 checksum with a pen. So this is the one step where the device earns its place: you enter your 23 words, it shows you the eight valid endings, and you throw the octal die one last time to choose between them. Faces 1 to 8, options one to eight. The device did not generate anything; it did arithmetic you could not do by hand, in front of you, on a wallet whose entropy you had already fixed.</p>
+
+      <div class="sc-callout mt-4"><h3>Do it once as a rehearsal</h3><p>Run the whole procedure end to end on a wallet you will wipe immediately. The point is to find out that your dictionary printout is missing a page, or that your handwriting turns 8 into B, while it costs you nothing.</p></div>
+
+      <h2><span class="sc-article-num">4</span>The detail that quietly ruins it</h2>
+
+      <p>The octal die is numbered <strong>1 to 8</strong>, not 0 to 7.</p>
+
+      <p>This sounds like pedantry and is not. The dictionary is organised in eight blocks of 256 words, and the leading digit selects the block — but as a label, not as a multiplier. Block 1 is the first 256 words, so the dictionary opens at <code>100</code> for <em>abandon</em> and ends at <code>8FF</code> for <em>zoo</em>. Read the die as 0 to 7 and treat the digit as a multiplier, and every word lands 256 places from where it belongs.</p>
+
+      <p>Nothing would warn you. The phrase would still be 23 valid words, the device would still offer eight endings, and the wallet would still work perfectly — it would simply be a different wallet than the one your worksheet describes. You would only find out when you tried to restore from the sheet and arrived somewhere empty.</p>
+
+      <p>The safeguard costs nothing: use the printed dictionary as the authority and do not do the arithmetic yourself. The codes on the page already account for it.</p>
+
+      <h2><span class="sc-article-num">5</span>Check it before you trust it</h2>
+
+      <p>The whole appeal of this method is that no step requires trust, so the last thing to do is confirm the words you wrote are the words your dice actually chose. The <a href="../entropy.html" data-site-link>Entropy Workshop</a> takes the same three-character codes, does the same lookup, and shows you the phrase and the first addresses. Download it and run it offline; it fetches nothing and generates nothing.</p>
+
+      <p>If its words match your worksheet, your transcription is clean. If they do not, you have a copying error rather than a broken wallet — which is exactly the sort of thing you want to discover before funding it.</p>
+
+      <blockquote class="sc-pull-quote"><p>Your recovery words are the backup. The worksheet full of dice codes is a receipt, not a key.</p></blockquote>
+
+      <h2><span class="sc-article-num">6</span>Is this better than 99 rolls?</h2>
+
+      <p>It is not more secure. Both give you 256 bits from dice you threw yourself, and neither can be improved on in that respect. What changes is how much you have to take on faith.</p>
+
+      <p>Hashing six-sided rolls is opaque, and the opacity has a real cost: as <a href="dice-entropy.html">rolling your own entropy</a> covers, wallets disagree about how to do it. Some hash the digits as written, some rewrite every 6 to a 0 first, some read the rolls as bits without hashing at all. The same column of rolls can produce completely unrelated wallets on two honest devices, and your notebook does not record which one you used.</p>
+
+      <p>The three-dice method has no such ambiguity, because there is no conversion to disagree about. A printed table says what each throw means. The price is buying two kinds of dice and printing a dictionary; the return is a procedure you can follow, check, and explain to someone else without saying "and then it hashes it".</p>
+
+      <p>If you already own six-sided dice and a device that accepts them, that method is fine and this one is not urgent. If you are drawn to this at all, it is probably because you want to see every step — and that instinct is the right one.</p>
+
+      <h2>Sources</h2>
+
+      <p>The method, the dice, the worksheet and the printed dictionary are the work of <a href="https://entropy.page/dice" target="_blank" rel="noopener noreferrer">D++ and Keysa's workshop</a> at entropy.page. The explanation above is ours; the procedure is theirs.</p>
+
+      <ul>
+        <li><a href="https://entropy.page/dice" target="_blank" rel="noopener noreferrer">entropy.page &mdash; Roll Your Own Seed Phrase</a> &mdash; the workshop, and where to get the dice and the printouts.</li>
+        <li><a href="https://entropy.page/files/dictionary.pdf" target="_blank" rel="noopener noreferrer">The BIP39 dictionary</a> &mdash; the lookup table itself, running 100 to 8FF. This is the one to print, and the authority on the codes.</li>
+        <li><a href="https://thesimplestbitcoinbook.net/wp-content/uploads/2023/09/Roll-Your-Own-Seed-Phrase-PDF.pdf" target="_blank" rel="noopener noreferrer">The slide deck</a> &mdash; the procedure step by step, and the arithmetic behind the three dice.</li>
+        <li><a href="https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki" target="_blank" rel="noopener noreferrer">BIP39</a> &mdash; the standard behind the wordlist and the checksum that fixes the last word.</li>
+      </ul></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="dice-entropy.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shuffle"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Roll the dice: generating your own entropy</h3>
+              <p>Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="seed-backup-metal.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-box-seam"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Durable seed backups</h3>
+              <p>Paper survives everything except the events your backup exists for. What metal actually buys you, the four-letter shortcut that halves the work, and the mistakes that quietly ruin a plate.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="recovery-test-drill.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-arrow-counterclockwise"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Test your recovery without risking your coins</h3>
+              <p>A backup you have never restored is a guess. Here is how to prove it works, including which method to use when you only own one device and it already holds funds.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260827-4888"></script>
+</body>
+</html>

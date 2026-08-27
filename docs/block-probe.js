@@ -1,4 +1,4 @@
-/* Instrumentation for lab-demo.html -- a copy of the dashboard that can be made
+/* Instrumentation for block-demo.html -- a copy of the dashboard that can be made
    to confirm a block on demand, so the strip's confirmation animation can be
    watched without waiting ten minutes for the real thing.
 

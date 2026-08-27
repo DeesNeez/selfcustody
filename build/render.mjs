@@ -14,11 +14,11 @@
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { pages, renderHeader, renderFooter, routes } from './content.mjs';
 import { guides, publishedGuides, renderGuideBody } from './guides.mjs';
-import { renderEntropyPage } from './tools/entropy-page.mjs';
+import { renderEntropyOffline, renderEntropyEmbed } from './tools/entropy-page.mjs';
 import { createHash } from 'node:crypto';
 
-/* file -> page key. Several files can share a key: lab-demo.html is the same
-   dashboard markup wrapped with lab-probe.js. */
+/* file -> page key. Several files can share a key: block-demo.html is the same
+   dashboard markup wrapped with block-probe.js. */
 const FILES = {
   'index.html': 'home',
   'guides.html': 'guides',
@@ -30,11 +30,11 @@ const FILES = {
   'merch.html': 'merch',
   'contact.html': 'contact',
   'coinkite.html': 'coinkite',
-  'lab-demo.html': 'dashboard',
+  'block-demo.html': 'dashboard',
 };
 
 const SITE = 'https://selfcustody.ca';
-const ASSET_VERSION = '20260825-4800';
+const ASSET_VERSION = '20260827-4888';
 const ASSET_QUERY = /(assets\/(?:vendor\/bootstrap-icons\/bootstrap-icons\.css|css\/(?:style|site-refresh)\.css|js\/site-refresh\.js)\?v=)[^"']+/g;
 
 /* The whole container block, anchored on the <noscript> that always follows it.
@@ -259,14 +259,71 @@ for (const guide of publishedGuides) {
    answering requests with an out-of-date file, silently, forever. */
 if (existsSync('docs/tools')) rmSync('docs/tools', { recursive: true });
 
-const entropyPage = renderEntropyPage();
-writeFileSync('docs/entropy.html', entropyPage);
-const entropyHash = createHash('sha256').update(entropyPage).digest('hex');
-writeFileSync('docs/entropy.html.sha256', `${entropyHash}  entropy.html
+/* Same reasoning, one level down. entropy.html used to be the downloadable
+   artifact and had a checksum published beside it; it is now the browsable
+   page, and that stale .sha256 would describe a file nobody can obtain --
+   worse than no checksum, because it invites a comparison that must fail. */
+if (existsSync('docs/entropy.html.sha256')) rmSync('docs/entropy.html.sha256');
+
+/* The downloadable artifact, and the checksum published beside it. This is the
+   file the verify instructions name and the one a reader is meant to hash --
+   the browsable page below is a different file with the site's chrome around
+   the same tool, and hashing that instead would prove nothing. */
+const entropyOffline = renderEntropyOffline();
+writeFileSync('docs/entropy-offline.html', entropyOffline);
+const entropyHash = createHash('sha256').update(entropyOffline).digest('hex');
+writeFileSync('docs/entropy-offline.html.sha256', `${entropyHash}  entropy-offline.html
 `);
+
+/* The same tool inside an ordinary page, so browsing it does not mean landing
+   on something that looks like a different website. */
+const embed = renderEntropyEmbed();
+const entropySite = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device.">
+  <title>Entropy Workshop | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="${SITE}/entropy.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="Entropy Workshop | SelfCustody.ca">
+  <meta property="og:description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device.">
+  <meta property="og:url" content="${SITE}/entropy.html">
+  <meta property="og:image" content="${SITE}/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="${SITE}/assets/img/social-preview.jpg?v=5">
+  <link rel="icon" type="image/svg+xml" href="assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=${ASSET_VERSION}" rel="stylesheet">
+  <link href="assets/css/style.css?v=${ASSET_VERSION}" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=${ASSET_VERSION}" rel="stylesheet">
+  <style>${embed.styles}</style>
+</head>
+<body class="site-refresh" data-page="entropy">
+  <div id="site-header">${renderHeader('entropy')}</div>
+    <main id="main-content">${embed.markup.replace('{{FILESIZE}}', embed.downloadSize)}</main>
+    <div id="site-footer">${renderFooter()}</div>
+  ${noscriptFor('entropy')}
+  <script src="assets/js/site-refresh.js?v=${ASSET_VERSION}"></script>
+${embed.scripts}
+</body>
+</html>
+`;
+writeFileSync('docs/entropy.html', entropySite);
+
 console.log(`
-entropy.html                   ${Math.round(entropyPage.length / 1024)} KB`);
+entropy-offline.html           ${Math.round(entropyOffline.length / 1024)} KB`);
 console.log(`  sha256  ${entropyHash}`);
+console.log(`entropy.html                   ${Math.round(entropySite.length / 1024)} KB  (site page)`);
 
 const planned = guides.length - publishedGuides.length;
 console.log(`\n${publishedGuides.length} guide page(s) written, ${planned} planned, ${aliasCount} redirect(s)`);
@@ -283,6 +340,13 @@ const ROOT_URLS = [
   ['/software.html', 'monthly', '0.8'],
   ['/exchanges.html', 'monthly', '0.8'],
   ['/dashboard.html', 'daily', '0.8'],
+  /* The browsable Workshop. It was kept out of here while it was the raw
+     downloadable file -- landing on that cold, without the guidance around it,
+     was the thing to avoid. It is a normal page now, with the safety brief
+     above the tool and nowhere to type an existing phrase. The offline copy it
+     links to stays out: a 211 KB near-duplicate, and cold arrival there is
+     what the original reasoning was actually about. */
+  ['/entropy.html', 'monthly', '0.7'],
   ['/contact.html', 'yearly', '0.5'],
 ];
 
@@ -335,10 +399,10 @@ for (const f of readdirSync('docs')) if (f.endsWith('.html') && !f.startsWith('_
 for (const f of readdirSync('docs/guides')) scan += readFileSync(`docs/guides/${f}`, 'utf8');
 
 let cssScan = '';
-for (const f of ['docs/assets/css/site-refresh.css', 'docs/assets/css/lab.css']) {
+for (const f of ['docs/assets/css/site-refresh.css', 'docs/assets/css/block-demo.css']) {
   try { cssScan += readFileSync(f, 'utf8'); } catch {}
 }
-try { scan += readFileSync('docs/lab-probe.js', 'utf8'); } catch {}
+try { scan += readFileSync('docs/block-probe.js', 'utf8'); } catch {}
 scan += cssScan;
 
 const referenced = new Set(['bi-arrow-up-right', 'bi-arrow-down-right', 'bi-arrow-right']);
