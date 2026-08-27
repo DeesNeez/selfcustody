@@ -1,0 +1,49 @@
+name: build
+
+# Every guard in this repo runs at build time, which until now meant they only
+# ran when someone remembered. None of this needs a browser, so it costs a
+# minute and closes that gap.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # The published test vectors. Every expected value comes from a
+      # specification rather than from running this code.
+      - name: Crypto vectors
+        run: node build/tools/entropy-test.mjs
+
+      # Also runs, in order: the icon-subset check, the fetch guard, the glyph
+      # guard and the Workshop guard. Any of them failing exits non-zero.
+      - name: Build and guards
+        run: node build/render.mjs
+
+      # The artifact's whole promise. Deliberately checked on Linux, where the
+      # checkout has LF endings: the checksum used to describe the Windows
+      # working copy rather than the committed bytes, and this is the job that
+      # would have caught it.
+      - name: Published checksum matches the artifact
+        working-directory: docs
+        run: sha256sum -c entropy-offline.html.sha256
+
+      # A build on a clean checkout must reproduce exactly what is committed.
+      # If this fails, either someone edited docs/ by hand or the build is not
+      # deterministic -- and a non-deterministic build cannot have a meaningful
+      # published checksum.
+      - name: Generated files are current and reproducible
+        run: |
+          if ! git diff --quiet; then
+            echo "::error::the build changed committed files -- run 'node build/render.mjs' and commit the result"
+            git --no-pager diff --stat
+            exit 1
+          fi

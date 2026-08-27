@@ -57,12 +57,12 @@ const COLEMAN_CARDS = [
 
 /* The account descriptor for one address type, from BIP39's all-zero test
    mnemonic -- the same seed the address vectors above use. */
-function descriptorFor(type) {
+function descriptorFor(type, branch = null) {
   const seed = C.mnemonicToSeed(ABANDON_12.split(' '));
   const path = C.accountPath(type, 0);
   const { xpub } = C.deriveAddresses({ seed, addressType: type, path });
   return C.watchOnlyDescriptor({
-    addressType: type, fingerprint: C.masterFingerprint(seed), path, xpub
+    addressType: type, fingerprint: C.masterFingerprint(seed), path, xpub, branch
   });
 }
 
@@ -581,10 +581,40 @@ export const VECTORS = [
   ['descriptor: carries the canonical xpub, not the zpub',
     () => descriptorFor('native').includes('xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V')
        && !/[yz]pub/.test(descriptorFor('native')), true],
+  /* The older one-descriptor-per-chain form, for wallets that predate BIP389
+     and reject <0;1> outright. Same checksums the reference implementation
+     produces for the same bodies. */
+  ['descriptor: receiving branch, for wallets without multipath',
+    () => descriptorFor('native', 0).slice(-9), '#afwvtk2s'],
+  ['descriptor: change branch, for wallets without multipath',
+    () => descriptorFor('native', 1).slice(-9), '#vatdkr6g'],
+  ['descriptor: the split pair describes the same account as the combined one',
+    () => {
+      const combined = descriptorFor('native').split('/<0;1>/')[0];
+      return [descriptorFor('native', 0).startsWith(combined),
+              descriptorFor('native', 1).startsWith(combined)].join();
+    }, 'true,true'],
+  ['descriptor: a branch other than 0 or 1 is refused',
+    () => { try { descriptorFor('native', 2); return 'accepted'; } catch (e) { return 'refused'; } }, 'refused'],
+
   ['descriptor: the origin uses h, which survives a shell',
     () => C.descriptorOrigin("m/84'/0'/0'"), '84h/0h/0h'],
   ['descriptor: receive and change in one expression',
     () => descriptorFor('native').includes('/<0;1>/*'), true],
+  /* parsePath is more forgiving than the descriptor grammar. It accepts
+     "m84h/0h/0h" with no slash after the m, and reading the path as text
+     rather than rebuilding it from the parsed indices emitted
+     [deadbeef/m84h/0h/0h] -- an origin no wallet parses, carrying a perfectly
+     valid checksum. */
+  ['descriptor: a path written without the slash still canonicalises',
+    () => C.descriptorOrigin('m84h/0h/0h'), '84h/0h/0h'],
+  ['descriptor: an uppercase M canonicalises',
+    () => C.descriptorOrigin("M/84'/0'/0'"), '84h/0h/0h'],
+  ['descriptor: unhardened steps keep their form',
+    () => C.descriptorOrigin("m/0'/1/2'"), '0h/1/2h'],
+  ['descriptor: a path that is not a path is refused, not checksummed',
+    () => { try { C.descriptorOrigin('not a path'); return 'accepted'; } catch (e) { return 'refused'; } }, 'refused'],
+
   ['descriptor: never contains a private key',
     () => /xprv|[yz]prv/.test(descriptorFor('native')), false],
   /* Every checksum this builds must satisfy the spec's own verifier. */

@@ -24,13 +24,39 @@
    would train people to work around the guard. So this looks at the surfaces
    that actually cause a fetch. */
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { join, relative, dirname } from 'node:path';
 
-/* Automatic requests we accept, and why. Anything not listed is a failure. */
+/* Automatic requests we accept from a page's own markup, and why. Anything
+   not listed is a failure. */
 const ALLOWED = {
-  'dashboard.html': ['https://mempool.space'],   /* live network data, the point of the page */
-  'block-demo.html': ['https://mempool.space']   /* the same markup with a probe attached */
+  /* Both pages preconnect in their own <head>, ahead of the calls the shared
+     script makes below. */
+  'dashboard.html': ['https://mempool.space'],
+  'block-demo.html': ['https://mempool.space']
+};
+
+/* Origins the shared site script may reach.
+
+   Kept separate from ALLOWED because assets/js/site-refresh.js is loaded by
+   every page and decides what to call at runtime from what it finds in the
+   DOM -- the glossary fetch only runs where there is a glossary, the price
+   calls only where there is a dashboard. Attributing them page by page from
+   the source would be guesswork, so they are declared once, here, as the set
+   the shared script is permitted to reach at all.
+
+   Every one is a public read-only endpoint called with no key and no
+   identifier attached.
+
+   The Workshop is not an exception that needs listing: it loads the same
+   script, and its CSP says connect-src 'none', so none of these can fire
+   there whatever the script contains. */
+const SHARED_SCRIPT_ORIGINS = {
+  'https://mempool.space': 'blocks, fees and mempool state for the dashboard',
+  'https://api.kraken.com': 'spot price for the dashboard',
+  'https://api.alternative.me': 'fear and greed index for the dashboard',
+  'https://api.frankfurter.dev': 'USD to CAD, so the price can be shown in local currency',
+  'https://btclexicon.com': 'the glossary term list'
 };
 
 /* Every element attribute that makes the browser fetch without being clicked.
@@ -60,8 +86,12 @@ function autoFetched(html) {
 
   for (const m of findAll(html, /<link\b([^>]*)>/gi)) {
     const attrs = m[1];
+    /* rel carries a token list, not one value. Comparing the whole attribute
+       against a set meant rel="preload stylesheet" matched nothing and walked
+       past a real fetch. Any single fetching token is enough. */
     const rel = (attrs.match(/\brel\s*=\s*["']([^"']*)["']/i)?.[1] || '').toLowerCase().trim();
-    if (!FETCHING_LINK_RELS.has(rel)) continue;
+    const tokens = rel.split(/\s+/).filter(Boolean);
+    if (!tokens.some(token => FETCHING_LINK_RELS.has(token))) continue;
     add(attrs.match(/\bhref\s*=\s*["']([^"']*)["']/i)?.[1], `<link rel="${rel}">`);
   }
 
@@ -98,10 +128,134 @@ function autoFetched(html) {
 
 const originOf = url => url.match(/^(?:https?:)?\/\/[^/]+/i)?.[0].replace(/^\/\//, 'https://') || null;
 
+/* Any absolute origin named in a script or stylesheet.
+
+   Markup and code need different rules. In markup, most external URLs are
+   click-through links that fetch nothing, so the guard looks only at the
+   attributes that actually cause a request. In a script that reasoning
+   inverts: a URL literal is there to be called, and matching only the ones
+   written directly inside fetch() misses almost everything real code does.
+   Both of the dashboard's forms escaped that: one wraps the call
+   (fetchJSON("https://...")), the other builds the URL into a variable first.
+
+   So for scripts the rule is blunter and stricter: every external origin
+   mentioned must be declared. Over-reporting a URL that turns out to be a
+   link target costs one line of documentation. Under-reporting costs exactly
+   what happened here -- five origins the site calls, past a guard whose whole
+   job was to notice them. */
+/* XML namespaces are identifiers that happen to look like URLs. No browser
+   ever dereferences xmlns="http://www.w3.org/2000/svg", and every inline SVG
+   on the site carries one. Excluded rather than declared as an allowed
+   origin, because calling it a permitted request would be false. */
+const NAMESPACE_ORIGINS = new Set([
+  'https://www.w3.org',      /* xmlns on every inline SVG */
+  'https://schema.org'       /* JSON-LD @context; vocabulary identifier, not a URL to load */
+]);
+
+/* Our own origin. It appears in code for one reason: the offline build
+   rewrites its relative links to absolute ones, so a file saved to a USB stick
+   still has somewhere to point. Those are anchors -- following one is a
+   decision to leave the tool -- and the same string appears in canonical tags
+   and JSON-LD, which are metadata. None of it is fetched on load.
+
+   Declared rather than ignored, so that if something ever does call our own
+   origin automatically it still has to be written down here first. */
+const SELF_ORIGIN = 'https://selfcustody.ca';
+
+function scriptOrigins(text) {
+  const found = new Set();
+  for (const m of text.matchAll(/https?:\/\/[a-z0-9.-]+/gi)) {
+    const origin = m[0].toLowerCase().replace(/^http:/, 'https:');
+    if (!NAMESPACE_ORIGINS.has(origin)) found.add(origin);
+  }
+  return [...found];
+}
+
+/* Local scripts and stylesheets a page pulls in. Their contents are as much a
+   part of what the page fetches as its own markup, and until this existed the
+   guard could not see any of it: the dashboard's calls live in
+   assets/js/site-refresh.js, so four external origins passed a guard whose
+   entire job was to notice them. The offline build was never affected -- it
+   inlines everything -- which is exactly why the gap went unnoticed. */
+function localAssets(html, dir) {
+  const out = [];
+  const add = url => {
+    if (!url || /^(https?:|data:|blob:|#|\/\/)/i.test(url)) return;
+    const file = join(dir, url.split('?')[0].split('#')[0]);
+    if (existsSync(file) && statSync(file).isFile()) out.push(file);
+  };
+  for (const m of html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']*)["']/gi)) add(m[1]);
+  for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
+    const rel = (m[0].match(/\brel\s*=\s*["']([^"']*)["']/i)?.[1] || '').toLowerCase();
+    if (!rel.split(/\s+/).includes('stylesheet')) continue;
+    add(m[0].match(/\bhref\s*=\s*["']([^"']*)["']/i)?.[1]);
+  }
+  return out;
+}
+
+/* Local assets, plus anything they @import, to a fixed depth. Nothing on the
+   site uses @import today; this exists so that adding one does not quietly
+   move a stylesheet out of the guard's view. */
+function assetGraph(html, dir, depth = 4) {
+  const seen = new Set();
+  const queue = localAssets(html, dir).map(file => [file, depth]);
+
+  while (queue.length) {
+    const [file, left] = queue.shift();
+    if (seen.has(file)) continue;
+    seen.add(file);
+    if (left <= 0 || !/\.css$/i.test(file)) continue;
+
+    const css = readFileSync(file, 'utf8');
+    for (const m of css.matchAll(/@import\s+(?:url\()?\s*["']?([^"')\s]+)/gi)) {
+      const url = m[1];
+      if (/^(?:https?:|data:|\/\/)/i.test(url)) continue;
+      const next = join(dirname(file), url.split('?')[0]);
+      if (existsSync(next) && statSync(next).isFile()) queue.push([next, left - 1]);
+    }
+  }
+  return [...seen];
+}
+
 function checkFile(path, name) {
   const html = readFileSync(path, 'utf8');
   const problems = [];
   const allowed = ALLOWED[name] || [];
+
+  /* Inline code gets the strict rule as well as linked code.
+
+     autoFetched below reads markup, where most external URLs are inert links,
+     so it only looks at the attributes that cause a request. That leniency is
+     right for markup and wrong for a script: the offline build is one file
+     with everything inlined, so a call written as fetchJSON("https://...") in
+     an inline block would meet only the lenient rule, in the build whose
+     entire claim is that it calls nothing. */
+  for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+    /* Only executable blocks. A <script type="application/ld+json"> is data:
+       its URLs are vocabulary identifiers and canonical addresses, and a
+       browser parses them as strings rather than fetching them. Scanning it
+       with the code rule flagged schema.org on all 54 guide pages. */
+    const type = (m[1].match(/\btype\s*=\s*["']([^"']*)["']/i)?.[1] || '').toLowerCase();
+    if (type && !/(java|ecma)script$|^module$|^text\/js$/.test(type)) continue;
+
+    for (const origin of scriptOrigins(m[2])) {
+      if (origin === SELF_ORIGIN) continue;
+      if (!(origin in SHARED_SCRIPT_ORIGINS)) {
+        problems.push(`an inline script names ${origin}, which is not declared`);
+      }
+    }
+  }
+
+  /* Everything the page loads is scanned by the stricter script rule. */
+  for (const asset of assetGraph(html, dirname(path))) {
+    const where = relative('docs', asset).replace(/\\/g, '/');
+    for (const origin of scriptOrigins(readFileSync(asset, 'utf8'))) {
+      if (origin === SELF_ORIGIN) continue;
+      if (!(origin in SHARED_SCRIPT_ORIGINS)) {
+        problems.push(`${where} names ${origin}, which is not declared`);
+      }
+    }
+  }
 
   for (const { url, why } of autoFetched(html)) {
     const origin = originOf(url);
@@ -142,8 +296,9 @@ export function assertNoUnexpectedFetches(root = 'docs') {
       console.error(`  ${name}`);
       for (const p of problems) console.error(`     ${p}`);
     }
-    console.error('\nIf a request is intentional, add its origin to ALLOWED in');
-    console.error('build/tools/assert-no-fetch.mjs with a reason beside it.\n');
+    console.error('\nIf a request is intentional, add its origin to ALLOWED (page markup)');
+    console.error('or SHARED_SCRIPT_ORIGINS (shared script) in');
+    console.error('build/tools/assert-no-fetch.mjs, with a reason beside it.\n');
     process.exit(1);
   }
 
