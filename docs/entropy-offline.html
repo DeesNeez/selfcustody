@@ -1052,6 +1052,7 @@
       <ul class="status">
         <li id="selftest">Running self-test&hellip;</li>
         <li id="where">Checking&hellip;</li>
+        <li id="adapter" class="warn" hidden>This machine reports a network connection</li>
         <li class="good">No network requests</li>
       </ul>
     </div>
@@ -1119,7 +1120,7 @@
         <span data-dl-label>Download</span>
       </a>
     </div>
-    <small data-dl-note>~250 KB &middot; no installer</small>
+    <small data-dl-note>~260 KB &middot; no installer</small>
   </div>
 </section>
 
@@ -3809,6 +3810,46 @@ const EntropyCore = (() => {
     where.textContent = offline
       ? 'Opened from a local file \u2014 this tool requires no network requests'
       : 'Loaded over a network \u2014 this copy is online';
+    /* ---- the network adapter -------------------------------------------
+
+       navigator.onLine is a weak signal and is used in one direction only.
+
+       True means the operating system believes an interface is up. That is
+       worth saying: this file needs no network, but the machine it is running
+       on is a different question, and someone who downloaded the tool
+       specifically to be off the network deserves to know the adapter is
+       still on. It may be a captive portal or a LAN with no route out -- the
+       wording says "reports a connection", not "you are online", because that
+       is genuinely all it knows.
+
+       False is never repeated back as reassurance. An interface being down is
+       not an air gap: a disabled adapter, a sleeping radio and a machine that
+       has never had a network card all look identical from here, and only one
+       of them is what the security brief is asking for. So when onLine is
+       false this simply says nothing, and the reader is left with the
+       instructions rather than a badge implying they are safe.
+
+       No traffic. It reads a flag the browser already holds and listens for
+       the events the browser already fires -- a request to some third party
+       to "check connectivity" would be the very thing this page promises not
+       to do, and it would fail against connect-src 'none' anyway. */
+    const adapter = $('adapter');
+    const paintAdapter = () => {
+      /* Only on the local copy. Served over a network the badge above already
+         says the page came from one, and saying it twice in different words
+         reads as two problems rather than one fact. */
+      adapter.hidden = !(offline && navigator.onLine === true);
+    };
+    paintAdapter();
+    addEventListener('online', paintAdapter);
+    addEventListener('offline', paintAdapter);
+    /* Chromium fires this when the connection type changes without the
+       up/down state changing. Absent in Firefox and Safari, so it is a bonus
+       rather than something the behaviour depends on. */
+    if (navigator.connection && navigator.connection.addEventListener) {
+      navigator.connection.addEventListener('change', paintAdapter);
+    }
+
     /* Which panel to show is a question about the file, not the protocol.
        The site page always offers the download, because it is never the thing
        being downloaded. The offline copy never does: the button would be dead
