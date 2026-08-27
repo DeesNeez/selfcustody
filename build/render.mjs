@@ -350,6 +350,7 @@ const entropySite = `<!DOCTYPE html>
        needs a response header, which GitHub Pages does not let us set. -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="referrer" content="no-referrer">
+  <meta http-equiv="x-dns-prefetch-control" content="off">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Turn dice rolls, coin flips or a shuffled deck into the recovery words, addresses and account key they produce, and check them against your device.">
   <title>Entropy Workshop | SelfCustody.ca</title>

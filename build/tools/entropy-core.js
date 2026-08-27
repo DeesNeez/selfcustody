@@ -474,8 +474,21 @@ const EntropyCore = (() => {
      that. The master node is depth 0 with no parent and no index. */
   const masterKey = seed => {
     const I = hmacSha512(utf8('Bitcoin seed'), seed);
+    const key = I.slice(0, 32);
+
+    /* BIP32 says a master key is invalid if the left half is zero or is not
+       below the curve order, and that such a seed must be rejected rather than
+       coerced. The odds are under one in 2^127, so no real seed will ever meet
+       this -- but a tool whose claim is that it reproduces the specification
+       exactly should not quietly do something else in the one case the
+       specification bothers to name. */
+    const parsed = toBigInt(key);
+    if (parsed === 0n || parsed >= N) {
+      throw new Error('this seed does not produce a valid master key under BIP32');
+    }
+
     return {
-      key: I.slice(0, 32), chainCode: I.slice(32), depth: 0,
+      key, chainCode: I.slice(32), depth: 0,
       parentFingerprint: new Uint8Array(4), index: 0
     };
   };
@@ -504,8 +517,22 @@ const EntropyCore = (() => {
       ? concat(new Uint8Array([0]), parent.key, indexBytes)
       : concat(compress(pointMul(toBigInt(parent.key))), indexBytes);
     const I = hmacSha512(parent.chainCode, data);
-    const child = mod(toBigInt(I.slice(0, 32)) + toBigInt(parent.key), N);
-    if (child === 0n) throw new Error('invalid child key');
+
+    /* Two rejections BIP32 requires, in the order it gives them. The left half
+       has to be below the curve order before it is used, and the sum has to be
+       non-zero after. Reducing IL modulo n instead -- which is what happens if
+       the first test is skipped -- produces a key the specification says does
+       not exist, and quietly disagrees with every other implementation for
+       that index. Both cases are under one in 2^127; both are named in the
+       spec, so both are checked rather than assumed away. */
+    const tweak = toBigInt(I.slice(0, 32));
+    if (tweak >= N) {
+      throw new Error(`child index ${index} is invalid under BIP32; use the next index`);
+    }
+    const child = mod(tweak + toBigInt(parent.key), N);
+    if (child === 0n) {
+      throw new Error(`child index ${index} is invalid under BIP32; use the next index`);
+    }
     return {
       key: toBytes32(child), chainCode: I.slice(32), depth: parent.depth + 1,
       parentFingerprint: fingerprint(parent), index
@@ -654,9 +681,21 @@ const EntropyCore = (() => {
 
   /* m/84'/0'/0' as descriptors write it: no leading m, and h for hardened.
      Both h and ' are legal; h is the one that survives a shell, a JSON file
-     and a copy-paste into a terminal without being eaten as a quote. */
-  const descriptorOrigin = path =>
-    String(path).replace(/^m\//i, '').replace(/'/g, 'h');
+     and a copy-paste into a terminal without being eaten as a quote.
+
+     Rebuilt from the parsed indices rather than edited as a string, because
+     parsePath is more forgiving than the descriptor grammar is. It accepts
+     "m84h/0h/0h" -- no slash after the m -- and read as text that produced
+     [deadbeef/m84h/0h/0h], an origin no wallet will parse, wearing a perfectly
+     valid BIP380 checksum. A checksum over a malformed string is the worst of
+     both worlds: it tells the reader the line survived transcription, which is
+     true, and implies it is usable, which is not.
+
+     Going through the indices means the output is canonical whatever the input
+     looked like, and anything parsePath rejects never reaches here at all. */
+  const descriptorOrigin = path => parsePath(path)
+    .map(index => index >= 0x80000000 ? `${index - 0x80000000}h` : String(index))
+    .join('/');
 
   const DESCRIPTOR_SCRIPT = {
     legacy: key => `pkh(${key})`,
@@ -667,10 +706,17 @@ const EntropyCore = (() => {
 
   /* The public half of an account, as a wallet should be given it. Takes the
      canonical xpub deliberately: see the note above. */
-  const watchOnlyDescriptor = ({ addressType, fingerprint, path, xpub, multipath = true }) => {
+  /* branch: leave it out for the multipath form, or pass 0 or 1 for the older
+     one-descriptor-per-chain style. BIP389's <0;1> is still a draft, and
+     software that predates it rejects the whole descriptor rather than
+     guessing, so the page offers both. */
+  const watchOnlyDescriptor = ({ addressType, fingerprint, path, xpub, branch = null }) => {
     const script = DESCRIPTOR_SCRIPT[addressType];
     if (!script) throw new Error(`no descriptor form for ${addressType}`);
-    const branches = multipath ? '<0;1>' : '0';
+    if (branch !== null && branch !== 0 && branch !== 1) {
+      throw new Error('a descriptor branch is 0 for receiving or 1 for change');
+    }
+    const branches = branch === null ? '<0;1>' : String(branch);
     const key = `[${String(fingerprint).toLowerCase()}/${descriptorOrigin(path)}]${xpub}/${branches}/*`;
     return withChecksum(script(key));
   };

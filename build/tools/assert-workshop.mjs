@@ -76,16 +76,30 @@ export function assertWorkshop() {
     check(/selftest/.test(html), `the ${name} build has no self-test element`);
     const block = html.slice(html.indexOf('VECTORS = ['));
     const vectors = (block.match(/\n\s*\['[^']+',\s*\(\)/g) || []).length;
-    check(vectors >= 20,
-      `the ${name} build embeds ${vectors} self-test vectors; it should carry at least 20`);
+    check(vectors >= 24,
+      `the ${name} build embeds ${vectors} self-test vectors; it should carry at least 24`);
+
+    /* A count is not coverage. These four are named because each guards
+       something no other vector touches: the wordlist beyond the handful of
+       words the address vectors happen to use, and the descriptor, whose
+       checksum is a second encoding of the account key. */
+    for (const vector of [
+      'BIP39 wordlist, official English list',
+      'BIP39 wordlist, 2048 unique words in order',
+      'Descriptor checksum, BIP380 published vector',
+      'Watch-only descriptor, BIP84 account'
+    ]) {
+      check(html.includes(vector),
+        `the ${name} build does not embed the "${vector}" self-test vector`);
+    }
   }
 
   /* ---- the safeguards nobody can see ------------------------------------ */
   for (const [name, html] of [['site', site], ['offline', offline]]) {
     check(/addEventListener\('pagehide', clearSensitiveState\)/.test(html),
       `the ${name} build does not clear entered material when the page is left`);
-    check(/event\.persisted/.test(html),
-      `the ${name} build does not clear on a back/forward-cache restore`);
+    check(/addEventListener\('pageshow', clearSensitiveState\)/.test(html),
+      `the ${name} build does not clear on pageshow, so a restored page can come back with its results`);
     check(!/addEventListener\('visibilitychange'/.test(html),
       `the ${name} build clears on visibilitychange, which would destroy work when someone switches apps mid-roll`);
     check(/<noscript>/.test(html),
