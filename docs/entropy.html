@@ -34,9 +34,9 @@
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4892" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4892" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4892" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4893" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260827-4893" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260827-4893" rel="stylesheet">
   <style>
 
   @font-face {
@@ -285,6 +285,10 @@
   }
   .sc-workshop .xpub-box .label b{ color: #ffad4c; }
   .sc-workshop .xpub-box #xpub-alt-row{ margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+  .sc-workshop /* One long unbroken token with punctuation the browser will happily break
+     at the wrong place, .sc-workshop so it wraps anywhere rather than pushing the panel
+     wide. Same treatment the account key already gets. */
+  .descriptor-box #descriptor{ overflow-wrap: anywhere; word-break: break-all; }
   .sc-workshop .xpub-note{
     font-family: inherit !important; color: var(--muted) !important;
     font-size: 0.85rem !important; margin-top: 12px !important; word-break: normal !important;
@@ -1341,6 +1345,13 @@
     <p class="xpub-note" id="xpub-slip" hidden>Some wallets show the same key with a prefix naming the address type. The two strings above are the same key with different version bytes, so a wallet showing one and a device showing the other do not disagree.</p>
   </div>
 
+  <div class="xpub-box descriptor-box">
+    <div class="label"><span>Watch-only descriptor</span><code>BIP380 &middot; BIP389</code></div>
+    <p id="descriptor"></p>
+    <p class="xpub-note">The same account key, written the way a wallet wants to be given it. It names the script type, so it cannot be imported as the wrong address type &mdash; the mistake that makes a restored wallet look empty. Sparrow, Bitcoin Core and most coordinators take this line directly.</p>
+    <p class="xpub-note">The <code>&lt;0;1&gt;</code> covers receiving and change together, and the eight characters after the <code>#</code> are a checksum over everything before them, so a wallet can tell you that you mistyped rather than watching the wrong account in silence. It still contains no private key and can sign nothing.</p>
+  </div>
+
   <details>
     <summary>Show the raw entropy</summary>
     <div class="body">
@@ -1482,7 +1493,7 @@
       </ul>
     </div>
 
-    <p>Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and by <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench by Miguel Medeiros</a>, where the three sources side by side, the running estimate of how much entropy you have built, and drawing from a shuffled deck were all done first.</p>
+    <p>Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
   </div>
@@ -1528,7 +1539,7 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4892"></script>
+  <script src="assets/js/site-refresh.js?v=20260827-4893"></script>
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file
@@ -2108,6 +2119,104 @@ const EntropyCore = (() => {
 
   const accountPath = (type, account = 0) =>
     `m/${ADDRESS_TYPES[type].purpose}'/0'/${account}'`;
+
+  /* ---- the watch-only descriptor ----------------------------------------
+
+     One line that tells a wallet everything it needs to watch this account and
+     nothing it would need to spend from it. Sparrow, Bitcoin Core and most
+     coordinators take it directly, which saves a reader picking an address
+     type from a menu and hoping it matches the key they pasted -- the
+     descriptor states the script type, so it cannot be mismatched.
+
+     Three things make it a descriptor rather than just a key.
+
+     The script type is a function around the key: wpkh for native segwit,
+     sh(wpkh(...)) for nested, pkh for legacy, tr for taproot. This is why the
+     canonical xpub is used and never the ypub/zpub form -- SLIP-132 prefixes
+     say the same thing a second time, in a dialect Core does not read, and a
+     descriptor carrying both could disagree with itself.
+
+     The origin -- [fingerprint/84h/0h/0h] -- says which master key this came
+     from and where it sits, so a signer can recognise its own key later.
+
+     The multipath suffix /<0;1>/* is BIP389: receive and change in one
+     expression, rather than importing two descriptors and hoping they were
+     kept in step. */
+
+  /* BIP380. The character set is written in three groups of 32 so that a
+     change to a character's position within its group, or to its group,
+     affects one symbol rather than several -- which is what lets this catch
+     the transcription errors people actually make. */
+  const DESC_INPUT_CHARSET =
+    "0123456789()[],'/*abcdefgh@:$%{}IJKLMNOPQRSTUVWXYZ&+-.;<=>?!^_|~ijklmnopqrstuvwxyzABCDEFGH`#\"\\ ";
+  const DESC_CHECKSUM_CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+  /* 40-bit constants, so the arithmetic runs in BigInt. Doing this in Numbers
+     would silently lose the top bits past 2^53. */
+  const DESC_GENERATOR = [0xf5dee51989n, 0xa9fdca3312n, 0x1bab10e32dn, 0x3706b1677an, 0x644d626ffdn];
+
+  const descPolymod = symbols => {
+    let chk = 1n;
+    for (const value of symbols) {
+      const top = chk >> 35n;
+      chk = ((chk & 0x7ffffffffn) << 5n) ^ BigInt(value);
+      for (let i = 0n; i < 5n; i++) {
+        if ((top >> i) & 1n) chk ^= DESC_GENERATOR[Number(i)];
+      }
+    }
+    return chk;
+  };
+
+  const descExpand = text => {
+    const groups = [];
+    const symbols = [];
+    for (const ch of text) {
+      const v = DESC_INPUT_CHARSET.indexOf(ch);
+      if (v < 0) throw new Error(`"${ch}" cannot appear in a descriptor`);
+      symbols.push(v & 31);
+      groups.push(v >> 5);
+      if (groups.length === 3) {
+        symbols.push(groups[0] * 9 + groups[1] * 3 + groups[2]);
+        groups.length = 0;
+      }
+    }
+    if (groups.length === 1) symbols.push(groups[0]);
+    else if (groups.length === 2) symbols.push(groups[0] * 3 + groups[1]);
+    return symbols;
+  };
+
+  const descriptorChecksum = text => {
+    const chk = descPolymod([...descExpand(text), 0, 0, 0, 0, 0, 0, 0, 0]) ^ 1n;
+    let out = '';
+    for (let i = 0n; i < 8n; i++) {
+      out += DESC_CHECKSUM_CHARSET[Number((chk >> (5n * (7n - i))) & 31n)];
+    }
+    return out;
+  };
+
+  const withChecksum = text => `${text}#${descriptorChecksum(text)}`;
+
+  /* m/84'/0'/0' as descriptors write it: no leading m, and h for hardened.
+     Both h and ' are legal; h is the one that survives a shell, a JSON file
+     and a copy-paste into a terminal without being eaten as a quote. */
+  const descriptorOrigin = path =>
+    String(path).replace(/^m\//i, '').replace(/'/g, 'h');
+
+  const DESCRIPTOR_SCRIPT = {
+    legacy: key => `pkh(${key})`,
+    nested: key => `sh(wpkh(${key}))`,
+    native: key => `wpkh(${key})`,
+    taproot: key => `tr(${key})`
+  };
+
+  /* The public half of an account, as a wallet should be given it. Takes the
+     canonical xpub deliberately: see the note above. */
+  const watchOnlyDescriptor = ({ addressType, fingerprint, path, xpub, multipath = true }) => {
+    const script = DESCRIPTOR_SCRIPT[addressType];
+    if (!script) throw new Error(`no descriptor form for ${addressType}`);
+    const branches = multipath ? '<0;1>' : '0';
+    const key = `[${String(fingerprint).toLowerCase()}/${descriptorOrigin(path)}]${xpub}/${branches}/*`;
+    return withChecksum(script(key));
+  };
 
   /* ---- entropy from what the user rolled or flipped ---------------------
 
@@ -2987,6 +3096,7 @@ const EntropyCore = (() => {
     pointMul, compress, base58check, segwitAddress, convertBits,
     entropyToMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
     encodeXpub, fingerprint, masterFingerprint, publicKeyOf, XPUB_VERSION,
+    descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
     cardBits, cardEntropy, cardsLeft, sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
@@ -3493,7 +3603,7 @@ const EntropyCore = (() => {
   const SECRET_FIELDS = ['input', 'passphrase'];
   const SECRET_TEXT = [
     'words', 'entropy', 'ending-list',
-    'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
+    'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label', 'descriptor',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
     'fp-base', 'fp-pass', 'fp-base-tag'
   ];
@@ -3632,6 +3742,15 @@ const EntropyCore = (() => {
        for when it says "import your xpub". It cannot spend. */
     $('xpub-path').textContent = path;
     $('xpub').textContent = addresses.xpub;
+    /* Built from the canonical xpub, never the ypub/zpub form: the script
+       type is already stated by the descriptor function, and a SLIP-132
+       prefix would say it a second time in a dialect Core does not read. */
+    $('descriptor').textContent = C.watchOnlyDescriptor({
+      addressType: state.addressType,
+      fingerprint: C.masterFingerprint(state.seed.seed),
+      path,
+      xpub: addresses.xpub
+    });
     $('xpub-alt-row').hidden = !addresses.typedXpub;
     $('xpub-slip').hidden = !addresses.typedXpub;
     if (addresses.typedXpub) {
