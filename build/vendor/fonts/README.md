@@ -1,42 +1,91 @@
-# Embedded webfonts
+# Webfonts
 
-Build input, not shipped as files. `build/tools/entropy-page.mjs` inlines these
-as base64 `@font-face` rules inside `docs/tools/entropy.html`.
+The site's two typefaces, vendored so nothing is fetched from Google.
 
-The tool page wears the site's chrome, so it needs the site's two typefaces —
-and it cannot link them from Google Fonts, because a `<link>` to fonts.googleapis.com
-would be a network request, and "this page makes none" is the property the whole
-tool rests on. Its CSP (`default-src 'none'`) would block the request anyway.
+Both builds use these files. `docs/assets/fonts/` is a copy made by
+`build/render.mjs` and served to browsers; `build/tools/entropy-page.mjs`
+inlines the same bytes as base64 `@font-face` rules inside the self-contained
+`docs/entropy-offline.html`. This directory is the single source.
+
+## Why they are here
+
+The offline build could never link them: a `<link>` to fonts.googleapis.com is
+a network request, and "this file fetches nothing" is the property the whole
+tool rests on. Its CSP (`default-src 'none'`) would block it anyway.
+
+The rest of the site kept loading them from Google until it became clear that
+was the same mistake with a wider blast radius. Every visitor's IP reached
+Google on every page, on a site about not handing your business to third
+parties — and the Workshop's *site* build carried the same three tags, so
+opening it from `file://` (what you do after downloading it) announced "this
+copy is running offline", in green, while three requests went out. The page
+said something untrue at the moment a reader was deciding whether to trust it.
 
 ## What these are
 
 Google serves both families as a **single variable font**, not one file per
 weight: the 400, 600 and 700 downloads of Open Sans are byte-identical, as are
-the 600 and 700 of Jost. So one file per family covers every weight the page
-uses, via the `wght` axis.
+the 600 and 700 of Jost. One file per family covers every weight the site uses,
+via the `wght` axis.
 
-Each is then subset to the characters that actually appear on the page —
-ASCII plus the punctuation the copy uses (en/em dash, curly quotes, ellipsis,
-middot, ×, ₂, →).
+Open Sans upstream also carries a `wdth` axis, which the site never varies. It
+is pinned to 100 before subsetting, which is why the source below is an
+intermediate file.
+
+Each is then subset to the characters that actually appear.
 
 | | as served by Google | subset here |
 |---|---|---|
-| Jost (600 + 700) | 53 KB | 13 KB |
-| Open Sans (400 + 600 + 700) | 145 KB | 25 KB |
+| Jost | 53 KB | 14 KB |
+| Open Sans | 145 KB | 26 KB |
 
-That is the difference between adding ~257 KB of base64 to a 65 KB file and
-adding ~50 KB.
+## What they cannot draw
+
+Eight characters the site uses are **not in either typeface at all**, in any
+weight — verified against the upstream variable fonts, not just these subsets:
+
+```
+← → ✓ ◐ ♠ ♣ ♥ ♦
+```
+
+They have always been drawn by whatever face the operating system supplies,
+under Google Fonts exactly as they are now. Nothing can change that short of
+choosing different typefaces. They are recorded in `coverage.json` under
+`knownFallback` so the build can tell them apart from a character that is
+missing by accident.
+
+`coverage.json` is generated alongside the subsets and lists every codepoint
+they contain. `build/tools/assert-glyphs.mjs` fails the build if any page uses
+a character that is in neither that list nor `knownFallback` — because the
+failure mode otherwise is a blank box that nothing reports.
 
 ## Regenerating
 
-```
-U="U+0020-007E,U+00A0,U+00B7,U+00D7,U+2013,U+2014,U+2018,U+2019,U+201C,U+201D,U+2022,U+2026,U+2082,U+2192"
-python -m fontTools.subset jost.woff2 --unicodes="$U" --layout-features='' \
+The subsets were originally cut for the Workshop alone. When the same files
+were reused site-wide, the copyright sign in every footer, an accented `e` in
+one guide and a vulgar fraction in another fell outside them. Re-cut from the
+upstream fonts, not from these files — you cannot add a glyph back to a subset.
+
+```bash
+# upstream variable fonts
+curl -L -o Jost.ttf     'https://github.com/google/fonts/raw/main/ofl/jost/Jost%5Bwght%5D.ttf'
+curl -L -o OpenSans.ttf 'https://github.com/google/fonts/raw/main/ofl/opensans/OpenSans%5Bwdth,wght%5D.ttf'
+
+U="U+0020-007E,U+00A0,U+00A9,U+00B7,U+00BD,U+00D7,U+00E9,U+2013,U+2014,U+2018,U+2019,U+201C,U+201D,U+2022,U+2026,U+2082,U+2192"
+
+python -m fontTools.subset Jost.ttf --unicodes="$U" --layout-features='' \
   --flavor=woff2 --output-file=build/vendor/fonts/jost-latin.woff2
+
+# pin the width axis first, or the subset carries an axis the site never uses
+python -m fontTools.varLib.instancer OpenSans.ttf wdth=100 -o OpenSans-wght.ttf
+python -m fontTools.subset OpenSans-wght.ttf --unicodes="$U" --layout-features='' \
+  --flavor=woff2 --output-file=build/vendor/fonts/open-sans-latin.woff2
 ```
 
-Do not pass `--instance`: that would flatten the weight axis and cost a second
-file per family. If new copy introduces a character outside the set above it
-will render as a blank box, so extend `$U` and re-subset.
+Then regenerate `coverage.json` from the new files, and rebuild — the offline
+artifact embeds these bytes, so its SHA-256 changes whenever they do.
 
-Both families are under the SIL Open Font License, which permits embedding.
+Do not pass `--instance` for `wght`: that would flatten the weight axis and
+cost a second file per family.
+
+Both families are under the SIL Open Font License, which permits this.

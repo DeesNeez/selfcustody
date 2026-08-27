@@ -24,13 +24,10 @@
   <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4888" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260827-4888" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260827-4888" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4891" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260827-4891" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260827-4891" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How a wallet finds your coins","description":"Your seed words are not a wallet. They are the root of a tree, and finding your money means knowing which branch to walk down — which is why the same words can restore perfectly and still show a balance of zero.","url":"https://selfcustody.ca/guides/how-wallets-find-coins.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/how-wallets-find-coins.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -115,11 +112,11 @@
 
       <p>Read left to right, each segment is a turn:</p>
 
-      <ul class="sc-check-list"><li><strong>m</strong> &mdash; the master key derived from your seed. The root.</li><li><strong>84'</strong> &mdash; the purpose, which in practice means the address type. 44&#8242; is legacy, 49&#8242; is wrapped SegWit, 84&#8242; is native SegWit, 86&#8242; is Taproot.</li><li><strong>0'</strong> &mdash; the coin. Zero is bitcoin.</li><li><strong>0'</strong> &mdash; the account number, so one seed can hold several separately-tracked wallets.</li><li><strong>0</strong> &mdash; the branch: 0 for addresses you hand out, 1 for change coming back to you.</li><li><strong>0</strong> &mdash; the index, counting up as you generate address after address.</li></ul>
+      <ul class="sc-check-list"><li><strong>m</strong> &mdash; the master key derived from your seed. The root.</li><li><strong>84'</strong> &mdash; the purpose, which in practice means the address type. 44' is legacy, 49' is wrapped SegWit, 84' is native SegWit, 86' is Taproot.</li><li><strong>0'</strong> &mdash; the coin. Zero is bitcoin.</li><li><strong>0'</strong> &mdash; the account number, so one seed can hold several separately-tracked wallets.</li><li><strong>0</strong> &mdash; the branch: 0 for addresses you hand out, 1 for change coming back to you.</li><li><strong>0</strong> &mdash; the index, counting up as you generate address after address.</li></ul>
 
       <p>Change any one of those numbers and you land somewhere else entirely &mdash; a valid, empty wallet with no relationship to the one you were looking for. This is the same silent-failure shape as a mistyped <a href='passphrase-setup.html'>passphrase</a>: nothing errors, because nothing is wrong. You simply asked a different question and got its correct answer.</p>
 
-      <div class="sc-callout mt-4"><h3>Why the address-type number matters most</h3><p>The purpose field is the one that bites people, because different wallets default to different values. A wallet that defaults to 84&#8242; restoring a seed created by a wallet defaulting to 44&#8242; will show nothing at all — the coins are sitting on the 44&#8242; branch, untouched, perfectly safe, and completely invisible until someone tells the software to look there.</p></div>
+      <div class="sc-callout mt-4"><h3>Why the address-type number matters most</h3><p>The purpose field is the one that bites people, because different wallets default to different values. A wallet that defaults to 84' restoring a seed created by a wallet defaulting to 44' will show nothing at all — the coins are sitting on the 44' branch, untouched, perfectly safe, and completely invisible until someone tells the software to look there.</p></div>
 
       
   <figure class="sc-figure sc-figure-slot">
@@ -163,7 +160,7 @@
 
       <p>Work through it in this order, and do not do anything drastic before finishing the list.</p>
 
-      <ul class="sc-check-list"><li><strong>Stop.</strong> Do not re-enter the seed anywhere unusual, and do not type it into a website offering to help. A quiet empty wallet is not an emergency; a leaked seed is.</li><li><strong>Check the address type.</strong> Try the other purpose values — 44&#8242;, 49&#8242;, 84&#8242;, 86&#8242;. Good software offers this as a dropdown during import.</li><li><strong>Check the account number.</strong> Some wallets create account 1 in situations where others use account 0.</li><li><strong>Raise the gap limit</strong> to several hundred and rescan.</li><li><strong>Ask whether a passphrase was ever set.</strong> A forgotten passphrase produces this exact symptom, and produces it permanently.</li><li><strong>Check a known address instead of the balance.</strong> If you have an address you know received coins, searching a block explorer for it tells you whether the money is still there — which is a separate question from whether this wallet can see it.</li></ul>
+      <ul class="sc-check-list"><li><strong>Stop.</strong> Do not re-enter the seed anywhere unusual, and do not type it into a website offering to help. A quiet empty wallet is not an emergency; a leaked seed is.</li><li><strong>Check the address type.</strong> Try the other purpose values — 44', 49', 84', 86'. Good software offers this as a dropdown during import.</li><li><strong>Check the account number.</strong> Some wallets create account 1 in situations where others use account 0.</li><li><strong>Raise the gap limit</strong> to several hundred and rescan.</li><li><strong>Ask whether a passphrase was ever set.</strong> A forgotten passphrase produces this exact symptom, and produces it permanently.</li><li><strong>Check a known address instead of the balance.</strong> If you have an address you know received coins, searching a block explorer for it tells you whether the money is still there — which is a separate question from whether this wallet can see it.</li></ul>
 
       <p>Almost every case resolves at step two or four. The point of <a href='recovery-test-drill.html'>testing your recovery</a> before you need it is that you discover which of these applies to you on a calm afternoon rather than during a crisis.</p>
 
@@ -264,6 +261,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260827-4888"></script>
+  <script src="../assets/js/site-refresh.js?v=20260827-4891"></script>
 </body>
 </html>

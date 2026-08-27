@@ -626,6 +626,11 @@ ${FONTS.map(embedFont).join('\n')}
     transition: transform 0.72s cubic-bezier(0.2, 0.72, 0.22, 1), opacity 0.18s ease;
   }
   .dl:hover::after { opacity: 1; transform: skewX(-18deg) translateX(680%); }
+  /* Above the sweep. The shine is a positioned box at z-index 1 and the label
+     was in normal flow beneath it, so hovering wiped the text as the band
+     crossed -- worst on the longest label, "Open the offline file", which the
+     band covers most of. The light passes behind the words now. */
+  .dl > * { position: relative; z-index: 2; }
   .dl-icon { flex: 0 0 auto; display: block; }
   .download-action small { color: var(--muted); font-size: 0.75rem; }
 
@@ -709,7 +714,6 @@ ${FONTS.map(embedFont).join('\n')}
      loose paragraphs around the lists were falling back to the browser's
      default blue, which is close to unreadable on this background. */
   details .body a { color: var(--orange); text-decoration: none; }
-  details .body a:hover { text-decoration: underline; }
 
   /* ---- sources ----------------------------------------------------------
      Every claim this page makes about a device is someone else's published
@@ -733,7 +737,6 @@ ${FONTS.map(embedFont).join('\n')}
   .src-list li:first-child { border-top: 0; }
   .src-list b { color: var(--ink-soft); font-size: 0.84rem; }
   .src-list a { color: var(--orange); text-decoration: none; word-break: break-word; }
-  .src-list a:hover { text-decoration: underline; }
   .src-list span { display: block; margin-top: 3px; font-size: 0.82rem; line-height: 1.55; }
   @media (max-width: 620px) {
     .src-list li { grid-template-columns: minmax(0, 1fr); }
@@ -940,7 +943,14 @@ ${FONTS.map(embedFont).join('\n')}
     width: 37px; height: 37px; color: #ffad4c; border: 1px solid rgba(255,138,0,.4); border-radius: 11px;
     background: rgba(255,138,0,.075); font: 800 0.82rem/1 "Open Sans", sans-serif;
   }
-  .workbench legend + * { clear: both; }
+  /* Every following sibling, not only the first. The legend is floated full
+     width, so whatever comes after it has to clear that float -- and with
+     `+` only the first sibling did. Both conversion rows live in this
+     fieldset and only one is shown at a time, so when the dice row was
+     hidden the card row was no longer the first sibling, never cleared, and
+     was laid out beside the floated legend: a zero-width strip at the right
+     edge with its buttons spilling off the page. */
+  .workbench legend ~ * { clear: both; }
   .workbench .seg { gap: 10px; }
   .workbench .seg button { min-height: 58px; border-radius: 12px; }
   .workbench .seg button[aria-pressed="true"] {
@@ -996,34 +1006,14 @@ ${FONTS.map(embedFont).join('\n')}
   main > details[open] { border-color: rgba(255,138,0,.25); }
   main > details summary { color: var(--ink); }
 
-  main > .method-note {
-    position: relative; overflow: hidden; padding: 0;
-    border-color: rgba(255,138,0,.22);
-    background:
-      radial-gradient(circle at 92% 10%, rgba(255,138,0,.09), transparent 18rem),
-      linear-gradient(145deg, rgba(255,255,255,.042), rgba(255,255,255,.018));
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 12px 30px rgba(0,0,0,.13);
-  }
-  main > .method-note::before {
-    content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
-    background: linear-gradient(180deg, #ffad4c, #d96f00);
-  }
-  .method-note summary {
-    display: flex; align-items: center; gap: 13px; padding: 17px 19px 17px 21px;
-    list-style: none; color: #fff !important;
-    font-family: "Jost", "Open Sans", sans-serif; font-size: 1rem; font-weight: 650;
-  }
-  .method-note summary::-webkit-details-marker { display: none; }
-  .method-note summary::after {
-    content: "\\203A"; margin-left: auto; color: #ffad4c;
-    font: 400 1.55rem/1 "Jost", sans-serif; transform: rotate(90deg);
-    transition: transform .16s ease;
-  }
-  .method-note[open] summary::after { transform: rotate(-90deg); }
-  .method-note[open] summary { border-bottom: 1px solid rgba(255,255,255,.075); }
-  .method-note .body { margin: 0; padding: 18px 21px 20px; }
-  .method-note .body p:first-child { margin-top: 0; }
-  .method-note .body p:last-child { margin-bottom: 0; }
+  /* Reads as one of the three disclosures at the foot of the page rather
+     than as a panel of its own. It used to be a bordered card with its own
+     gradient, an orange rule down the side and a chevron, which set it apart
+     from "How this page was checked" and "Sources" for no reason a reader
+     could act on -- all three are the same kind of thing. It keeps the orange
+     summary so it is still the one that answers a question rather than
+     listing references. */
+  .method-note summary { color: #ffad4c; }
 
   @media (max-width: 820px) {
     .hero { min-height: auto; padding: 108px 0 44px; }
@@ -1771,9 +1761,16 @@ const ui = () => `
        and makes no claim about the machine. */
     const offline = isOffline();
     const where = $('where');
-    where.className = offline ? 'good' : 'warn';
+    /* Deliberately not a green "safe" state. The old badge said "this copy is
+       running offline" in the same green as the passing self-test, which was
+       two mistakes at once: it read as an all-clear, and it was not even true
+       -- the site build was fetching three resources from Google Fonts while
+       saying it. Those are gone now, so the honest claim is about the file
+       rather than the machine: it needs no network. Whether the machine has
+       one is not something a page can see. */
+    where.className = offline ? '' : 'warn';
     where.textContent = offline
-      ? 'Local file \\u2014 this copy is running offline'
+      ? 'Opened from a local file \\u2014 this tool requires no network requests'
       : 'Loaded over a network \\u2014 this copy is online';
     /* Which panel to show is a question about the file, not the protocol.
        The site page always offers the download, because it is never the thing
@@ -2263,7 +2260,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       </ul>
     </div>
 
-    <p>Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a>.</p>
+    <p>Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and by <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench by Miguel Medeiros</a>, where the three sources side by side, the running estimate of how much entropy you have built, and drawing from a shuffled deck were all done first.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
   </div>

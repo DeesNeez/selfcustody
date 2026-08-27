@@ -15,7 +15,35 @@ import { readFileSync, writeFileSync, readdirSync, mkdirSync, rmSync, existsSync
 import { pages, renderHeader, renderFooter, routes } from './content.mjs';
 import { guides, publishedGuides, renderGuideBody } from './guides.mjs';
 import { renderEntropyOffline, renderEntropyEmbed } from './tools/entropy-page.mjs';
+import { assertNoUnexpectedFetches } from './tools/assert-no-fetch.mjs';
+import { assertGlyphCoverage } from './tools/assert-glyphs.mjs';
 import { createHash } from 'node:crypto';
+import { copyFileSync } from 'node:fs';
+
+/* ---- webfonts -----------------------------------------------------------
+
+   These used to come from fonts.googleapis.com on every page. Two problems
+   with that, and the second is the serious one.
+
+   Every visitor's IP reached Google on every page load, for a site whose
+   subject is not handing your business to third parties.
+
+   And the Entropy Workshop's site build carried the same three tags. Opened
+   from file:// -- which is exactly what someone does after downloading it --
+   it announced "this copy is running offline", in green, while three requests
+   went to Google. The page stated something false at the moment a reader was
+   deciding whether to trust it.
+
+   The same two files were already vendored for the offline build, which
+   inlines them as data: URIs. They are copied out here so the site can serve
+   them from its own origin, which keeps one source of truth for the bytes.
+
+   Note what is NOT in them: the check mark, the half-filled circle and the
+   four card suits. Neither Jost nor Open Sans contains those glyphs at all --
+   verified against the upstream variable fonts, not just the subsets -- so
+   they have always been drawn by a system fallback face, under Google Fonts
+   exactly as here. Adding them to the subset is not possible and not needed. */
+const FONTS = ['jost-latin.woff2', 'open-sans-latin.woff2'];
 
 /* file -> page key. Several files can share a key: block-demo.html is the same
    dashboard markup wrapped with block-probe.js. */
@@ -34,7 +62,7 @@ const FILES = {
 };
 
 const SITE = 'https://selfcustody.ca';
-const ASSET_VERSION = '20260827-4888';
+const ASSET_VERSION = '20260827-4891';
 const ASSET_QUERY = /(assets\/(?:vendor\/bootstrap-icons\/bootstrap-icons\.css|css\/(?:style|site-refresh)\.css|js\/site-refresh\.js)\?v=)[^"']+/g;
 
 /* The whole container block, anchored on the <noscript> that always follows it.
@@ -150,9 +178,6 @@ const guideHead = guide => {
   <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=${ASSET_VERSION}" rel="stylesheet">
   <link href="../assets/css/style.css?v=${ASSET_VERSION}" rel="stylesheet">
@@ -257,6 +282,14 @@ for (const guide of publishedGuides) {
 /* Lived at docs/tools/entropy.html before it moved to the root. Removed
    outright rather than left behind: a stale copy at the old URL would keep
    answering requests with an out-of-date file, silently, forever. */
+/* Serve the two webfonts from our own origin. Copied rather than committed
+   twice so build/vendor/fonts stays the single place the bytes live -- the
+   offline build inlines the same files as data: URIs. */
+mkdirSync('docs/assets/fonts', { recursive: true });
+for (const font of FONTS) {
+  copyFileSync(`build/vendor/fonts/${font}`, `docs/assets/fonts/${font}`);
+}
+
 if (existsSync('docs/tools')) rmSync('docs/tools', { recursive: true });
 
 /* Same reasoning, one level down. entropy.html used to be the downloadable
@@ -299,9 +332,6 @@ const entropySite = `<!DOCTYPE html>
   <link rel="icon" type="image/svg+xml" href="assets/img/self-custody-favicon.svg">
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=${ASSET_VERSION}" rel="stylesheet">
   <link href="assets/css/style.css?v=${ASSET_VERSION}" rel="stylesheet">
@@ -422,3 +452,8 @@ if (absent.length || absentPoints.length) {
   process.exit(1);
 }
 console.log(`icon check: ${referenced.size} glyphs by name and ${referencedPoints.size} by codepoint, all present in the subset font`);
+
+/* Last, once every page is on disk: nothing may fetch from an origin it has
+   no business fetching from, and the offline build may not fetch at all. */
+assertNoUnexpectedFetches('docs');
+assertGlyphCoverage('docs');
