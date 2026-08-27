@@ -36,17 +36,21 @@ Each is then subset to the characters that actually appear.
 
 | | as served by Google | subset here |
 |---|---|---|
-| Jost | 53 KB | 14 KB |
-| Open Sans | 145 KB | 26 KB |
+| Jost | 53 KB | 15 KB |
+| Open Sans | 145 KB | 27 KB |
 
 ## What they cannot draw
 
-Eight characters the site uses are **not in either typeface at all**, in any
-weight — verified against the upstream variable fonts, not just these subsets:
+Nine characters the site uses are **not in both typefaces**, in any weight —
+verified against the upstream variable fonts, not just these subsets:
 
 ```
-← → ✓ ◐ ♠ ♣ ♥ ♦
+← → ✓ ◐ ♠ ♣ ♥ ♦    and the hair space, U+200A
 ```
+
+Neither family contains the arrows, the check mark, the half-filled circle or
+the card suits. The hair space is in Open Sans but not Jost, and a fallback
+space is indistinguishable from the real one.
 
 They have always been drawn by whatever face the operating system supplies,
 under Google Fonts exactly as they are now. Nothing can change that short of
@@ -71,7 +75,7 @@ upstream fonts, not from these files — you cannot add a glyph back to a subset
 curl -L -o Jost.ttf     'https://github.com/google/fonts/raw/main/ofl/jost/Jost%5Bwght%5D.ttf'
 curl -L -o OpenSans.ttf 'https://github.com/google/fonts/raw/main/ofl/opensans/OpenSans%5Bwdth,wght%5D.ttf'
 
-U="U+0020-007E,U+00A0,U+00A9,U+00B7,U+00BD,U+00D7,U+00E9,U+2013,U+2014,U+2018,U+2019,U+201C,U+201D,U+2022,U+2026,U+2082,U+2192"
+U="U+0020-007E,U+00A0,U+00A9,U+00B7,U+00BD,U+00D7,U+00E9,U+2013,U+2014,U+2018,U+2019,U+201C,U+201D,U+2022,U+2026,U+2082,U+2192,U+2212,U+2248,U+2264,U+2265"
 
 python -m fontTools.subset Jost.ttf --unicodes="$U" --layout-features='' \
   --flavor=woff2 --output-file=build/vendor/fonts/jost-latin.woff2
