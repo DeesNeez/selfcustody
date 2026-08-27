@@ -2105,6 +2105,39 @@ const ui = () => `
 
   /* ---- boot ---- */
 
+  /* Whether a network interface is up, decided before anything slow runs.
+
+     This badge is the only one that appears rather than changing its text, so
+     it is the only one that can change the size of the row. Left until after
+     the self-test it did exactly that: the vectors take about a second --
+     PBKDF2's 2048 rounds are among them -- so the hero painted with three
+     badges, sat there, and then grew to two rows when a fourth arrived. The
+     status row went 40px to 90px on the copy where this warning actually
+     shows, which is the downloaded file on a machine still connected.
+
+     Nothing here needs the vectors, or the network. It reads a flag the
+     browser already holds. */
+  function paintAdapter() {
+    const adapter = $('adapter');
+    if (!adapter) return;
+    /* Only on the local copy. Served over a network the badge above already
+       says the page came from one, and saying it twice in different words
+       reads as two problems rather than one fact. */
+    adapter.hidden = !(isOffline() && navigator.onLine === true);
+  }
+
+  (function watchAdapter() {
+    paintAdapter();
+    addEventListener('online', paintAdapter);
+    addEventListener('offline', paintAdapter);
+    /* Chromium fires this when the connection type changes without the
+       up/down state changing. Absent in Firefox and Safari, so it is a bonus
+       rather than something the behaviour depends on. */
+    if (navigator.connection && navigator.connection.addEventListener) {
+      navigator.connection.addEventListener('change', paintAdapter);
+    }
+  })();
+
   (function boot() {
     const results = runSelfTest();
     const bad = results.filter(r => !r.ok);
@@ -2173,23 +2206,6 @@ const ui = () => `
        the events the browser already fires -- a request to some third party
        to "check connectivity" would be the very thing this page promises not
        to do, and it would fail against connect-src 'none' anyway. */
-    const adapter = $('adapter');
-    const paintAdapter = () => {
-      /* Only on the local copy. Served over a network the badge above already
-         says the page came from one, and saying it twice in different words
-         reads as two problems rather than one fact. */
-      adapter.hidden = !(offline && navigator.onLine === true);
-    };
-    paintAdapter();
-    addEventListener('online', paintAdapter);
-    addEventListener('offline', paintAdapter);
-    /* Chromium fires this when the connection type changes without the
-       up/down state changing. Absent in Firefox and Safari, so it is a bonus
-       rather than something the behaviour depends on. */
-    if (navigator.connection && navigator.connection.addEventListener) {
-      navigator.connection.addEventListener('change', paintAdapter);
-    }
-
     /* Which panel to show is a question about the file, not the protocol.
        The site page always offers the download, because it is never the thing
        being downloaded. The offline copy never does: the button would be dead
