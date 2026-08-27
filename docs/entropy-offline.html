@@ -179,9 +179,7 @@
   fieldset { margin: 26px 0 0; padding: 0; border: 0; }
   legend { padding: 0; margin-bottom: 9px; color: #fff; font-size: 0.95rem; font-weight: 700; }
   .hint { margin: 7px 0 0; color: var(--muted); font-size: 0.85rem; }
-  /* Sits under a full-width row of four evenly spaced buttons, where a
-     left-aligned single line reads as though it fell out of the row. */
-  .hint-centred { text-align: center; }
+
 
   .seg { display: flex; flex-wrap: wrap; gap: 8px; }
   .seg button {
@@ -291,10 +289,16 @@
      at the wrong place, so it wraps anywhere rather than pushing the panel
      wide. Same treatment the account key already gets. */
   .descriptor-box #descriptor { overflow-wrap: anywhere; word-break: break-all; }
-  /* The one disclosure here that hides something which spends, so its summary
-     is warned rather than neutral. */
-  .xprv-box > summary { color: #ffad4c; }
-  .xprv-box #xprv, .xprv-box #xprv-alt { overflow-wrap: anywhere; word-break: break-all; }
+  /* Sits directly under the recovery words rather than behind a fold. The
+     words are the more powerful secret -- they rebuild every account, where
+     this rebuilds one -- so hiding the lesser value while printing the greater
+     one above it would be theatre. Tinted in the warning colour instead,
+     because it is the one value on this page that spends.
+     A modifier on .xpub-box, not its own panel, so the two key boxes cannot
+     drift apart. Equal specificity, so these win on source order. */
+  .xprv-box { border-color: rgba(255, 138, 0, 0.28); background: rgba(255, 138, 0, 0.05); }
+  .xprv-box .label span { color: #ffad4c; }
+  .xprv-box #xprv-alt-row { margin-top: 14px; }
   .descriptor-split { margin-top: 14px; }
   .descriptor-split summary { font-size: 0.85rem; }
   .split-line { display: grid; gap: 3px; margin: 0 0 10px; }
@@ -1124,7 +1128,7 @@
     </nav>
     <div class="hero-heading">
       <div class="hero-copy">
-        <span class="eyebrow">Beta &middot; offline capable tool</span>
+        <span class="eyebrow">Offline-capable tool</span>
         <div class="sc-guide-title-row">
           <span class="sc-die-mark guide-die-mark" aria-hidden="true"></span>
           <h1>Entropy Workshop</h1>
@@ -1264,7 +1268,7 @@
             <button type="button" data-group="addressType" data-value="nested" aria-pressed="false">Nested<small>starts 3</small></button>
             <button type="button" data-group="addressType" data-value="native" aria-pressed="false">Native SegWit<small>bc1q</small></button>
             <button type="button" data-group="addressType" data-value="taproot" aria-pressed="false">Taproot<small>bc1p</small></button></div>
-  <p class="hint hint-centred">Each has its own <a href="glossary.html#term-derivation_path" data-site-link>derivation path</a>, filled in below.</p>
+  <p class="hint">Each has its own <a href="glossary.html#term-derivation_path" data-site-link>derivation path</a>, filled in below.</p>
 </fieldset>
 
 <fieldset>
@@ -1360,6 +1364,16 @@
     </details>
   </div>
 
+  <div class="xpub-box xprv-box">
+    <div class="label"><span>Account private key</span><code id="xprv-path"></code></div>
+    <p id="xprv"></p>
+    <div id="xprv-alt-row" hidden>
+      <div class="label"><span>Same key as <b id="xprv-alt-label"></b></span></div>
+      <p id="xprv-alt"></p>
+    </div>
+    <p class="xpub-note">This is the half that spends. Anything holding it can move the coins under that path without the recovery words above.</p>
+  </div>
+
   <h3>First addresses</h3>
   <p class="hint" id="type-note"></p>
   <div class="addr">
@@ -1405,21 +1419,6 @@
     </div>
   </details>
 
-  <details class="xprv-box">
-    <summary>Show the account private key</summary>
-    <div class="body">
-      <p>The spending half of the account above. Anything holding this can move
-         the coins under <code id="xprv-path"></code> without needing the
-         recovery words.</p>
-      <p><code id="xprv"></code></p>
-      <p id="xprv-alt-row" hidden>Same key with the prefix <b id="xprv-alt-label"></b> that some wallets use for this address type:<br><code id="xprv-alt"></code></p>
-      <p class="xpub-note">It is behind this fold rather than on screen because
-        it is the one value here that spends. The recovery words above are more
-        powerful still &mdash; they rebuild every account, where this rebuilds
-        one &mdash; so nothing is being withheld by hiding it, only kept out of
-        the way until asked for. Treat both the same.</p>
-    </div>
-  </details>
 </section>
 </section>
 
@@ -3737,7 +3736,14 @@ const EntropyCore = (() => {
     const info = spec();
     const bits = C.sourceEntropy({ method: method(), input });
     const target = state.words === 24 ? 256 : 128;
-    $('meter-val').textContent = bits.toFixed(1) + ' / ' + target + ' bits';
+    /* Shown past the target rather than pinned to it, because the reading is
+       honest about the source: a hundred rolls really do carry 258.5 bits.
+       What is not honest is leaving it there and letting a bar past full imply
+       that more rolls keep helping. A seed holds what it holds -- everything
+       above the target is hashed down into the same 256 bits. */
+    const over = bits > target;
+    $('meter-val').textContent = bits.toFixed(1) + ' / ' + target + ' bits'
+      + (over ? ' — seed max ' + target : '');
     $('meter-fill').style.width = Math.min(100, bits / target * 100) + '%';
     $('meter-fill').classList.toggle('is-full', bits >= target);
 
@@ -3752,11 +3758,26 @@ const EntropyCore = (() => {
               : each + (drawn ? ' ' + left + ' cards still face-down.' : '');
           })()
         : info.groupBits
-          ? 'Each word is ' + (state.source === 'cards' ? '' : '') + info.groupBits + ' bits: ' +
+          ? 'Each word is ' + info.groupBits + ' bits: ' +
             (method() === 'octahex' ? 'log2(8) + log2(16) + log2(16) = 3 + 4 + 4.' : 'five four-sided dice and a coin, 5 x 2 + 1.')
         : info.eventBits === 1
           ? 'One bit a flip, so the count and the bits are the same number.'
-          : 'Each roll is log2(6) = 2.585 bits. Ninety-nine of them come to 255.9, just under the 256 a 24-word seed holds — which is why the rolls are hashed rather than packed in.';
+          : (() => {
+              const fit = Math.floor(target / info.eventBits);
+              return 'Each roll is log2(6) = 2.585 bits, so ' + fit + ' of them come to '
+                + (fit * info.eventBits).toFixed(1) + ' — just under the ' + target
+                + ' a ' + state.words + '-word seed holds, which is why the rolls are '
+                + 'hashed rather than packed in.';
+            })();
+
+    /* Once the source carries more than the seed can hold, the extra is real
+       entropy that lands nowhere. Keeping the count climbing without saying so
+       would let someone roll another fifty in the belief they were buying
+       something. They are not; they are choosing a different wallet. */
+    if (over) {
+      $('meter-note').textContent += ' Past that, more ' + info.unit
+        + 's change which wallet you get but not how hard it is to guess.';
+    }
   }
 
   function paintCount() {
