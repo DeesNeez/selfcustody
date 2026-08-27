@@ -16,6 +16,11 @@ import { createHash } from 'node:crypto';
 const SITE = 'docs/entropy.html';
 const OFFLINE = 'docs/entropy-offline.html';
 const SIDECAR = 'docs/entropy-offline.html.sha256';
+const CR = String.fromCharCode(13);
+
+const codeOnlyEarly = html => html
+  .replace(/<!--[\s\S]*?-->/g, ' ')
+  .replace(/\/\*[\s\S]*?\*\//g, ' ');
 
 export function assertWorkshop() {
   const problems = [];
@@ -44,6 +49,17 @@ export function assertWorkshop() {
       'the sidecar does not name entropy-offline.html, so shasum -c cannot use it');
   }
 
+  /* ---- line endings ------------------------------------------------------
+     The artifact is hashed byte for byte, so its bytes must be the same
+     everywhere. entropy-core.js is checked out CRLF on Windows and LF
+     elsewhere and is inlined verbatim, which produced a mixed file: git
+     normalised the committed blob, and the published SHA-256 then described
+     the working copy rather than what GitHub served. Anyone following the
+     verify instructions got a mismatch and was right to distrust the file. */
+  check(!offline.includes(CR),
+    'the offline artifact contains carriage returns; git will rewrite it and the published checksum will not match what is served');
+  check(!site.includes(CR), 'the site build contains carriage returns');
+
   /* ---- the build flag ---------------------------------------------------
      One constant decides whether a page offers the download or the checksum
      panel, and whether it claims to be the self-contained file. Getting it
@@ -60,16 +76,30 @@ export function assertWorkshop() {
     check(/selftest/.test(html), `the ${name} build has no self-test element`);
     const block = html.slice(html.indexOf('VECTORS = ['));
     const vectors = (block.match(/\n\s*\['[^']+',\s*\(\)/g) || []).length;
-    check(vectors >= 20,
-      `the ${name} build embeds ${vectors} self-test vectors; it should carry at least 20`);
+    check(vectors >= 24,
+      `the ${name} build embeds ${vectors} self-test vectors; it should carry at least 24`);
+
+    /* A count is not coverage. These four are named because each guards
+       something no other vector touches: the wordlist beyond the handful of
+       words the address vectors happen to use, and the descriptor, whose
+       checksum is a second encoding of the account key. */
+    for (const vector of [
+      'BIP39 wordlist, official English list',
+      'BIP39 wordlist, 2048 unique words in order',
+      'Descriptor checksum, BIP380 published vector',
+      'Watch-only descriptor, BIP84 account'
+    ]) {
+      check(html.includes(vector),
+        `the ${name} build does not embed the "${vector}" self-test vector`);
+    }
   }
 
   /* ---- the safeguards nobody can see ------------------------------------ */
   for (const [name, html] of [['site', site], ['offline', offline]]) {
     check(/addEventListener\('pagehide', clearSensitiveState\)/.test(html),
       `the ${name} build does not clear entered material when the page is left`);
-    check(/event\.persisted/.test(html),
-      `the ${name} build does not clear on a back/forward-cache restore`);
+    check(/addEventListener\('pageshow', clearSensitiveState\)/.test(html),
+      `the ${name} build does not clear on pageshow, so a restored page can come back with its results`);
     check(!/addEventListener\('visibilitychange'/.test(html),
       `the ${name} build clears on visibilitychange, which would destroy work when someone switches apps mid-roll`);
     check(/<noscript>/.test(html),
@@ -98,6 +128,30 @@ export function assertWorkshop() {
     "the offline build's CSP does not start from default-src 'none'");
   check(/connect-src 'none'/.test(site),
     "the site build's CSP does not forbid connect-src; this page has nothing to send anywhere");
+
+  /* navigator.onLine is allowed in one direction only, and this checks that
+     structurally rather than by reading the copy.
+
+     A page cannot see an air gap. A disabled adapter, a sleeping radio and a
+     machine with no card look identical through that flag, and only one of
+     them is what the security brief asks for. So the flag may be read to
+     WARN -- `navigator.onLine === true` -- and never in the negative, where
+     the only thing it could produce is false reassurance.
+
+     A first attempt at this grepped the rendered text for phrases like
+     "air-gapped", and failed on both builds. What it had found was the
+     download panel telling the reader to PUT the file on an air-gapped
+     machine, and the noscript notice describing the tool as safe to use
+     offline. Both are instructions, not claims about the reader's current
+     state -- prose read as if it were code, for the third time in these
+     guards. Hence: check the comparison, not the copy. */
+  for (const [name, html] of [['site', site], ['offline', offline]]) {
+    const uses = [...codeOnlyEarly(html).matchAll(/navigator\.onLine\s*(===\s*true)?/g)];
+    const negative = uses.filter(m => !m[1]);
+    check(negative.length === 0,
+      `the ${name} build reads navigator.onLine somewhere other than a "=== true" test; ` +
+      'it may warn when a network appears present and must never claim the absence of one');
+  }
 
   /* The one thing the tool must never grow.
 

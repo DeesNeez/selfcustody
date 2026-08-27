@@ -313,6 +313,11 @@ ${FONTS.map(embedFont).join('\n')}
      at the wrong place, so it wraps anywhere rather than pushing the panel
      wide. Same treatment the account key already gets. */
   .descriptor-box #descriptor { overflow-wrap: anywhere; word-break: break-all; }
+  .descriptor-split { margin-top: 14px; }
+  .descriptor-split summary { font-size: 0.85rem; }
+  .split-line { display: grid; gap: 3px; margin: 0 0 10px; }
+  .split-line span { color: var(--muted); font-size: 0.74rem; letter-spacing: .05em; text-transform: uppercase; }
+  .split-line code { overflow-wrap: anywhere; word-break: break-all; font-size: 0.78rem; }
   .xpub-note {
     font-family: inherit !important; color: var(--muted) !important;
     font-size: 0.85rem !important; margin-top: 12px !important; word-break: normal !important;
@@ -1087,6 +1092,10 @@ const selfTest = () => `
   /* Every expected value here is from a published specification: FIPS 180-4,
      RFC 4231, and the test vectors in BIP32, BIP39, BIP84 and BIP86. None of
      them was produced by running this code. */
+  const LF = String.fromCharCode(10);
+  const ABANDON = 'abandon '.repeat(11) + 'about';
+  let vectorSeed = null;
+
   const VECTORS = [
     ['SHA-256, FIPS 180-4', () => C.hex(C.sha256(C.utf8('abc'))),
       'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'],
@@ -1127,11 +1136,45 @@ const selfTest = () => `
       () => WORDLIST[C.METHODS.octahex.indexOf('8FF')], 'zoo'],
     ['Dice bit table codes', () => C.diceBits('123456'), '0110110100'],
     ['Dice with 6 as 0', () => C.hex(C.METHODS.dicezero.entropy('123456', 16)),
-      C.hex(C.sha256(C.utf8('123450')).slice(0, 16))]
-  ];
+      C.hex(C.sha256(C.utf8('123450')).slice(0, 16))],
 
-  const ABANDON = 'abandon '.repeat(11) + 'about';
-  let vectorSeed = null;
+    /* The wordlist itself, which nothing else here covers.
+
+       Every address vector above goes through a handful of words. One altered
+       entry anywhere in the other two thousand would produce wrong recovery
+       phrases for the seeds that happen to reach it, while every other test
+       still passed -- and the phrase is the backup, so a single wrong word is
+       a wallet nobody can restore.
+
+       2f5eed53... is the SHA-256 of the official bip-0039/english.txt, one
+       word per line with a trailing newline. The page carries the list
+       space-joined, so the canonical form is rebuilt before hashing. */
+    ['BIP39 wordlist, official English list',
+      () => C.hex(C.sha256(C.utf8(WORDLIST.join(LF) + LF))),
+      '2f5eed53a4727b4bf8880d8f3f199efc90e58503646d9ff8eff3a2ed3b24dbda'],
+    ['BIP39 wordlist, 2048 unique words in order',
+      () => [WORDLIST.length, new Set(WORDLIST).size,
+             WORDLIST.every((w, i) => i === 0 || WORDLIST[i - 1] < w)].join(),
+      '2048,2048,true'],
+
+    /* The descriptor. Its checksum is a second, independent encoding of the
+       account key, so a fault here hands someone a line that looks verified
+       and watches the wrong wallet -- or none. */
+    ['Descriptor checksum, BIP380 published vector',
+      () => C.withChecksum('raw(deadbeef)'), 'raw(deadbeef)#89f8spxm'],
+    ['Watch-only descriptor, BIP84 account',
+      () => {
+        if (!vectorSeed) vectorSeed = C.mnemonicToSeed(ABANDON.split(' '));
+        const path = C.accountPath('native', 0);
+        return C.watchOnlyDescriptor({
+          addressType: 'native',
+          fingerprint: C.masterFingerprint(vectorSeed),
+          path,
+          xpub: C.deriveAddresses({ seed: vectorSeed, addressType: 'native', path }).xpub
+        });
+      },
+      'wpkh([73c5da0a/84h/0h/0h]xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V/<0;1>/*)#qf45pmyh']
+  ];
 
   function vectorAddress(type, path, branch) {
     if (!vectorSeed) vectorSeed = C.mnemonicToSeed(ABANDON.split(' '));
@@ -1155,8 +1198,10 @@ const ui = () => `
      used to decide whether to offer the download. It is a weaker signal than
      it looks -- a file:// page can sit on a fully connected machine -- so it
      says which copy you are on, never that the machine is offline.
-     navigator.onLine is deliberately not used: it reports whether an interface
-     exists, not whether traffic can flow, and is wrong in both directions. */
+     navigator.onLine is read separately, and in one direction only: it may
+     warn that an interface appears to be up, and never claims one is absent.
+     It reports whether an interface exists, not whether traffic can flow, so
+     the negative case is worthless as reassurance. See paintAdapter below. */
   const isOffline = () => location.protocol === 'file:';
 
   /* Two questions that used to have one answer.
@@ -1233,15 +1278,18 @@ const ui = () => `
          the old input across would leave a box full of characters the new
          method rejects. */
       $('input').value = '';
-      state.seed = null;
       state.choice = 0;
       buildPad();
     }
     paintSegments();
     paintSteps();
     paintCount();
-    if (group !== 'addressType') hideResults();
-    if (group === 'addressType' && state.seed) render();
+    /* Everything except the address type and the path changes what the seed
+       would be, so the cached one stops being an answer to the question on
+       screen. The address type is the one control the cache survives, which is
+       the reason it exists. */
+    if (group !== 'addressType') invalidateDerivedState();
+    else if (state.seed) render();
   }
 
   /* The conversion step is only a question for dice, and the word count is
@@ -1550,6 +1598,54 @@ const ui = () => `
     $('endings').hidden = true;
   }
 
+  /* ---- invalidating a result -------------------------------------------
+
+     The page caches the slow half of the work -- PBKDF2's 2048 rounds -- so
+     that changing the address type repaints instead of recomputing. That cache
+     has to be thrown away the moment anything it was computed from changes,
+     and it was not being thrown away thoroughly enough.
+
+     Three ways a stale wallet could reach the screen:
+
+     Editing the rolls only hid the results; state.seed stayed. Change the
+     address type afterwards and render() ran against the old seed, showing
+     wallet A while the box on screen visibly held entropy B.
+
+     Switching 12 words to 24 left the seed cached too, so the same thing
+     happened with the word count contradicting what was displayed.
+
+     And clearing state.seed without state.seedKey left the pair inconsistent:
+     type a passphrase, delete it back to what it was, and the key matched
+     while the seed was null, so derive() skipped the work and then read
+     .options off null.
+
+     Every one of those is the failure this tool exists not to have -- a
+     plausible wrong answer, shown without complaint.
+
+     There is also a timer. derive() schedules the slow part 20ms out so the
+     button can repaint first, and that callback closes over the input it was
+     given. Left alone it survives the page being cleared: navigate during the
+     window, come back through the back/forward cache, and pageshow clears the
+     page and then the old callback renders the mnemonic again. So the timer is
+     cancelled here, and a generation counter makes any callback that still
+     runs return without touching anything. */
+  let deriveTimer = 0;
+  let generation = 0;
+
+  function invalidateDerivedState() {
+    generation += 1;
+    if (deriveTimer) { clearTimeout(deriveTimer); deriveTimer = 0; }
+    state.seed = null;
+    state.seedKey = null;
+    for (const id of SECRET_TEXT) {
+      const el = $(id);
+      if (!el) continue;
+      el.replaceChildren();
+      el.textContent = '';
+    }
+    hideResults();
+  }
+
   /* Every element that ends up holding something derived from the entered
      sequence, plus the two inputs and the cached seed.
 
@@ -1569,7 +1665,8 @@ const ui = () => `
   const SECRET_FIELDS = ['input', 'passphrase'];
   const SECRET_TEXT = [
     'words', 'entropy', 'ending-list',
-    'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label', 'descriptor',
+    'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
+    'descriptor', 'descriptor-recv', 'descriptor-chng',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
     'fp-base', 'fp-pass', 'fp-base-tag'
   ];
@@ -1579,16 +1676,19 @@ const ui = () => `
       const el = $(id);
       if (el) el.value = '';
     }
-    for (const id of SECRET_TEXT) {
-      const el = $(id);
-      if (!el) continue;
-      el.replaceChildren();
-      el.textContent = '';
-    }
-    state.seed = null;
-    state.seedKey = null;
+    invalidateDerivedState();
     state.choice = 0;
-    hideResults();
+
+    /* The transient UI as well, or clearing leaves a page that disagrees with
+       itself: a roll counter describing rolls that are gone, an enabled Derive
+       button over an empty box, a cap notice about a limit no longer reached,
+       and -- if the refusal dialog was open when the page was left -- a modal
+       still sitting over a page with nothing in it. */
+    const alarm = $('alarm');
+    if (alarm && alarm.open) alarm.close();
+    clearFull();
+    wasFull = false;
+    paintCount();
   }
 
   function fail(message) {
@@ -1623,7 +1723,13 @@ const ui = () => `
     $('go').disabled = true;
     $('go').textContent = 'Working\\u2026';
 
-    setTimeout(() => {
+    const mine = generation;
+    deriveTimer = setTimeout(() => {
+      deriveTimer = 0;
+      /* Anything that invalidates the cache bumps the generation. A callback
+         from before that point is describing inputs the page no longer has,
+         so it stops here rather than rendering them. */
+      if (mine !== generation) return;
       try {
         if (state.seedKey !== key) {
           state.seed = C.deriveSeed({
@@ -1668,6 +1774,16 @@ const ui = () => `
   }
 
   function render() {
+    /* The last line of defence. render() is called directly when the address
+       type or the path changes, on the assumption that the cached seed still
+       describes what is on screen. If it does not -- because something changed
+       without invalidating, now or after some future edit -- showing the old
+       wallet would be worse than showing nothing. */
+    if (!state.seed || state.seedKey !== seedKeyFor(clean())) {
+      invalidateDerivedState();
+      return;
+    }
+
     const path = $('path').value.trim();
     let addresses;
     try {
@@ -1711,12 +1827,17 @@ const ui = () => `
     /* Built from the canonical xpub, never the ypub/zpub form: the script
        type is already stated by the descriptor function, and a SLIP-132
        prefix would say it a second time in a dialect Core does not read. */
-    $('descriptor').textContent = C.watchOnlyDescriptor({
+    const descriptorArgs = {
       addressType: state.addressType,
       fingerprint: C.masterFingerprint(state.seed.seed),
       path,
       xpub: addresses.xpub
-    });
+    };
+    $('descriptor').textContent = C.watchOnlyDescriptor(descriptorArgs);
+    /* The same account written the older way, for wallets that predate
+       BIP389's multipath syntax and reject it outright. */
+    $('descriptor-recv').textContent = C.watchOnlyDescriptor({ ...descriptorArgs, branch: 0 });
+    $('descriptor-chng').textContent = C.watchOnlyDescriptor({ ...descriptorArgs, branch: 1 });
     $('xpub-alt-row').hidden = !addresses.typedXpub;
     $('xpub-slip').hidden = !addresses.typedXpub;
     if (addresses.typedXpub) {
@@ -1760,7 +1881,12 @@ const ui = () => `
      through entering ninety-nine rolls, and destroying that work would be a
      bug of our own making rather than a safeguard. */
   addEventListener('pagehide', clearSensitiveState);
-  addEventListener('pageshow', event => { if (event.persisted) clearSensitiveState(); });
+  /* Every pageshow, not only the persisted one. bfcache is the case that
+     started this, but it is not the only way a browser puts old values back:
+     ordinary history restoration and a discarded tab reloaded with its form
+     state both repopulate fields without persisted being set. Clearing on a
+     fresh load costs nothing -- there is nothing there yet. */
+  addEventListener('pageshow', clearSensitiveState);
 
   document.querySelectorAll('[data-group]').forEach(button => {
     button.addEventListener('click', () => onPick(button.dataset.group, button.dataset.value));
@@ -1778,7 +1904,7 @@ const ui = () => `
       clearFull();
     }
     paintCount();
-    hideResults();
+    invalidateDerivedState();
   });
   $('path').addEventListener('input', () => {
     state.pathEdited = $('path').value.trim() !== defaultPath();
@@ -1862,6 +1988,46 @@ const ui = () => `
     where.textContent = offline
       ? 'Opened from a local file \\u2014 this tool requires no network requests'
       : 'Loaded over a network \\u2014 this copy is online';
+    /* ---- the network adapter -------------------------------------------
+
+       navigator.onLine is a weak signal and is used in one direction only.
+
+       True means the operating system believes an interface is up. That is
+       worth saying: this file needs no network, but the machine it is running
+       on is a different question, and someone who downloaded the tool
+       specifically to be off the network deserves to know the adapter is
+       still on. It may be a captive portal or a LAN with no route out -- the
+       wording says "reports a connection", not "you are online", because that
+       is genuinely all it knows.
+
+       False is never repeated back as reassurance. An interface being down is
+       not an air gap: a disabled adapter, a sleeping radio and a machine that
+       has never had a network card all look identical from here, and only one
+       of them is what the security brief is asking for. So when onLine is
+       false this simply says nothing, and the reader is left with the
+       instructions rather than a badge implying they are safe.
+
+       No traffic. It reads a flag the browser already holds and listens for
+       the events the browser already fires -- a request to some third party
+       to "check connectivity" would be the very thing this page promises not
+       to do, and it would fail against connect-src 'none' anyway. */
+    const adapter = $('adapter');
+    const paintAdapter = () => {
+      /* Only on the local copy. Served over a network the badge above already
+         says the page came from one, and saying it twice in different words
+         reads as two problems rather than one fact. */
+      adapter.hidden = !(offline && navigator.onLine === true);
+    };
+    paintAdapter();
+    addEventListener('online', paintAdapter);
+    addEventListener('offline', paintAdapter);
+    /* Chromium fires this when the connection type changes without the
+       up/down state changing. Absent in Firefox and Safari, so it is a bonus
+       rather than something the behaviour depends on. */
+    if (navigator.connection && navigator.connection.addEventListener) {
+      navigator.connection.addEventListener('change', paintAdapter);
+    }
+
     /* Which panel to show is a question about the file, not the protocol.
        The site page always offers the download, because it is never the thing
        being downloaded. The offline copy never does: the button would be dead
@@ -1925,7 +2091,11 @@ const ui = () => `
     if (yearEl) yearEl.textContent = String(new Date().getFullYear());
     buildPad();
     $('path').value = defaultPath();
-    $('passphrase').addEventListener('input', () => { state.seed = null; hideResults(); });
+    /* Both halves of the cache, not just the seed. Clearing one and leaving
+       the other let a passphrase typed and then deleted arrive back at a
+       matching key with no seed behind it, and derive() then skipped the work
+       and read .options off null. */
+    $('passphrase').addEventListener('input', invalidateDerivedState);
     paintSegments();
     paintSteps();
     paintCount();
@@ -1963,6 +2133,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <ul class="status">
         <li id="selftest">Running self-test&hellip;</li>
         <li id="where">Checking&hellip;</li>
+        <li id="adapter" class="warn" hidden>This machine reports a network connection</li>
         ${offline
           /* Only the downloaded file makes this claim, because only it can:
              the site page loads a stylesheet, a script and two webfonts. It
@@ -2221,6 +2392,14 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <p id="descriptor"></p>
     <p class="xpub-note">The same account key, written the way a wallet wants to be given it. It names the script type, so it cannot be imported as the wrong address type &mdash; the mistake that makes a restored wallet look empty. Sparrow, Bitcoin Core and most coordinators take this line directly.</p>
     <p class="xpub-note">The <code>&lt;0;1&gt;</code> covers receiving and change together, and the eight characters after the <code>#</code> are a checksum over everything before them, so a wallet can tell you that you mistyped rather than watching the wrong account in silence. It still contains no private key and can sign nothing.</p>
+    <details class="descriptor-split">
+      <summary>If your wallet will not accept it</summary>
+      <div class="body">
+        <p>The <code>&lt;0;1&gt;</code> form comes from BIP389, which is still a draft. Sparrow and current Bitcoin Core read it; older software may not, and will usually say the descriptor is malformed rather than guess. If that happens, import these two instead &mdash; receiving first, then change. They describe the same wallet.</p>
+        <p class="split-line"><span>Receiving</span><code id="descriptor-recv"></code></p>
+        <p class="split-line"><span>Change</span><code id="descriptor-chng"></code></p>
+      </div>
+    </details>
   </div>
 
   <details>
@@ -2413,6 +2592,13 @@ export function renderEntropyOffline() {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src data:; img-src data:; form-action 'none'; base-uri 'none'">
   <meta name="referrer" content="no-referrer">
+  <!-- The links in this file are documentation, and the request guard treats
+       an anchor as inert because clicking is a decision. Browsers do not
+       entirely agree: Chromium resolves hostnames for links it can see, before
+       anything is clicked, which would put this file's reading list into a DNS
+       log on a machine chosen for having no traffic at all. Off, and declared
+       before any link appears. -->
+  <meta http-equiv="x-dns-prefetch-control" content="off">
 <meta name="robots" content="noindex">
 <title>Entropy Workshop | SelfCustody.ca</title>
 <style>${styles()}</style>
