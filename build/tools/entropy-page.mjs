@@ -2343,7 +2343,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 <section class="workbench" aria-label="Entropy conversion controls">
 <div class="setup-grid">
 <fieldset class="setup-wide">
-  <legend data-step="1"><span class="step-num">1. </span>How did you make the randomness?</legend>
+  <legend data-step="1"><span class="step-num">1. </span>What did you use?</legend>
   <div class="seg seg-even source-pick">${segment('source', [
     { value: 'coin', label: 'Coins', sub: 'heads or tails' },
     { value: 'dice', label: 'Dice', sub: 'six-sided, or octal and hex' },
