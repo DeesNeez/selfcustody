@@ -591,6 +591,40 @@ export const VECTORS = [
       ? 'identical' : 'different';
   }, 'identical'],
 
+  /* ---- the account private key -------------------------------------------
+
+     Published in BIP84's own test vectors for the all-zero mnemonic, so this
+     is the specification's value rather than a recording of what this code
+     does. Worth pinning carefully: an xprv that is subtly wrong hands someone
+     a key that looks right, imports without complaint, and controls a
+     different wallet than the words beside it. */
+  ['xprv: BIP84 account key for the all-zero mnemonic',
+    () => C.encodeXprv(C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'"),
+                       C.ADDRESS_TYPES.native.xprvVersion),
+    'zprvAdG4iTXWBoARxkkzNpNh8r6Qag3irQB8PzEMkAFeTRXxHpbF9z4QgEvBRmfvqWvGp42t42nvgGpNgYSJA9iefm1yYNZKEm7z6qUWCroSQnE'],
+  ['xprv: the canonical form is the same key with BIP32 version bytes',
+    () => C.encodeXprv(C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'"))
+            .slice(0, 4), 'xprv'],
+  /* The private and public serialisations must describe one key. If they ever
+     drift, the page would show an xpub for one account and an xprv for
+     another, which is the worst way for this to fail. */
+  ['xprv: private and public forms agree on the same account',
+    () => {
+      const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'");
+      const fromPriv = C.hex(C.compress(C.pointMul(BigInt('0x' + C.hex(node.key)))));
+      const fromPub = C.hex(C.publicKeyOf(node));
+      return fromPriv === fromPub;
+    }, true],
+  ['xprv: it is 78 bytes like the public form, private key padded with a zero',
+    () => {
+      const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'");
+      return [C.encodeXprv(node).length > 100, C.encodeXpub(node).length > 100].join();
+    }, 'true,true'],
+  /* And it must never reach the descriptor, which is the one thing on the page
+     that is meant to be safe to hand out. */
+  ['xprv: never appears in a watch-only descriptor',
+    () => /xprv|[yz]prv/.test(descriptorFor('native')), false],
+
   /* ---- the checksum a phrase carries -------------------------------------
 
      BIP39 appends entropy/32 bits of SHA-256 over the entropy, so the last

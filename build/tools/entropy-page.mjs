@@ -338,6 +338,10 @@ ${FONTS.map(embedFont).join('\n')}
      at the wrong place, so it wraps anywhere rather than pushing the panel
      wide. Same treatment the account key already gets. */
   .descriptor-box #descriptor { overflow-wrap: anywhere; word-break: break-all; }
+  /* The one disclosure here that hides something which spends, so its summary
+     is warned rather than neutral. */
+  .xprv-box > summary { color: #ffad4c; }
+  .xprv-box #xprv, .xprv-box #xprv-alt { overflow-wrap: anywhere; word-break: break-all; }
   .descriptor-split { margin-top: 14px; }
   .descriptor-split summary { font-size: 0.85rem; }
   .split-line { display: grid; gap: 3px; margin: 0 0 10px; }
@@ -1776,6 +1780,7 @@ const ui = () => `
     'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
     'descriptor', 'descriptor-recv', 'descriptor-chng',
     'checksum-line', 'checksum-detail',
+    'xprv', 'xprv-path', 'xprv-alt', 'xprv-alt-label',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
     'fp-base', 'fp-pass', 'fp-base-tag'
   ];
@@ -2010,6 +2015,22 @@ const ui = () => `
     $('chng-path').textContent = addresses.change.path;
     $('chng-addr').textContent = addresses.change.address;
     $('entropy').textContent = state.seed.entropy;
+
+    /* The spending key for the same account the xpub above describes, in the
+       canonical form and, where the address type has one, the SLIP-132 form
+       beside it -- the same pairing the public box shows, for the same reason:
+       a wallet showing one and a device showing the other do not disagree. */
+    const accountNode = C.derive(C.masterKey(state.seed.seed), path);
+    $('xprv-path').textContent = path;
+    $('xprv').textContent = C.encodeXprv(accountNode);
+    const typedPrivVersion = C.ADDRESS_TYPES[state.addressType].xprvVersion;
+    const typedPriv = typedPrivVersion && typedPrivVersion !== C.XPRV_VERSION
+      ? C.encodeXprv(accountNode, typedPrivVersion) : null;
+    $('xprv-alt-row').hidden = !typedPriv;
+    if (typedPriv) {
+      $('xprv-alt').textContent = typedPriv;
+      $('xprv-alt-label').textContent = typedPriv.slice(0, 4);
+    }
     $('type-note').textContent = C.ADDRESS_TYPES[state.addressType].note;
     $('results').hidden = false;
   }
@@ -2610,6 +2631,22 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <div class="body">
       <p>The number your rolls became, before it was written out as words:</p>
       <p><code id="entropy"></code></p>
+    </div>
+  </details>
+
+  <details class="xprv-box">
+    <summary>Show the account private key</summary>
+    <div class="body">
+      <p>The spending half of the account above. Anything holding this can move
+         the coins under <code id="xprv-path"></code> without needing the
+         recovery words.</p>
+      <p><code id="xprv"></code></p>
+      <p id="xprv-alt-row" hidden>Same key with the prefix <b id="xprv-alt-label"></b> that some wallets use for this address type:<br><code id="xprv-alt"></code></p>
+      <p class="xpub-note">It is behind this fold rather than on screen because
+        it is the one value here that spends. The recovery words above are more
+        powerful still &mdash; they rebuild every account, where this rebuilds
+        one &mdash; so nothing is being withheld by hiding it, only kept out of
+        the way until asked for. Treat both the same.</p>
     </div>
   </details>
 </section>
