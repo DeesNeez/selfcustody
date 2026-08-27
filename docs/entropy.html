@@ -35,9 +35,9 @@
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4918" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4918" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4918" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4919" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260827-4919" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260827-4919" rel="stylesheet">
   <style>
 
   @font-face {
@@ -517,7 +517,7 @@
   .sc-workshop .meter-cap{
     display: block; margin-top: 8px; padding: 7px 11px; border-radius: 8px;
     border: 1px solid rgba(255, 138, 0, 0.34); background: rgba(255, 138, 0, 0.1);
-    color: #ffc07f; font-weight: 700;
+    color: #ffc07f; font-weight: 700; text-align: center;
   }
   @media (prefers-reduced-motion: reduce) { .sc-workshop .meter-track i{ transition: none; } }
 
@@ -1725,7 +1725,7 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4918"></script>
+  <script src="assets/js/site-refresh.js?v=20260827-4919"></script>
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file
@@ -3932,8 +3932,8 @@ const EntropyCore = (() => {
        something. They are not; they are choosing a different wallet. */
     $('meter-cap').hidden = !over;
     $('meter-cap').textContent = over
-      ? 'The seed stops at ' + target + ' bits, so more ' + info.unit
-        + 's change which wallet you get but not how hard it is to guess.'
+      ? state.words + ' word seed stops at ' + target + ' bits. More ' + info.unit
+        + 's will change which wallet you produce but not how hard it is to guess.'
       : '';
   }
 
