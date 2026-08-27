@@ -35,9 +35,9 @@
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4926" rel="stylesheet">
-  <link href="assets/css/style.css?v=20260827-4926" rel="stylesheet">
-  <link href="assets/css/site-refresh.css?v=20260827-4926" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4929" rel="stylesheet">
+  <link href="assets/css/style.css?v=20260827-4929" rel="stylesheet">
+  <link href="assets/css/site-refresh.css?v=20260827-4929" rel="stylesheet">
   <style>
 
   @font-face {
@@ -604,6 +604,11 @@
      start typing rolls in, not after. */
   .sc-workshop .download{
     display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px;
+    /* Centred against the copy beside it, which it can be again now that the
+       checksum instructions are a row of their own: opening them grows the
+       second row, so the button keeps the position it was given by the first.
+       While they shared a column, centring slid the button 74px down the
+       moment anyone opened them. */
     align-items: center;
     margin: 0 0 38px; padding: 21px 22px; border-radius: 16px;
     background: rgba(255, 255, 255, 0.035);
@@ -618,9 +623,9 @@
   .sc-workshop .download-copy{ min-width: 0; }
   .sc-workshop .download-copy strong{ display: block; margin-bottom: 9px; color: #fff; font-family: "Jost", sans-serif; font-size: 1.25rem; }
   .sc-workshop .download-copy p{ margin: 0 0 10px; color: var(--ink-soft); font-size: 0.9rem; }
-  .sc-workshop .download-copy .verify{ margin: 0 0 6px; color: var(--muted); font-size: 0.85rem; }
-  .sc-workshop .download-copy .verify:last-child{ margin-bottom: 0; }
-  .sc-workshop .download-copy code{
+  .sc-workshop .download-copy .verify, .sc-workshop .verify-details .verify{ margin: 0 0 6px; color: var(--muted); font-size: 0.85rem; }
+  .sc-workshop .download-copy .verify:last-child, .sc-workshop .verify-details .verify:last-child{ margin-bottom: 0; }
+  .sc-workshop .download-copy code, .sc-workshop .verify-details code{
     padding: 1px 5px; border-radius: 4px; word-break: break-all;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.9em; color: var(--ink-soft); background: rgba(0, 0, 0, 0.3);
@@ -664,10 +669,15 @@
     .sc-workshop .verify-cmds span{ margin-bottom: 9px; }
     .sc-workshop .verify-cmds span:last-of-type{ margin-bottom: 0; }
   }
-  .sc-workshop .download-copy a{ color: var(--orange); }
+  .sc-workshop .download-copy a, .sc-workshop .verify-details a{ color: var(--orange); }
 
 
-  .sc-workshop .verify-details{ margin: 12px 0 0; }
+  /* Its own row under both columns, not the foot of the left one. Opening it
+     used to add 150px to that column, which slid the download button down the
+     page -- the button moving because of something read beside it. Below
+     everything it grows into empty space and nothing above it shifts, on the
+     stacked layout as well as the wide one. */
+  .sc-workshop .verify-details{ grid-column: 1 / -1; margin: 0; }
   .sc-workshop .verify-details summary{
     display: flex; align-items: center; gap: 9px; width: fit-content;
     color: var(--ink-soft); font-size: 0.84rem;
@@ -1319,18 +1329,6 @@
       <p class="verify">Running from: <code id="dl-path"></code></p>
     </div>
 
-    <details class="verify-details">
-      <summary>Verify this file against the published checksum</summary>
-      <div class="verify-body">
-        <p class="verify">Check that this is the file that was published, rather than whatever happened to arrive:</p>
-        <div class="verify-cmds">
-          <code>certutil -hashfile entropy-offline.html SHA256</code><span>Windows</span>
-          <code>shasum -a 256 entropy-offline.html</code><span>macOS, Linux</span>
-        </div>
-        <p class="verify" id="dl-hash-served">Compare that against <a href="entropy-offline.html.sha256">entropy-offline.html.sha256</a>, published beside this page.</p>
-        <p class="verify" id="dl-hash-local" hidden>Compare that against the published <code>entropy-offline.html.sha256</code>, which sits beside this page on selfcustody.ca. That one line is the only thing you need the network for, and you can fetch it from anywhere.</p>
-      </div>
-    </details>
   </div>
   <div class="download-action" id="dl-action" hidden>
     <div class="dl-frame">
@@ -1344,6 +1342,18 @@
     </div>
     <small data-dl-note>~290 KB &middot; no installer</small>
   </div>
+    <details class="verify-details">
+      <summary>Verify this file against the published checksum</summary>
+      <div class="verify-body">
+        <p class="verify">Check that this is the file that was published, rather than whatever happened to arrive:</p>
+        <div class="verify-cmds">
+          <code>certutil -hashfile entropy-offline.html SHA256</code><span>Windows</span>
+          <code>shasum -a 256 entropy-offline.html</code><span>macOS, Linux</span>
+      
+        <p class="verify" id="dl-hash-served">Compare that against <a href="entropy-offline.html.sha256">entropy-offline.html.sha256</a>, published beside this page.</p>
+        <p class="verify" id="dl-hash-local" hidden>Compare that against the published <code>entropy-offline.html.sha256</code>, which sits beside this page on selfcustody.ca. That one line is the only thing you need the network for, and you can fetch it from anywhere.</p>
+    
+    </details>
 </section>
 
 <div class="workbench-intro">
@@ -1750,7 +1760,7 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="index.html">Home</a></li><li><a href="guides.html">Guides</a></li><li><a href="devices.html">Devices</a></li><li><a href="software.html">Software</a></li><li><a href="exchanges.html">Exchanges</a></li><li><a href="glossary.html">Glossary</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="assets/js/site-refresh.js?v=20260827-4926"></script>
+  <script src="assets/js/site-refresh.js?v=20260827-4929"></script>
 <script>
 /* Crypto core for the entropy tool at docs/tools/entropy.html.
    Inlined into that page by build/tools/entropy-page.mjs -- the shipped file
