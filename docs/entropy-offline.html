@@ -580,6 +580,11 @@
      start typing rolls in, not after. */
   .download {
     display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px;
+    /* Centred against the copy beside it, which it can be again now that the
+       checksum instructions are a row of their own: opening them grows the
+       second row, so the button keeps the position it was given by the first.
+       While they shared a column, centring slid the button 74px down the
+       moment anyone opened them. */
     align-items: center;
     margin: 0 0 38px; padding: 21px 22px; border-radius: 16px;
     background: rgba(255, 255, 255, 0.035);
@@ -594,9 +599,9 @@
   .download-copy { min-width: 0; }
   .download-copy strong { display: block; margin-bottom: 9px; color: #fff; font-family: "Jost", sans-serif; font-size: 1.25rem; }
   .download-copy p { margin: 0 0 10px; color: var(--ink-soft); font-size: 0.9rem; }
-  .download-copy .verify { margin: 0 0 6px; color: var(--muted); font-size: 0.85rem; }
-  .download-copy .verify:last-child { margin-bottom: 0; }
-  .download-copy code {
+  .download-copy .verify, .verify-details .verify { margin: 0 0 6px; color: var(--muted); font-size: 0.85rem; }
+  .download-copy .verify:last-child, .verify-details .verify:last-child { margin-bottom: 0; }
+  .download-copy code, .verify-details code {
     padding: 1px 5px; border-radius: 4px; word-break: break-all;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.9em; color: var(--ink-soft); background: rgba(0, 0, 0, 0.3);
@@ -640,10 +645,15 @@
     .verify-cmds span { margin-bottom: 9px; }
     .verify-cmds span:last-of-type { margin-bottom: 0; }
   }
-  .download-copy a { color: var(--orange); }
+  .download-copy a, .verify-details a { color: var(--orange); }
 
 
-  .verify-details { margin: 12px 0 0; }
+  /* Its own row under both columns, not the foot of the left one. Opening it
+     used to add 150px to that column, which slid the download button down the
+     page -- the button moving because of something read beside it. Below
+     everything it grows into empty space and nothing above it shifts, on the
+     stacked layout as well as the wide one. */
+  .verify-details { grid-column: 1 / -1; margin: 0; }
   .verify-details summary {
     display: flex; align-items: center; gap: 9px; width: fit-content;
     color: var(--ink-soft); font-size: 0.84rem;
@@ -1269,18 +1279,6 @@
       <p class="verify">Running from: <code id="dl-path"></code></p>
     </div>
 
-    <details class="verify-details" open>
-      <summary>Verify this file against the published checksum</summary>
-      <div class="verify-body">
-        <p class="verify">Check that this is the file that was published, rather than whatever happened to arrive:</p>
-        <div class="verify-cmds">
-          <code>certutil -hashfile entropy-offline.html SHA256</code><span>Windows</span>
-          <code>shasum -a 256 entropy-offline.html</code><span>macOS, Linux</span>
-        </div>
-        <p class="verify" id="dl-hash-served">Compare that against <a href="entropy-offline.html.sha256">entropy-offline.html.sha256</a>, published beside this page.</p>
-        <p class="verify" id="dl-hash-local" hidden>Compare that against the published <code>entropy-offline.html.sha256</code>, which sits beside this page on selfcustody.ca. That one line is the only thing you need the network for, and you can fetch it from anywhere.</p>
-      </div>
-    </details>
   </div>
   <div class="download-action" id="dl-action" hidden>
     <div class="dl-frame">
@@ -1294,6 +1292,18 @@
     </div>
     <small data-dl-note>~290 KB &middot; no installer</small>
   </div>
+    <details class="verify-details" open>
+      <summary>Verify this file against the published checksum</summary>
+      <div class="verify-body">
+        <p class="verify">Check that this is the file that was published, rather than whatever happened to arrive:</p>
+        <div class="verify-cmds">
+          <code>certutil -hashfile entropy-offline.html SHA256</code><span>Windows</span>
+          <code>shasum -a 256 entropy-offline.html</code><span>macOS, Linux</span>
+      
+        <p class="verify" id="dl-hash-served">Compare that against <a href="entropy-offline.html.sha256">entropy-offline.html.sha256</a>, published beside this page.</p>
+        <p class="verify" id="dl-hash-local" hidden>Compare that against the published <code>entropy-offline.html.sha256</code>, which sits beside this page on selfcustody.ca. That one line is the only thing you need the network for, and you can fetch it from anywhere.</p>
+    
+    </details>
 </section>
 
 <div class="workbench-intro">
