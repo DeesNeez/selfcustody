@@ -5978,7 +5978,7 @@ const guides = [
       <p>This is a genuinely advanced exercise, and it carries one rule with no exceptions.</p>
 
       ${cautions([
-        "Only ever do this with throwaway test rolls, on a wallet holding nothing, which you wipe afterwards.",
+        "Only ever do this with a test sequence, on a wallet holding nothing that you wipe afterwards. Never with the rolls behind a wallet you use.",
         "Never type the rolls or the words of a real wallet into anything except the device itself &mdash; not a website, not an offline copy of one, not a notes app, not a spreadsheet.",
         "Anything that asks you to enter an existing recovery phrase to \"verify\" or \"validate\" it is stealing from you, however official it looks."
       ])}
@@ -8982,9 +8982,9 @@ const renderToolsBand = ({ home = false } = {}) => `
           <span class="sc-eyebrow">Entropy</span>
           ${home
             ? `<h2>Check the Dice Math</h2>
-          <p>Dice, coins or a shuffled deck &mdash; this shows you the words those events should have produced, and whether your device agrees.</p>`
+          <p>Dice, coins or a shuffled deck &mdash; this shows you the words those events should have produced, and whether your device agrees. Experimental, and meant for checking rather than for making a wallet you intend to keep.</p>`
             : `<h2>Test the method</h2>
-          <p>Use a disposable sequence to check how your device turns physical randomness into a wallet.</p>`}
+          <p>Check how your device turns physical randomness into a wallet, using a test sequence rather than the rolls behind a wallet you use. The tool is experimental, and meant for exactly that check.</p>`}
         </div>
         <div class="sc-tool-band">
           <span class="sc-die-mark" aria-hidden="true"></span>
@@ -8993,9 +8993,11 @@ const renderToolsBand = ({ home = false } = {}) => `
             <p>Enter your dice rolls, coin flips or drawn cards and see the recovery words and first addresses they convert to &mdash; then compare that against what your device showed you. If the two disagree, your device uses a different conversion, which is common and worth knowing before you trust a column of rolls as a backup.</p>
             <ul class="sc-tool-facts">
               ${home
-                ? `<li>Use it here, or save it and run it on a machine that has never been online</li>
+                ? `<li>Beta software &mdash; for testing, not for securing real bitcoin</li>
+              <li>Use it here, or save it and run it on a machine that has never been online</li>
               <li>Generates no randomness, and has nowhere to type an existing phrase</li>`
-                : `<li>One file, with nothing loaded from anywhere</li>
+                : `<li>Beta software &mdash; for testing, not for securing real bitcoin</li>
+              <li>One file, with nothing loaded from anywhere</li>
               <li>Use it here, or save it and run it on a machine that has never been online</li>
               <li>Checks itself against the published BIP test vectors on load</li>
               <li>Generates no randomness, and has nowhere to type an existing phrase</li>`}
@@ -9006,7 +9008,7 @@ const renderToolsBand = ({ home = false } = {}) => `
               <a class="sc-btn sc-btn-primary" href="entropy.html"><span>Enter Workshop</span></a>
             </div>
             <a class="sc-text-link" href="entropy-offline.html" download="selfcustody-entropy-check.html" data-tool-download>Download the file <i class="bi bi-arrow-down-right"></i></a>
-            <p>Use throwaway rolls, on a wallet you will wipe afterwards. <a href="guides/dice-entropy.html">Roll the dice</a> explains the procedure and the rules that matter more than the tool does.</p>
+            <p>Enter a test sequence, not the rolls behind a wallet you use. <a href="guides/dice-entropy.html">Roll the dice</a> explains the procedure and the rules that matter more than the tool does.</p>
           </div>
         </div>
         ${home ? '' : `<p class="sc-tool-aside">Also worth a minute: the <a href="guides/human-randomness.html#sc-rng-lab">guessing machine</a> in <em>Why you cannot think of a random number</em>. It calls your next tap before you make it and seals the guess so it cannot cheat, and it explains faster than any article can why nobody should invent their own randomness.</p>`}

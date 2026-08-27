@@ -35,11 +35,23 @@ const REAL_OCTAHEX = '5B3172E48C6F19A2D7403E8B5C1'
   + '69F2A83D07E4B1C596A2F38D0E7'
   + '4B1A6C39F28E5D07B4A1936FC2E';
 
-/* A real 25-card draw from a CSPRNG-shuffled deck, pinned so the suite stays
+/* A real 27-card draw from a CSPRNG-shuffled deck, pinned so the suite stays
    deterministic. It has to be accepted: a check that refused genuine shuffles
    would teach people to redraw until they passed, which is the one thing the
-   dice guide says never to do. */
+   dice guide says never to do.
+
+   Twenty-seven, not the 25 the minimum asks for. It was described as 25 for
+   long enough that the exact boundary went untested underneath the wrong
+   number; the two cases below pin 25 and 24 from a prefix of this same draw. */
 const REAL_DRAW = '7H2CTS4DJHAS9C6SKD3H8DQCTC5H2SJD9HKC4S7DAH6C3STD8SQH5C';
+const CARDS_25 = REAL_DRAW.slice(0, 50);
+const CARDS_24 = REAL_DRAW.slice(0, 48);
+const refusedDraw = input => {
+  try {
+    C.deriveSeed({ method: 'cards', input, words: 12, wordlist: WORDLIST });
+    return 'accepted';
+  } catch { return 'refused'; }
+};
 
 /* iancoleman/bip39, src/js/entropy.js, eventBits["card"] -- transcribed from
    the published source rather than from this implementation. */
@@ -353,10 +365,10 @@ export const VECTORS = [
      last three bits. The first of them is BIP39's own all-zero vector, which
      ties this table to the published standard rather than to itself. */
   ['bitbox: 23 rolled words from the first cell',
-    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST }).words.join(' '),
+    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), words: 24, wordlist: WORDLIST }).words.join(' '),
     'abandon '.repeat(22) + 'abandon'],
   ['bitbox: the eight endings offered for zero entropy',
-    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST })
+    () => C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), words: 24, wordlist: WORDLIST })
       .options.map(o => o.word).join(' '),
     'art diesel false kite organ ready surface trouble'],
   ['bitbox: the first ending is the bip39 all-zero phrase',
@@ -365,7 +377,7 @@ export const VECTORS = [
     ABANDON_24],
   ['bitbox: every offered ending passes the bip39 checksum',
     () => {
-      const draft = C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), wordlist: WORDLIST });
+      const draft = C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(23), words: 24, wordlist: WORDLIST });
       return draft.options.every((opt, i) => {
         const built = C.entropyToMnemonic(C.fromHex(opt.entropy), WORDLIST);
         return built.join(' ') === [...draft.words, opt.word].join(' ')
@@ -375,12 +387,12 @@ export const VECTORS = [
     }, 'all valid'],
   ['bitbox: a coin where a die belongs is refused', () => {
     try {
-      C.lookupDraft({ method: 'bitbox', input: 'H1111H' + '11111H'.repeat(22), wordlist: WORDLIST });
+      C.lookupDraft({ method: 'bitbox', input: 'H1111H' + '11111H'.repeat(22), words: 24, wordlist: WORDLIST });
       return 'accepted';
     } catch { return 'refused'; }
   }, 'refused'],
   ['bitbox: a short sequence is refused', () => {
-    try { C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    try { C.lookupDraft({ method: 'bitbox', input: '11111H'.repeat(22), words: 24, wordlist: WORDLIST }); return 'accepted'; }
     catch { return 'refused'; }
   }, 'refused'],
 
@@ -422,16 +434,66 @@ export const VECTORS = [
   }, '0 256'],
 
   ['octahex: 69 entries make 23 words',
-    () => [C.limits('octahex', 24).least, C.METHODS.octahex.rolled].join(' '), '69 23'],
+    () => [C.limits('octahex', 24).least, C.rolledWords('octahex', 24)].join(' '), '69 23'],
+
+  /* Both seed lengths, because three dice are 11 bits and a word index is 11
+     bits whatever the seed length is. How many endings the last word has
+     depends on how badly 11 divides the seed:
+
+       24 words   23 rolled = 253 bits, 256 wanted, 3 free  ->   8 endings
+       12 words   11 rolled = 121 bits, 128 wanted, 7 free  -> 128 endings
+
+     Independently confirmed against entropylab, which tabulates the same
+     three: 11/128, 17/32 and 23/8 for 12, 18 and 24 words. */
+  ['octahex: 33 entries make 11 words, for a 12-word seed',
+    () => [C.limits('octahex', 12).least, C.rolledWords('octahex', 12)].join(' '), '33 11'],
+  ['octahex: a 12-word seed leaves 128 endings',
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST }).options.length, 128],
+  ['octahex: a 24-word seed leaves 8 endings',
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST }).options.length, 8],
+  ['octahex: all 128 twelve-word endings pass the BIP39 checksum',
+    () => {
+      const draft = C.lookupDraft({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST });
+      /* Each option is rebuilt from its own entropy through BIP39, so the
+         checksum word has to fall out of the specification rather than being
+         taken on trust from the table that produced it.
+
+         Deliberately not through deriveSeed: that would run PBKDF2's 2048
+         rounds 128 times, and this suite is embedded in the page and runs on
+         load. The seed is not what is being checked here -- the last word is. */
+      const wrong = draft.options.filter(option => {
+        const rebuilt = C.entropyToMnemonic(C.fromHex(option.entropy), WORDLIST);
+        return rebuilt.length !== 12
+            || rebuilt[11] !== option.word
+            || rebuilt.slice(0, 11).join(' ') !== draft.words.join(' ');
+      });
+      return wrong.length;
+    }, 0],
+  ['octahex: 11 throws produce a 12-word phrase',
+    () => C.deriveSeed({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST, choice: 0 }).mnemonic.length, 12],
+  ['octahex: an invalid 12-word choice reports all 128 endings',
+    () => {
+      try {
+        C.deriveSeed({ method: 'octahex', input: '100'.repeat(11), words: 12,
+                       wordlist: WORDLIST, choice: 128 });
+        return 'accepted';
+      } catch (err) {
+        return err.message;
+      }
+    }, 'pick one of the 128 endings for the last word'],
+  /* The BitBox table is published for 24 words only, so it must not gain a
+     12-word form by accident. */
+  ['bitbox: still 24 words only',
+    () => Object.keys(C.METHODS.bitbox.counts).join(','), '24'],
   ['octahex: 23 rolled words from the first cell',
-    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST }).words.join(' '),
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST }).words.join(' '),
     'abandon '.repeat(22) + 'abandon'],
   /* 23 words of the first cell is 253 zero bits, so the eight endings are the
      same eight the BitBox table offers for the same entropy, and the first of
      them is BIP39's published all-zero phrase. Two unrelated dice methods
      landing on the same standard vector is the check worth having. */
   ['octahex: the eight endings for zero entropy',
-    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST })
+    () => C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST })
       .options.map(o => o.word).join(' '),
     'art diesel false kite organ ready surface trouble'],
   ['octahex: the first ending is the bip39 all-zero phrase',
@@ -441,19 +503,19 @@ export const VECTORS = [
   ['octahex: the octal die picks the ending', () => {
     /* The deck says to roll the octal die once more and take that option
        number, so face 1 is the first ending and face 8 the last. */
-    const draft = C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), wordlist: WORDLIST });
+    const draft = C.lookupDraft({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST });
     return [draft.options[0].word, draft.options[7].word].join(' ');
   }, 'art trouble'],
   ['octahex: a 0 on the octal die is refused', () => {
-    try { C.lookupDraft({ method: 'octahex', input: '000' + '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    try { C.lookupDraft({ method: 'octahex', input: '000' + '100'.repeat(22), words: 24, wordlist: WORDLIST }); return 'accepted'; }
     catch { return 'refused'; }
   }, 'refused'],
   ['octahex: a 9 on the octal die is refused', () => {
-    try { C.lookupDraft({ method: 'octahex', input: '900' + '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    try { C.lookupDraft({ method: 'octahex', input: '900' + '100'.repeat(22), words: 24, wordlist: WORDLIST }); return 'accepted'; }
     catch { return 'refused'; }
   }, 'refused'],
   ['octahex: a short sequence is refused', () => {
-    try { C.lookupDraft({ method: 'octahex', input: '100'.repeat(22), wordlist: WORDLIST }); return 'accepted'; }
+    try { C.lookupDraft({ method: 'octahex', input: '100'.repeat(22), words: 24, wordlist: WORDLIST }); return 'accepted'; }
     catch { return 'refused'; }
   }, 'refused'],
   ['octahex: the keypad allows the octal die only in first place',
@@ -541,6 +603,75 @@ export const VECTORS = [
       ? 'identical' : 'different';
   }, 'identical'],
 
+  /* ---- the account private key -------------------------------------------
+
+     Published in BIP84's own test vectors for the all-zero mnemonic, so this
+     is the specification's value rather than a recording of what this code
+     does. Worth pinning carefully: an xprv that is subtly wrong hands someone
+     a key that looks right, imports without complaint, and controls a
+     different wallet than the words beside it. */
+  ['xprv: BIP84 account key for the all-zero mnemonic',
+    () => C.encodeXprv(C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'"),
+                       C.ADDRESS_TYPES.native.xprvVersion),
+    'zprvAdG4iTXWBoARxkkzNpNh8r6Qag3irQB8PzEMkAFeTRXxHpbF9z4QgEvBRmfvqWvGp42t42nvgGpNgYSJA9iefm1yYNZKEm7z6qUWCroSQnE'],
+  ['xprv: the canonical form is the same key with BIP32 version bytes',
+    () => C.encodeXprv(C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'"))
+            .slice(0, 4), 'xprv'],
+  /* The private and public serialisations must describe one key. If they ever
+     drift, the page would show an xpub for one account and an xprv for
+     another, which is the worst way for this to fail. */
+  ['xprv: private and public forms agree on the same account',
+    () => {
+      const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'");
+      const fromPriv = C.hex(C.compress(C.pointMul(BigInt('0x' + C.hex(node.key)))));
+      const fromPub = C.hex(C.publicKeyOf(node));
+      return fromPriv === fromPub;
+    }, true],
+  ['xprv: it is 78 bytes like the public form, private key padded with a zero',
+    () => {
+      const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'");
+      return [C.encodeXprv(node).length > 100, C.encodeXpub(node).length > 100].join();
+    }, 'true,true'],
+  /* And it must never reach the descriptor, which is the one thing on the page
+     that is meant to be safe to hand out. */
+  ['xprv: never appears in a watch-only descriptor',
+    () => /xprv|[yz]prv/.test(descriptorFor('native')), false],
+
+  /* ---- the checksum a phrase carries -------------------------------------
+
+     BIP39 appends entropy/32 bits of SHA-256 over the entropy, so the last
+     word is never fully free. checkMnemonic recomputes that from the phrase
+     rather than from the construction that produced it, which is what makes it
+     a check rather than a restatement. */
+  ['checksum: BIP39’s own all-zero 12-word vector passes',
+    () => C.checkMnemonic(ABANDON_12.split(' '), WORDLIST).ok, true],
+  ['checksum: BIP39’s own all-zero 24-word vector passes',
+    () => C.checkMnemonic(ABANDON_24.split(' '), WORDLIST).ok, true],
+  ['checksum: a 12-word phrase carries 4 bits over 128',
+    () => { const s = C.checkMnemonic(ABANDON_12.split(' '), WORDLIST);
+            return [s.checksumBits, s.entropyBits, s.freeBits].join(); }, '4,128,7'],
+  ['checksum: a 24-word phrase carries 8 bits over 256',
+    () => { const s = C.checkMnemonic(ABANDON_24.split(' '), WORDLIST);
+            return [s.checksumBits, s.entropyBits, s.freeBits].join(); }, '8,256,3'],
+  /* The check has to be able to fail, or it says nothing. Swapping the last
+     word for its neighbour in the list breaks the checksum and nothing else. */
+  ['checksum: a wrong last word is caught',
+    () => {
+      const words = ABANDON_12.split(' ');
+      words[11] = WORDLIST[WORDLIST.indexOf(words[11]) + 1];
+      return C.checkMnemonic(words, WORDLIST).ok;
+    }, false],
+  ['checksum: every phrase this page builds passes its own check',
+    () => {
+      const built = [
+        C.deriveSeed({ method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST }).mnemonic,
+        C.deriveSeed({ method: 'coin', input: REAL_FLIPS.slice(0, 128), words: 12, wordlist: WORDLIST }).mnemonic,
+        C.deriveSeed({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST, choice: 5 }).mnemonic,
+        C.deriveSeed({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST, choice: 3 }).mnemonic
+      ];
+      return built.filter(m => !C.checkMnemonic(m, WORDLIST).ok).length;
+    }, 0],
+
   /* ---- the watch-only descriptor ------------------------------------------
 
      The checksum is BIP380's. Its own published vector is pinned first, and
@@ -601,6 +732,17 @@ export const VECTORS = [
     () => C.descriptorOrigin("m/84'/0'/0'"), '84h/0h/0h'],
   ['descriptor: receive and change in one expression',
     () => descriptorFor('native').includes('/<0;1>/*'), true],
+  ['descriptor: a root path has no slash after the fingerprint',
+    () => {
+      const seed = C.mnemonicToSeed(ABANDON_12.split(' '));
+      const { xpub } = C.deriveAddresses({ seed, addressType: 'native', path: 'm' });
+      const descriptor = C.watchOnlyDescriptor({
+        addressType: 'native', fingerprint: C.masterFingerprint(seed), path: 'm', xpub
+      });
+      return descriptor.includes('[73c5da0a]')
+        && !descriptor.includes('[73c5da0a/]')
+        && descsumCheck(descriptor);
+    }, true],
   /* parsePath is more forgiving than the descriptor grammar. It accepts
      "m84h/0h/0h" with no slash after the m, and reading the path as text
      rather than rebuilding it from the parsed indices emitted
@@ -717,8 +859,55 @@ export const VECTORS = [
   ['cards: the entropy is SHA-256 of the transcript',
     () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy,
     C.hex(C.sha256(C.utf8(REAL_DRAW)).slice(0, 16))],
-  ['cards: 25 drawn cards make a 12-word phrase',
+  ['cards: 27 drawn cards make a 12-word phrase',
     () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).mnemonic.length, 12],
+  /* The boundary itself. 25 cards carry 132.4 bits and 24 carry 127.6, so 25
+     is the fewest that can fill a 12-word seed -- taken as a prefix of the
+     draw above so both sides of the line come from a genuine shuffle. */
+  ['cards: exactly 25 is accepted, the fewest that fill 12 words',
+    () => C.deriveSeed({ method: 'cards', input: CARDS_25, words: 12, wordlist: WORDLIST }).mnemonic.length, 12],
+  ['cards: 24 is one short and refused',
+    () => refusedDraw(CARDS_24), 'refused'],
+
+  /* normalise() keeps ranks and suits in one list, so a malformed pair passes
+     it and reads as an event. Every one of these derived a wallet before
+     deriveSeed checked the shape. */
+  ['cards: two suits are not a card',
+    () => refusedDraw('SS'.repeat(25)), 'refused'],
+  ['cards: two ranks are not a card',
+    () => refusedDraw('AK'.repeat(25)), 'refused'],
+  ['cards: a suit before its rank is refused',
+    () => refusedDraw('SA'.repeat(25)), 'refused'],
+  /* The one that counted as 25 cards and hashed 51 characters. */
+  ['cards: a trailing half-card is refused rather than hashed',
+    () => refusedDraw(CARDS_25 + 'A'), 'refused'],
+
+  /* Duplicates. Well-formed, so the shape check passes them, and the card
+     count the meter reads is unaffected -- which is exactly why they matter:
+     cardEntropy is log2(52!/(52-n)!) and assumes every card is a new one. */
+  ['cards: the same card 25 times is refused',
+    () => refusedDraw('AS'.repeat(25)), 'refused'],
+  ['cards: one repeat inside an otherwise real draw is refused',
+    () => refusedDraw(CARDS_25.slice(0, 48) + CARDS_25.slice(0, 2)), 'refused'],
+  /* Named and placed, because "there is a duplicate somewhere in 52 cards" is
+     not something anyone can act on. Reported before the count is, so a short
+     transcript hears about the impossible card rather than about its length. */
+  ['cards: the repeat is named with its position',
+    () => {
+      try { C.deriveSeed({ method: 'cards', input: 'AS2H3D4CAS', words: 12, wordlist: WORDLIST }); return 'accepted'; }
+      catch (err) { return err.message.startsWith('card 5 is AS, which has already been drawn'); }
+    }, true],
+  /* A finished deck is meant to be shuffled and drawn again, so the 53rd card
+     repeating one of the first 52 is a legitimate draw rather than a mistake.
+     The check counts per pass for this reason -- the same accounting cardsLeft
+     uses to decide which keys the pad greys out. */
+  ['cards: a fresh deck after 52 may repeat the first deck',
+    () => C.deriveSeed({ method: 'cards', input: C.CARD_DECK.join('') + C.CARD_DECK.slice(0, 6).join(''),
+      words: 24, wordlist: WORDLIST }).mnemonic.length, 24],
+  ['cards: but a repeat inside the second deck is still refused',
+    () => refusedDraw(C.CARD_DECK.join('') + 'AC2C3CAC'), 'refused'],
+  ['cards: repeatedCard finds nothing in a real draw',
+    () => C.repeatedCard(REAL_DRAW), null],
   /* The tolerance is not a taste call: it is the longest code minus one, the
      furthest a single final event can carry the total past the target. Pinned
      so the two tables cannot drift apart from the numbers they imply. */
