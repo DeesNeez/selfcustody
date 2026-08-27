@@ -581,6 +581,41 @@ export const VECTORS = [
       ? 'identical' : 'different';
   }, 'identical'],
 
+  /* ---- the checksum a phrase carries -------------------------------------
+
+     BIP39 appends entropy/32 bits of SHA-256 over the entropy, so the last
+     word is never fully free. checkMnemonic recomputes that from the phrase
+     rather than from the construction that produced it, which is what makes it
+     a check rather than a restatement. */
+  ['checksum: BIP39’s own all-zero 12-word vector passes',
+    () => C.checkMnemonic(ABANDON_12.split(' '), WORDLIST).ok, true],
+  ['checksum: BIP39’s own all-zero 24-word vector passes',
+    () => C.checkMnemonic(ABANDON_24.split(' '), WORDLIST).ok, true],
+  ['checksum: a 12-word phrase carries 4 bits over 128',
+    () => { const s = C.checkMnemonic(ABANDON_12.split(' '), WORDLIST);
+            return [s.checksumBits, s.entropyBits, s.freeBits].join(); }, '4,128,7'],
+  ['checksum: a 24-word phrase carries 8 bits over 256',
+    () => { const s = C.checkMnemonic(ABANDON_24.split(' '), WORDLIST);
+            return [s.checksumBits, s.entropyBits, s.freeBits].join(); }, '8,256,3'],
+  /* The check has to be able to fail, or it says nothing. Swapping the last
+     word for its neighbour in the list breaks the checksum and nothing else. */
+  ['checksum: a wrong last word is caught',
+    () => {
+      const words = ABANDON_12.split(' ');
+      words[11] = WORDLIST[WORDLIST.indexOf(words[11]) + 1];
+      return C.checkMnemonic(words, WORDLIST).ok;
+    }, false],
+  ['checksum: every phrase this page builds passes its own check',
+    () => {
+      const built = [
+        C.deriveSeed({ method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST }).mnemonic,
+        C.deriveSeed({ method: 'coin', input: REAL_FLIPS.slice(0, 128), words: 12, wordlist: WORDLIST }).mnemonic,
+        C.deriveSeed({ method: 'octahex', input: '100'.repeat(11), words: 12, wordlist: WORDLIST, choice: 5 }).mnemonic,
+        C.deriveSeed({ method: 'octahex', input: '100'.repeat(23), words: 24, wordlist: WORDLIST, choice: 3 }).mnemonic
+      ];
+      return built.filter(m => !C.checkMnemonic(m, WORDLIST).ok).length;
+    }, 0],
+
   /* ---- the watch-only descriptor ------------------------------------------
 
      The checksum is BIP380's. Its own published vector is pinned first, and

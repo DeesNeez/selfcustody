@@ -261,6 +261,17 @@
     letter-spacing: 0.12em; text-transform: uppercase;
   }
   .xpub-box .label b { color: #ffad4c; }
+  .checksum-note {
+    margin: 10px 0 0; padding: 9px 12px; border-radius: 9px;
+    font-size: 0.82rem; line-height: 1.55;
+  }
+  .checksum-note.is-ok {
+    color: #8be3c6; border: 1px solid rgba(53, 180, 138, 0.32); background: rgba(53, 180, 138, 0.07);
+  }
+  .checksum-note.is-bad {
+    color: #ff9d8a; border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.1);
+  }
+
   .xpub-box #xpub-alt-row { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
   /* One long unbroken token with punctuation the browser will happily break
      at the wrong place, so it wraps anywhere rather than pushing the panel
@@ -1307,6 +1318,7 @@
 
   <h3>Recovery words</h3>
   <ol class="words" id="words"></ol>
+  <p class="checksum-note" id="checksum-note"></p>
 
   <h3>First addresses</h3>
   <p class="hint" id="type-note"></p>
@@ -1964,6 +1976,45 @@ const EntropyCore = (() => {
       words.push(wordlist[parseInt(all.slice(i, i + 11), 2)]);
     }
     return words;
+  };
+
+  /* Read a phrase back and check its last word.
+
+     Every phrase this page produces ends in a word that is partly a checksum:
+     BIP39 appends entropy/32 bits of SHA-256 over the entropy, so four bits
+     for a 12-word phrase and eight for a 24-word one. The word carrying them
+     is therefore not free, and how much of it is free differs by method --
+     which is the whole reason some methods offer a choice of last word and
+     others cannot.
+
+     This recomputes the checksum from the phrase itself rather than trusting
+     the construction that made it, so it is a genuine check of this page's own
+     output and not a badge that always says yes. */
+  const checkMnemonic = (words, wordlist) => {
+    const indices = words.map(word => wordlist.indexOf(word));
+    if (indices.some(i => i < 0)) throw new Error('that phrase contains a word outside the BIP39 list');
+
+    const all = indices.map(i => i.toString(2).padStart(11, '0')).join('');
+    const entropyBits = Math.floor(all.length * 32 / 33);
+    const checksumBits = entropyBits / 32;
+    const entropy = bitsToBytes(all.slice(0, entropyBits), entropyBits / 8);
+
+    const expected = [...sha256(entropy)]
+      .map(b => b.toString(2).padStart(8, '0')).join('')
+      .slice(0, checksumBits);
+    const actual = all.slice(entropyBits);
+
+    return {
+      ok: expected === actual,
+      words: words.length,
+      entropyBits,
+      checksumBits,
+      /* Bits of the last word that are entropy rather than checksum. Three for
+         a 24-word phrase, seven for a 12-word one -- and whether anyone gets to
+         choose them depends on whether they were rolled or hashed. */
+      freeBits: 11 - checksumBits,
+      lastWord: words[words.length - 1]
+    };
   };
 
   const mnemonicToSeed = (words, passphrase = '') =>
@@ -3131,7 +3182,7 @@ const EntropyCore = (() => {
     sha256, sha512, hmacSha512, pbkdf2Sha512, ripemd160,
     hash160, hash256, taggedHash,
     pointMul, compress, base58check, segwitAddress, convertBits,
-    entropyToMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
+    entropyToMnemonic, checkMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
     encodeXpub, fingerprint, masterFingerprint, publicKeyOf, XPUB_VERSION,
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, normalise, events,
@@ -3741,7 +3792,7 @@ const EntropyCore = (() => {
   const SECRET_TEXT = [
     'words', 'entropy', 'ending-list',
     'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
-    'descriptor', 'descriptor-recv', 'descriptor-chng',
+    'descriptor', 'descriptor-recv', 'descriptor-chng', 'checksum-note',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
     'fp-base', 'fp-pass', 'fp-base-tag'
   ];
@@ -3891,6 +3942,27 @@ const EntropyCore = (() => {
     }
 
     $('error').hidden = true;
+    /* What the last word is made of, and whether it checks out.
+
+       Worth saying plainly because the two families of method differ here and
+       the difference is invisible otherwise. A hashed sequence fixes every bit
+       of the entropy, so exactly one last word is valid and there is nothing to
+       choose; a lookup table leaves a few bits unrolled, which is why those
+       methods offer a list to pick from. Either way the checksum itself is
+       computed, never chosen -- picking it would just mean picking an invalid
+       phrase. */
+    const sum = C.checkMnemonic(state.seed.mnemonic, WORDLIST);
+    const note = $('checksum-note');
+    note.className = 'checksum-note' + (sum.ok ? ' is-ok' : ' is-bad');
+    note.textContent = sum.ok
+      ? 'Checksum verified. Word ' + sum.words + ' carries ' + sum.checksumBits
+        + ' bits of checksum over the ' + sum.entropyBits + ' before it'
+        + (spec().lookup
+          ? ', and the ' + sum.freeBits + ' bits in front of those are the ones you picked above.'
+          : ' — the other ' + sum.freeBits + ' bits come from your ' + spec().unit
+            + 's, so only one word ' + sum.words + ' is valid and there is nothing to choose.')
+      : 'This phrase does not pass the BIP39 checksum, which should be impossible here. Do not use it.';
+
     $('words').replaceChildren(...state.seed.mnemonic.map((word, i) => {
       const li = document.createElement('li');
       const n = document.createElement('span');

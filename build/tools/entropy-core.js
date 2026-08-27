@@ -459,6 +459,45 @@ const EntropyCore = (() => {
     return words;
   };
 
+  /* Read a phrase back and check its last word.
+
+     Every phrase this page produces ends in a word that is partly a checksum:
+     BIP39 appends entropy/32 bits of SHA-256 over the entropy, so four bits
+     for a 12-word phrase and eight for a 24-word one. The word carrying them
+     is therefore not free, and how much of it is free differs by method --
+     which is the whole reason some methods offer a choice of last word and
+     others cannot.
+
+     This recomputes the checksum from the phrase itself rather than trusting
+     the construction that made it, so it is a genuine check of this page's own
+     output and not a badge that always says yes. */
+  const checkMnemonic = (words, wordlist) => {
+    const indices = words.map(word => wordlist.indexOf(word));
+    if (indices.some(i => i < 0)) throw new Error('that phrase contains a word outside the BIP39 list');
+
+    const all = indices.map(i => i.toString(2).padStart(11, '0')).join('');
+    const entropyBits = Math.floor(all.length * 32 / 33);
+    const checksumBits = entropyBits / 32;
+    const entropy = bitsToBytes(all.slice(0, entropyBits), entropyBits / 8);
+
+    const expected = [...sha256(entropy)]
+      .map(b => b.toString(2).padStart(8, '0')).join('')
+      .slice(0, checksumBits);
+    const actual = all.slice(entropyBits);
+
+    return {
+      ok: expected === actual,
+      words: words.length,
+      entropyBits,
+      checksumBits,
+      /* Bits of the last word that are entropy rather than checksum. Three for
+         a 24-word phrase, seven for a 12-word one -- and whether anyone gets to
+         choose them depends on whether they were rolled or hashed. */
+      freeBits: 11 - checksumBits,
+      lastWord: words[words.length - 1]
+    };
+  };
+
   const mnemonicToSeed = (words, passphrase = '') =>
     pbkdf2Sha512(
       utf8(words.join(' ').normalize('NFKD')),
@@ -1624,7 +1663,7 @@ const EntropyCore = (() => {
     sha256, sha512, hmacSha512, pbkdf2Sha512, ripemd160,
     hash160, hash256, taggedHash,
     pointMul, compress, base58check, segwitAddress, convertBits,
-    entropyToMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
+    entropyToMnemonic, checkMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
     encodeXpub, fingerprint, masterFingerprint, publicKeyOf, XPUB_VERSION,
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, normalise, events,

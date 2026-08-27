@@ -308,6 +308,17 @@ ${FONTS.map(embedFont).join('\n')}
     letter-spacing: 0.12em; text-transform: uppercase;
   }
   .xpub-box .label b { color: #ffad4c; }
+  .checksum-note {
+    margin: 10px 0 0; padding: 9px 12px; border-radius: 9px;
+    font-size: 0.82rem; line-height: 1.55;
+  }
+  .checksum-note.is-ok {
+    color: #8be3c6; border: 1px solid rgba(53, 180, 138, 0.32); background: rgba(53, 180, 138, 0.07);
+  }
+  .checksum-note.is-bad {
+    color: #ff9d8a; border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.1);
+  }
+
   .xpub-box #xpub-alt-row { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
   /* One long unbroken token with punctuation the browser will happily break
      at the wrong place, so it wraps anywhere rather than pushing the panel
@@ -1704,7 +1715,7 @@ const ui = () => `
   const SECRET_TEXT = [
     'words', 'entropy', 'ending-list',
     'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
-    'descriptor', 'descriptor-recv', 'descriptor-chng',
+    'descriptor', 'descriptor-recv', 'descriptor-chng', 'checksum-note',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
     'fp-base', 'fp-pass', 'fp-base-tag'
   ];
@@ -1854,6 +1865,27 @@ const ui = () => `
     }
 
     $('error').hidden = true;
+    /* What the last word is made of, and whether it checks out.
+
+       Worth saying plainly because the two families of method differ here and
+       the difference is invisible otherwise. A hashed sequence fixes every bit
+       of the entropy, so exactly one last word is valid and there is nothing to
+       choose; a lookup table leaves a few bits unrolled, which is why those
+       methods offer a list to pick from. Either way the checksum itself is
+       computed, never chosen -- picking it would just mean picking an invalid
+       phrase. */
+    const sum = C.checkMnemonic(state.seed.mnemonic, WORDLIST);
+    const note = $('checksum-note');
+    note.className = 'checksum-note' + (sum.ok ? ' is-ok' : ' is-bad');
+    note.textContent = sum.ok
+      ? 'Checksum verified. Word ' + sum.words + ' carries ' + sum.checksumBits
+        + ' bits of checksum over the ' + sum.entropyBits + ' before it'
+        + (spec().lookup
+          ? ', and the ' + sum.freeBits + ' bits in front of those are the ones you picked above.'
+          : ' \u2014 the other ' + sum.freeBits + ' bits come from your ' + spec().unit
+            + 's, so only one word ' + sum.words + ' is valid and there is nothing to choose.')
+      : 'This phrase does not pass the BIP39 checksum, which should be impossible here. Do not use it.';
+
     $('words').replaceChildren(...state.seed.mnemonic.map((word, i) => {
       const li = document.createElement('li');
       const n = document.createElement('span');
@@ -2423,6 +2455,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
   <h3>Recovery words</h3>
   <ol class="words" id="words"></ol>
+  <p class="checksum-note" id="checksum-note"></p>
 
   <h3>First addresses</h3>
   <p class="hint" id="type-note"></p>
