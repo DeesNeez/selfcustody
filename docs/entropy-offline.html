@@ -391,14 +391,22 @@
     color: #ffad4c; font-size: 0.72rem; font-weight: 800;
     letter-spacing: 0.12em; text-transform: uppercase;
   }
-  .xprv-more-head code { flex: 1 1 auto; min-width: 0; }
+  /* The summary used to carry the derivation path, which did the pushing.
+     The path now sits with the key it belongs to, so the chevron holds the
+     right edge itself. */
   .xprv-more-head i {
-    flex: 0 0 auto; width: 7px; height: 7px; margin-right: 2px;
+    flex: 0 0 auto; width: 7px; height: 7px; margin: 0 2px 0 auto;
     border-right: 2px solid #ffad4c; border-bottom: 2px solid #ffad4c;
     transform: translateY(-2px) rotate(45deg); transition: transform 0.15s ease;
   }
   .xprv-more[open] .xprv-more-head i { transform: translateY(1px) rotate(-135deg); }
-  .xprv-more-body { margin-top: 4px; }
+  .xprv-more-body { margin-top: 10px; }
+  .xprv-more-body > .label { margin-bottom: 6px; }
+  /* Two sections in one disclosure, so the second announces itself. */
+  #seedqr-block {
+    margin-top: 18px; padding-top: 16px;
+    border-top: 1px solid rgba(255, 138, 0, 0.16);
+  }
   /* Grouped in fours because four digits is exactly one word's index, so the
      grouping lines up with the numbered list above rather than being decoration.
      Margins on the spans rather than spaces between them: what a person copies
@@ -1808,15 +1816,20 @@
        fingerprint. The account key is a level down and needed less often, so
        it is a fold rather than a second slab of text. -->
   <div class="xpub-box xprv-box">
-    <div class="label"><span>Private key</span><code>m</code></div>
+    <div class="label"><span>Private key</span><code>m &middot; Master</code></div>
     <p id="master-xprv"></p>
     <p class="xpub-note">The root of the tree, and the only key here that reproduces the
       <strong>master fingerprint</strong> below. Anything holding it can move every coin this phrase
       will ever control.</p>
 
+    <!-- One disclosure rather than two stacked in the same box. The summary
+         names both rather than filing the SeedQR under the account key: a
+         SeedQR is the recovery words as digits, not that key, and saying so
+         is the difference between a heading and a claim. -->
     <details class="xprv-more" id="xprv-more">
-      <summary><span class="xprv-more-head"><b>Account private key</b><code id="xprv-path"></code><i aria-hidden="true"></i></span></summary>
+      <summary><span class="xprv-more-head"><b>Account private key and SeedQR</b><i aria-hidden="true"></i></span></summary>
       <div class="xprv-more-body">
+        <div class="label"><span>Account private key</span><code id="xprv-path"></code></div>
         <p id="xprv"></p>
         <div id="xprv-alt-row" hidden>
           <div class="label"><span>Same key as <b id="xprv-alt-label"></b></span></div>
@@ -1826,20 +1839,14 @@
           <b>zprv</b> exists at, so it is what to match against a device showing one.</p>
         <p class="xpub-note">On its own it reports its own fingerprint, not the master one &mdash; it
           cannot see that far up. The descriptor below carries the origin and does.</p>
-      </div>
-    </details>
 
-    <!-- Its own disclosure rather than a row inside the one above: a SeedQR is
-         the recovery words as digits, not the account key, and filing it under
-         that heading would teach the wrong thing in a tool whose job is
-         telling these keys apart. -->
-    <details class="xprv-more" id="seedqr-more">
-      <summary><span class="xprv-more-head"><b>SeedQR recovery code</b><code id="seedqr-grid"></code><i aria-hidden="true"></i></span></summary>
-      <div class="xprv-more-body">
-        <p class="xpub-note">The recovery words as numbers: each word&rsquo;s place in the BIP39 list, four digits per word, in the order they appear above. <a href="https://github.com/SeedSigner/seedsigner/blob/dev/docs/seed_qr/README.md" target="_blank" rel="noopener noreferrer">SeedSigner</a> and compatible signing devices scan it. The heading says how many squares the code will be, so you know the size of the job before you start punching one into metal.</p>
-        <p class="seedqr-digits" id="seedqr-digits"></p>
-        <p class="xpub-note">This is the phrase in another alphabet, nothing weaker. Anything that reads it can spend the wallet.</p>
-        <p class="qr-row"><button type="button" class="qr-button" data-qr="seedqr">Show QR</button></p>
+        <div id="seedqr-block">
+          <div class="label"><span>SeedQR recovery code</span></div>
+          <p class="xpub-note">The recovery words as numbers: each word&rsquo;s place in the BIP39 list, four digits per word, in the order they appear above. <a href="https://github.com/SeedSigner/seedsigner/blob/dev/docs/seed_qr/README.md" target="_blank" rel="noopener noreferrer">SeedSigner</a> and compatible signing devices scan it. This one is a <b id="seedqr-grid"></b> grid &mdash; the size of the job if you punch it into metal.</p>
+          <p class="seedqr-digits" id="seedqr-digits"></p>
+          <p class="xpub-note">This is the phrase in another alphabet, nothing weaker. Anything that reads it can spend the wallet.</p>
+          <p class="qr-row"><button type="button" class="qr-button" data-qr="seedqr">Show QR</button></p>
+        </div>
       </div>
     </details>
   </div>
@@ -6144,7 +6151,7 @@ var qrcodegen;
        a 25x25 and a 29x29 grid -- the sizes SeedSigner's specification states.
        Both are pinned by the test suite rather than asserted from here.
 
-       A length with no stated grid hides the fold rather than guessing one.
+       A length with no stated grid hides the section rather than guessing one.
        The number is a promise about how many squares somebody is about to
        punch into metal, and 18-word support arriving later must add its grid
        deliberately instead of inheriting whichever branch it happened to take.
@@ -6153,7 +6160,7 @@ var qrcodegen;
        and the string lives in qrSources so it leaves with the rest. */
     const SEEDQR_GRIDS = { 12: '25 × 25', 24: '29 × 29' };
     const grid = SEEDQR_GRIDS[state.seed.mnemonic.length];
-    $('seedqr-more').hidden = !grid;
+    $('seedqr-block').hidden = !grid;
     if (grid) {
       const digits = C.seedQrDigits(state.seed.mnemonic, WORDLIST);
       $('seedqr-grid').textContent = grid;
