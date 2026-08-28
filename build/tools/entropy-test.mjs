@@ -2,9 +2,11 @@
 
    Run:  npm run test:entropy
 
-   Every vector here is from a published specification, not from running this
-   code and recording what it said. That distinction is the whole point: a
-   self-check that compares the tool against itself proves nothing.
+   Every cryptographic vector here is from a published specification, not from
+   running this code and recording what it said. That distinction is the whole
+   point: a self-check that compares the tool against itself proves nothing.
+   Exact text-output tests separately pin this project's own export format;
+   the values inside those records are the published vectors tested below.
 
    The same suite is embedded in the shipped page and runs on load. If any of
    it fails the page refuses to show results, because a conversion tool that is
@@ -20,6 +22,8 @@ const WORDLIST = readFileSync('build/tools/bip39-english.txt', 'utf8').trim().sp
    as the base mnemonic for every address vector below. */
 const ABANDON_12 = 'abandon '.repeat(11) + 'about';
 const ABANDON_24 = 'abandon '.repeat(23) + 'art';
+const ABANDON_12_WORDS = ABANDON_12.split(' ');
+const ABANDON_12_SEED = C.mnemonicToSeed(ABANDON_12_WORDS);
 
 /* Two sequences straight from a CSPRNG, pinned here so the suite is
    deterministic. Both must be allowed through: the check exists to catch typed
@@ -77,6 +81,86 @@ function descriptorFor(type, branch = null) {
     addressType: type, fingerprint: C.masterFingerprint(seed), path, xpub, branch
   });
 }
+
+function exportFor({ passphrase = '', passphraseUsed = false, extra = 0,
+  path = "m/84'/0'/0'" } = {}) {
+  const mnemonic = ABANDON_12_WORDS;
+  return C.buildWalletExportTexts({
+    mnemonic, wordlist: WORDLIST,
+    seed: passphrase ? C.mnemonicToSeed(mnemonic, passphrase) : ABANDON_12_SEED,
+    addressType: 'native', path, passphraseUsed, extra
+  });
+}
+
+/* The prose and line breaks are this project's file-format contract. The key,
+   descriptor and address values are the BIP32/39/84/380 vectors independently
+   pinned elsewhere in this suite. Keeping the expected documents literal is
+   what catches a label, ordering or newline change that a structural test
+   would silently bless. */
+const PRIVATE_EXPORT_12 = [
+  'Entropy Workshop - PRIVATE RECOVERY RECORD',
+  'KEEP SECRET. Anyone with the recovery words or private keys can spend this wallet.',
+  '',
+  'Recovery words (12)',
+  '01. abandon',
+  '02. abandon',
+  '03. abandon',
+  '04. abandon',
+  '05. abandon',
+  '06. abandon',
+  '07. abandon',
+  '08. abandon',
+  '09. abandon',
+  '10. abandon',
+  '11. abandon',
+  '12. about',
+  '',
+  'SeedQR digits',
+  '000000000000000000000000000000000000000000000003',
+  '',
+  'Wallet identity',
+  'Master fingerprint: 73C5DA0A',
+  'Fingerprint without passphrase: 73C5DA0A',
+  'BIP39 passphrase: not used',
+  'Address type: Native SegWit',
+  "Account path: m/84'/0'/0'",
+  '',
+  'Master private key',
+  'Path: m',
+  'Canonical xprv: xprv9s21ZrQH143K3GJpoapnV8SFfukcVBSfeCficPSGfubmSFDxo1kuHnLisriDvSnRRuL2Qrg5ggqHKNVpxR86QEC8w35uxmGoggxtQTPvfUu',
+  '',
+  'Account private key',
+  "Path: m/84'/0'/0'",
+  'Canonical xprv: xprv9ybY78BftS5UGANki6oSifuQEjkpyAC8ZmBvBNTshQnCBcxnefjHS7buPMkkqhcRzmoGZ5bokx7GuyDAiktd5HemohAU4wV1ZPMDRmLpBMm',
+  'SLIP-132 zprv: zprvAdG4iTXWBoARxkkzNpNh8r6Qag3irQB8PzEMkAFeTRXxHpbF9z4QgEvBRmfvqWvGp42t42nvgGpNgYSJA9iefm1yYNZKEm7z6qUWCroSQnE',
+  ''
+].join('\n');
+
+const WATCH_ONLY_EXPORT_12 = [
+  'SelfCustody.ca - WATCH-ONLY WALLET RECORD',
+  'SHARE WITH CARE. This record cannot spend, but it reveals addresses and wallet activity.',
+  '',
+  'Wallet identity',
+  'Master fingerprint: 73C5DA0A',
+  'Address type: Native SegWit',
+  "Account path: m/84'/0'/0'",
+  '',
+  'Account public key',
+  'Canonical xpub: xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V',
+  'SLIP-132 zpub: zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs',
+  '',
+  'Watch-only descriptors',
+  'Combined receive/change: wpkh([73c5da0a/84h/0h/0h]xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V/<0;1>/*)#qf45pmyh',
+  'Receive: wpkh([73c5da0a/84h/0h/0h]xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V/0/*)#afwvtk2s',
+  'Change: wpkh([73c5da0a/84h/0h/0h]xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V/1/*)#vatdkr6g',
+  '',
+  'Addresses',
+  'Receive',
+  "m/84'/0'/0'/0/0: bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu",
+  'Change',
+  "m/84'/0'/0'/1/0: bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el",
+  ''
+].join('\n');
 
 /* BIP380's descsum_check, so the suite verifies its own output the way a
    wallet would rather than only comparing strings. */
@@ -972,6 +1056,77 @@ export const VECTORS = [
     () => C.hex(C.fingerprint(C.masterKey(Uint8Array.from(
       '000102030405060708090a0b0c0d0e0f'.match(/../g).map(h => parseInt(h, 16)))))).toLowerCase(),
     '3442193e'],
+
+  /* ---- deterministic wallet export text ---------------------------------
+
+     These pin the format before the page grows download or copy controls.
+     Most importantly, they test the watch-only boundary as an absence: none
+     of the secret inputs or private extended-key prefixes may cross it. */
+  ['export: the private recovery record is byte-for-byte stable',
+    () => exportFor().privateText, PRIVATE_EXPORT_12],
+  ['export: the watch-only record is byte-for-byte stable',
+    () => exportFor().watchOnlyText, WATCH_ONLY_EXPORT_12],
+  ['export: both documents are LF-only and end in exactly one newline',
+    () => {
+      const { privateText, watchOnlyText } = exportFor();
+      return [privateText, watchOnlyText]
+        .every(text => !text.includes('\r') && text.endsWith('\n') && !text.endsWith('\n\n'));
+    }, true],
+  ['export: path spelling canonicalises to the same bytes',
+    () => {
+      const variant = exportFor({ path: "M/84h/0H/0'" });
+      return variant.privateText === PRIVATE_EXPORT_12
+        && variant.watchOnlyText === WATCH_ONLY_EXPORT_12;
+    }, true],
+  ['export: watch-only text contains no mnemonic, seed, entropy or private key',
+    () => {
+      const mnemonic = ABANDON_12_WORDS;
+      const seed = ABANDON_12_SEED;
+      const watch = exportFor().watchOnlyText;
+      const secretValues = [
+        ABANDON_12, ...new Set(mnemonic), C.hex(seed),
+        C.seedQrDigits(mnemonic, WORDLIST), '00'.repeat(16)
+      ];
+      const namedSecret = /\b(?:mnemonic|entropy|seed|recovery words)\b/i.test(watch);
+      const privatePrefix = /\b(?:xprv|yprv|zprv|Yprv|Zprv|tprv|uprv|vprv)/.test(watch);
+      return [secretValues.filter(value => watch.includes(value)).length,
+              namedSecret, privatePrefix].join();
+    }, '0,false,false'],
+  ['export: a passphrase is recorded as used but its value is never accepted or written',
+    () => {
+      const { privateText, watchOnlyText } = exportFor({
+        passphrase: 'TREZOR', passphraseUsed: true
+      });
+      return [
+        privateText.includes('BIP39 passphrase: used (value intentionally not included)'),
+        privateText.includes('Fingerprint without passphrase: 73C5DA0A'),
+        privateText.includes('TREZOR'), watchOnlyText.includes('TREZOR')
+      ].join();
+    }, 'true,true,false,false'],
+  ['export: callers must explicitly say whether a passphrase was used',
+    () => {
+      const mnemonic = ABANDON_12_WORDS;
+      try {
+        C.buildWalletExportTexts({
+          mnemonic, wordlist: WORDLIST, seed: ABANDON_12_SEED,
+          addressType: 'native', path: "m/84'/0'/0'"
+        });
+        return 'accepted';
+      } catch (error) {
+        return error.message.includes('whether a BIP39 passphrase was used') ? 'refused' : error.message;
+      }
+    }, 'refused'],
+  ['export: the default watch-only run includes five addresses per branch',
+    () => {
+      const text = C.buildWalletExportTexts({
+        mnemonic: ABANDON_12_WORDS, wordlist: WORDLIST, seed: ABANDON_12_SEED,
+        addressType: 'native', path: "m/84'/0'/0'", passphraseUsed: false
+      }).watchOnlyText;
+      const addressLines = text.split('\n').filter(line =>
+        /^m\/84'\/0'\/0'\/[01]\/\d+: /.test(line));
+      return [addressLines.length, addressLines.at(4).startsWith("m/84'/0'/0'/0/4:"),
+              addressLines.at(9).startsWith("m/84'/0'/0'/1/4:")].join();
+    }, '10,true,true'],
 
   /* The boundary itself, from both sides. The rule is per pass, so the same
      card is a mistake at 52 and a legitimate draw at 53 -- these pin that the
