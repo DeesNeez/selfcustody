@@ -444,15 +444,16 @@
     border: 1px solid rgba(255, 255, 255, 0.11); border-radius: 12px;
     background: rgba(0, 0, 0, 0.18);
   }
-  .sc-workshop .export-card.is-private{ border-color: rgba(255, 138, 0, 0.34); background: rgba(255, 138, 0, 0.055); }
-  .sc-workshop .export-card.is-watch{ border-color: rgba(53, 180, 138, 0.28); background: rgba(53, 180, 138, 0.045); }
+  .sc-workshop .export-intro{ margin-bottom: 15px; }
+  .sc-workshop .export-card.is-private{ border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.085); }
+  .sc-workshop .export-card.is-watch{ border-color: rgba(255, 138, 0, 0.34); background: rgba(255, 138, 0, 0.055); }
   .sc-workshop .export-tag{
     width: fit-content; margin-bottom: 8px; padding: 3px 7px; border-radius: 5px;
     color: var(--muted); background: rgba(255, 255, 255, 0.06);
     font-size: 0.65rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase;
   }
-  .sc-workshop .is-private .export-tag{ color: #ffad4c; background: rgba(255, 138, 0, 0.11); }
-  .sc-workshop .is-watch .export-tag{ color: #8be3c6; background: rgba(53, 180, 138, 0.1); }
+  .sc-workshop .is-private .export-tag{ color: #ff9d8a; background: rgba(214, 94, 64, 0.14); }
+  .sc-workshop .is-watch .export-tag{ color: #ffad4c; background: rgba(255, 138, 0, 0.11); }
   .sc-workshop .export-card h4{ margin: 0 0 7px; color: #fff; font-size: 0.98rem; }
   .sc-workshop .export-card p{ margin: 0 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
   .sc-workshop .export-card .export-button{ margin-top: auto; }
@@ -463,27 +464,30 @@
   }
   .sc-workshop .export-button:hover:not(:disabled){ color: #fff; border-color: rgba(255, 138, 0, 0.56); }
   .sc-workshop .export-button:disabled{ opacity: 0.55; cursor: wait; }
-  .sc-workshop .is-private .export-button{ color: #ffad4c; border-color: rgba(255, 138, 0, 0.36); }
-  .sc-workshop .is-watch .export-button{ color: #8be3c6; border-color: rgba(53, 180, 138, 0.34); }
+  .sc-workshop .is-private .export-button{ color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
+  .sc-workshop .is-private .export-button:hover:not(:disabled){ border-color: rgba(255, 157, 138, 0.72); }
+  .sc-workshop .is-watch .export-button{ color: #ffad4c; border-color: rgba(255, 138, 0, 0.36); }
   .sc-workshop .export-status{ min-height: 1.4em; margin: 9px 0 0; color: var(--muted); font-size: 0.78rem; }
 
   .sc-workshop .export-dialog{
     width: min(520px, calc(100vw - 32px)); padding: 25px 27px;
     color: var(--ink); background: #201a18;
-    border: 1px solid rgba(255, 138, 0, 0.62); border-radius: 14px;
+    border: 1px solid rgba(214, 94, 64, 0.7); border-radius: 14px;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.62);
   }
   .sc-workshop .export-dialog::backdrop{ background: rgba(8, 7, 6, 0.74); }
-  .sc-workshop .export-dialog h2{ margin: 0 32px 10px 0; color: #ffad4c; font-size: 1.25rem; }
+  .sc-workshop .export-dialog h2{ margin: 0 32px 10px 0; color: #ff9d8a; font-size: 1.25rem; }
   .sc-workshop .export-dialog p{ margin: 0 0 11px; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.65; }
   .sc-workshop .export-dialog strong{ color: #fff; }
   .sc-workshop .export-dialog-close{
     float: right; margin: -5px -5px 0 0; padding: 0 6px; border: 0; border-radius: 6px;
     color: var(--muted); background: none; font-size: 1.3rem; line-height: 1.2; cursor: pointer;
   }
-  .sc-workshop .export-dialog-close:hover{ color: var(--orange); }
+  .sc-workshop .export-dialog-close:hover{ color: #ff9d8a; }
   .sc-workshop .export-dialog-actions{ display: flex; flex-wrap: wrap; gap: 10px; margin-top: 19px; }
   .sc-workshop .export-dialog-actions .export-button{ width: auto; }
+  .sc-workshop .export-dialog .export-button{ color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
+  .sc-workshop .export-dialog .export-button:hover:not(:disabled){ border-color: rgba(255, 157, 138, 0.72); }
 
   @media (max-width: 620px) {
     .sc-workshop .export-grid{ grid-template-columns: 1fr; }
@@ -1911,7 +1915,7 @@
   </div>
 
   <h3>Export records</h3>
-  <p class="hint">Two plain-text files for two different jobs. The private one restores and spends; the watch-only one cannot spend, but still reveals the wallet&rsquo;s addresses and history.</p>
+  <p class="hint export-intro">Two plain-text files for two different jobs. The private one restores and spends; the watch-only one cannot spend, but still reveals the wallet&rsquo;s addresses and history.</p>
   <div class="export-grid">
     <article class="export-card is-private">
       <span class="export-tag">Keep secret</span>
