@@ -1876,6 +1876,199 @@ const EntropyCore = (() => {
     };
   };
 
+  /* Build the two text records that an export control can later download.
+
+     Keeping this in the core, rather than assembling strings in the page,
+     gives the boundary between secret and watch-only material one testable
+     implementation. The private record receives only a boolean saying
+     whether a BIP39 passphrase was used; accepting the value itself would
+     make it much too easy for a future UI to write that second secret beside
+     the recovery words. The fingerprint without the passphrase can be
+     recovered from the words, so it is derived here instead.
+
+     These are intentionally plain UTF-8-friendly, LF-only documents with no
+     timestamp or locale-sensitive formatting. The same wallet therefore
+     produces the same bytes on every run and on every platform. */
+  /* Events per line, and how many sit together before a space. Cards get
+     thirteen to a line, a rank's worth, so the rows line up with a deck rather
+     than with the page: 58 cards -- what 24 words takes -- reads as four full
+     rows and the six that came off the second shuffle. Everything else is
+     single characters, grouped in fives the way anyone checking a long run of
+     them against paper would group them.
+
+     The spacing is presentation only. normalise() strips it, so what is
+     written here can be typed straight back in, which is the whole point of
+     recording it. */
+  const TRANSCRIPT_SHAPE = { 1: { perLine: 50, group: 5 }, 2: { perLine: 13, group: 1 } };
+
+  const transcriptLines = (method, input) => {
+    const size = METHODS[method].size || 1;
+    const { perLine, group } = TRANSCRIPT_SHAPE[size] || { perLine: 20, group: 1 };
+    const all = events(method, input);
+    const lines = [];
+    for (let at = 0; at < all.length; at += perLine) {
+      const row = all.slice(at, at + perLine);
+      const groups = [];
+      for (let j = 0; j < row.length; j += group) groups.push(row.slice(j, j + group).join(''));
+      lines.push(groups.join(' '));
+    }
+    return lines;
+  };
+
+  const buildWalletExportTexts = ({
+    mnemonic, wordlist, seed, addressType, path, passphraseUsed, extra = 4, source = null
+  }) => {
+    if (!Array.isArray(mnemonic) || ![12, 24].includes(mnemonic.length)) {
+      throw new Error('an export needs 12 or 24 recovery words');
+    }
+    if (!Array.isArray(wordlist) || wordlist.length !== 2048) {
+      throw new Error('an export needs the 2048-word BIP39 list');
+    }
+    if (!checkMnemonic(mnemonic, wordlist).ok) {
+      throw new Error('cannot export recovery words with a bad BIP39 checksum');
+    }
+    if (!(seed instanceof Uint8Array) || seed.length !== 64) {
+      throw new Error('an export needs a 64-byte BIP39 seed');
+    }
+    if (typeof passphraseUsed !== 'boolean') {
+      throw new Error('an export must say whether a BIP39 passphrase was used');
+    }
+    if (!Number.isInteger(extra) || extra < 0) {
+      throw new Error('extra address count must be a non-negative integer');
+    }
+
+    const type = ADDRESS_TYPES[addressType];
+    if (!type) throw new Error(`unknown address type: ${addressType}`);
+
+    /* The rolls, flips or draw that produced these words, so the record can be
+       checked against the paper it was written on years later.
+
+       Proof rather than claim: the transcript is run back through the same
+       derivation and the record is refused if it does not reproduce the words
+       beside it. A passphrase cannot change a mnemonic, only the seed under
+       it, so this verification needs no secret the builder was not already
+       handed. Watch-only never sees any of it -- a transcript is the seed
+       material itself, not a key derived from it. */
+    let sourceSections = [];
+    if (source) {
+      const { method, input, words, choice = 0 } = source;
+      const spec = METHODS[method];
+      if (!spec) throw new Error(`unknown entropy method: ${method}`);
+      const replay = deriveSeed({ method, input, words, wordlist, choice });
+      if (replay.mnemonic.join(' ') !== mnemonic.join(' ')) {
+        throw new Error('the recorded sequence does not reproduce these recovery words');
+      }
+      const count = events(method, input).length;
+      const unit = count === 1 ? spec.unit
+        : spec.unit.endsWith('y') ? `${spec.unit.slice(0, -1)}ies` : `${spec.unit}s`;
+      sourceSections = [
+        [
+          'Entropy source',
+          `Method: ${spec.label}`,
+          `Words: ${words}`,
+          ...(spec.lookup ? [`Ending chosen: ${choice + 1} of ${replay.options.length}`] : []),
+          `Recorded: ${count} ${unit}`
+        ],
+        [
+          'Transcript',
+          'Entered into the Workshop under the same method and word count, this',
+          'reproduces the words above. Spacing and line breaks are ignored.',
+          ...transcriptLines(method, input)
+        ]
+      ];
+    }
+
+    /* Rebuild the path from its parsed indices so spelling variants such as h
+       and an uppercase M cannot make byte-different exports of one wallet. */
+    const canonicalPath = `m${parsePath(path).map(index => {
+      const hardened = index >= 0x80000000;
+      return `/${hardened ? index - 0x80000000 : index}${hardened ? "'" : ''}`;
+    }).join('')}`;
+
+    const root = masterKey(seed);
+    const account = derive(root, canonicalPath);
+    const addresses = deriveAddresses({ seed, addressType, path: canonicalPath, extra });
+    const fingerprint = masterFingerprint(seed);
+    const baseFingerprint = passphraseUsed
+      ? masterFingerprint(mnemonicToSeed(mnemonic))
+      : fingerprint;
+    const accountXprv = encodeXprv(account);
+    const typedXprv = encodeXprv(account, type.xprvVersion);
+    const descriptorArgs = {
+      addressType, fingerprint, path: canonicalPath, xpub: addresses.xpub
+    };
+
+    const joinSections = sections => sections.map(lines => lines.join('\n')).join('\n\n') + '\n';
+    const numberedWords = mnemonic.map((word, index) =>
+      `${String(index + 1).padStart(2, '0')}. ${word}`);
+
+    const privateText = joinSections([
+      [
+        'SelfCustody.ca Entropy Workshop - PRIVATE RECOVERY RECORD',
+        'KEEP SECRET. Anyone with the recovery words or private keys can spend this wallet.'
+      ],
+      [`Recovery words (${mnemonic.length})`, ...numberedWords],
+      ['SeedQR digits', seedQrDigits(mnemonic, wordlist)],
+      [
+        'Wallet identity',
+        `Master fingerprint: ${fingerprint}`,
+        `Fingerprint without passphrase: ${baseFingerprint}`,
+        `BIP39 passphrase: ${passphraseUsed ? 'used (value intentionally not included)' : 'not used'}`,
+        `Address type: ${type.label}`,
+        `Account path: ${canonicalPath}`
+      ],
+      [
+        'Master private key',
+        'Path: m',
+        `Canonical xprv: ${encodeXprv(root)}`
+      ],
+      [
+        'Account private key',
+        `Path: ${canonicalPath}`,
+        `Canonical xprv: ${accountXprv}`,
+        ...(typedXprv === accountXprv ? [] : [`SLIP-132 ${typedXprv.slice(0, 4)}: ${typedXprv}`])
+      ],
+      ...sourceSections
+    ]);
+
+    const receive = [addresses.receive, ...addresses.moreReceive];
+    const change = [addresses.change, ...addresses.moreChange];
+    const watchOnlyText = joinSections([
+      [
+        'SelfCustody.ca Entropy Workshop - WATCH-ONLY WALLET RECORD',
+        'SHARE WITH CARE. This record cannot spend, but it reveals addresses and wallet activity.'
+      ],
+      [
+        'Wallet identity',
+        `Master fingerprint: ${fingerprint}`,
+        `Address type: ${type.label}`,
+        `Account path: ${canonicalPath}`
+      ],
+      [
+        'Account public key',
+        `Canonical xpub: ${addresses.xpub}`,
+        ...(addresses.typedXpub
+          ? [`SLIP-132 ${addresses.typedXpub.slice(0, 4)}: ${addresses.typedXpub}`]
+          : [])
+      ],
+      [
+        'Watch-only descriptors',
+        `Combined receive/change: ${watchOnlyDescriptor(descriptorArgs)}`,
+        `Receive: ${watchOnlyDescriptor({ ...descriptorArgs, branch: 0 })}`,
+        `Change: ${watchOnlyDescriptor({ ...descriptorArgs, branch: 1 })}`
+      ],
+      [
+        'Addresses',
+        'Receive',
+        ...receive.map(item => `${item.path}: ${item.address}`),
+        'Change',
+        ...change.map(item => `${item.path}: ${item.address}`)
+      ]
+    ]);
+
+    return { privateText, watchOnlyText };
+  };
+
   const buildWallet = ({ method, input, words, addressType, path, wordlist, passphrase = '', choice = 0 }) => {
     const { entropy, mnemonic, seed } = deriveSeed({ method, input, words, wordlist, passphrase, choice });
     return { entropy, mnemonic, ...deriveAddresses({ seed, addressType, path }) };
@@ -1895,7 +2088,7 @@ const EntropyCore = (() => {
     cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity, seedQrDigits,
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,
-    deriveSeed, deriveAddresses, buildWallet, limits,
+    deriveSeed, deriveAddresses, buildWalletExportTexts, buildWallet, limits,
     assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative
   };
 })();

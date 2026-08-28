@@ -120,6 +120,45 @@ export function assertWorkshop() {
        and Derive button. Pin both the absence of that early exit and the raw
        input handoff needed to detect old/new alias ambiguity. */
     const script = codeOnlyEarly(html);
+    check(/id="export-private-open"/.test(html) && /id="export-watch"/.test(html) &&
+      /id="export-private-dialog"/.test(html),
+      `the ${name} build does not expose both export records and the private-file warning`);
+    check(/C\.buildWalletExportTexts\(\{/.test(script) &&
+      /passphraseUsed:\s*\$\('passphrase'\)\.value\.length\s*>\s*0/.test(script),
+      `the ${name} build does not pass only passphrase presence to the tested export builder`);
+    /* The transcript is optional to the builder, because a wallet restored
+       from words has none. This page always has one, and a private record
+       without it cannot be checked against the paper it was rolled on. */
+    check(/source:\s*\{\s*method: method\(\), input: clean\(\), words: state\.words, choice: state\.choice/
+      .test(script),
+      `the ${name} build does not record the rolls its wallet came from`);
+    check(/URL\.createObjectURL\(new Blob\(\[text\]/.test(script) &&
+      /URL\.revokeObjectURL\(url\)/.test(script),
+      `the ${name} build does not create and revoke its text-download Blob URLs`);
+    check(/function invalidateDerivedState\(\)\s*\{[\s\S]*?clearExportState\(\);[\s\S]*?state\.seed\s*=\s*null/.test(script),
+      `the ${name} build does not clear export state when its derived wallet is invalidated`);
+    /* The SeedQR is the recovery words in another alphabet. Its wipe is not
+       inherited from the box it sits in -- invalidateDerivedState clears the
+       ids in SECRET_TEXT and nothing else -- so the registration is the whole
+       mechanism and is pinned here. Nothing may be encoded before the button
+       is pressed, which is what parking the digits in qrSources buys. */
+    check(/'seedqr-digits',\s*'seedqr-grid'/.test(script),
+      `the ${name} build does not register its SeedQR digits as clearable secret text`);
+    check(/qrSources\.seedqr\s*=\s*\{\s*text:\s*digits/.test(script) &&
+      !/paintQr\([^)]*digits/.test(script),
+      `the ${name} build draws its SeedQR before the button asks for one`);
+    /* The strings parked for the QR buttons have to leave on every path that
+       invalidates a wallet, not only on a full clear -- editing one roll
+       invalidates too. Pinned as both placement and uniqueness: one deletion
+       loop, and it sits inside invalidateDerivedState. */
+    check((script.match(/delete qrSources\[key\]/g) || []).length === 1,
+      `the ${name} build does not drop its parked QR strings in exactly one place`);
+    const invalidateStart = script.indexOf('function invalidateDerivedState()');
+    const invalidateEnd = script.indexOf('function clearSensitiveState()', invalidateStart);
+    const invalidate = invalidateStart >= 0 && invalidateEnd > invalidateStart
+      ? script.slice(invalidateStart, invalidateEnd) : '';
+    check(/delete qrSources\[key\];/.test(invalidate),
+      `the ${name} build keeps parked QR strings alive after its wallet is invalidated`);
     const paintStart = script.indexOf('function paintCount()');
     const paintEnd = script.indexOf('function hideResults()', paintStart);
     const paint = paintStart >= 0 && paintEnd > paintStart

@@ -148,7 +148,11 @@ function autoFetched(html) {
 
   /* CSS, inline or in a file: @import and every url() that is not a data: URI. */
   for (const m of findAll(html, /@import\s+(?:url\()?["']?([^"')]+)/gi)) add(m[1], '@import');
-  for (const m of findAll(html, /url\(\s*["']?(?!data:)([^"')]+)/gi)) add(m[1], 'css url()');
+  /* A CSS function starts at a token boundary. Without the left boundary this
+     also matched the URL suffix in JavaScript's createObjectURL(...), reading
+     its argument as a stylesheet request. Punctuation is allowed before a
+     real CSS url(), while identifier characters, dots and hyphens are not. */
+  for (const m of findAll(html, /(?:^|[^\w.-])url\(\s*["']?(?!data:)([^"')]+)/gi)) add(m[1], 'css url()');
 
   /* Runtime. Matching source text, not behaviour -- a determined author can
      always defeat this, but it catches the accident, which is the point. */
@@ -227,6 +231,19 @@ function assertScriptGuard() {
     if (!undeclaredScriptOrigins(source).includes(origin)) {
       throw new Error(`fetch guard self-test failed: a computed request to ${label} was not rejected`);
     }
+  }
+}
+
+function assertMarkupGuard() {
+  const probe = '<style>.planted{background:url("https://example.invalid/tracker")}</style>'
+    + '<script>URL.createObjectURL(new Blob([text]));</script>';
+  const found = autoFetched(probe);
+  const css = found.filter(item => item.why === 'css url()');
+  if (!css.some(item => item.url === 'https://example.invalid/tracker')) {
+    throw new Error('fetch guard self-test failed: a planted CSS URL was not rejected');
+  }
+  if (css.some(item => item.url !== 'https://example.invalid/tracker')) {
+    throw new Error('fetch guard self-test failed: JavaScript URL.createObjectURL was read as CSS');
   }
 }
 
@@ -363,6 +380,7 @@ function walk(dir, out = []) {
 
 export function assertNoUnexpectedFetches(root = 'docs') {
   assertScriptGuard();
+  assertMarkupGuard();
   const failures = [];
   const assets = new Set();
 
