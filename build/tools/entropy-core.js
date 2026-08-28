@@ -1934,13 +1934,13 @@ const EntropyCore = (() => {
       addressType, fingerprint, path: canonicalPath, xpub: addresses.xpub
     };
 
-    const document = sections => sections.map(lines => lines.join('\n')).join('\n\n') + '\n';
+    const joinSections = sections => sections.map(lines => lines.join('\n')).join('\n\n') + '\n';
     const numberedWords = mnemonic.map((word, index) =>
       `${String(index + 1).padStart(2, '0')}. ${word}`);
 
-    const privateText = document([
+    const privateText = joinSections([
       [
-        'Entropy Workshop - PRIVATE RECOVERY RECORD',
+        'SelfCustody.ca Entropy Workshop - PRIVATE RECOVERY RECORD',
         'KEEP SECRET. Anyone with the recovery words or private keys can spend this wallet.'
       ],
       [`Recovery words (${mnemonic.length})`, ...numberedWords],
@@ -1968,9 +1968,9 @@ const EntropyCore = (() => {
 
     const receive = [addresses.receive, ...addresses.moreReceive];
     const change = [addresses.change, ...addresses.moreChange];
-    const watchOnlyText = document([
+    const watchOnlyText = joinSections([
       [
-        'SelfCustody.ca - WATCH-ONLY WALLET RECORD',
+        'SelfCustody.ca Entropy Workshop - WATCH-ONLY WALLET RECORD',
         'SHARE WITH CARE. This record cannot spend, but it reveals addresses and wallet activity.'
       ],
       [

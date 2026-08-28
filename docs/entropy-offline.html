@@ -399,6 +399,15 @@
   }
   .xprv-more[open] .xprv-more-head i { transform: translateY(1px) rotate(-135deg); }
   .xprv-more-body { margin-top: 4px; }
+  /* Grouped in fours because four digits is exactly one word's index, so the
+     grouping lines up with the numbered list above rather than being decoration.
+     Margins on the spans rather than spaces between them: what a person copies
+     is the unbroken run every SeedQR reader expects. */
+  .seedqr-digits {
+    margin: 12px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9rem; line-height: 1.9; color: var(--ink);
+  }
+  .seedqr-digits span { display: inline-block; margin-right: 0.6em; }
   .descriptor-split { margin-top: 14px; }
   .descriptor-split summary { font-size: 0.85rem; }
   .split-line { display: grid; gap: 3px; margin: 0 0 10px; }
@@ -460,6 +469,14 @@
     color: var(--muted); background: none; font-size: 1.3rem; line-height: 1.2; cursor: pointer;
   }
   .export-dialog-close:hover { color: #ff9d8a; }
+  /* role="alert" is assertive, which is right here: it only ever carries a
+     refusal, and a refusal the person cannot see is the bug this fixes. */
+  .export-dialog-error:empty { display: none; }
+  .export-dialog-error {
+    margin: 16px 0 0; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.12);
+    color: #ff9d8a; font-size: 0.84rem; line-height: 1.55;
+  }
   .export-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 19px; }
   .export-dialog-actions .export-button { width: auto; }
   .export-dialog .export-button { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
@@ -1811,6 +1828,20 @@
           cannot see that far up. The descriptor below carries the origin and does.</p>
       </div>
     </details>
+
+    <!-- Its own disclosure rather than a row inside the one above: a SeedQR is
+         the recovery words as digits, not the account key, and filing it under
+         that heading would teach the wrong thing in a tool whose job is
+         telling these keys apart. -->
+    <details class="xprv-more" id="seedqr-more">
+      <summary><span class="xprv-more-head"><b>SeedQR recovery code</b><code id="seedqr-grid"></code><i aria-hidden="true"></i></span></summary>
+      <div class="xprv-more-body">
+        <p class="xpub-note">The recovery words as numbers: each word&rsquo;s place in the BIP39 list, four digits per word, in the order they appear above. <a href="https://github.com/SeedSigner/seedsigner/blob/dev/docs/seed_qr/README.md" target="_blank" rel="noopener noreferrer">SeedSigner</a> and compatible signing devices scan it. The heading says how many squares the code will be, so you know the size of the job before you start punching one into metal.</p>
+        <p class="seedqr-digits" id="seedqr-digits"></p>
+        <p class="xpub-note">This is the phrase in another alphabet, nothing weaker. Anything that reads it can spend the wallet.</p>
+        <p class="qr-row"><button type="button" class="qr-button" data-qr="seedqr">Show QR</button></p>
+      </div>
+    </details>
   </div>
 
   <h3>Addresses</h3>
@@ -1889,6 +1920,7 @@
       <p>It contains the recovery words, SeedQR digits and private keys shown above. Anyone who gets the file can move the wallet&rsquo;s coins.</p>
       <p><strong>Download it only on the offline computer</strong>, then move it directly to the protected backup storage you chose. Do not put it in cloud storage, email or chat.</p>
       <p>The BIP39 passphrase value is deliberately left out. If one was used, the file says so and the passphrase must remain stored separately.</p>
+      <p class="export-dialog-error" id="export-private-error" role="alert"></p>
       <div class="export-dialog-actions">
         <button type="button" class="export-button" id="export-private-confirm">Download private record</button>
         <button type="submit" class="key-tool" value="cancel">Cancel</button>
@@ -3993,13 +4025,13 @@ const EntropyCore = (() => {
       addressType, fingerprint, path: canonicalPath, xpub: addresses.xpub
     };
 
-    const document = sections => sections.map(lines => lines.join('\n')).join('\n\n') + '\n';
+    const joinSections = sections => sections.map(lines => lines.join('\n')).join('\n\n') + '\n';
     const numberedWords = mnemonic.map((word, index) =>
       `${String(index + 1).padStart(2, '0')}. ${word}`);
 
-    const privateText = document([
+    const privateText = joinSections([
       [
-        'Entropy Workshop - PRIVATE RECOVERY RECORD',
+        'SelfCustody.ca Entropy Workshop - PRIVATE RECOVERY RECORD',
         'KEEP SECRET. Anyone with the recovery words or private keys can spend this wallet.'
       ],
       [`Recovery words (${mnemonic.length})`, ...numberedWords],
@@ -4027,9 +4059,9 @@ const EntropyCore = (() => {
 
     const receive = [addresses.receive, ...addresses.moreReceive];
     const change = [addresses.change, ...addresses.moreChange];
-    const watchOnlyText = document([
+    const watchOnlyText = joinSections([
       [
-        'SelfCustody.ca - WATCH-ONLY WALLET RECORD',
+        'SelfCustody.ca Entropy Workshop - WATCH-ONLY WALLET RECORD',
         'SHARE WITH CARE. This record cannot spend, but it reveals addresses and wallet activity.'
       ],
       [
@@ -5473,10 +5505,6 @@ var qrcodegen;
      Clear is pressed. Static filenames avoid leaking a fingerprint into the
      downloads list or a synced filename. */
   const exportUrls = new Set();
-  const EXPORT_LABELS = {
-    private: 'Download private record',
-    watch: 'Download watch-only record'
-  };
 
   function revokeExportUrl(url) {
     if (!exportUrls.delete(url)) return;
@@ -5487,17 +5515,9 @@ var qrcodegen;
     for (const url of [...exportUrls]) revokeExportUrl(url);
     const dialog = $('export-private-dialog');
     if (dialog && dialog.open) dialog.close();
-    const status = $('export-status');
-    if (status) status.textContent = '';
-    const privateButton = $('export-private-confirm');
-    const watchButton = $('export-watch');
-    if (privateButton) {
-      privateButton.disabled = false;
-      privateButton.textContent = EXPORT_LABELS.private;
-    }
-    if (watchButton) {
-      watchButton.disabled = false;
-      watchButton.textContent = EXPORT_LABELS.watch;
+    for (const id of ['export-status', 'export-private-error']) {
+      const line = $(id);
+      if (line) line.textContent = '';
     }
   }
 
@@ -5517,14 +5537,25 @@ var qrcodegen;
   /* The builder receives the cached seed and only a boolean for passphrase
      state. The passphrase value itself never crosses this boundary. Kept in
      the click handler's task so the Blob download retains the browser's user
-     activation; deferring it for a prettier "Preparing" repaint makes local
-     file downloads more likely to be blocked as synthetic. */
-  function prepareExport(kind, button) {
+     activation: yielding first, for a progress state or any other repaint,
+     makes a local file download more likely to be refused as synthetic. That
+     is also why nothing here reports progress -- one synchronous task cannot
+     paint twice, so a "Preparing" label would be a lie the eye never sees,
+     and single-threaded execution already rules out an overlapping click. */
+  function prepareExport(kind) {
     if (!state.seed || $('results').hidden) return;
+    const isPrivate = kind === 'private';
     const path = $('path').value.trim();
-    button.disabled = true;
-    button.textContent = 'Preparing…';
-    $('export-status').textContent = 'Preparing ' + (kind === 'private' ? 'private' : 'watch-only') + ' record…';
+
+    /* Where a failure has to appear depends on where the click came from. The
+       page-level line sits behind the modal's backdrop, so reporting a private
+       failure there writes into a region the person cannot see: the button
+       does nothing and nothing explains why. */
+    const fail = message => {
+      const line = isPrivate && $('export-private-dialog').open
+        ? $('export-private-error') : $('export-status');
+      line.textContent = message;
+    };
 
     try {
       if (state.seedKey !== seedKeyFor(clean())) {
@@ -5538,20 +5569,18 @@ var qrcodegen;
         path,
         passphraseUsed: $('passphrase').value.length > 0
       });
-      const isPrivate = kind === 'private';
       downloadTextRecord(
         isPrivate ? texts.privateText : texts.watchOnlyText,
         isPrivate ? 'selfcustody-private-recovery.txt' : 'selfcustody-watch-only.txt'
       );
+      /* Closed before the message is written, so the success line is not
+         reported into a region the backdrop is covering. */
+      if (isPrivate && $('export-private-dialog').open) $('export-private-dialog').close();
       $('export-status').textContent = isPrivate
         ? 'Private recovery record download requested. Treat the file like the wallet itself.'
         : 'Watch-only record download requested. It cannot spend, but it reveals wallet activity.';
-      if (isPrivate && $('export-private-dialog').open) $('export-private-dialog').close();
     } catch (error) {
-      $('export-status').textContent = 'Could not prepare that record: ' + error.message + '.';
-    } finally {
-      button.disabled = false;
-      button.textContent = EXPORT_LABELS[kind];
+      fail('Could not prepare that record: ' + error.message + '.');
     }
   }
 
@@ -5772,6 +5801,18 @@ var qrcodegen;
     clearExportState();
     state.seed = null;
     state.seedKey = null;
+
+    /* The strings parked for the QR buttons are derived material like any
+       other, and this is the only place that drops them. Clearing the page is
+       not the only thing that invalidates a wallet -- editing a single roll
+       does too -- and until this moved, that path emptied the DOM while
+       leaving the last mnemonic's SeedQR digits reachable in qrSources. The
+       buttons live inside #results, so nothing could open one; the defect was
+       that a secret outlived the wallet it belonged to and could not be
+       collected while a live object still referenced it. */
+    for (const key of Object.keys(qrSources)) delete qrSources[key];
+    if ($('qr-dialog').open) $('qr-dialog').close();
+
     for (const id of SECRET_TEXT) {
       const el = $(id);
       if (!el) continue;
@@ -5806,7 +5847,8 @@ var qrcodegen;
     'master-xprv', 'xprv', 'xprv-path', 'xprv-alt', 'xprv-alt-label',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path', 'recv-more', 'chng-more',
     'qr-dialog-code', 'qr-dialog-text', 'qr-dialog-title',
-    'fp-base', 'fp-pass', 'fp-base-tag'
+    'fp-base', 'fp-pass', 'fp-base-tag',
+    'seedqr-digits', 'seedqr-grid'
   ];
 
   function clearSensitiveState() {
@@ -5816,10 +5858,6 @@ var qrcodegen;
     }
     invalidateDerivedState();
     state.choice = 0;
-    /* The parked strings are derived material too. Left behind, the next press
-       of a button would open the last wallet's address over an empty page. */
-    for (const key of Object.keys(qrSources)) delete qrSources[key];
-    if ($('qr-dialog').open) $('qr-dialog').close();
 
     /* The transient UI as well, or clearing leaves a page that disagrees with
        itself: a roll counter describing rolls that are gone, an enabled Derive
@@ -6101,6 +6139,31 @@ var qrcodegen;
       $('xprv-alt').textContent = typedPriv;
       $('xprv-alt-label').textContent = typedPriv.slice(0, 4);
     }
+
+    /* 12 words are 48 digits and 24 are 96, which the vendored encoder puts in
+       a 25x25 and a 29x29 grid -- the sizes SeedSigner's specification states.
+       Both are pinned by the test suite rather than asserted from here.
+
+       A length with no stated grid hides the fold rather than guessing one.
+       The number is a promise about how many squares somebody is about to
+       punch into metal, and 18-word support arriving later must add its grid
+       deliberately instead of inheriting whichever branch it happened to take.
+
+       Only the digits are written. Nothing is encoded until the button asks,
+       and the string lives in qrSources so it leaves with the rest. */
+    const SEEDQR_GRIDS = { 12: '25 × 25', 24: '29 × 29' };
+    const grid = SEEDQR_GRIDS[state.seed.mnemonic.length];
+    $('seedqr-more').hidden = !grid;
+    if (grid) {
+      const digits = C.seedQrDigits(state.seed.mnemonic, WORDLIST);
+      $('seedqr-grid').textContent = grid;
+      $('seedqr-digits').replaceChildren(...(digits.match(/.{4}/g) || []).map(group => {
+        const cell = document.createElement('span');
+        cell.textContent = group;
+        return cell;
+      }));
+      qrSources.seedqr = { text: digits, title: 'SeedQR' };
+    }
     $('type-note').textContent = C.ADDRESS_TYPES[state.addressType].note;
     $('results').hidden = false;
   }
@@ -6205,14 +6268,13 @@ var qrcodegen;
   }
 
   $('export-private-open').addEventListener('click', () => {
+    /* A refusal from a previous attempt is about a wallet that may no longer
+       be on screen. Opening the warning again starts from the warning. */
+    $('export-private-error').textContent = '';
     $('export-private-dialog').showModal();
   });
-  $('export-private-confirm').addEventListener('click', event => {
-    prepareExport('private', event.currentTarget);
-  });
-  $('export-watch').addEventListener('click', event => {
-    prepareExport('watch', event.currentTarget);
-  });
+  $('export-private-confirm').addEventListener('click', () => prepareExport('private'));
+  $('export-watch').addEventListener('click', () => prepareExport('watch'));
 
   $('go').addEventListener('click', derive);
   $('alarm-back').addEventListener('click', () => $('alarm').close());
