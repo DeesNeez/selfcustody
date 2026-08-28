@@ -1831,11 +1831,35 @@ const EntropyCore = (() => {
     return { entropy: hex(entropy), mnemonic, ...seedOf(mnemonic, passphrase) };
   };
 
-  const deriveAddresses = ({ seed, addressType, path }) => {
+  /* `extra` addresses past the first on each branch. The page shows one of
+     each and folds the rest away: a wallet checking against a device usually
+     needs the first, and occasionally needs to see that the run continues.
+     Each one costs a point multiplication, which is why this is a small
+     number and not a scrolling list. */
+  /* SeedQR, as SeedSigner defined it and as Krux, Jade, Passport and the
+     COLDCARD Q read it: each word's position in the BIP39 list, zero-based,
+     padded to four digits and run together. Twelve words give 48 digits and
+     twenty-four give 96.
+
+     Zero-based is the whole of the format and the only thing to get wrong:
+     "abandon" is 0000, not 0001, so the all-abandon test phrase ends 0003 for
+     "about". A one-off here would produce a QR that scans cleanly and restores
+     somebody else's wallet. */
+  const seedQrDigits = (mnemonic, wordlist) => mnemonic.map(word => {
+    const at = wordlist.indexOf(word);
+    if (at < 0) throw new Error(`${word} is not a BIP39 word`);
+    return String(at).padStart(4, '0');
+  }).join('');
+
+  const deriveAddresses = ({ seed, addressType, path, extra = 4 }) => {
     const account = derive(masterKey(seed), path);
     const type = ADDRESS_TYPES[addressType];
-    const addressAt = branch =>
-      type.encode(compress(pointMul(toBigInt(ckdPriv(ckdPriv(account, branch), 0).key))));
+    const addressAt = (branch, index = 0) =>
+      type.encode(compress(pointMul(toBigInt(ckdPriv(ckdPriv(account, branch), index).key))));
+    const runFrom = branch => Array.from({ length: Math.max(0, extra) }, (unused, i) => ({
+      path: `${path}/${branch}/${i + 1}`,
+      address: addressAt(branch, i + 1)
+    }));
     /* The account key, which is the thing a watch-only wallet actually wants:
        it can derive every address below it and sign nothing. */
     const xpub = encodeXpub(account);
@@ -1843,6 +1867,8 @@ const EntropyCore = (() => {
     return {
       receive: { path: `${path}/0/0`, address: addressAt(0) },
       change: { path: `${path}/1/0`, address: addressAt(1) },
+      moreReceive: runFrom(0),
+      moreChange: runFrom(1),
       xpub,
       /* Only present when the address type has a prefix of its own, so the
          page can stay quiet rather than showing the same string twice. */
@@ -1866,7 +1892,7 @@ const EntropyCore = (() => {
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, legacyNormalise, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
-    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity,
+    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity, seedQrDigits,
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,
     deriveSeed, deriveAddresses, buildWallet, limits,
