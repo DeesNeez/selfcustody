@@ -16,6 +16,12 @@ import { readFileSync } from 'node:fs';
 import { loadCore } from './load-core.mjs';
 
 const C = loadCore();
+
+/* The QR generator the page inlines, evaluated rather than imported for the
+   same reason the core is: it ships as a classic script, and testing anything
+   other than the bytes that ship proves nothing about the bytes that ship. */
+const QR = new Function(
+  `${readFileSync('build/vendor/qr/qrcodegen.js', 'utf8')}\nreturn qrcodegen;`)();
 const WORDLIST = readFileSync('build/tools/bip39-english.txt', 'utf8').trim().split(/\r?\n/);
 
 /* The 12- and 24-word all-zero-entropy phrases from BIP39's own vectors, used
@@ -23,6 +29,7 @@ const WORDLIST = readFileSync('build/tools/bip39-english.txt', 'utf8').trim().sp
 const ABANDON_12 = 'abandon '.repeat(11) + 'about';
 const ABANDON_24 = 'abandon '.repeat(23) + 'art';
 const ABANDON_12_WORDS = ABANDON_12.split(' ');
+const ABANDON_24_WORDS = ABANDON_24.split(' ');
 const ABANDON_12_SEED = C.mnemonicToSeed(ABANDON_12_WORDS);
 
 /* Two sequences straight from a CSPRNG, pinned here so the suite is
@@ -82,13 +89,18 @@ function descriptorFor(type, branch = null) {
   });
 }
 
-function exportFor({ passphrase = '', passphraseUsed = false, extra = 0,
+/* `extra` is left out unless a test names it, so the default here is the
+   builder's own default -- the address count that actually ships. The two
+   literal-document tests below opt down to one address per branch to keep the
+   expected text readable; every other test sees what a person downloads. */
+function exportFor({ passphrase = '', passphraseUsed = false, extra,
   path = "m/84'/0'/0'" } = {}) {
   const mnemonic = ABANDON_12_WORDS;
   return C.buildWalletExportTexts({
     mnemonic, wordlist: WORDLIST,
     seed: passphrase ? C.mnemonicToSeed(mnemonic, passphrase) : ABANDON_12_SEED,
-    addressType: 'native', path, passphraseUsed, extra
+    addressType: 'native', path, passphraseUsed,
+    ...(extra === undefined ? {} : { extra })
   });
 }
 
@@ -98,7 +110,7 @@ function exportFor({ passphrase = '', passphraseUsed = false, extra = 0,
    what catches a label, ordering or newline change that a structural test
    would silently bless. */
 const PRIVATE_EXPORT_12 = [
-  'Entropy Workshop - PRIVATE RECOVERY RECORD',
+  'SelfCustody.ca Entropy Workshop - PRIVATE RECOVERY RECORD',
   'KEEP SECRET. Anyone with the recovery words or private keys can spend this wallet.',
   '',
   'Recovery words (12)',
@@ -137,7 +149,7 @@ const PRIVATE_EXPORT_12 = [
 ].join('\n');
 
 const WATCH_ONLY_EXPORT_12 = [
-  'SelfCustody.ca - WATCH-ONLY WALLET RECORD',
+  'SelfCustody.ca Entropy Workshop - WATCH-ONLY WALLET RECORD',
   'SHARE WITH CARE. This record cannot spend, but it reveals addresses and wallet activity.',
   '',
   'Wallet identity',
@@ -1063,9 +1075,9 @@ export const VECTORS = [
      Most importantly, they test the watch-only boundary as an absence: none
      of the secret inputs or private extended-key prefixes may cross it. */
   ['export: the private recovery record is byte-for-byte stable',
-    () => exportFor().privateText, PRIVATE_EXPORT_12],
+    () => exportFor({ extra: 0 }).privateText, PRIVATE_EXPORT_12],
   ['export: the watch-only record is byte-for-byte stable',
-    () => exportFor().watchOnlyText, WATCH_ONLY_EXPORT_12],
+    () => exportFor({ extra: 0 }).watchOnlyText, WATCH_ONLY_EXPORT_12],
   ['export: both documents are LF-only and end in exactly one newline',
     () => {
       const { privateText, watchOnlyText } = exportFor();
@@ -1074,7 +1086,7 @@ export const VECTORS = [
     }, true],
   ['export: path spelling canonicalises to the same bytes',
     () => {
-      const variant = exportFor({ path: "M/84h/0H/0'" });
+      const variant = exportFor({ extra: 0, path: "M/84h/0H/0'" });
       return variant.privateText === PRIVATE_EXPORT_12
         && variant.watchOnlyText === WATCH_ONLY_EXPORT_12;
     }, true],
@@ -1082,12 +1094,19 @@ export const VECTORS = [
     () => {
       const mnemonic = ABANDON_12_WORDS;
       const seed = ABANDON_12_SEED;
+      /* At the shipped address count, so the assertion covers all ten
+         address lines rather than the two a trimmed record would carry. */
       const watch = exportFor().watchOnlyText;
       const secretValues = [
         ABANDON_12, ...new Set(mnemonic), C.hex(seed),
         C.seedQrDigits(mnemonic, WORDLIST), '00'.repeat(16)
       ];
-      const namedSecret = /\b(?:mnemonic|entropy|seed|recovery words)\b/i.test(watch);
+      /* Past the title line, which names the tool -- "Entropy Workshop" is
+         provenance, not a leak, and the title is pinned byte-for-byte by the
+         document test above. Anywhere below it, one of these words announces
+         a section that should not exist in a watch-only record. */
+      const body = watch.split('\n').slice(1).join('\n');
+      const namedSecret = /\b(?:mnemonic|entropy|seed|recovery words)\b/i.test(body);
       const privatePrefix = /\b(?:xprv|yprv|zprv|Yprv|Zprv|tprv|uprv|vprv)/.test(watch);
       return [secretValues.filter(value => watch.includes(value)).length,
               namedSecret, privatePrefix].join();
@@ -1127,6 +1146,38 @@ export const VECTORS = [
       return [addressLines.length, addressLines.at(4).startsWith("m/84'/0'/0'/0/4:"),
               addressLines.at(9).startsWith("m/84'/0'/0'/1/4:")].join();
     }, '10,true,true'],
+
+  /* ---- SeedQR ------------------------------------------------------------
+
+     What this project promises about a SeedQR is compatibility and grid size,
+     not identical pixels to a SeedSigner-generated code. Grid size is the part
+     that matters, because a SeedQR exists to be punched into metal by hand:
+     25x25 for 12 words and 29x29 for 24, the dimensions SeedSigner's
+     specification states. These pin our encoder against those numbers. */
+  ['seedqr: 12 words are 48 numeric digits, 24 words are 96',
+    () => {
+      const twelve = C.seedQrDigits(ABANDON_12_WORDS, WORDLIST);
+      const twentyFour = C.seedQrDigits(ABANDON_24_WORDS, WORDLIST);
+      return [twelve.length, twentyFour.length,
+        /^[0-9]+$/.test(twelve + twentyFour)].join();
+    }, '48,96,true'],
+  ['seedqr: the codes are the 25x25 and 29x29 grids SeedSigner specifies',
+    () => [ABANDON_12_WORDS, ABANDON_24_WORDS]
+      .map(words => QR.QrCode.encodeText(
+        C.seedQrDigits(words, WORDLIST), QR.QrCode.Ecc.MEDIUM).size).join(),
+    '25,29'],
+  /* Not a promise, a pin on the vendored library: Nayuki raises the error
+     correction of a code whose data already fits, so asking for Medium yields
+     Quartile at 12 words and stays Medium at 24. Recorded so an encoder
+     upgrade that changed the boost -- and with it the module pattern somebody
+     has already transcribed -- cannot pass unnoticed. The dimensions would
+     survive such a change; the pattern inside them would not. */
+  ['seedqr: the encoder boosts 12 words to Quartile and leaves 24 at Medium',
+    () => [ABANDON_12_WORDS, ABANDON_24_WORDS]
+      .map(words => QR.QrCode.encodeText(
+        C.seedQrDigits(words, WORDLIST), QR.QrCode.Ecc.MEDIUM)
+        .errorCorrectionLevel.ordinal).join(),
+    [QR.QrCode.Ecc.QUARTILE.ordinal, QR.QrCode.Ecc.MEDIUM.ordinal].join()],
 
   /* The boundary itself, from both sides. The rule is per pass, so the same
      card is a mistake at 52 and a legitimate draw at 53 -- these pin that the
