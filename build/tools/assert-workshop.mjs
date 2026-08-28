@@ -120,6 +120,17 @@ export function assertWorkshop() {
        and Derive button. Pin both the absence of that early exit and the raw
        input handoff needed to detect old/new alias ambiguity. */
     const script = codeOnlyEarly(html);
+    check(/id="export-private-open"/.test(html) && /id="export-watch"/.test(html) &&
+      /id="export-private-dialog"/.test(html),
+      `the ${name} build does not expose both export records and the private-file warning`);
+    check(/C\.buildWalletExportTexts\(\{/.test(script) &&
+      /passphraseUsed:\s*\$\('passphrase'\)\.value\.length\s*>\s*0/.test(script),
+      `the ${name} build does not pass only passphrase presence to the tested export builder`);
+    check(/URL\.createObjectURL\(new Blob\(\[text\]/.test(script) &&
+      /URL\.revokeObjectURL\(url\)/.test(script),
+      `the ${name} build does not create and revoke its text-download Blob URLs`);
+    check(/function invalidateDerivedState\(\)\s*\{[\s\S]*?clearExportState\(\);[\s\S]*?state\.seed\s*=\s*null/.test(script),
+      `the ${name} build does not clear export state when its derived wallet is invalidated`);
     const paintStart = script.indexOf('function paintCount()');
     const paintEnd = script.indexOf('function hideResults()', paintStart);
     const paint = paintStart >= 0 && paintEnd > paintStart
