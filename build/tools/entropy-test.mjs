@@ -908,6 +908,53 @@ export const VECTORS = [
     () => refusedDraw(C.CARD_DECK.join('') + 'AC2C3CAC'), 'refused'],
   ['cards: repeatedCard finds nothing in a real draw',
     () => C.repeatedCard(REAL_DRAW), null],
+
+  /* The boundary itself, from both sides. The rule is per pass, so the same
+     card is a mistake at 52 and a legitimate draw at 53 -- these pin that the
+     flip happens exactly at the end of the deck and not a card either way. */
+  ['cards: a repeat at card 52 is refused, the deck not yet finished',
+    () => refusedDraw(C.CARD_DECK.slice(0, 51).join('') + 'AC'), 'refused'],
+  ['cards: the same card at 53 is accepted, the deck having been finished',
+    () => C.repeatedCard(C.CARD_DECK.join('') + 'AC'), null],
+  ['cards: and it is refused again once it repeats within the second pass',
+    () => C.repeatedCard(C.CARD_DECK.join('') + 'ACAC').at, 54],
+
+  /* ---- aliases -----------------------------------------------------------
+
+     Golden vectors. Every one of these has to normalise to the transcript the
+     canonical form already produced, because the phrase is a hash of that
+     string: if an alias changed it by one character it would silently hand
+     somebody a different wallet than the same deal gave them yesterday.
+
+     The last two are the regression guard rather than the feature -- a
+     canonical deal and a spaced one, both of which have to come out exactly
+     as they did before the alias pass existed. */
+  ['alias: 10 is the ten', () => C.normalise('cards', '10H'), 'TH'],
+  ['alias: filled suit symbols',
+    () => C.normalise('cards', 'A\u2660Q\u2666K\u2665J\u2663'), 'ASQDKHJC'],
+  ['alias: outline suit symbols',
+    () => C.normalise('cards', 'A\u2664Q\u2662K\u2661J\u2667'), 'ASQDKHJC'],
+  ['alias: lower case and spacing together',
+    () => C.normalise('cards', 'as 10h  q\u2666'), 'ASTHQD'],
+  ['alias: the same deal aliased and canonical hash identically',
+    () => {
+      const canonical = C.deriveSeed({ method: 'cards', input: CARDS_25, words: 12, wordlist: WORDLIST });
+      const written = CARDS_25.replace(/T/g, '10').replace(/S/g, '\u2660')
+        .replace(/H/g, '\u2665').replace(/D/g, '\u2666').replace(/C/g, '\u2663');
+      const aliased = C.deriveSeed({ method: 'cards', input: written, words: 12, wordlist: WORDLIST });
+      return aliased.mnemonic.join(' ') === canonical.mnemonic.join(' ');
+    }, true],
+  ['alias: cardbits reads them too',
+    () => C.normalise('cardbits', '10\u2660'), 'TS'],
+  ['alias: a canonical transcript is returned unchanged',
+    () => C.normalise('cards', REAL_DRAW), REAL_DRAW],
+  ['alias: spacing is still dropped and nothing else moves',
+    () => C.normalise('cards', 'AS 2C TD'), 'AS2CTD'],
+  /* The alias pass is card-only. A dice transcript containing "10" must keep
+     losing the 0 exactly as it did, or every dice phrase ever produced from a
+     sloppy paste would move. */
+  ['alias: dice are left alone', () => C.normalise('dice', '102030'), '123'],
+  ['alias: coin flips are left alone', () => C.normalise('coin', 'HT10'), 'HT'],
   /* The tolerance is not a taste call: it is the longest code minus one, the
      furthest a single final event can carry the total past the target. Pinned
      so the two tables cannot drift apart from the numbers they imply. */
