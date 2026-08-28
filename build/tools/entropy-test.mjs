@@ -2,9 +2,11 @@
 
    Run:  npm run test:entropy
 
-   Every vector here is from a published specification, not from running this
-   code and recording what it said. That distinction is the whole point: a
-   self-check that compares the tool against itself proves nothing.
+   Every cryptographic vector here is from a published specification, not from
+   running this code and recording what it said. That distinction is the whole
+   point: a self-check that compares the tool against itself proves nothing.
+   Exact text-output tests separately pin this project's own export format;
+   the values inside those records are the published vectors tested below.
 
    The same suite is embedded in the shipped page and runs on load. If any of
    it fails the page refuses to show results, because a conversion tool that is
@@ -14,12 +16,21 @@ import { readFileSync } from 'node:fs';
 import { loadCore } from './load-core.mjs';
 
 const C = loadCore();
+
+/* The QR generator the page inlines, evaluated rather than imported for the
+   same reason the core is: it ships as a classic script, and testing anything
+   other than the bytes that ship proves nothing about the bytes that ship. */
+const QR = new Function(
+  `${readFileSync('build/vendor/qr/qrcodegen.js', 'utf8')}\nreturn qrcodegen;`)();
 const WORDLIST = readFileSync('build/tools/bip39-english.txt', 'utf8').trim().split(/\r?\n/);
 
 /* The 12- and 24-word all-zero-entropy phrases from BIP39's own vectors, used
    as the base mnemonic for every address vector below. */
 const ABANDON_12 = 'abandon '.repeat(11) + 'about';
 const ABANDON_24 = 'abandon '.repeat(23) + 'art';
+const ABANDON_12_WORDS = ABANDON_12.split(' ');
+const ABANDON_24_WORDS = ABANDON_24.split(' ');
+const ABANDON_12_SEED = C.mnemonicToSeed(ABANDON_12_WORDS);
 
 /* Two sequences straight from a CSPRNG, pinned here so the suite is
    deterministic. Both must be allowed through: the check exists to catch typed
@@ -76,6 +87,119 @@ function descriptorFor(type, branch = null) {
   return C.watchOnlyDescriptor({
     addressType: type, fingerprint: C.masterFingerprint(seed), path, xpub, branch
   });
+}
+
+/* `extra` is left out unless a test names it, so the default here is the
+   builder's own default -- the address count that actually ships. The two
+   literal-document tests below opt down to one address per branch to keep the
+   expected text readable; every other test sees what a person downloads. */
+function exportFor({ passphrase = '', passphraseUsed = false, extra,
+  path = "m/84'/0'/0'" } = {}) {
+  const mnemonic = ABANDON_12_WORDS;
+  return C.buildWalletExportTexts({
+    mnemonic, wordlist: WORDLIST,
+    seed: passphrase ? C.mnemonicToSeed(mnemonic, passphrase) : ABANDON_12_SEED,
+    addressType: 'native', path, passphraseUsed,
+    ...(extra === undefined ? {} : { extra })
+  });
+}
+
+/* The prose and line breaks are this project's file-format contract. The key,
+   descriptor and address values are the BIP32/39/84/380 vectors independently
+   pinned elsewhere in this suite. Keeping the expected documents literal is
+   what catches a label, ordering or newline change that a structural test
+   would silently bless. */
+const PRIVATE_EXPORT_12 = [
+  'SelfCustody.ca Entropy Workshop - PRIVATE RECOVERY RECORD',
+  'KEEP SECRET. Anyone with the recovery words or private keys can spend this wallet.',
+  '',
+  'Recovery words (12)',
+  '01. abandon',
+  '02. abandon',
+  '03. abandon',
+  '04. abandon',
+  '05. abandon',
+  '06. abandon',
+  '07. abandon',
+  '08. abandon',
+  '09. abandon',
+  '10. abandon',
+  '11. abandon',
+  '12. about',
+  '',
+  'SeedQR digits',
+  '000000000000000000000000000000000000000000000003',
+  '',
+  'Wallet identity',
+  'Master fingerprint: 73C5DA0A',
+  'Fingerprint without passphrase: 73C5DA0A',
+  'BIP39 passphrase: not used',
+  'Address type: Native SegWit',
+  "Account path: m/84'/0'/0'",
+  '',
+  'Master private key',
+  'Path: m',
+  'Canonical xprv: xprv9s21ZrQH143K3GJpoapnV8SFfukcVBSfeCficPSGfubmSFDxo1kuHnLisriDvSnRRuL2Qrg5ggqHKNVpxR86QEC8w35uxmGoggxtQTPvfUu',
+  '',
+  'Account private key',
+  "Path: m/84'/0'/0'",
+  'Canonical xprv: xprv9ybY78BftS5UGANki6oSifuQEjkpyAC8ZmBvBNTshQnCBcxnefjHS7buPMkkqhcRzmoGZ5bokx7GuyDAiktd5HemohAU4wV1ZPMDRmLpBMm',
+  'SLIP-132 zprv: zprvAdG4iTXWBoARxkkzNpNh8r6Qag3irQB8PzEMkAFeTRXxHpbF9z4QgEvBRmfvqWvGp42t42nvgGpNgYSJA9iefm1yYNZKEm7z6qUWCroSQnE',
+  ''
+].join('\n');
+
+const WATCH_ONLY_EXPORT_12 = [
+  'SelfCustody.ca Entropy Workshop - WATCH-ONLY WALLET RECORD',
+  'SHARE WITH CARE. This record cannot spend, but it reveals addresses and wallet activity.',
+  '',
+  'Wallet identity',
+  'Master fingerprint: 73C5DA0A',
+  'Address type: Native SegWit',
+  "Account path: m/84'/0'/0'",
+  '',
+  'Account public key',
+  'Canonical xpub: xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V',
+  'SLIP-132 zpub: zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs',
+  '',
+  'Watch-only descriptors',
+  'Combined receive/change: wpkh([73c5da0a/84h/0h/0h]xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V/<0;1>/*)#qf45pmyh',
+  'Receive: wpkh([73c5da0a/84h/0h/0h]xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V/0/*)#afwvtk2s',
+  'Change: wpkh([73c5da0a/84h/0h/0h]xpub6CatWdiZiodmUeTDp8LT5or8nmbKNcuyvz7WyksVFkKB4RHwCD3XyuvPEbvqAQY3rAPshWcMLoP2fMFMKHPJ4ZeZXYVUhLv1VMrjPC7PW6V/1/*)#vatdkr6g',
+  '',
+  'Addresses',
+  'Receive',
+  "m/84'/0'/0'/0/0: bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu",
+  'Change',
+  "m/84'/0'/0'/1/0: bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el",
+  ''
+].join('\n');
+
+/* 128 coin flips, pinned so the suite is deterministic, and the wallet they
+   produce. Not a published vector -- there is none for "these flips make these
+   words" -- but every step between them is one, and the point of these tests
+   is the record's shape rather than the arithmetic underneath it. */
+const FLIPS = 'HTTHHTHTTHHHTHTTHTHHTTHTHHTHTTHH'.repeat(4);
+const FLIP_WALLET = C.deriveSeed({
+  method: 'coin', input: FLIPS, words: 12, wordlist: WORDLIST
+});
+
+function exportWithSource(overrides = {}) {
+  return C.buildWalletExportTexts({
+    mnemonic: FLIP_WALLET.mnemonic, wordlist: WORDLIST, seed: FLIP_WALLET.seed,
+    addressType: 'native', path: "m/84'/0'/0'", passphraseUsed: false,
+    source: { method: 'coin', input: FLIPS, words: 12, ...overrides }
+  });
+}
+
+/* Pulls the transcript back out of a written record: everything after the
+   explanation, which is what a person would select and paste back in. */
+function recordedTranscript(text) {
+  const lines = text.split('\n');
+  const at = lines.indexOf('reproduces the words above. Spacing and line breaks are ignored.');
+  if (at < 0) return '';
+  const out = [];
+  for (let i = at + 1; i < lines.length && lines[i].trim(); i++) out.push(lines[i]);
+  return out.join('\n');
 }
 
 /* BIP380's descsum_check, so the suite verifies its own output the way a
@@ -972,6 +1096,184 @@ export const VECTORS = [
     () => C.hex(C.fingerprint(C.masterKey(Uint8Array.from(
       '000102030405060708090a0b0c0d0e0f'.match(/../g).map(h => parseInt(h, 16)))))).toLowerCase(),
     '3442193e'],
+
+  /* ---- deterministic wallet export text ---------------------------------
+
+     These pin the format before the page grows download or copy controls.
+     Most importantly, they test the watch-only boundary as an absence: none
+     of the secret inputs or private extended-key prefixes may cross it. */
+  ['export: the private recovery record is byte-for-byte stable',
+    () => exportFor({ extra: 0 }).privateText, PRIVATE_EXPORT_12],
+  ['export: the watch-only record is byte-for-byte stable',
+    () => exportFor({ extra: 0 }).watchOnlyText, WATCH_ONLY_EXPORT_12],
+  ['export: both documents are LF-only and end in exactly one newline',
+    () => {
+      const { privateText, watchOnlyText } = exportFor();
+      return [privateText, watchOnlyText]
+        .every(text => !text.includes('\r') && text.endsWith('\n') && !text.endsWith('\n\n'));
+    }, true],
+  ['export: path spelling canonicalises to the same bytes',
+    () => {
+      const variant = exportFor({ extra: 0, path: "M/84h/0H/0'" });
+      return variant.privateText === PRIVATE_EXPORT_12
+        && variant.watchOnlyText === WATCH_ONLY_EXPORT_12;
+    }, true],
+  ['export: watch-only text contains no mnemonic, seed, entropy or private key',
+    () => {
+      const mnemonic = ABANDON_12_WORDS;
+      const seed = ABANDON_12_SEED;
+      /* At the shipped address count, so the assertion covers all ten
+         address lines rather than the two a trimmed record would carry. */
+      const watch = exportFor().watchOnlyText;
+      const secretValues = [
+        ABANDON_12, ...new Set(mnemonic), C.hex(seed),
+        C.seedQrDigits(mnemonic, WORDLIST), '00'.repeat(16)
+      ];
+      /* Past the title line, which names the tool -- "Entropy Workshop" is
+         provenance, not a leak, and the title is pinned byte-for-byte by the
+         document test above. Anywhere below it, one of these words announces
+         a section that should not exist in a watch-only record. */
+      const body = watch.split('\n').slice(1).join('\n');
+      const namedSecret = /\b(?:mnemonic|entropy|seed|recovery words)\b/i.test(body);
+      const privatePrefix = /\b(?:xprv|yprv|zprv|Yprv|Zprv|tprv|uprv|vprv)/.test(watch);
+      return [secretValues.filter(value => watch.includes(value)).length,
+              namedSecret, privatePrefix].join();
+    }, '0,false,false'],
+  ['export: a passphrase is recorded as used but its value is never accepted or written',
+    () => {
+      const { privateText, watchOnlyText } = exportFor({
+        passphrase: 'TREZOR', passphraseUsed: true
+      });
+      return [
+        privateText.includes('BIP39 passphrase: used (value intentionally not included)'),
+        privateText.includes('Fingerprint without passphrase: 73C5DA0A'),
+        privateText.includes('TREZOR'), watchOnlyText.includes('TREZOR')
+      ].join();
+    }, 'true,true,false,false'],
+  ['export: callers must explicitly say whether a passphrase was used',
+    () => {
+      const mnemonic = ABANDON_12_WORDS;
+      try {
+        C.buildWalletExportTexts({
+          mnemonic, wordlist: WORDLIST, seed: ABANDON_12_SEED,
+          addressType: 'native', path: "m/84'/0'/0'"
+        });
+        return 'accepted';
+      } catch (error) {
+        return error.message.includes('whether a BIP39 passphrase was used') ? 'refused' : error.message;
+      }
+    }, 'refused'],
+  ['export: the default watch-only run includes five addresses per branch',
+    () => {
+      const text = C.buildWalletExportTexts({
+        mnemonic: ABANDON_12_WORDS, wordlist: WORDLIST, seed: ABANDON_12_SEED,
+        addressType: 'native', path: "m/84'/0'/0'", passphraseUsed: false
+      }).watchOnlyText;
+      const addressLines = text.split('\n').filter(line =>
+        /^m\/84'\/0'\/0'\/[01]\/\d+: /.test(line));
+      return [addressLines.length, addressLines.at(4).startsWith("m/84'/0'/0'/0/4:"),
+              addressLines.at(9).startsWith("m/84'/0'/0'/1/4:")].join();
+    }, '10,true,true'],
+
+  /* ---- the recorded entropy source --------------------------------------
+
+     The record exists so somebody can check a file against the paper they
+     rolled it on. That is only worth anything if what is written reproduces
+     what was hashed, which is what the first of these tests states directly:
+     the transcript, read back out of the finished document and normalised, is
+     the same string the derivation consumed. */
+  ['source: the written transcript normalises back to what was hashed',
+    () => {
+      const written = recordedTranscript(exportWithSource().privateText);
+      return C.normalise('coin', written) === C.normalise('coin', FLIPS);
+    }, true],
+  ['source: the private record names the method, word count and tally',
+    () => {
+      const text = exportWithSource().privateText;
+      return ['Method: Coin flips', 'Words: 12', 'Recorded: 128 flips']
+        .every(line => text.includes(line));
+    }, true],
+  ['source: 128 single-character events wrap at fifty, grouped in fives',
+    () => {
+      const rows = recordedTranscript(exportWithSource().privateText).split('\n');
+      return [rows.length, rows[0].length, rows.at(-1).length,
+        rows.every(row => row.split(' ').every(g => g.length <= 5))].join();
+    }, '3,59,33,true'],
+  /* 58 cards, which is what 24 words takes: a full deck and six from the next.
+     Thirteen to a line puts the turn of the deck partway through the fifth row
+     rather than at a line break, which is the honest picture of it. */
+  ['source: cards wrap at thirteen a line',
+    () => {
+      const deal = C.CARD_DECK.join('') + C.CARD_DECK.slice(0, 6).join('');
+      const wallet = C.deriveSeed({ method: 'cards', input: deal, words: 24, wordlist: WORDLIST });
+      const text = C.buildWalletExportTexts({
+        mnemonic: wallet.mnemonic, wordlist: WORDLIST, seed: wallet.seed,
+        addressType: 'native', path: "m/84'/0'/0'", passphraseUsed: false,
+        source: { method: 'cards', input: deal, words: 24 }
+      }).privateText;
+      const rows = recordedTranscript(text).split('\n');
+      return [rows.length, rows.map(row => row.split(' ').length).join('-')].join();
+    }, '5,13-13-13-13-6'],
+  /* The record must not be able to claim a sequence that produces a different
+     wallet. Anything else would be worse than omitting it: a file that looks
+     checkable and is not. */
+  ['source: a transcript that does not reproduce the words is refused',
+    () => {
+      const wrong = 'T' + FLIPS.slice(1);
+      try {
+        exportWithSource({ input: wrong });
+        return 'accepted';
+      } catch (error) {
+        return error.message.includes('does not reproduce these recovery words')
+          ? 'refused' : error.message;
+      }
+    }, 'refused'],
+  ['source: the watch-only record carries no transcript at all',
+    () => {
+      const watch = exportWithSource().watchOnlyText;
+      return [watch.includes(FLIPS), watch.includes('Transcript'),
+        watch.includes('Entropy source'), watch.includes('Coin flips')].join();
+    }, 'false,false,false,false'],
+  ['source: a record built without one is unchanged',
+    () => {
+      const bare = C.buildWalletExportTexts({
+        mnemonic: FLIP_WALLET.mnemonic, wordlist: WORDLIST, seed: FLIP_WALLET.seed,
+        addressType: 'native', path: "m/84'/0'/0'", passphraseUsed: false
+      }).privateText;
+      return [bare.includes('Entropy source'), bare.includes('Transcript')].join();
+    }, 'false,false'],
+
+  /* ---- SeedQR ------------------------------------------------------------
+
+     What this project promises about a SeedQR is compatibility and grid size,
+     not identical pixels to a SeedSigner-generated code. Grid size is the part
+     that matters, because a SeedQR exists to be punched into metal by hand:
+     25x25 for 12 words and 29x29 for 24, the dimensions SeedSigner's
+     specification states. These pin our encoder against those numbers. */
+  ['seedqr: 12 words are 48 numeric digits, 24 words are 96',
+    () => {
+      const twelve = C.seedQrDigits(ABANDON_12_WORDS, WORDLIST);
+      const twentyFour = C.seedQrDigits(ABANDON_24_WORDS, WORDLIST);
+      return [twelve.length, twentyFour.length,
+        /^[0-9]+$/.test(twelve + twentyFour)].join();
+    }, '48,96,true'],
+  ['seedqr: the codes are the 25x25 and 29x29 grids SeedSigner specifies',
+    () => [ABANDON_12_WORDS, ABANDON_24_WORDS]
+      .map(words => QR.QrCode.encodeText(
+        C.seedQrDigits(words, WORDLIST), QR.QrCode.Ecc.MEDIUM).size).join(),
+    '25,29'],
+  /* Not a promise, a pin on the vendored library: Nayuki raises the error
+     correction of a code whose data already fits, so asking for Medium yields
+     Quartile at 12 words and stays Medium at 24. Recorded so an encoder
+     upgrade that changed the boost -- and with it the module pattern somebody
+     has already transcribed -- cannot pass unnoticed. The dimensions would
+     survive such a change; the pattern inside them would not. */
+  ['seedqr: the encoder boosts 12 words to Quartile and leaves 24 at Medium',
+    () => [ABANDON_12_WORDS, ABANDON_24_WORDS]
+      .map(words => QR.QrCode.encodeText(
+        C.seedQrDigits(words, WORDLIST), QR.QrCode.Ecc.MEDIUM)
+        .errorCorrectionLevel.ordinal).join(),
+    [QR.QrCode.Ecc.QUARTILE.ordinal, QR.QrCode.Ecc.MEDIUM.ordinal].join()],
 
   /* The boundary itself, from both sides. The rule is per pass, so the same
      card is a mistake at 52 and a legitimate draw at 53 -- these pin that the

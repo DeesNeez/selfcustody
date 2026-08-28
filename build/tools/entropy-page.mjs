@@ -439,17 +439,34 @@ ${FONTS.map(embedFont).join('\n')}
   .xprv-more > summary::-webkit-details-marker { display: none; }
   .xprv-more-head { display: flex; align-items: baseline; gap: 10px; }
   .xprv-more-head b {
-    color: #ffad4c; font-size: 0.72rem; font-weight: 800;
-    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink); font-size: 0.84rem; font-weight: 700;
+    letter-spacing: 0.01em;
   }
-  .xprv-more-head code { flex: 1 1 auto; min-width: 0; }
+  /* The summary used to carry the derivation path, which did the pushing.
+     The path now sits with the key it belongs to, so the chevron holds the
+     right edge itself. */
   .xprv-more-head i {
-    flex: 0 0 auto; width: 7px; height: 7px; margin-right: 2px;
+    flex: 0 0 auto; width: 7px; height: 7px; margin: 0 2px 0 auto;
     border-right: 2px solid #ffad4c; border-bottom: 2px solid #ffad4c;
     transform: translateY(-2px) rotate(45deg); transition: transform 0.15s ease;
   }
   .xprv-more[open] .xprv-more-head i { transform: translateY(1px) rotate(-135deg); }
-  .xprv-more-body { margin-top: 4px; }
+  .xprv-more-body { margin-top: 10px; }
+  .xprv-more-body > .label { margin-bottom: 6px; }
+  /* Two sections in one disclosure, so the second announces itself. */
+  #seedqr-block {
+    margin-top: 18px; padding-top: 16px;
+    border-top: 1px solid rgba(255, 138, 0, 0.16);
+  }
+  /* Grouped in fours because four digits is exactly one word's index, so the
+     grouping lines up with the numbered list above rather than being decoration.
+     Margins on the spans rather than spaces between them: what a person copies
+     is the unbroken run every SeedQR reader expects. */
+  .seedqr-digits {
+    margin: 12px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9rem; line-height: 1.9; color: var(--ink);
+  }
+  .seedqr-digits span { display: inline-block; margin-right: 0.6em; }
   .descriptor-split { margin-top: 14px; }
   .descriptor-split summary { font-size: 0.85rem; }
   .split-line { display: grid; gap: 3px; margin: 0 0 10px; }
@@ -458,6 +475,77 @@ ${FONTS.map(embedFont).join('\n')}
   .xpub-note {
     font-family: inherit !important; color: var(--muted) !important;
     font-size: 0.85rem !important; margin-top: 12px !important; word-break: normal !important;
+  }
+
+  /* The two files are deliberately not presented as equivalent buttons. One
+     is a spending backup and one is watch-only metadata; putting them in one
+     undifferentiated action row would make the dangerous choice look like a
+     format preference. The cards state their contents before the buttons,
+     and the private one gets the warning colour and a second confirmation. */
+  .export-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .export-card {
+    display: flex; flex-direction: column; min-width: 0; padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.11); border-radius: 12px;
+    background: rgba(0, 0, 0, 0.18);
+  }
+  .export-intro { margin-bottom: 15px; }
+  .export-card.is-private { border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.085); }
+  .export-card.is-watch { border-color: rgba(255, 138, 0, 0.34); background: rgba(255, 138, 0, 0.055); }
+  .export-tag {
+    width: fit-content; margin-bottom: 9px; padding: 4px 9px; border-radius: 5px;
+    color: var(--muted); background: rgba(255, 255, 255, 0.06);
+    font-size: 0.76rem; font-weight: 800; line-height: 1.25; letter-spacing: 0.07em; text-transform: uppercase;
+  }
+  .is-private .export-tag { color: #ff9d8a; background: rgba(214, 94, 64, 0.14); }
+  .is-watch .export-tag { color: #ffad4c; background: rgba(255, 138, 0, 0.11); }
+  .export-card h4 { margin: 0 0 7px; color: #fff; font-size: 0.98rem; }
+  .export-card p { margin: 0 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
+  .export-card .export-button { margin-top: auto; }
+  .export-button {
+    width: 100%; padding: 10px 13px; border: 1px solid rgba(255, 255, 255, 0.17);
+    border-radius: 8px; color: var(--ink); background: rgba(255, 255, 255, 0.055);
+    font: inherit; font-size: 0.83rem; font-weight: 800; cursor: pointer;
+  }
+  .export-button:hover:not(:disabled) { color: #fff; border-color: rgba(255, 138, 0, 0.56); }
+  .export-button:disabled { opacity: 0.55; cursor: wait; }
+  .is-private .export-button { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
+  .is-private .export-button:hover:not(:disabled) { border-color: rgba(255, 157, 138, 0.72); }
+  .is-watch .export-button { color: #ffad4c; border-color: rgba(255, 138, 0, 0.36); }
+  .export-status { min-height: 1.4em; margin: 9px 0 0; color: var(--muted); font-size: 0.78rem; }
+
+  .export-dialog {
+    width: min(520px, calc(100vw - 32px)); padding: 25px 27px;
+    color: var(--ink); background: #201a18;
+    border: 1px solid rgba(214, 94, 64, 0.7); border-radius: 14px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.62);
+  }
+  .export-dialog::backdrop { background: rgba(8, 7, 6, 0.74); }
+  .export-dialog h2 { margin: 0 32px 10px 0; color: #ff9d8a; font-size: 1.25rem; }
+  .export-dialog p { margin: 0 0 11px; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.65; }
+  .export-dialog strong { color: #fff; }
+  .export-dialog-close {
+    float: right; margin: -5px -5px 0 0; padding: 0 6px; border: 0; border-radius: 6px;
+    color: var(--muted); background: none; font-size: 1.3rem; line-height: 1.2; cursor: pointer;
+  }
+  .export-dialog-close:hover { color: #ff9d8a; }
+  /* role="alert" is assertive, which is right here: it only ever carries a
+     refusal, and a refusal the person cannot see is the bug this fixes. */
+  .export-dialog-error:empty { display: none; }
+  .export-dialog-error {
+    margin: 16px 0 0; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.12);
+    color: #ff9d8a; font-size: 0.84rem; line-height: 1.55;
+  }
+  .export-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 19px; }
+  .export-dialog-actions .export-button { width: auto; }
+  .export-dialog .export-button { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
+  .export-dialog .export-button:hover:not(:disabled) { border-color: rgba(255, 157, 138, 0.72); }
+
+  @media (max-width: 620px) {
+    .export-grid { grid-template-columns: 1fr; }
+    .export-dialog { padding: 22px 20px; }
+    .export-dialog-actions { display: grid; }
+    .export-dialog-actions .export-button, .export-dialog-actions .key-tool { width: 100%; }
   }
 
   /* ---- the eight endings ------------------------------------------------
@@ -585,6 +673,7 @@ ${FONTS.map(embedFont).join('\n')}
     font-size: 0.78rem; font-weight: 700; line-height: 1.5;
   }
   .deal b.red { color: #ff7a6b; }
+  .deal b span { margin-left: 0.15em; }
   /* Where one deck ends and the next begins. A full-width break rather than a
      separator between two chips: the reader is holding 52 cards in one hand and
      six in the other, and the screen should be the same shape. */
@@ -1981,6 +2070,97 @@ const ui = () => `
      keeps them out of the DOM until somebody asks to see one. */
   const qrSources = Object.create(null);
 
+  /* Download URLs are capabilities for the bytes inside their Blob, so they
+     get the same lifecycle as every other derived value. Revoke shortly after
+     the synthetic click, and immediately when the result is invalidated or
+     Clear is pressed. Static filenames avoid leaking a fingerprint into the
+     downloads list or a synced filename. */
+  const exportUrls = new Set();
+
+  function revokeExportUrl(url) {
+    if (!exportUrls.delete(url)) return;
+    URL.revokeObjectURL(url);
+  }
+
+  function clearExportState() {
+    for (const url of [...exportUrls]) revokeExportUrl(url);
+    const dialog = $('export-private-dialog');
+    if (dialog && dialog.open) dialog.close();
+    for (const id of ['export-status', 'export-private-error']) {
+      const line = $(id);
+      if (line) line.textContent = '';
+    }
+  }
+
+  function downloadTextRecord(text, filename) {
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+    exportUrls.add(url);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.hidden = true;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => revokeExportUrl(url), 1000);
+  }
+
+  /* The builder receives the cached seed and only a boolean for passphrase
+     state. The passphrase value itself never crosses this boundary. Kept in
+     the click handler's task so the Blob download retains the browser's user
+     activation: yielding first, for a progress state or any other repaint,
+     makes a local file download more likely to be refused as synthetic. That
+     is also why nothing here reports progress -- one synchronous task cannot
+     paint twice, so a "Preparing" label would be a lie the eye never sees,
+     and single-threaded execution already rules out an overlapping click. */
+  function prepareExport(kind) {
+    if (!state.seed || $('results').hidden) return;
+    const isPrivate = kind === 'private';
+    const path = $('path').value.trim();
+
+    /* Where a failure has to appear depends on where the click came from. The
+       page-level line sits behind the modal's backdrop, so reporting a private
+       failure there writes into a region the person cannot see: the button
+       does nothing and nothing explains why. */
+    const fail = message => {
+      const line = isPrivate && $('export-private-dialog').open
+        ? $('export-private-error') : $('export-status');
+      line.textContent = message;
+    };
+
+    try {
+      if (state.seedKey !== seedKeyFor(clean())) {
+        throw new Error('the wallet changed before the file was ready');
+      }
+      const texts = C.buildWalletExportTexts({
+        mnemonic: state.seed.mnemonic,
+        wordlist: WORDLIST,
+        seed: state.seed.seed,
+        addressType: state.addressType,
+        path,
+        passphraseUsed: $('passphrase').value.length > 0,
+        /* What was rolled, flipped or drawn, so the file can be checked
+           against the paper it came from. The builder replays it and refuses
+           the record if it does not reproduce these words. */
+        source: {
+          method: method(), input: clean(), words: state.words, choice: state.choice
+        }
+      });
+      downloadTextRecord(
+        isPrivate ? texts.privateText : texts.watchOnlyText,
+        isPrivate ? 'selfcustody-private-recovery.txt' : 'selfcustody-watch-only.txt'
+      );
+      /* Closed before the message is written, so the success line is not
+         reported into a region the backdrop is covering. */
+      if (isPrivate && $('export-private-dialog').open) $('export-private-dialog').close();
+      $('export-status').textContent = isPrivate
+        ? 'Private recovery record download requested. Treat the file like the wallet itself.'
+        : 'Watch-only record download requested. It cannot spend, but it reveals wallet activity.';
+    } catch (error) {
+      fail('Could not prepare that record: ' + error.message + '.');
+    }
+  }
+
   function qrSvg(text, ecc) {
     const qr = qrcodegen.QrCode.encodeText(text, ecc);
     const dim = qr.size + QR_QUIET * 2;
@@ -2040,7 +2220,13 @@ const ui = () => `
       const chip = document.createElement('b');
       const suit = card.slice(1);
       if (suit === 'H' || suit === 'D') chip.className = 'red';
-      chip.textContent = card.slice(0, 1) + (SUIT_MARK[suit] || suit);
+      /* Rank and suit as separate nodes so a margin can sit between them:
+         monospace sets 3 and a heart hard against each other, and a suit is a
+         picture rather than a second digit. Display only -- the string that
+         gets hashed never comes back from here. */
+      const mark = document.createElement('span');
+      mark.textContent = SUIT_MARK[suit] || suit;
+      chip.append(card.slice(0, 1), mark);
       out.push(chip);
     });
     el.replaceChildren(...out);
@@ -2195,8 +2381,21 @@ const ui = () => `
   function invalidateDerivedState() {
     generation += 1;
     if (deriveTimer) { clearTimeout(deriveTimer); deriveTimer = 0; }
+    clearExportState();
     state.seed = null;
     state.seedKey = null;
+
+    /* The strings parked for the QR buttons are derived material like any
+       other, and this is the only place that drops them. Clearing the page is
+       not the only thing that invalidates a wallet -- editing a single roll
+       does too -- and until this moved, that path emptied the DOM while
+       leaving the last mnemonic's SeedQR digits reachable in qrSources. The
+       buttons live inside #results, so nothing could open one; the defect was
+       that a secret outlived the wallet it belonged to and could not be
+       collected while a live object still referenced it. */
+    for (const key of Object.keys(qrSources)) delete qrSources[key];
+    if ($('qr-dialog').open) $('qr-dialog').close();
+
     for (const id of SECRET_TEXT) {
       const el = $(id);
       if (!el) continue;
@@ -2231,7 +2430,8 @@ const ui = () => `
     'master-xprv', 'xprv', 'xprv-path', 'xprv-alt', 'xprv-alt-label',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path', 'recv-more', 'chng-more',
     'qr-dialog-code', 'qr-dialog-text', 'qr-dialog-title',
-    'fp-base', 'fp-pass', 'fp-base-tag'
+    'fp-base', 'fp-pass', 'fp-base-tag',
+    'seedqr-digits', 'seedqr-grid'
   ];
 
   function clearSensitiveState() {
@@ -2241,10 +2441,6 @@ const ui = () => `
     }
     invalidateDerivedState();
     state.choice = 0;
-    /* The parked strings are derived material too. Left behind, the next press
-       of a button would open the last wallet's address over an empty page. */
-    for (const key of Object.keys(qrSources)) delete qrSources[key];
-    if ($('qr-dialog').open) $('qr-dialog').close();
 
     /* The transient UI as well, or clearing leaves a page that disagrees with
        itself: a roll counter describing rolls that are gone, an enabled Derive
@@ -2372,6 +2568,11 @@ const ui = () => `
       invalidateDerivedState();
       return;
     }
+
+    /* A rerender means at least the account presentation may have changed.
+       Close a pending confirmation and retire any Blob URL before painting
+       the new result, so no control remains attached to the prior one. */
+    clearExportState();
 
     const path = $('path').value.trim();
     let addresses;
@@ -2521,6 +2722,31 @@ const ui = () => `
       $('xprv-alt').textContent = typedPriv;
       $('xprv-alt-label').textContent = typedPriv.slice(0, 4);
     }
+
+    /* 12 words are 48 digits and 24 are 96, which the vendored encoder puts in
+       a 25x25 and a 29x29 grid -- the sizes SeedSigner's specification states.
+       Both are pinned by the test suite rather than asserted from here.
+
+       A length with no stated grid hides the section rather than guessing one.
+       The number is a promise about how many squares somebody is about to
+       punch into metal, and 18-word support arriving later must add its grid
+       deliberately instead of inheriting whichever branch it happened to take.
+
+       Only the digits are written. Nothing is encoded until the button asks,
+       and the string lives in qrSources so it leaves with the rest. */
+    const SEEDQR_GRIDS = { 12: '25 \u00d7 25', 24: '29 \u00d7 29' };
+    const grid = SEEDQR_GRIDS[state.seed.mnemonic.length];
+    $('seedqr-block').hidden = !grid;
+    if (grid) {
+      const digits = C.seedQrDigits(state.seed.mnemonic, WORDLIST);
+      $('seedqr-grid').textContent = grid;
+      $('seedqr-digits').replaceChildren(...(digits.match(/.{4}/g) || []).map(group => {
+        const cell = document.createElement('span');
+        cell.textContent = group;
+        return cell;
+      }));
+      qrSources.seedqr = { text: digits, title: 'SeedQR' };
+    }
     $('type-note').textContent = C.ADDRESS_TYPES[state.addressType].note;
     $('results').hidden = false;
   }
@@ -2623,6 +2849,15 @@ const ui = () => `
       $('qr-dialog').showModal();
     });
   }
+
+  $('export-private-open').addEventListener('click', () => {
+    /* A refusal from a previous attempt is about a wallet that may no longer
+       be on screen. Opening the warning again starts from the warning. */
+    $('export-private-error').textContent = '';
+    $('export-private-dialog').showModal();
+  });
+  $('export-private-confirm').addEventListener('click', () => prepareExport('private'));
+  $('export-watch').addEventListener('click', () => prepareExport('watch'));
 
   $('go').addEventListener('click', derive);
   $('alarm-back').addEventListener('click', () => $('alarm').close());
@@ -3211,9 +3446,14 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <strong>master fingerprint</strong> below. Anything holding it can move every coin this phrase
       will ever control.</p>
 
+    <!-- One disclosure rather than two stacked in the same box. The summary
+         names both rather than filing the SeedQR under the account key: a
+         SeedQR is the recovery words as digits, not that key, and saying so
+         is the difference between a heading and a claim. -->
     <details class="xprv-more" id="xprv-more">
-      <summary><span class="xprv-more-head"><b>Account private key</b><code id="xprv-path"></code><i aria-hidden="true"></i></span></summary>
+      <summary><span class="xprv-more-head"><b>Show account key and SeedQR</b><i aria-hidden="true"></i></span></summary>
       <div class="xprv-more-body">
+        <div class="label"><span>Account path</span><code id="xprv-path"></code></div>
         <p id="xprv"></p>
         <div id="xprv-alt-row" hidden>
           <div class="label"><span>Same key as <b id="xprv-alt-label"></b></span></div>
@@ -3223,6 +3463,14 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
           <b>zprv</b> exists at, so it is what to match against a device showing one.</p>
         <p class="xpub-note">On its own it reports its own fingerprint, not the master one &mdash; it
           cannot see that far up. The descriptor below carries the origin and does.</p>
+
+        <div id="seedqr-block">
+          <div class="label"><span>SeedQR recovery code</span></div>
+          <p class="xpub-note">The recovery words as numbers: each word&rsquo;s place in the BIP39 list, four digits per word, in the order they appear above. <a href="https://github.com/SeedSigner/seedsigner/blob/dev/docs/seed_qr/README.md" target="_blank" rel="noopener noreferrer">SeedSigner</a> and compatible signing devices scan it. This one is a <b id="seedqr-grid"></b> grid &mdash; the size of the job if you punch it into metal.</p>
+          <p class="seedqr-digits" id="seedqr-digits"></p>
+          <p class="xpub-note">This is the phrase in another alphabet, nothing weaker. Anything that reads it can spend the wallet.</p>
+          <p class="qr-row"><button type="button" class="qr-button" data-qr="seedqr">Show QR</button></p>
+        </div>
       </div>
     </details>
   </div>
@@ -3277,6 +3525,39 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       </div>
     </details>
   </div>
+
+  <h3>Export records</h3>
+  <p class="hint export-intro">Two plain-text files for two different jobs. The private one restores and spends; the watch-only one cannot spend, but still reveals the wallet&rsquo;s addresses and history.</p>
+  <div class="export-grid">
+    <article class="export-card is-private">
+      <span class="export-tag">Keep secret</span>
+      <h4>Private recovery record</h4>
+      <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value.</p>
+      <button type="button" class="export-button" id="export-private-open">Review and download</button>
+    </article>
+    <article class="export-card is-watch">
+      <span class="export-tag">No spending keys</span>
+      <h4>Watch-only record</h4>
+      <p>Account public keys, checked descriptors and the first five addresses on each branch. Safe from spending, not private from balance and history.</p>
+      <button type="button" class="export-button" id="export-watch">Download watch-only record</button>
+    </article>
+  </div>
+  <p class="export-status" id="export-status" role="status" aria-live="polite"></p>
+
+  <dialog class="export-dialog" id="export-private-dialog" aria-labelledby="export-private-title">
+    <form method="dialog">
+      <button class="export-dialog-close" value="cancel" aria-label="Close">&times;</button>
+      <h2 id="export-private-title">This file can spend the wallet</h2>
+      <p>It contains the recovery words, SeedQR digits and private keys shown above. Anyone who gets the file can move the wallet&rsquo;s coins.</p>
+      <p><strong>Download it only on the offline computer</strong>, then move it directly to the protected backup storage you chose. Do not put it in cloud storage, email or chat.</p>
+      <p>The BIP39 passphrase value is deliberately left out. If one was used, the file says so and the passphrase must remain stored separately.</p>
+      <p class="export-dialog-error" id="export-private-error" role="alert"></p>
+      <div class="export-dialog-actions">
+        <button type="button" class="export-button" id="export-private-confirm">Download private record</button>
+        <button type="submit" class="key-tool" value="cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
 
   <details>
     <summary>Show the raw entropy</summary>
