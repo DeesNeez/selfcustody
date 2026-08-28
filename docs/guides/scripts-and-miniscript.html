@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.">
-  <title>Scripts and miniscript | SelfCustody.ca</title>
+  <meta name="description" content="Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and Miniscript is what made writing those safely something other than a specialist art.">
+  <title>Scripts and Miniscript | SelfCustody.ca</title>
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://selfcustody.ca/guides/scripts-and-miniscript.html">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="en_CA">
   <meta property="og:site_name" content="SelfCustody.ca">
-  <meta property="og:title" content="Scripts and miniscript | SelfCustody.ca">
-  <meta property="og:description" content="Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.">
+  <meta property="og:title" content="Scripts and Miniscript | SelfCustody.ca">
+  <meta property="og:description" content="Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and Miniscript is what made writing those safely something other than a specialist art.">
   <meta property="og:url" content="https://selfcustody.ca/guides/scripts-and-miniscript.html">
   <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
   <meta property="og:image:type" content="image/jpeg">
@@ -25,10 +25,10 @@
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4931" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260827-4931" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260827-4931" rel="stylesheet">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Scripts and miniscript","description":"Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.","url":"https://selfcustody.ca/guides/scripts-and-miniscript.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/scripts-and-miniscript.html"}}</script>
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260828-4937" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260828-4937" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260828-4937" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Scripts and Miniscript","description":"Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and Miniscript is what made writing those safely something other than a specialist art.","url":"https://selfcustody.ca/guides/scripts-and-miniscript.html","datePublished":"2026-08-18","dateModified":"2026-08-18","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/scripts-and-miniscript.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
   <div id="site-header">
@@ -77,8 +77,8 @@
           <a href="../guides.html#concepts">Concepts</a>
         </nav>
         <span class="sc-eyebrow">How it works</span>
-        <h1>Scripts and miniscript</h1>
-        <p class="sc-lead">Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.</p>
+        <h1>Scripts and Miniscript</h1>
+        <p class="sc-lead">Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and Miniscript is what made writing those safely something other than a specialist art.</p>
         <div class="sc-guide-meta">
           <span class="sc-level sc-level-advanced">Advanced</span>
           <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 20 minutes</span>
@@ -136,7 +136,7 @@
 
       <p>Miniscript is a restricted, structured way of writing the useful subset of Script &mdash; and the restriction is the entire point. By limiting how pieces may be assembled, it makes the resulting policy something software can <em>analyse</em> rather than merely execute.</p>
 
-      <ul class="sc-check-list"><li><strong>It can be checked for correctness.</strong> Software can prove a miniscript is spendable by the parties intended, and cannot be spent by anyone else. The catastrophic failure of a hand-written script becomes a compile-time error.</li><li><strong>It composes.</strong> Conditions can be built from smaller ones — this key AND that timelock, OR two of these three — without the combination producing surprises.</li><li><strong>Wallets can work with it.</strong> They can compute the cost of each spending path, so fee estimation works and coin selection behaves.</li><li><strong>It is readable.</strong> A policy can be written in a form a careful person can actually check against what they meant, and it travels inside a <a href='how-wallets-find-coins.html'>descriptor</a> alongside the keys and derivation paths.</li><li><strong>It is not a new protocol.</strong> Miniscript compiles to ordinary Script that existing nodes already validate. Nothing had to change for it to work.</li></ul>
+      <ul class="sc-check-list"><li><strong>It can be checked for correctness.</strong> Software can prove a Miniscript is spendable by the parties intended, and cannot be spent by anyone else. The catastrophic failure of a hand-written script becomes a compile-time error.</li><li><strong>It composes.</strong> Conditions can be built from smaller ones — this key AND that timelock, OR two of these three — without the combination producing surprises.</li><li><strong>Wallets can work with it.</strong> They can compute the cost of each spending path, so fee estimation works and coin selection behaves.</li><li><strong>It is readable.</strong> A policy can be written in a form a careful person can actually check against what they meant, and it travels inside a <a href='how-wallets-find-coins.html'>descriptor</a> alongside the keys and derivation paths.</li><li><strong>It is not a new protocol.</strong> Miniscript compiles to ordinary Script that existing nodes already validate. Nothing had to change for it to work.</li></ul>
 
       <p>A policy might read, in plain English: <em>three of five company keys can spend at any time; or two of five, but only after ninety days; or a single recovery key after one year.</em> Ordinary multisig cannot express that at all &mdash; it has exactly one quorum, fixed forever. Miniscript expresses it, proves it does what it says, and produces an address that looks utterly unremarkable.</p>
 
@@ -148,7 +148,7 @@
 
       <h3>A worked example: AnchorWatch</h3>
 
-      <p><a href="https://anchorwatch.com/" target="_blank" rel="noopener">AnchorWatch</a> is a Lloyd's of London coverholder offering insured bitcoin custody, and its Trident Vault is built on miniscript rather than plain multisig. The reason is precisely the expressiveness described above.</p>
+      <p><a href="https://anchorwatch.com/" target="_blank" rel="noopener">AnchorWatch</a> is a Lloyd's of London coverholder offering insured bitcoin custody, and its Trident Vault is built on Miniscript rather than plain multisig. The reason is precisely the expressiveness described above.</p>
 
       <p>While the insurance policy is active, AnchorWatch is a required co-signer &mdash; which is what makes the coverage underwritable, since they can enforce controls on how funds move. They cannot spend unilaterally at any point. And the vault carries timelocked recovery paths, so if keys are lost, destroyed, or become unavailable through death or staff changes, different combinations of keys become usable as time passes.</p>
 
@@ -168,7 +168,7 @@
 
       <p>The obligation that comes with it is the same one multisig carries, only larger: the keys are not enough. The description of the policy is part of your backup, and without it the money is unreachable no matter how many keys you hold.</p>
 
-      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>The chain will enforce whatever you tell it to, exactly, forever, with nobody to appeal to. That is the feature and the danger in one sentence — and the reason miniscript's ability to prove what a policy does before you fund it matters more than anything it makes newly expressible.</p></div></div>
+      <div class="sc-callout mt-4"><h3>If you take one thing from this page</h3><p>The chain will enforce whatever you tell it to, exactly, forever, with nobody to appeal to. That is the feature and the danger in one sentence — and the reason Miniscript's ability to prove what a policy does before you fund it matters more than anything it makes newly expressible.</p></div></div>
       </div>
     </section>
 
@@ -261,6 +261,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260827-4931"></script>
+  <script src="../assets/js/site-refresh.js?v=20260828-4937"></script>
 </body>
 </html>

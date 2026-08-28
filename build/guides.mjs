@@ -1221,8 +1221,8 @@ const guides = [
       <p>The fix is not to suspect a particular manufacturer. It is to remove the question from the table: <strong>supply the randomness yourself, from something physical you can watch</strong>. Do that and the quality of the device's generator stops mattering, because it is no longer the thing deciding your wallet.</p>
 
       ${figure({
-        src: "../assets/img/dice-entropy.jpg",
-        alt: "Two dice mid-roll on a green felt table",
+        src: "../assets/img/quickstart-dice.jpg",
+        alt: "Two white dice caught in mid-air above a green felt runner on a scarred wooden table, beside a whisky glass, a brass oil lamp and a leather notebook",
         caption: "A physical process you can watch, in a room you control. That is the entire argument for doing it this way.",
         width: 1376,
         height: 768
@@ -5798,6 +5798,8 @@ const guides = [
 
       <p>Three bits is eight possibilities. So there are exactly eight words that can legally finish your phrase, and which of the eight you pick is the last of your randomness \u2014 the checksum part is then forced.</p>
 
+      <p>The same method shortens to a 12-word seed, and the arithmetic there is worth knowing because it is not the same shape: 11 throws are 121 bits against a 128-bit seed, which leaves seven free bits rather than three \u2014 <strong>128 valid endings to choose from instead of eight</strong>. <a href="bring-your-own-entropy.html">Bring Your Own Entropy</a> covers that case.</p>
+
       <p>Nobody computes a SHA-256 checksum with a pen. So this is the one step where the device earns its place: you enter your 23 words, it shows you the eight valid endings, and you throw the octal die one last time to choose between them. Faces 1 to 8, options one to eight. The device did not generate anything; it did arithmetic you could not do by hand, in front of you, on a wallet whose entropy you had already fixed.</p>
 
       ${callout("Do it once as a rehearsal", `Run the whole procedure end to end on a wallet you will wipe immediately. The point is to find out that your dictionary printout is missing a page, or that your handwriting turns 8 into B, while it costs you nothing.`)}
@@ -5877,7 +5879,7 @@ const guides = [
 
       ${figure({
         src: "../assets/img/dice-entropy.jpg",
-        alt: "Two dice mid-roll on a green felt table",
+        alt: "Two white dice caught in mid-air above a burgundy felt runner on a scarred wooden table, beside a whisky glass, a brass oil lamp and a leather notebook",
         caption: "Each roll is 2.58 bits of entropy. With enough randomness, you get a secret nobody else can guess.",
         width: 1376,
         height: 768
@@ -5983,7 +5985,7 @@ const guides = [
         "Anything that asks you to enter an existing recovery phrase to \"verify\" or \"validate\" it is stealing from you, however official it looks."
       ])}
 
-      ${callout("The tool for the job", `This site publishes one: <a href="../entropy.html">Entropy Workshop</a>. Enter your test rolls, coin flips or drawn cards and it shows the words and first addresses they convert to, so you can compare them against what your device produced. It is a single file with nothing loaded from anywhere, so you can save it and run it on a machine that has never been online &mdash; and it deliberately cannot generate randomness or accept an existing recovery phrase, which is why it is safe to point you at.`)}
+      ${callout("The tool for the job", `This site publishes one: <a href="../entropy.html">Entropy Workshop</a>. Enter your test rolls, coin flips or drawn cards and it shows the words and first addresses they convert to, so you can compare them against what your device produced. It is a single file with nothing loaded from anywhere, so you can save it and run it on a machine that has never been online &mdash; and it deliberately cannot generate randomness or accept an existing recovery phrase, which is why it is safe to point you at. <a href="bring-your-own-entropy.html">Bring Your Own Entropy</a> walks through every control on it, and how to check the file itself before you trust what it tells you.`)}
 
       <h2>Finishing up</h2>
 
@@ -6002,6 +6004,159 @@ const guides = [
         Method comparison, cross-device warning, and verification steps after Keith Mukai&rsquo;s
         ${official("https://kdmukai-bot.github.io/seedsigner-ai-analysis/dice/standard.html", "Dice to seed")}.
         Dice-bias figures from Iversen, Longcor, Mosteller, Gilbert &amp; Youtz, <em>Psychometrika</em> 36(1), 1971, and Labby, <em>CHANCE</em> 22(4), 2009.
+      </p>`
+  },
+  {
+    slug: "bring-your-own-entropy",
+    category: "advanced",
+    products: [],
+    title: "BYOE: Bring Your Own Entropy",
+    titleMark: "sc-die-mark",
+    summary: "The Workshop turns coin flips, dice rolls or a shuffled deck into a wallet you can hold against your device. What it does with what you give it, what it refuses to do, and how to check it before you believe a word of it.",
+    level: "intermediate",
+    minutes: 16,
+    goals: ["learn", "harden"],
+    tags: ["Entropy", "Seed generation", "Open source"],
+    icon: "bi-rulers",
+    updated: "2026-08-27",
+    status: "published",
+    related: ["dice-entropy", "quickstart", "three-dice-seed", "human-randomness"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">A wallet is one enormous secret number. The Entropy Workshop will not make that number for you &mdash; there is no random number generator anywhere in it, and that absence is the whole design. You bring the randomness in from the physical world, and the page does the arithmetic in front of you: the same arithmetic your signing device does privately, so you can hold the two side by side and see whether they agree.</p>
+
+      <p>This guide is about reading that tool. What each control changes, what comes out the other end, and how to check the page itself before you trust anything it tells you.</p>
+
+      ${markLink("../entropy.html", "Open the Entropy Workshop")}
+
+      <h2><span class="sc-article-num">1</span>It cannot generate anything, and that is the feature</h2>
+
+      <p>Most "seed generator" pages you will find offer a button that produces a phrase. This one does not have that button, because it does not have anything to put behind it. There is no call to the browser&rsquo;s random number generator in the conversion path at all. Every bit that ends up in a wallet came off a coin, a die or a card that you handled.</p>
+
+      <p>The second absence matters just as much: there is nowhere on the page to type a recovery phrase you already own. The tool converts physical events into words, and only in that direction. A page that has no field for your phrase cannot be tricked into sending your phrase somewhere, which is a stronger guarantee than any promise about what it does with the field.</p>
+
+      ${pullQuote("A tool that cannot accept your recovery phrase cannot leak it. That is worth more than a promise not to.")}
+
+      <h2><span class="sc-article-num">2</span>Pick the source you actually have</h2>
+
+      <p>Step one asks what you are going to flip, roll or draw. The three sources are not interchangeable &mdash; they differ in how much each event is worth, and therefore in how long you will be sitting there.</p>
+
+      <ul>
+        <li><strong>Coins.</strong> One bit a flip, packed straight into the seed with nothing hashed. That makes it the only source you can check entirely by hand: heads is a 1, tails a 0, in the order you flipped them. It also makes it the longest &mdash; a 12-word seed takes exactly 128 flips, and a 24-word seed exactly 256.</li>
+        <li><strong>Six-sided dice.</strong> Each roll carries log2(6) = 2.585 bits, so 50 rolls fill a 12-word seed and 99 fill a 24-word one. The rolls are hashed rather than packed, which is why the count is not a round number.</li>
+        <li><strong>Octal and hex dice.</strong> One eight-sided die and two sixteen-sided dice throw 3 + 4 + 4 = 11 bits between them, which is exactly one recovery word. Nothing is hashed: the three faces name the word the way the printed dictionary does.</li>
+        <li><strong>Cards.</strong> A shuffled deck, drawn without replacement, so each card is worth slightly less than the last &mdash; log2(52) = 5.70 bits for the first, then log2(51), and so on. Twenty-five cards carry enough for 12 words. Twenty-four needs fifty-eight, which is more than a deck holds: draw all 52, shuffle them back together, and draw six more. The Workshop counts it the same way &mdash; it greys out the cards already drawn, and once the deck is finished it tells you to shuffle and carry on.</li>
+      </ul>
+
+      ${figure({
+        src: "../assets/img/bring-your-own-entropy-dice.jpg",
+        alt: "Two white dice caught in mid-air above a navy felt runner on a scarred wooden table, beside a whisky glass, a brass oil lamp, a leather notebook and a scatter of coins",
+        caption: "The part the page cannot do for you. Everything downstream is arithmetic; this is the only step that produces anything unpredictable.",
+        width: 1376,
+        height: 768
+      })}
+
+      <p>Whichever you choose, the page counts events rather than characters, and refuses to count a half-entered one &mdash; a card rank with no suit yet is not a card.</p>
+
+      <h2><span class="sc-article-num">3</span>The conversion is the part that has to match your device</h2>
+
+      <p>Here is the fact that sends most people to a tool like this in the first place: <strong>the same dice rolls produce different recovery words on different devices.</strong> Not because any of them is wrong, but because they made different reasonable choices about how to turn digits into bits.</p>
+
+      <p>So step two asks which convention to follow. For six-sided dice there are four:</p>
+
+      <ul>
+        <li><strong>Hash the rolls</strong> &mdash; SHA-256 over the digits exactly as typed. COLDCARD, SeedSigner and Krux.</li>
+        <li><strong>Hash, with 6 as 0</strong> &mdash; the same, after rewriting every 6 as a 0 first. Keystone and the BIP39 HTML tool.</li>
+        <li><strong>The bit table</strong> &mdash; each face contributes one or two bits, so no fixed number of rolls fills a seed.</li>
+        <li><strong>The BitBox lookup</strong> &mdash; five four-sided dice and a coin name a word outright, with nothing hashed.</li>
+      </ul>
+
+      <p>Cards have two: hash the draw, or use the BIP39 tool&rsquo;s variable-length card codes. Coins have one, because there is only one sensible thing to do with a bit.</p>
+
+      ${callout("If the words disagree with your device", `Change the conversion before you conclude anything. A mismatch between this page and your hardware is far more likely to be two different conventions than a dishonest device &mdash; and the page names which devices use which convention precisely so that you can check that first.`)}
+
+      <h2><span class="sc-article-num">4</span>The last word, and when you get to choose it</h2>
+
+      <p>A recovery phrase is not purely random. In a 12-word phrase, the first 11 words and part of the twelfth carry 128 bits of entropy, and the last four bits of the final word are a <a href="../glossary.html#term-checksum">checksum</a> computed from everything before them. In a 24-word phrase it is 256 bits and eight checksum bits. That is what makes a mistyped phrase detectable rather than silently wrong.</p>
+
+      <p>The tool always shows you whether the checksum holds, and it will open up and explain what the last word is made of if you ask it to. Where the interesting difference lies is whether you get a say in that last word:</p>
+
+      <ul>
+        <li><strong>Hashing methods leave you no choice.</strong> Hashing fixes all 128 or 256 entropy bits at once, so exactly one final word fits, and the tool fills it in.</li>
+        <li><strong>Lookup methods do.</strong> The octal-and-hex dictionary gives you 11 words from 11 throws, which is 121 bits &mdash; seven short of 128. Those seven unrolled bits are yours to pick, which means <strong>128 valid endings</strong> to choose from at 12 words, and eight at 24. The checksum itself is never a choice; it is computed either way.</li>
+      </ul>
+
+      <h2><span class="sc-article-num">5</span>What comes out</h2>
+
+      <p>Pressing the button gives you rather more than a phrase, because a phrase on its own is hard to check against anything:</p>
+
+      <ul>
+        <li><strong>The recovery words</strong>, numbered, with the checksum verdict beneath them.</li>
+        <li><strong>The account private key</strong> &mdash; the half that spends, shown openly beneath the words because the words are the more powerful secret and are already on screen. Where the address type has a SLIP-132 prefix, its twin is shown beside it, so a wallet displaying one and a device displaying the other do not look like a disagreement.</li>
+        <li><strong>The account public key</strong>, which is what a watch-only wallet means when it asks for your <a href="../glossary.html#term-xpub">xpub</a>.</li>
+        <li><strong>A watch-only <a href="../glossary.html#term-descriptor">descriptor</a></strong>, written the way a wallet wants to be handed one &mdash; script type named so it cannot be imported as the wrong address type, receiving and change covered together, and eight characters of checksum after the hash so a wallet can tell you that you mistyped rather than silently watching the wrong account.</li>
+        <li><strong>The first addresses</strong> on both the receiving and change branches, which is usually the fastest thing to compare against a device screen.</li>
+      </ul>
+
+      <p>The address type you pick changes the derivation path underneath all of it: legacy sits at m/44&rsquo;/0&rsquo;/0&rsquo;, nested SegWit at m/49&rsquo;/0&rsquo;/0&rsquo;, native SegWit at m/84&rsquo;/0&rsquo;/0&rsquo;, and taproot at m/86&rsquo;/0&rsquo;/0&rsquo;. Restoring the right words down the wrong path is the single most common reason a correctly restored wallet looks empty.</p>
+
+      <h2><span class="sc-article-num">6</span>The meter, and why more rolls stop helping</h2>
+
+      <p>As you enter events the page tracks how many bits they carry against how many the seed can hold. It is worth watching once, because the arithmetic is not intuitive: ninety-nine rolls of a six-sided die come to 255.9 bits, just under the 256 a 24-word seed holds, which is exactly why those rolls are hashed rather than packed in.</p>
+
+      <p>Keep rolling past the target and the count keeps climbing, because the count is honest about the source. What it will also tell you is that the extra lands nowhere: a seed holds what it holds, and everything above that is hashed down into the same number of bits. More rolls past the line change <em>which</em> wallet you get. They do not make it harder to guess.</p>
+
+      <h2><span class="sc-article-num">7</span>It checks itself, and it checks you</h2>
+
+      <p>Three separate guards run, and it is worth knowing what each one does and does not mean.</p>
+
+      <p><strong>It tests itself on load.</strong> The page carries published test vectors and runs them before it will show you anything. If any of them fail, it refuses to render results at all, because a conversion tool that is quietly wrong is worse than no tool.</p>
+
+      <p><strong>It refuses obviously typed input.</strong> Ninety-nine 1s, a walk up and down the faces, a neat repeating block &mdash; these get turned away. Cards get stricter treatment still, because a deck has rules: a rank must be followed by a suit, and one deck cannot deal the same card twice, so an impossible transcript is refused rather than quietly hashed.</p>
+
+      <p><strong>Neither of those is a randomness test.</strong> Passing the fabrication check means "nothing here is obviously fabricated". It does not mean the dice were fair, that you shuffled properly, or that the result is good randomness. No page can tell you that from the digits alone.</p>
+
+      ${cautions([
+        "A passing fabrication check is not a verdict on your dice or your shuffle.",
+        "The tool cannot detect a loaded die, a sticky coin, or a deck that was not really shuffled.",
+        "If you find yourself re-rolling because a sequence <em>looks</em> wrong, stop &mdash; that instinct is the bias the entropy guides describe, and it makes the result worse rather than better."
+      ])}
+
+      <h2><span class="sc-article-num">8</span>Check the file before you trust it</h2>
+
+      <p>The whole tool is one self-contained HTML file. It embeds its own fonts, styles, script and wordlist, carries a restrictive content-security policy, and makes no automatic network request of any kind. That is what makes it possible to carry it to a machine that has never been online.</p>
+
+      <p>Its SHA-256 is published beside it, and the page shows you how to check it:</p>
+
+      <ul>
+        <li><code>certutil -hashfile entropy-offline.html SHA256</code> on Windows</li>
+        <li><code>shasum -a 256 entropy-offline.html</code> on macOS or Linux</li>
+      </ul>
+
+      <p>Be clear about what that proves. It proves the file arrived intact &mdash; a truncated download, a proxy that rewrote something, a bad USB stick all change the hash and you will see it. <strong>It does not prove the file is genuine</strong>, because the checksum is served from the same place as the file it describes. Anyone able to replace one could replace the other. Same-origin checksums catch accidents, not adversaries. If a result is going to change what you believe about a wallet, compare a copy fetched over a different network or taken from the repository&rsquo;s history, and read the file &mdash; it is one unminified document, specifically so that reading it is possible.</p>
+
+      <h2><span class="sc-article-num">9</span>Where to run it, and the limit it will not pretend past</h2>
+
+      <p>Download it, check the hash, and open it from disk on a machine with no network. The page will tell you which copy you are running and how it was loaded, and it is careful about the wording, because there is a thing it genuinely cannot know.</p>
+
+      <p><strong>It cannot tell whether your machine is offline.</strong> From inside a browser, a local file on a fully connected laptop is indistinguishable from the same file on an air-gapped one. No badge on any page is proof of an air gap &mdash; only how you set the machine up is.</p>
+
+      ${callout("What this tool is for", `It is experimental, and it is for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose. Use it to check that a device produced what it should have, with a sequence you are content to throw away &mdash; not to manufacture the wallet you are going to live on.`)}
+
+      <h2>This is the instrument, not the procedure</h2>
+
+      <p>Worth being plain about where this page sits. Everything above describes a tool for checking work \u2014 it is not the method, and it is not the part that keeps bitcoin safe. The full dice procedure lives in one guide and the rules that outrank all of this live in another, and if you only read one more thing, read those rather than coming back here.</p>
+
+      <p class="mt-4"><a class="sc-text-link" href="dice-entropy.html">Roll the dice: the full procedure, and the rules people break <i class="bi bi-arrow-right"></i></a></p>
+      <p><a class="sc-text-link" href="quickstart.html">Intro to Self Custody: back it up and prove you can recover it <i class="bi bi-arrow-right"></i></a></p>
+      <p><a class="sc-text-link" href="human-randomness.html">Why you cannot think of a random number <i class="bi bi-arrow-right"></i></a></p>
+
+      <p class="sc-source-note">
+        Conversions follow BIP32, BIP39, BIP44/49/84/86 and SLIP-132; the descriptor follows
+        ${official("https://github.com/bitcoin/bips/blob/master/bip-0380.mediawiki", "BIP380")}
+        with the multipath notation of
+        ${official("https://github.com/bitcoin/bips/blob/master/bip-0389.mediawiki", "BIP389")}.
+        Device conventions are taken from each vendor&rsquo;s own documentation and reproduced as published test vectors.
       </p>`
   },
   {
@@ -6905,7 +7060,7 @@ const guides = [
         <div class="sc-inheritance-grid">
           <article class="is-green"><h3>Multisig with a third party</h3><p><span>How it works</span>Heirs hold one key; a lawyer, firm, or trusted person holds another. Neither side can act alone.</p><p><span>It demands</span>Coordination, and an heir who can complete a signing.</p></article>
           <article class="is-orange"><h3>Collaborative custody</h3><p><span>How it works</span>Unchained or Casa holds a key and runs a verified inheritance process.</p><p><span>It demands</span>Ongoing fees, and trusting a company to still exist.</p></article>
-          <article class="is-cream"><h3>Timelocked spending paths</h3><p><span>How it works</span>A smaller quorum becomes valid only after a long delay, enforced by bitcoin itself.</p><p><span>It demands</span>Real technical skill. See <a href='scripts-and-miniscript.html'>scripts and miniscript</a>.</p></article>
+          <article class="is-cream"><h3>Timelocked spending paths</h3><p><span>How it works</span>A smaller quorum becomes valid only after a long delay, enforced by bitcoin itself.</p><p><span>It demands</span>Real technical skill. See <a href='scripts-and-miniscript.html'>scripts and Miniscript</a>.</p></article>
           <article class="is-red"><h3>Product inheritance features</h3><p><span>How it works</span>Built-in claim processes with long notice periods, such as Bitkey's.</p><p><span>It demands</span>Committing to that product's ecosystem.</p></article>
           <article class="is-orange"><h3>Sealed instructions with a professional</h3><p><span>How it works</span>A lawyer holds a sealed envelope released only on death.</p><p><span>It demands</span>Trusting a firm and its filing over decades.</p></article>
         </div>
@@ -7237,7 +7392,7 @@ const guides = [
 
       ${checklist([
         "<strong>Time delays.</strong> A wallet with a mandatory waiting period cannot be emptied now by anyone, including you. The <a href='coldcard-advanced-features.html'>COLDCARD login countdown</a> does this at the device level; some products build a notice period into recovery itself.",
-        "<strong>Timelocked spending paths.</strong> Bitcoin can enforce that certain coins simply are not spendable until a future date. That is a fact about the chain, not a claim about your wallet &mdash; see <a href='scripts-and-miniscript.html'>scripts and miniscript</a>.",
+        "<strong>Timelocked spending paths.</strong> Bitcoin can enforce that certain coins simply are not spendable until a future date. That is a fact about the chain, not a claim about your wallet &mdash; see <a href='scripts-and-miniscript.html'>scripts and Miniscript</a>.",
         "<strong>Keys you cannot reach.</strong> A multisig whose second key is in another city, another country, or another person's hands cannot be assembled in an evening. <a href='multisig-key-geography.html'>Key geography</a> is the design work behind this.",
         "<strong>Keys other people must approve.</strong> A collaborative custody arrangement means a third party has to participate, on their schedule, through their process."
       ])}
@@ -7294,12 +7449,125 @@ const guides = [
       ${callout("If you take one thing from this page", `Not being identified as a holder protects you from every attack on this page at once, and costs nothing but silence. Every technical measure here is a distant second — and the ones that make you unable to comply protect your coins, which is not the same thing as protecting you.`)}`
   },
 
+  {
+    slug: "supply-chain-and-vendor-risk",
+    category: "advanced",
+    products: [],
+    title: "Supply chain, long cons, and the vendor you cannot avoid trusting",
+    summary: "You cannot read the silicon, and you did not watch the parcel. Three different problems hide under one heading &mdash; the intercepted package, the patient maintainer, and the vendor who simply changes &mdash; and only one defence survives all three.",
+    level: "intermediate",
+    minutes: 18,
+    goals: ["learn", "harden"],
+    tags: ["Threat model", "Open source", "Reproducible firmware"],
+    icon: "bi-box-seam",
+    updated: "2026-08-27",
+    status: "published",
+    related: ["choosing-your-first-setup", "multisig-2of3", "duress-and-coercion"],
+    layout: "article",
+    body: `
+      <p class="sc-guide-intro">At some point in every self-custody setup there is a thing you did not make and cannot inspect. A chip whose contents you take on faith. Firmware you did not compile. A parcel that spent four days out of your sight. You can push that boundary back a long way, and this guide is about how far &mdash; but the honest starting point is that it never reaches zero.</p>
+
+      <p>Three quite different problems get filed under "supply chain", and they call for different answers. Confusing them is how people end up buying tamper-evident stickers and calling it a threat model.</p>
+
+      <h2><span class="sc-article-num">1</span>Three problems wearing one name</h2>
+
+      <ul>
+        <li><strong>Interception.</strong> Someone touched the device between the factory and your hands &mdash; a swapped unit, a counterfeit, a pre-loaded recovery sheet. An outsider, acting once, against one parcel.</li>
+        <li><strong>The long con.</strong> Nobody intercepted anything, because the person you needed to worry about was inside from the beginning. They spent years being genuinely useful, and then spent the trust.</li>
+        <li><strong>Plain vendor risk.</strong> No attacker at all. A company folds, a product line is dropped, a design trade-off you never knew you accepted turns out to matter. Most of what actually goes wrong lives here.</li>
+      </ul>
+
+      ${pullQuote("A tamper seal answers the first problem, weakly. It has nothing to say about the other two.")}
+
+      <h2><span class="sc-article-num">2</span>The parcel</h2>
+
+      <p>Holographic seals and shrink wrap are worth something, but much less than their theatre suggests: they are manufactured goods like anything else, and an attacker who can source a device can usually source the packaging. Treat an intact seal as mildly reassuring and a broken one as disqualifying, and do not build anything on top of that.</p>
+
+      <p>The defence that actually works is procedural, and it is short: <strong>never accept a secret the device did not make while you were watching.</strong> The counterfeit that has taken the most money is not a sophisticated implant &mdash; it is a device shipped with a recovery sheet already filled in, and a card in the box explaining that this is your wallet. It is not. It is the attacker&rsquo;s wallet, and everything you send to it is a gift.</p>
+
+      ${cautions([
+        "A device that arrives with words already written on the recovery card is compromised. There is no benign version of this.",
+        "Being asked to re-type words the device has just shown you is the normal backup check, and both COLDCARD and Trezor document it. The danger is a phrase that existed before you initialised the device &mdash; printed on a card, already loaded when it arrived, or read out to you by someone claiming to be support.",
+        "Anyone who contacts you claiming your device needs its phrase re-entered for a firmware issue is running the same scam without the hardware."
+      ])}
+
+      <p>Beyond that: buy direct from the manufacturer rather than a marketplace where the listing and the fulfilment are different companies, initialise the device yourself, check the firmware version and its signature against the vendor&rsquo;s published value, and generate a fresh wallet before anything of value goes near it. Counterfeit units convincing enough to fool a casual look have been found in the wild, with the real microcontroller replaced &mdash; which is exactly why the check that matters is behavioural rather than visual.</p>
+
+      <h2><span class="sc-article-num">3</span>The long con</h2>
+
+      <p>This is the hard one, and it is not hypothetical.</p>
+
+      <p>In March 2024 an engineer investigating why ssh logins on a test machine had become about half a second slower found a backdoor inside <strong>xz</strong>, a compression library that ships in nearly every Linux distribution. It had been introduced by an account that had been contributing to the project for roughly two years &mdash; fixing real bugs, doing real work, eventually becoming a co-maintainer and gaining the right to cut releases. The malicious code was not in the source anyone reads; it was assembled from files that looked like test fixtures. It was found by accident, by someone chasing a performance oddity that had nothing to do with security.</p>
+
+      <p>Bitcoin has its own version. In 2018 the maintainer of a widely used JavaScript library, tired of supporting it for free, handed it to a volunteer who had been helpfully contributing for some time. The volunteer added a new dependency, and that dependency carried a payload aimed specifically at the build of a particular bitcoin wallet, targeting users&rsquo; keys. It reached an enormous number of machines before anyone noticed, because everything about the handover looked exactly like the open-source maintenance everyone wants more of.</p>
+
+      <p>Notice what defeats every heuristic you would normally reach for. A long commit history, real contributions, an established name, code in front of everyone &mdash; those are not evidence against this attack, they are the attack&rsquo;s method. Reputation is accrued in public precisely so it can be spent once.</p>
+
+      <h2><span class="sc-article-num">4</span>What reproducible builds prove</h2>
+
+      <p>A reproducible build means anyone can compile the published source and get a binary identical to the one the vendor shipped, byte for byte. That is a real and valuable property, and a device whose firmware is reproducible is meaningfully better than one whose is not.</p>
+
+      <p>Be precise about what it rules out, though. Reproducibility proves the binary matches the source. It says <em>nothing</em> about whether the source is honest. The xz backdoor was in the project&rsquo;s own repository, put there by someone entitled to put things there &mdash; a reproducible build would have faithfully reproduced it.</p>
+
+      ${callout("The distinction worth holding", `Reproducible builds defeat a compromised build server and a tampered download. They do not defeat a malicious maintainer, because that attacker does not need to change the binary &mdash; they change the source, in public, and let you compile it yourself.`)}
+
+      <h2><span class="sc-article-num">5</span>Signatures, and where the chain ends</h2>
+
+      <p>Verifying a release signature before you flash it defeats a substituted download: a file altered in transit or on a mirror will not verify against the vendor&rsquo;s key. Do it. Most vendors document the exact command, and the ones that do not are telling you something.</p>
+
+      <p>But follow the chain to its end and you arrive at a key you got from somewhere, most likely the same website that served the firmware. The usual answers help without closing it: fetch the key over a different network, check it against a copy published somewhere the vendor does not control, and note that a key you have been verifying against for three years is a better bet than one you fetched five minutes ago. A signature proves the vendor signed it. It cannot prove the vendor should have.</p>
+
+      <h2><span class="sc-article-num">6</span>The one answer that survives a dishonest vendor</h2>
+
+      <p>Every defence above assumes the vendor is honest and asks whether someone else interfered. Only one common arrangement drops that assumption: <strong>multisig across different manufacturers</strong>.</p>
+
+      <p>In a 2-of-3 where the three keys live on devices from three vendors, running three independent firmware codebases, a single compromised device cannot move funds. It cannot even do it quietly &mdash; it needs a second signature from a device that shares none of its code. That is a structural answer rather than a procedural one, which is why it is the only thing on this page that keeps working when the vendor themselves is the problem.</p>
+
+      <p>It is not free, and the costs are the familiar ones: three devices to buy, three backups to store and test, a descriptor to keep alongside them, and considerably more ways to lock yourself out by accident. A 2-of-3 protects you from one dishonest vendor and from one lost key. It also gives you three chances to lose the plot.</p>
+
+      <p class="mt-4"><a class="sc-text-link" href="multisig-2of3.html">How a 2-of-3 multisig actually works <i class="bi bi-arrow-right"></i></a></p>
+
+      <h2><span class="sc-article-num">7</span>Trade-offs you are choosing whether you notice or not</h2>
+
+      <ul>
+        <li><strong>Secure element or open silicon.</strong> A secure element resists someone who has your device on a bench, which is a real and common threat. It is also, by construction, a chip you cannot audit. Fully open designs invert both halves of that.</li>
+        <li><strong>Closed or open firmware.</strong> Open firmware can be read and, at its best, reproduced. Closed firmware cannot, and you are trusting a process you can only see the outputs of. Neither answers the malicious-maintainer case on its own.</li>
+        <li><strong>Standards or convenience.</strong> A device that stores a standard BIP39 phrase on a standard derivation path can be recovered on completely different hardware years from now. Anything proprietary makes the vendor&rsquo;s continued existence part of your backup plan.</li>
+        <li><strong>How much the vendor knows about you.</strong> Customer databases leak; one hardware wallet company&rsquo;s did, and its customers received phishing and physical threats for years afterwards. Where a device is bought, and under what name, is part of this decision.</li>
+      </ul>
+
+      <p class="mt-4"><a class="sc-text-link" href="duress-and-coercion.html">Why being identified as a holder is its own risk <i class="bi bi-arrow-right"></i></a></p>
+
+      <h2><span class="sc-article-num">8</span>What to actually do</h2>
+
+      ${checklist([
+        "Buy direct from the manufacturer, and prefer vendors who publish reproducible builds and signed releases.",
+        "Initialise every device yourself. Never accept a pre-filled recovery sheet, and never re-enter an existing phrase because someone asked you to.",
+        "Verify firmware signatures before flashing, and keep the vendor key you have been checking against rather than re-fetching it each time.",
+        "Confirm receive addresses on the device&rsquo;s own screen, not on the computer driving it.",
+        "Prefer standard BIP39 and standard derivation paths, so recovery never depends on one company still existing.",
+        "For amounts that would genuinely hurt to lose, spread the trust across vendors with multisig rather than deepening it with one."
+      ])}
+
+      <h2>The short version</h2>
+
+      <p>The parcel problem is real but tractable: buy direct, initialise it yourself, and never accept a secret you did not watch being made. The vendor-risk problem is mostly solved by standards, so that no company&rsquo;s survival is load-bearing. The long con is the one with no procedural fix, because it defeats reputation, code review and reproducible builds alike &mdash; and the only answer to it is not to let any single vendor be sufficient.</p>
+
+      ${callout("If you take one thing from this page", `Every check here except one assumes the vendor is honest and asks whether somebody else interfered. Multisig across manufacturers is the only arrangement that keeps working if that assumption is wrong &mdash; which is the assumption a long con is built to exploit.`)}
+
+      <p class="sc-source-note">
+        The 2024 xz backdoor is documented as CVE-2024-3094; the 2018 npm incident is documented in the
+        ${official("https://github.com/dominictarr/event-stream/issues/116", "event-stream maintainers&rsquo; own thread")}.
+        Device-specific verification steps come from each vendor&rsquo;s published documentation.
+      </p>`
+  },
+
   /* ----------------------------------------------------------------- concepts */
   {
     slug: "double-spend-problem",
     category: "concepts",
     products: [],
-    title: "The problem bitcoin solved",
+    title: "The problem Bitcoin solved",
     summary: "Digital money was considered impossible for thirty years, and the obstacle was not cryptography. It was getting strangers who cannot trust each other to agree on what happened first.",
     level: "intermediate",
     minutes: 18,
@@ -8413,8 +8681,8 @@ const guides = [
     slug: "scripts-and-miniscript",
     category: "concepts",
     products: [],
-    title: "Scripts and miniscript",
-    summary: "Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and miniscript is what made writing those safely something other than a specialist art.",
+    title: "Scripts and Miniscript",
+    summary: "Bitcoin can enforce far more than “whoever holds this key may spend”. It can enforce quorums, deadlines, and conditions that change over time — and Miniscript is what made writing those safely something other than a specialist art.",
     level: "advanced",
     minutes: 20,
     goals: ["learn", "harden"],
@@ -8475,7 +8743,7 @@ const guides = [
       <p>Miniscript is a restricted, structured way of writing the useful subset of Script &mdash; and the restriction is the entire point. By limiting how pieces may be assembled, it makes the resulting policy something software can <em>analyse</em> rather than merely execute.</p>
 
       ${checklist([
-        "<strong>It can be checked for correctness.</strong> Software can prove a miniscript is spendable by the parties intended, and cannot be spent by anyone else. The catastrophic failure of a hand-written script becomes a compile-time error.",
+        "<strong>It can be checked for correctness.</strong> Software can prove a Miniscript is spendable by the parties intended, and cannot be spent by anyone else. The catastrophic failure of a hand-written script becomes a compile-time error.",
         "<strong>It composes.</strong> Conditions can be built from smaller ones — this key AND that timelock, OR two of these three — without the combination producing surprises.",
         "<strong>Wallets can work with it.</strong> They can compute the cost of each spending path, so fee estimation works and coin selection behaves.",
         "<strong>It is readable.</strong> A policy can be written in a form a careful person can actually check against what they meant, and it travels inside a <a href='how-wallets-find-coins.html'>descriptor</a> alongside the keys and derivation paths.",
@@ -8497,7 +8765,7 @@ const guides = [
 
       <h3>A worked example: AnchorWatch</h3>
 
-      <p><a href="https://anchorwatch.com/" target="_blank" rel="noopener">AnchorWatch</a> is a Lloyd's of London coverholder offering insured bitcoin custody, and its Trident Vault is built on miniscript rather than plain multisig. The reason is precisely the expressiveness described above.</p>
+      <p><a href="https://anchorwatch.com/" target="_blank" rel="noopener">AnchorWatch</a> is a Lloyd's of London coverholder offering insured bitcoin custody, and its Trident Vault is built on Miniscript rather than plain multisig. The reason is precisely the expressiveness described above.</p>
 
       <p>While the insurance policy is active, AnchorWatch is a required co-signer &mdash; which is what makes the coverage underwritable, since they can enforce controls on how funds move. They cannot spend unilaterally at any point. And the vault carries timelocked recovery paths, so if keys are lost, destroyed, or become unavailable through death or staff changes, different combinations of keys become usable as time passes.</p>
 
@@ -8523,7 +8791,7 @@ const guides = [
 
       <p>The obligation that comes with it is the same one multisig carries, only larger: the keys are not enough. The description of the policy is part of your backup, and without it the money is unreachable no matter how many keys you hold.</p>
 
-      ${callout("If you take one thing from this page", "The chain will enforce whatever you tell it to, exactly, forever, with nobody to appeal to. That is the feature and the danger in one sentence — and the reason miniscript's ability to prove what a policy does before you fund it matters more than anything it makes newly expressible.")}`
+      ${callout("If you take one thing from this page", "The chain will enforce whatever you tell it to, exactly, forever, with nobody to appeal to. That is the feature and the danger in one sentence — and the reason Miniscript's ability to prove what a policy does before you fund it matters more than anything it makes newly expressible.")}`
   },
   {
     slug: "who-decides-the-rules",

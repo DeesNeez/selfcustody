@@ -25,9 +25,9 @@
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4931" rel="stylesheet">
-  <link href="../assets/css/style.css?v=20260827-4931" rel="stylesheet">
-  <link href="../assets/css/site-refresh.css?v=20260827-4931" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260828-4937" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260828-4937" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260828-4937" rel="stylesheet">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Three dice, one word: rolling a seed you can read","description":"One octal die and two hex dice throw exactly eleven bits — one recovery word, with nothing hashed and nothing to trust. The method, the arithmetic, and the one detail that quietly ruins it.","url":"https://selfcustody.ca/guides/three-dice-seed.html","datePublished":"2026-08-26","dateModified":"2026-08-26","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/three-dice-seed.html"}}</script>
 </head>
 <body class="site-refresh" data-page="guides">
@@ -119,6 +119,8 @@
       <p>A 24-word phrase is not 24 free words. It is 256 bits of secret plus an 8-bit checksum, and 24 &times; 11 = 264 = 256 + 8. Those eight checksum bits live in the last word, which is why the twenty-fourth word is mostly a verification digit rather than randomness. Your 23 throws are 253 bits. The last word carries the remaining three bits of secret, followed by a checksum computed over everything.</p>
 
       <p>Three bits is eight possibilities. So there are exactly eight words that can legally finish your phrase, and which of the eight you pick is the last of your randomness — the checksum part is then forced.</p>
+
+      <p>The same method shortens to a 12-word seed, and the arithmetic there is worth knowing because it is not the same shape: 11 throws are 121 bits against a 128-bit seed, which leaves seven free bits rather than three — <strong>128 valid endings to choose from instead of eight</strong>. <a href="bring-your-own-entropy.html">Bring Your Own Entropy</a> covers that case.</p>
 
       <p>Nobody computes a SHA-256 checksum with a pen. So this is the one step where the device earns its place: you enter your 23 words, it shows you the eight valid endings, and you throw the octal die one last time to choose between them. Faces 1 to 8, options one to eight. The device did not generate anything; it did arithmetic you could not do by hand, in front of you, on a wallet whose entropy you had already fixed.</p>
 
@@ -254,6 +256,6 @@
       </div>
     </footer></div>
   <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
-  <script src="../assets/js/site-refresh.js?v=20260827-4931"></script>
+  <script src="../assets/js/site-refresh.js?v=20260828-4937"></script>
 </body>
 </html>
