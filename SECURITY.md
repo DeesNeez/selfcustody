@@ -19,9 +19,13 @@ containment of the Entropy Workshop. Everything else — a broken link, a wrong
 fact in a guide, a layout bug — is welcome as a normal public issue.
 
 Include the page or file, what you did, what happened, and what you expected.
-A failing input is worth more than a description of one. If the report concerns
-the offline build, include the SHA-256 of the file you tested, since it tells us
-exactly which artifact you were looking at.
+When relevant, include the entropy source, word count, conversion method,
+address type, and derivation path.
+If an exact input is necessary to reproduce the issue, use only a disposable
+or minimized test vector. Never submit entropy, a recovery phrase, passphrase,
+private key, or other material from a wallet you use or intend to use.
+If the report concerns the offline build, include the SHA-256 of the file you
+tested so we can identify the exact artifact.
 
 Expect an acknowledgement within a week. There is no bounty programme.
 
