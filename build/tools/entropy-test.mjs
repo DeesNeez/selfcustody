@@ -909,6 +909,70 @@ export const VECTORS = [
   ['cards: repeatedCard finds nothing in a real draw',
     () => C.repeatedCard(REAL_DRAW), null],
 
+  /* ---- the master key -----------------------------------------------------
+
+     The page shows this beside the account key, and the whole reason it is
+     there is that a wallet handed the account key reports a different
+     fingerprint -- which reads as a mismatch and is not one. These pin the
+     three properties that claim rests on. */
+  ['master: depth 0, so it carries no derivation of its own',
+    () => C.masterKey(C.deriveSeed({ method: 'dice', input: REAL_ROLLS, words: 24,
+      wordlist: WORDLIST }).seed).depth, 0],
+  ['master: a wallet given it reproduces the fingerprint the page shows',
+    () => {
+      const s = C.deriveSeed({ method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST });
+      return C.hex(C.fingerprint(C.masterKey(s.seed))).toUpperCase() === C.masterFingerprint(s.seed);
+    }, true],
+  ['master: the account key does not, which is the confusion it explains',
+    () => {
+      const s = C.deriveSeed({ method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST });
+      const acct = C.derive(C.masterKey(s.seed), C.accountPath('native', 0));
+      return C.hex(C.fingerprint(acct)).toUpperCase() === C.masterFingerprint(s.seed);
+    }, false],
+  /* It sits above the address-type choice, so all four branches share it.
+     If this ever came out as four different keys the box would be lying. */
+  ['master: one key above all four address types',
+    () => {
+      const s = C.deriveSeed({ method: 'dice', input: REAL_ROLLS, words: 24, wordlist: WORDLIST });
+      const root = C.encodeXprv(C.masterKey(s.seed));
+      const accounts = ['legacy', 'nested', 'native', 'taproot']
+        .map(t => C.encodeXprv(C.derive(C.masterKey(s.seed), C.accountPath(t, 0))));
+      return [new Set([root]).size, new Set(accounts).size, accounts.includes(root)].join();
+    }, '1,4,false'],
+  /* BIP32 test vector 1, from the specification rather than from this code. */
+  ['master: BIP32 vector 1 serialises to the published master xprv',
+    () => C.encodeXprv(C.masterKey(Uint8Array.from(
+      '000102030405060708090a0b0c0d0e0f'.match(/../g).map(h => parseInt(h, 16))))),
+    'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi'],
+  /* The addresses behind the "more addresses" fold. BIP84 publishes the first
+     two receiving addresses and the first change address for this phrase, so
+     index 1 of the receiving run is checkable against the specification rather
+     than against this code. The run is only useful if it continues correctly;
+     an off-by-one in the index would be invisible without this. */
+  ['addresses: the fold starts at index 1, not a repeat of the first',
+    () => {
+      const seed = C.mnemonicToSeed(('abandon '.repeat(11) + 'about').split(' '));
+      const a = C.deriveAddresses({ seed, addressType: 'native', path: "m/84'/0'/0'" });
+      return [a.moreReceive[0].path.endsWith('/0/1'),
+              a.moreReceive[0].address !== a.receive.address].join();
+    }, 'true,true'],
+  ['addresses: receiving index 1 matches the BIP84 vector',
+    () => {
+      const seed = C.mnemonicToSeed(('abandon '.repeat(11) + 'about').split(' '));
+      return C.deriveAddresses({ seed, addressType: 'native', path: "m/84'/0'/0'" }).moreReceive[0].address;
+    }, 'bc1qnjg0jd8228aq7egyzacy8cys3knf9xvrerkf9g'],
+  ['addresses: four on each branch, change on branch 1',
+    () => {
+      const seed = C.mnemonicToSeed(('abandon '.repeat(11) + 'about').split(' '));
+      const a = C.deriveAddresses({ seed, addressType: 'native', path: "m/84'/0'/0'" });
+      return [a.moreReceive.length, a.moreChange.length,
+              a.moreChange.every(e => e.path.includes('/1/'))].join();
+    }, '4,4,true'],
+  ['master: and to the fingerprint BIP32 publishes for it',
+    () => C.hex(C.fingerprint(C.masterKey(Uint8Array.from(
+      '000102030405060708090a0b0c0d0e0f'.match(/../g).map(h => parseInt(h, 16)))))).toLowerCase(),
+    '3442193e'],
+
   /* The boundary itself, from both sides. The rule is per pass, so the same
      card is a mistake at 52 and a legitimate draw at 53 -- these pin that the
      flip happens exactly at the end of the deck and not a card either way. */

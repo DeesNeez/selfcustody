@@ -29,6 +29,10 @@ import { readFileSync } from 'node:fs';
 import { scopeCss } from './scope-css.mjs';
 
 const CORE = 'build/tools/entropy-core.js';
+/* Project Nayuki's QR generator, MIT, vendored and compiled once. See
+   build/vendor/qr/README.md for the upstream commit and why this one library
+   is here when the crypto beside it is written from the specifications. */
+const QRLIB = 'build/vendor/qr/qrcodegen.js';
 const WORDS = 'build/tools/bip39-english.txt';
 
 /* The page wears the site's chrome, which means it needs the site's two
@@ -344,9 +348,25 @@ ${FONTS.map(embedFont).join('\n')}
     border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
     background: rgba(0, 0, 0, 0.22);
   }
+  /* An extended key is 111 characters, and at 0.86rem it needed 840px in a box
+     offering 834 -- six pixels over, so every key broke onto a second line for
+     the sake of about half a character. A smaller fixed size only moves the
+     width at which that happens.
+
+     So the type is sized to the box instead: 111 characters at this font
+     advance measure 61.1em, which is why the cap is a hair under 1/61 of the
+     container. It never grows past 0.86rem, and shrinks only as far as it must.
+     The plain declaration first is the fallback for anything without container
+     queries -- there the key wraps as it does today rather than vanishing. */
+  .xpub-box { container-type: inline-size; }
   .xpub-box p {
     margin: 8px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.86rem; line-height: 1.55; color: var(--ink); word-break: break-all;
+    /* Clamped, not min(): on a phone the box is 233px and shrink-to-fit would
+       have solved the wrap by rendering the key at 3.7px. The floor is the
+       point where it stops shrinking and starts wrapping again, which is the
+       right trade on a narrow screen. */
+    font-size: clamp(0.82rem, 1.6cqi, 0.86rem);
   }
   .xpub-box .label { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
   .xpub-box .label span {
@@ -397,7 +417,9 @@ ${FONTS.map(embedFont).join('\n')}
   /* One long unbroken token with punctuation the browser will happily break
      at the wrong place, so it wraps anywhere rather than pushing the panel
      wide. Same treatment the account key already gets. */
-  .descriptor-box #descriptor { overflow-wrap: anywhere; word-break: break-all; }
+  /* Exempt: at 154 characters this wraps at any readable size, so it keeps
+     the full one rather than shrinking to no purpose. */
+  .descriptor-box #descriptor { overflow-wrap: anywhere; word-break: break-all; font-size: 0.86rem; }
   /* Sits directly under the recovery words rather than behind a fold. The
      words are the more powerful secret -- they rebuild every account, where
      this rebuilds one -- so hiding the lesser value while printing the greater
@@ -408,6 +430,26 @@ ${FONTS.map(embedFont).join('\n')}
   .xprv-box { border-color: rgba(255, 138, 0, 0.28); background: rgba(255, 138, 0, 0.05); }
   .xprv-box .label span { color: #ffad4c; }
   .xprv-box #xprv-alt-row { margin-top: 14px; }
+  /* Same construction as the checksum disclosure: the summary keeps its
+     default display and loses its marker through list-style, with the row laid
+     out by a span inside it. Setting display on a <summary> stops some
+     browsers treating it as the disclosure's summary at all. */
+  .xprv-more { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 138, 0, 0.22); }
+  .xprv-more > summary { cursor: pointer; list-style: none; }
+  .xprv-more > summary::-webkit-details-marker { display: none; }
+  .xprv-more-head { display: flex; align-items: baseline; gap: 10px; }
+  .xprv-more-head b {
+    color: #ffad4c; font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .xprv-more-head code { flex: 1 1 auto; min-width: 0; }
+  .xprv-more-head i {
+    flex: 0 0 auto; width: 7px; height: 7px; margin-right: 2px;
+    border-right: 2px solid #ffad4c; border-bottom: 2px solid #ffad4c;
+    transform: translateY(-2px) rotate(45deg); transition: transform 0.15s ease;
+  }
+  .xprv-more[open] .xprv-more-head i { transform: translateY(1px) rotate(-135deg); }
+  .xprv-more-body { margin-top: 4px; }
   .descriptor-split { margin-top: 14px; }
   .descriptor-split summary { font-size: 0.85rem; }
   .split-line { display: grid; gap: 3px; margin: 0 0 10px; }
@@ -890,7 +932,8 @@ ${FONTS.map(embedFont).join('\n')}
   ol.words b { color: #fff; font-weight: 600; }
   ol.words span { color: var(--orange-dark); font-size: 0.72rem; min-width: 1.4em; font-variant-numeric: tabular-nums; }
 
-  .addr { margin-top: 10px; padding: 14px 16px; background: rgba(255, 255, 255, 0.035);
+  .addr { position: relative; margin-top: 10px; padding: 14px 16px;
+          background: rgba(255, 255, 255, 0.035);
           border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; }
   .addr .label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;
                  font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
@@ -898,6 +941,122 @@ ${FONTS.map(embedFont).join('\n')}
   .addr .label code { color: var(--muted); font-size: 0.75rem; letter-spacing: 0; text-transform: none; }
   .addr p { margin: 8px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
             font-size: 0.95rem; color: #fff; word-break: break-all; line-height: 1.5; }
+
+  /* Same disclosure construction as the checksum and private-key folds: the
+     summary keeps its default display and drops its marker through list-style,
+     with the row laid out by a span inside it. No border or background of its
+     own -- it lives inside the address box and should read as part of it. */
+  /* Just a chevron in the corner. No label: the box it sits in is already
+     titled, and a line of text would say less than the arrow does.
+     text-align rather than a display change on the <summary>, because setting
+     display there stops some browsers treating it as the disclosure at all --
+     the same trap the checksum fold documents. The aria-label carries what a
+     screen reader needs, since there is no text to read. */
+  /* The closed box has to measure exactly what it did before the run existed,
+     so the summary takes no height and the chevron is placed into the padding
+     that was already there. Height and overflow rather than display or
+     position on the <summary> itself: changing either of those stops some
+     browsers treating it as the disclosure at all, which is the trap the
+     checksum fold documents. The <i> is the hit area, sized for a finger. */
+  /* Zero margin, against the global details rule further down that gives
+     every other disclosure on the page 26px of air. Here that margin was the
+     whole of the height the box gained. */
+  /* Positioned against the fold itself, not the box. Anchored to the box the
+     chevron tracked its bottom edge, so opening the run moved the arrow down
+     with it -- the control walking away from the pointer that just clicked it.
+     The fold's own top edge does not move when it expands. */
+  /* flow-root, so the list's margins cannot collapse out through the
+     zero-height summary. While they could, the fold's top edge sat 8px higher
+     closed than open -- and the chevron anchored to it slid down on the very
+     click that opened the fold, walking away from the pointer. */
+  .addr-more { position: relative; display: flow-root; margin: 0; }
+  .addr-more > summary {
+    height: 0; overflow: visible; cursor: pointer; list-style: none;
+  }
+  .addr-more > summary::-webkit-details-marker { display: none; }
+  .addr-more > summary i { position: absolute; right: -8px; top: -26px; width: 24px; height: 24px; }
+  .addr-more > summary i::before {
+    content: ""; position: absolute; right: 7px; top: 8px; width: 7px; height: 7px;
+    border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg); transition: transform 0.15s ease;
+  }
+  .addr-more > summary:hover i::before { border-color: var(--orange-dark); }
+  /* Rotated about its own centre so the glyph turns in place. The earlier
+     version nudged it down 3px on open, which read as the arrow jumping. */
+  .addr-more[open] > summary i::before { transform: rotate(-135deg); }
+  .addr-run { margin: 0; padding: 12px 0 0; list-style: none; }
+
+  /* Address on the left, code on the right, both starting at the same line.
+     Sized to be read by a phone held to the screen rather than to dominate the
+     box -- it is a confirmation, and the address beside it is still the thing
+     anybody copies. */
+  /* Its own line under the address, flush left. Everything else in these boxes
+     starts at the same edge -- the label, the address, the descriptor -- and a
+     button that began anywhere else was the one thing that did not line up. In
+     the address boxes it shares that line with the chevron in the opposite
+     corner, which reads as a row of controls rather than two strays. */
+  .qr-row { margin: 10px 0 0; }
+  /* Small enough that the box is the height it was before the code existed --
+     one line of address and its label, unchanged. At this size it is a glance
+     rather than something to scan, which is why it opens. */
+  /* A button rather than a small code in the box. A code big enough to point a
+     phone at does not fit a line of address, and one that fits is too small to
+     read -- so the box keeps its size and the code opens at a size that works. */
+  /* Sized to the line it sits on rather than to itself: beside an address it
+     was 30px against 23px of text and became the tallest thing on the row. */
+  .qr-button {
+    flex: 0 0 auto; align-self: center;
+    display: inline-block; vertical-align: middle;
+    padding: 2px 8px; border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04); color: var(--muted);
+    /* Named rather than inherited. Under the address it sits inside a <p> that
+       is monospace, so "font: inherit" quietly rendered the label in the wrong
+       face and made the button a different width in each of the three places
+       it appears -- 63px in one, 74px in another, for the same two words. */
+    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.66rem; font-weight: 800; letter-spacing: 0.06em;
+    line-height: 1.6; text-transform: uppercase; cursor: pointer; white-space: nowrap;
+  }
+  .qr-button:hover { color: var(--orange); border-color: rgba(255, 138, 0, 0.55); }
+  .qr-row { margin: 12px 0 0; }
+  /* Opened, it is sized to be read by a phone held to the screen. */
+  .qr-dialog {
+    max-width: min(92vw, 360px); padding: 18px; border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px; background: #1f1f1e; color: var(--ink);
+  }
+  .qr-dialog::backdrop { background: rgba(0, 0, 0, 0.72); }
+  .qr-dialog-title {
+    margin: 0 0 10px; color: var(--orange-dark); font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .qr-dialog-code svg { display: block; width: 100%; height: auto; border-radius: 8px; }
+  .qr-dialog-text {
+    margin: 12px 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8rem; line-height: 1.5; color: var(--ink-soft); word-break: break-all;
+  }
+  .qr-dialog-close {
+    float: right; margin: -6px -4px 0 0; padding: 0 6px; border: 0; border-radius: 6px;
+    background: none; color: var(--muted); font-size: 1.3rem; line-height: 1.2; cursor: pointer;
+  }
+  .qr-dialog-close:hover { color: var(--orange); }
+  @media (max-width: 560px) {
+    .addr-line { display: block; }
+    .qr-holder { margin-top: 10px; }
+    .qr-holder svg { width: 76px; }
+  }
+  .addr-run li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+    padding: 6px 0; border-top: 1px solid rgba(255, 255, 255, 0.07); }
+  .addr-run li:first-child { border-top: 0; }
+  .addr-run code { flex: 0 0 auto; color: var(--muted); font-size: 0.74rem; }
+  .addr-run b { flex: 1 1 auto; min-width: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.86rem; font-weight: 400; color: var(--ink); word-break: break-all; }
+
+  /* Every <summary> here is a control, so none of them should behave like
+     prose. Left selectable, a second click inside one starts the browser's
+     word selection -- and on the address folds, whose summary is a bare
+     chevron with no text of its own, that selection spilled into the four
+     addresses underneath and highlighted them. */
+  summary { user-select: none; -webkit-user-select: none; }
 
   details { margin-top: 26px; }
   summary { cursor: pointer; color: var(--ink-soft); font-size: 0.9rem; font-weight: 700; }
@@ -1778,11 +1937,20 @@ const ui = () => `
         : info.eventBits === 1
           ? 'One bit a flip, so the count and the bits are the same number.'
           : (() => {
-              const fit = Math.floor(target / info.eventBits);
-              return 'Each roll is log2(6) = 2.585 bits, so ' + fit + ' of them come to '
-                + (fit * info.eventBits).toFixed(1) + ' \u2014 just under the ' + target
-                + ' a ' + state.words + '-word seed holds, which is why the rolls are '
-                + 'hashed rather than packed in.';
+              /* The number quoted has to be the number the page will accept.
+                 It used to be floor(target / bits-per-roll), which for 12
+                 words is 49 -- one short of the 50 the counter demands, so the
+                 note explained the arithmetic with a roll count that would be
+                 refused. Quoting the real minimum also makes the two cases
+                 land either side of the target, which is the point: 50 rolls
+                 overshoot 128, 99 fall just short of 256, and both work
+                 because the rolls are hashed rather than packed. */
+              const need = limits().least;
+              const carried = need * info.eventBits;
+              return 'Each roll is log2(6) = 2.585 bits, so the ' + need + ' this needs carry '
+                + carried.toFixed(1) + ' \u2014 just ' + (carried >= target ? 'past' : 'under')
+                + ' the ' + target + ' a ' + state.words + '-word seed holds, which is why the rolls '
+                + 'are hashed rather than packed in.';
             })();
 
     /* Once the source carries more than the seed can hold, the extra is real
@@ -1794,6 +1962,60 @@ const ui = () => `
       ? state.words + ' word seed stops at ' + target + ' bits. More ' + info.unit
         + 's will change which wallet you produce but not how hard it is to guess.'
       : '';
+  }
+
+  /* A QR as inline SVG rather than an image: no data: URI to build, nothing
+     for the CSP to allow, and it scales without going soft on a phone.
+
+     Drawn as one <path> of unit squares. A version 9 code is 53x53, which is
+     2,809 rects if each module is its own element and one path string if it is
+     not -- and this is rebuilt every time an address type changes.
+
+     Always dark-on-white with a quiet zone, whatever the page around it is
+     doing. A scanner needs the contrast and the margin; a QR that matches the
+     site's palette is a QR that does not read. */
+  const QR_QUIET = 3;
+
+  /* What each button would encode, set when a wallet is derived and emptied
+     with everything else. Holding the strings here rather than in the markup
+     keeps them out of the DOM until somebody asks to see one. */
+  const qrSources = Object.create(null);
+
+  function qrSvg(text, ecc) {
+    const qr = qrcodegen.QrCode.encodeText(text, ecc);
+    const dim = qr.size + QR_QUIET * 2;
+    let d = '';
+    for (let y = 0; y < qr.size; y++) {
+      for (let x = 0; x < qr.size; x++) {
+        if (qr.getModule(x, y)) d += 'M' + (x + QR_QUIET) + ' ' + (y + QR_QUIET) + 'h1v1h-1z';
+      }
+    }
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + dim + ' ' + dim);
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('shape-rendering', 'crispEdges');
+    const bg = document.createElementNS(NS, 'rect');
+    bg.setAttribute('width', String(dim));
+    bg.setAttribute('height', String(dim));
+    bg.setAttribute('fill', '#fff');
+    const fg = document.createElementNS(NS, 'path');
+    fg.setAttribute('d', d);
+    fg.setAttribute('fill', '#000');
+    svg.append(bg, fg);
+    return svg;
+  }
+
+  /* One code into one holder, with the label a screen reader gets instead of
+     the picture. Cleared rather than left stale when there is nothing to draw:
+     an old wallet's QR under a new wallet's address would be the worst kind of
+     wrong, because it would scan. */
+  function paintQr(el, text, label, ecc) {
+    if (!el) return;
+    if (!text) { el.replaceChildren(); return; }
+    const svg = qrSvg(text, ecc || qrcodegen.QrCode.Ecc.MEDIUM);
+    svg.setAttribute('aria-label', label);
+    el.replaceChildren(svg);
   }
 
   /* Reads the canonical transcript back as chips, with a break where one deck
@@ -1911,7 +2133,7 @@ const ui = () => `
         : 'Tap each roll in the order you made them. You can type the digits instead, or paste.';
 
     $('go').disabled = !at.ready;
-    $('go').textContent = info.lookup ? 'Show the words these produce' : 'Show the wallet these produce';
+    $('go').textContent = info.lookup ? 'Produce words' : 'Produce wallet';
     $('matches').textContent = info.matches;
 
     /* The keys are disabled at the ceiling, so a press cannot report it -- a
@@ -2006,8 +2228,9 @@ const ui = () => `
     'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
     'descriptor', 'descriptor-recv', 'descriptor-chng',
     'checksum-line', 'checksum-detail',
-    'xprv', 'xprv-path', 'xprv-alt', 'xprv-alt-label',
-    'recv-addr', 'recv-path', 'chng-addr', 'chng-path',
+    'master-xprv', 'xprv', 'xprv-path', 'xprv-alt', 'xprv-alt-label',
+    'recv-addr', 'recv-path', 'chng-addr', 'chng-path', 'recv-more', 'chng-more',
+    'qr-dialog-code', 'qr-dialog-text', 'qr-dialog-title',
     'fp-base', 'fp-pass', 'fp-base-tag'
   ];
 
@@ -2018,6 +2241,10 @@ const ui = () => `
     }
     invalidateDerivedState();
     state.choice = 0;
+    /* The parked strings are derived material too. Left behind, the next press
+       of a button would open the last wallet's address over an empty page. */
+    for (const key of Object.keys(qrSources)) delete qrSources[key];
+    if ($('qr-dialog').open) $('qr-dialog').close();
 
     /* The transient UI as well, or clearing leaves a page that disagrees with
        itself: a roll counter describing rolls that are gone, an enabled Derive
@@ -2227,7 +2454,9 @@ const ui = () => `
       path,
       xpub: addresses.xpub
     };
-    $('descriptor').textContent = C.watchOnlyDescriptor(descriptorArgs);
+    const descriptorLine = C.watchOnlyDescriptor(descriptorArgs);
+    $('descriptor').textContent = descriptorLine;
+    qrSources.descriptor = { text: descriptorLine, title: 'Watch-only descriptor' };
     /* The same account written the older way, for wallets that predate
        BIP389's multipath syntax and reject it outright. */
     $('descriptor-recv').textContent = C.watchOnlyDescriptor({ ...descriptorArgs, branch: 0 });
@@ -2243,12 +2472,44 @@ const ui = () => `
     $('recv-addr').textContent = addresses.receive.address;
     $('chng-path').textContent = addresses.change.path;
     $('chng-addr').textContent = addresses.change.address;
+
+    /* Built rather than templated: the count is the core's to decide, and a
+       fixed set of ids here would silently show four of five or five of four
+       the moment it changed. */
+    const runInto = (el, run) => el.replaceChildren(...run.map(entry => {
+      const li = document.createElement('li');
+      const where = document.createElement('code');
+      /* Just the branch and index. The account path they hang off is already
+         shown on the two entries above, and repeating it here turned each
+         row into a wall of apostrophes. */
+      where.textContent = '/' + entry.path.split('/').slice(-2).join('/');
+      const addr = document.createElement('b');
+      addr.textContent = entry.address;
+      li.append(where, addr);
+      return li;
+    }));
+    runInto($('recv-more'), addresses.moreReceive);
+    runInto($('chng-more'), addresses.moreChange);
+
+    /* Codes for the two addresses on show and for the descriptor. The folded
+       run gets its own inside runInto above -- these are the ones with a fixed
+       holder in the markup. */
+    /* Nothing is encoded up front. A code costs a version-9 Reed-Solomon pass
+       and most derivations never open one, so the strings are parked on the
+       buttons and drawn if a button is pressed. */
+    qrSources.recv = { text: addresses.receive.address, title: 'First receiving address' };
+    qrSources.chng = { text: addresses.change.address, title: 'First change address' };
     $('entropy').textContent = state.seed.entropy;
 
     /* The spending key for the same account the xpub above describes, in the
        canonical form and, where the address type has one, the SLIP-132 form
        beside it -- the same pairing the public box shows, for the same reason:
        a wallet showing one and a device showing the other do not disagree. */
+    /* Depth 0, so no path and no SLIP-132 twin: the typed prefixes describe a
+       script type, and this key sits above the level where a script type has
+       been chosen. */
+    $('master-xprv').textContent = C.encodeXprv(C.masterKey(state.seed.seed));
+
     const accountNode = C.derive(C.masterKey(state.seed.seed), path);
     $('xprv-path').textContent = path;
     $('xprv').textContent = C.encodeXprv(accountNode);
@@ -2345,6 +2606,24 @@ const ui = () => `
     clearSensitiveState();
     setInput('');
   });
+  /* <dialog> rather than a hand-rolled overlay: it takes Escape, the backdrop
+     and focus handling from the browser, and form method="dialog" closes it
+     without a line of script.
+
+     Filled from qrSources rather than from the DOM, so the code is encoded
+     from the same string the page derived rather than from text that has been
+     through a render and back. */
+  for (const button of document.querySelectorAll('[data-qr]')) {
+    button.addEventListener('click', () => {
+      const source = qrSources[button.dataset.qr];
+      if (!source || !source.text) return;
+      paintQr($('qr-dialog-code'), source.text, source.title + ' as a QR code');
+      $('qr-dialog-title').textContent = source.title;
+      $('qr-dialog-text').textContent = source.text;
+      $('qr-dialog').showModal();
+    });
+  }
+
   $('go').addEventListener('click', derive);
   $('alarm-back').addEventListener('click', () => $('alarm').close());
   /* "Clear and start again" after a refusal. The full clear, not just the
@@ -2495,8 +2774,19 @@ const ui = () => `
       }
     }
 
+    /* A reload starts this page over: the input is cleared, the wallet is gone
+       and the results are hidden. Restoring the old scroll position drops the
+       reader into the middle of a results panel that no longer has anything in
+       it, which reads as the page having broken rather than reset.
+
+       Only when there is no fragment to honour -- #offline below is a link
+       people follow deliberately, and the guides point at it. */
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
     if (location.hash === '#offline') {
       requestAnimationFrame(() => $('offline').scrollIntoView({ block: 'center' }));
+    } else if (!location.hash) {
+      requestAnimationFrame(() => window.scrollTo(0, 0));
     }
 
     /* Relative links are right on the site and broken in the downloaded file:
@@ -2836,6 +3126,13 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
        aria-hidden because it says exactly what the textarea already says. -->
   <div class="deal" id="deal" hidden aria-hidden="true"></div>
   <p class="deck-turn" id="deck-turn" role="status" hidden></p>
+  <dialog class="qr-dialog" id="qr-dialog">
+    <form method="dialog"><button class="qr-dialog-close" aria-label="Close">&times;</button></form>
+    <p class="qr-dialog-title" id="qr-dialog-title"></p>
+    <div class="qr-dialog-code" id="qr-dialog-code"></div>
+    <p class="qr-dialog-text" id="qr-dialog-text"></p>
+  </dialog>
+
   <div class="count">
     <span id="accepts"></span>
     <b id="count"></b>
@@ -2852,7 +3149,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   </div>
 </fieldset>
 
-<button type="button" class="go" id="go" disabled>Show the wallet these produce</button>
+<button type="button" class="go" id="go" disabled>Produce wallet</button>
 
 <div class="endings" id="endings" hidden>
   <strong>Now pick the last word.</strong>
@@ -2902,25 +3199,56 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     </div>
   </details>
 
+  <!-- One box, because two long xprv strings side by side is how somebody
+       copies the wrong one. The master is what is shown: it restores the whole
+       wallet and it is the only key here that reproduces the master
+       fingerprint. The account key is a level down and needed less often, so
+       it is a fold rather than a second slab of text. -->
   <div class="xpub-box xprv-box">
-    <div class="label"><span>Account private key</span><code id="xprv-path"></code></div>
-    <p id="xprv"></p>
-    <div id="xprv-alt-row" hidden>
-      <div class="label"><span>Same key as <b id="xprv-alt-label"></b></span></div>
-      <p id="xprv-alt"></p>
-    </div>
-    <p class="xpub-note">This is the half that spends. Anything holding it can move the coins under that path without the recovery words above.</p>
+    <div class="label"><span>Private key</span><code>m</code></div>
+    <p id="master-xprv"></p>
+    <p class="xpub-note">The root of the tree, and the only key here that reproduces the
+      <strong>master fingerprint</strong> below. Anything holding it can move every coin this phrase
+      will ever control.</p>
+
+    <details class="xprv-more" id="xprv-more">
+      <summary><span class="xprv-more-head"><b>Account private key</b><code id="xprv-path"></code><i aria-hidden="true"></i></span></summary>
+      <div class="xprv-more-body">
+        <p id="xprv"></p>
+        <div id="xprv-alt-row" hidden>
+          <div class="label"><span>Same key as <b id="xprv-alt-label"></b></span></div>
+          <p id="xprv-alt"></p>
+        </div>
+        <p class="xpub-note">Spends this account and nothing else. It is the level a <b>yprv</b> or
+          <b>zprv</b> exists at, so it is what to match against a device showing one.</p>
+        <p class="xpub-note">On its own it reports its own fingerprint, not the master one &mdash; it
+          cannot see that far up. The descriptor below carries the origin and does.</p>
+      </div>
+    </details>
   </div>
 
-  <h3>First addresses</h3>
+  <h3>Addresses</h3>
   <p class="hint" id="type-note"></p>
+  <!-- The first of each is what a device check needs. The run continues inside
+       the same box rather than in one of its own: these are the next addresses
+       on this branch, not a separate thing to reason about. -->
   <div class="addr">
     <div class="label"><span>Receiving</span><code id="recv-path"></code></div>
     <p id="recv-addr"></p>
+    <p class="qr-row"><button type="button" class="qr-button" data-qr="recv">Show QR</button></p>
+    <details class="addr-more">
+      <summary aria-label="Show four more receiving addresses"><i aria-hidden="true"></i></summary>
+      <ol class="addr-run" id="recv-more"></ol>
+    </details>
   </div>
   <div class="addr">
     <div class="label"><span>Change</span><code id="chng-path"></code></div>
     <p id="chng-addr"></p>
+    <p class="qr-row"><button type="button" class="qr-button" data-qr="chng">Show QR</button></p>
+    <details class="addr-more">
+      <summary aria-label="Show four more change addresses"><i aria-hidden="true"></i></summary>
+      <ol class="addr-run" id="chng-more"></ol>
+    </details>
   </div>
 
   <div class="xpub-box">
@@ -2930,15 +3258,16 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <div class="label"><span>Same key as <b id="xpub-alt-label"></b></span></div>
       <p id="xpub-alt"></p>
     </div>
-    <p class="xpub-note">This is the public half of the account, and the thing a watch-only wallet means when it asks for your <a href="glossary.html#term-xpub" data-site-link>xpub</a>. It can work out every address below it and sign nothing, so it cannot move coins &mdash; but anyone holding it can see your whole balance and history, which is why it is not something to post or email.</p>
-    <p class="xpub-note" id="xpub-slip" hidden>Some wallets show the same key with a prefix naming the address type. The two strings above are the same key with different version bytes, so a wallet showing one and a device showing the other do not disagree.</p>
+    <p class="xpub-note">The public half, and what a watch-only wallet means by your <a href="glossary.html#term-xpub" data-site-link>xpub</a>. It derives every address below and signs nothing, so it cannot move coins &mdash; but it shows your whole balance and history. Not something to post.</p>
+    <p class="xpub-note" id="xpub-slip" hidden>Same key, different version bytes. A wallet showing one and a device showing the other do not disagree.</p>
   </div>
 
   <div class="xpub-box descriptor-box">
     <div class="label"><span>Watch-only descriptor</span><code><a href="https://github.com/bitcoin/bips/blob/master/bip-0380.mediawiki" target="_blank" rel="noopener noreferrer">BIP380</a> &middot; <a href="https://github.com/bitcoin/bips/blob/master/bip-0389.mediawiki" target="_blank" rel="noopener noreferrer">BIP389</a></code></div>
     <p id="descriptor"></p>
-    <p class="xpub-note">The same account key, written the way a wallet wants to be given it. It names the script type, so it cannot be imported as the wrong address type &mdash; the mistake that makes a restored wallet look empty. Sparrow, Bitcoin Core and most coordinators take this line directly.</p>
-    <p class="xpub-note">The <code>&lt;0;1&gt;</code> covers receiving and change together, and the eight characters after the <code>#</code> are a checksum over everything before them, so a wallet can tell you that you mistyped rather than watching the wrong account in silence. It still contains no private key and can sign nothing.</p>
+    <p class="qr-row"><button type="button" class="qr-button" data-qr="descriptor">Show QR</button></p>
+    <p class="xpub-note">The account key in the form wallets take directly &mdash; Sparrow, Bitcoin Core, most coordinators. Naming the script type is what stops it being imported as the wrong one, the mistake that makes a restored wallet look empty.</p>
+    <p class="xpub-note"><code>&lt;0;1&gt;</code> covers receiving and change together. The eight characters after the <code>#</code> are a checksum, so a mistyped line is caught rather than silently watching the wrong account. No private key; signs nothing.</p>
     <details class="descriptor-split">
       <summary>If your wallet will not accept it</summary>
       <div class="body">
@@ -3102,8 +3431,11 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
 </main>`;
 
-const toolScripts = ({ core, wordlist, offline }) => `<script>
+const toolScripts = ({ core, qrlib, wordlist, offline }) => `<script>
 ${core}
+</script>
+<script>
+${qrlib}
 </script>
 <script>
 'use strict';
@@ -3126,6 +3458,7 @@ const withFileSize = html => html.replace(
 
 const payload = () => ({
   core: readFileSync(CORE, 'utf8'),
+  qrlib: readFileSync(QRLIB, 'utf8'),
   wordlist: readFileSync(WORDS, 'utf8').trim().split(/\r?\n/).join(' ')
 });
 
