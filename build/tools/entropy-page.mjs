@@ -673,6 +673,7 @@ ${FONTS.map(embedFont).join('\n')}
     font-size: 0.78rem; font-weight: 700; line-height: 1.5;
   }
   .deal b.red { color: #ff7a6b; }
+  .deal b span { margin-left: 0.15em; }
   /* Where one deck ends and the next begins. A full-width break rather than a
      separator between two chips: the reader is holding 52 cards in one hand and
      six in the other, and the screen should be the same shape. */
@@ -2213,7 +2214,13 @@ const ui = () => `
       const chip = document.createElement('b');
       const suit = card.slice(1);
       if (suit === 'H' || suit === 'D') chip.className = 'red';
-      chip.textContent = card.slice(0, 1) + (SUIT_MARK[suit] || suit);
+      /* Rank and suit as separate nodes so a margin can sit between them:
+         monospace sets 3 and a heart hard against each other, and a suit is a
+         picture rather than a second digit. Display only -- the string that
+         gets hashed never comes back from here. */
+      const mark = document.createElement('span');
+      mark.textContent = SUIT_MARK[suit] || suit;
+      chip.append(card.slice(0, 1), mark);
       out.push(chip);
     });
     el.replaceChildren(...out);
