@@ -174,6 +174,34 @@ const WATCH_ONLY_EXPORT_12 = [
   ''
 ].join('\n');
 
+/* 128 coin flips, pinned so the suite is deterministic, and the wallet they
+   produce. Not a published vector -- there is none for "these flips make these
+   words" -- but every step between them is one, and the point of these tests
+   is the record's shape rather than the arithmetic underneath it. */
+const FLIPS = 'HTTHHTHTTHHHTHTTHTHHTTHTHHTHTTHH'.repeat(4);
+const FLIP_WALLET = C.deriveSeed({
+  method: 'coin', input: FLIPS, words: 12, wordlist: WORDLIST
+});
+
+function exportWithSource(overrides = {}) {
+  return C.buildWalletExportTexts({
+    mnemonic: FLIP_WALLET.mnemonic, wordlist: WORDLIST, seed: FLIP_WALLET.seed,
+    addressType: 'native', path: "m/84'/0'/0'", passphraseUsed: false,
+    source: { method: 'coin', input: FLIPS, words: 12, ...overrides }
+  });
+}
+
+/* Pulls the transcript back out of a written record: everything after the
+   explanation, which is what a person would select and paste back in. */
+function recordedTranscript(text) {
+  const lines = text.split('\n');
+  const at = lines.indexOf('reproduces the words above. Spacing and line breaks are ignored.');
+  if (at < 0) return '';
+  const out = [];
+  for (let i = at + 1; i < lines.length && lines[i].trim(); i++) out.push(lines[i]);
+  return out.join('\n');
+}
+
 /* BIP380's descsum_check, so the suite verifies its own output the way a
    wallet would rather than only comparing strings. */
 function descsumCheck(text) {
@@ -1146,6 +1174,74 @@ export const VECTORS = [
       return [addressLines.length, addressLines.at(4).startsWith("m/84'/0'/0'/0/4:"),
               addressLines.at(9).startsWith("m/84'/0'/0'/1/4:")].join();
     }, '10,true,true'],
+
+  /* ---- the recorded entropy source --------------------------------------
+
+     The record exists so somebody can check a file against the paper they
+     rolled it on. That is only worth anything if what is written reproduces
+     what was hashed, which is what the first of these tests states directly:
+     the transcript, read back out of the finished document and normalised, is
+     the same string the derivation consumed. */
+  ['source: the written transcript normalises back to what was hashed',
+    () => {
+      const written = recordedTranscript(exportWithSource().privateText);
+      return C.normalise('coin', written) === C.normalise('coin', FLIPS);
+    }, true],
+  ['source: the private record names the method, word count and tally',
+    () => {
+      const text = exportWithSource().privateText;
+      return ['Method: Coin flips', 'Words: 12', 'Recorded: 128 flips']
+        .every(line => text.includes(line));
+    }, true],
+  ['source: 128 single-character events wrap at fifty, grouped in fives',
+    () => {
+      const rows = recordedTranscript(exportWithSource().privateText).split('\n');
+      return [rows.length, rows[0].length, rows.at(-1).length,
+        rows.every(row => row.split(' ').every(g => g.length <= 5))].join();
+    }, '3,59,33,true'],
+  /* 58 cards, which is what 24 words takes: a full deck and six from the next.
+     Thirteen to a line puts the turn of the deck partway through the fifth row
+     rather than at a line break, which is the honest picture of it. */
+  ['source: cards wrap at thirteen a line',
+    () => {
+      const deal = C.CARD_DECK.join('') + C.CARD_DECK.slice(0, 6).join('');
+      const wallet = C.deriveSeed({ method: 'cards', input: deal, words: 24, wordlist: WORDLIST });
+      const text = C.buildWalletExportTexts({
+        mnemonic: wallet.mnemonic, wordlist: WORDLIST, seed: wallet.seed,
+        addressType: 'native', path: "m/84'/0'/0'", passphraseUsed: false,
+        source: { method: 'cards', input: deal, words: 24 }
+      }).privateText;
+      const rows = recordedTranscript(text).split('\n');
+      return [rows.length, rows.map(row => row.split(' ').length).join('-')].join();
+    }, '5,13-13-13-13-6'],
+  /* The record must not be able to claim a sequence that produces a different
+     wallet. Anything else would be worse than omitting it: a file that looks
+     checkable and is not. */
+  ['source: a transcript that does not reproduce the words is refused',
+    () => {
+      const wrong = 'T' + FLIPS.slice(1);
+      try {
+        exportWithSource({ input: wrong });
+        return 'accepted';
+      } catch (error) {
+        return error.message.includes('does not reproduce these recovery words')
+          ? 'refused' : error.message;
+      }
+    }, 'refused'],
+  ['source: the watch-only record carries no transcript at all',
+    () => {
+      const watch = exportWithSource().watchOnlyText;
+      return [watch.includes(FLIPS), watch.includes('Transcript'),
+        watch.includes('Entropy source'), watch.includes('Coin flips')].join();
+    }, 'false,false,false,false'],
+  ['source: a record built without one is unchanged',
+    () => {
+      const bare = C.buildWalletExportTexts({
+        mnemonic: FLIP_WALLET.mnemonic, wordlist: WORDLIST, seed: FLIP_WALLET.seed,
+        addressType: 'native', path: "m/84'/0'/0'", passphraseUsed: false
+      }).privateText;
+      return [bare.includes('Entropy source'), bare.includes('Transcript')].join();
+    }, 'false,false'],
 
   /* ---- SeedQR ------------------------------------------------------------
 

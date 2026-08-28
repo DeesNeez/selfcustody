@@ -2138,7 +2138,13 @@ const ui = () => `
         seed: state.seed.seed,
         addressType: state.addressType,
         path,
-        passphraseUsed: $('passphrase').value.length > 0
+        passphraseUsed: $('passphrase').value.length > 0,
+        /* What was rolled, flipped or drawn, so the file can be checked
+           against the paper it came from. The builder replays it and refuses
+           the record if it does not reproduce these words. */
+        source: {
+          method: method(), input: clean(), words: state.words, choice: state.choice
+        }
       });
       downloadTextRecord(
         isPrivate ? texts.privateText : texts.watchOnlyText,
@@ -3445,7 +3451,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
          SeedQR is the recovery words as digits, not that key, and saying so
          is the difference between a heading and a claim. -->
     <details class="xprv-more" id="xprv-more">
-      <summary><span class="xprv-more-head"><b>Account private key and SeedQR</b><i aria-hidden="true"></i></span></summary>
+      <summary><span class="xprv-more-head"><b>Show account key and SeedQR</b><i aria-hidden="true"></i></span></summary>
       <div class="xprv-more-body">
         <div class="label"><span>Account path</span><code id="xprv-path"></code></div>
         <p id="xprv"></p>
