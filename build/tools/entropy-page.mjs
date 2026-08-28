@@ -627,12 +627,14 @@ ${FONTS.map(embedFont).join('\n')}
      start typing rolls in, not after. */
   .download {
     display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px;
-    /* Centred against the copy beside it, which it can be again now that the
-       checksum instructions are a row of their own: opening them grows the
-       second row, so the button keeps the position it was given by the first.
-       While they shared a column, centring slid the button 74px down the
-       moment anyone opened them. */
-    align-items: center;
+    /* Pinned to the top of the row rather than centred in it. Centring
+       measures against the copy column, and that column is not the same
+       height in both states: served it reads "Run it offline instead", opened
+       from disk it reads "Running the local copy" and adds the path line,
+       which is 34px taller. So the button sat in a different place depending
+       on where the page had been opened from. Against the top edge it lands
+       identically in both, and the checksum row below still cannot move it. */
+    align-items: start;
     margin: 0 0 38px; padding: 21px 22px; border-radius: 16px;
     background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -713,7 +715,7 @@ ${FONTS.map(embedFont).join('\n')}
   .verify-details[open] summary::before { content: "\\2212"; }
   .verify-body { margin-top: 12px; }
 
-  .download-action { display: grid; gap: 8px; justify-items: center; min-width: 205px; }
+  .download-action { display: grid; gap: 8px; justify-items: center; width: 205px; }
 
   /* On the hub, the visible border around "Enter Workshop" is not the button's
      own -- its gradient border-box ring is too close in colour to read clearly
@@ -781,7 +783,7 @@ ${FONTS.map(embedFont).join('\n')}
 
   @media (max-width: 620px) {
     .download { grid-template-columns: 1fr; gap: 16px; }
-    .download-action { justify-items: stretch; }
+    .download-action { width: 100%; justify-items: stretch; }
     .dl { text-align: center; }
   }
 
@@ -2336,8 +2338,6 @@ const ui = () => `
        cannot tell. So it reports which copy you are on and offers the download,
        and makes no claim about the machine. */
     const offline = isOffline();
-    const where = $('where');
-    const whereText = where.querySelector('[data-status-text]');
     /* Deliberately not a green "safe" state. The old badge said "this copy is
        running offline" in the same green as the passing self-test, which was
        two mistakes at once: it read as an all-clear, and it was not even true
@@ -2345,10 +2345,8 @@ const ui = () => `
        saying it. Those are gone now, so the honest claim is about the file
        rather than the machine: it needs no network. Whether the machine has
        one is not something a page can see. */
-    where.className = offline ? '' : 'warn';
-    whereText.textContent = offline
-      ? 'Opened from a local file \\u2014 this tool requires no network requests'
-      : 'Loaded over a network \\u2014 this copy is online';
+    /* The badge itself is set during parse, above the fold, so it is never
+       laid out at the wrong size. Nothing to repeat here. */
     /* ---- the network adapter -------------------------------------------
 
        navigator.onLine is a weak signal and is used in one direction only.
@@ -2406,9 +2404,9 @@ const ui = () => `
       const button = document.querySelector('a.dl');
       if (button) {
         button.removeAttribute('download');
-        button.querySelector('[data-dl-label]').textContent = 'Open offline file';
+        button.querySelector('[data-dl-label]').textContent = 'Open offline';
         const note = document.querySelector('[data-dl-note]');
-        if (note) note.textContent = 'Saving it needs the served site \u2014 this copy is running from disk';
+        if (note) note.textContent = 'Already on disk';
       }
     }
 
@@ -2541,7 +2539,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
                  The offline wording is the longer one, and either copy can show
                  either message, since the site build opened from disk reports
                  itself as a local file. -->
-            <li id="where"><span data-status-text>Checking&hellip;</span><span class="status-reserve" aria-hidden="true">Opened from a local file &mdash; this tool requires no network requests</span></li>${offline
+            <li id="where"><span data-status-text>Checking&hellip;</span></li>${offline
             /* Only the downloaded file makes this claim, because only it can:
                the site page loads a stylesheet, a script and two webfonts. It
                is also the one claim here worth a badge of its own -- "running
@@ -2554,6 +2552,50 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
             ? '\n            <li class="good">No network requests</li>'
             : ''}
           </ul>
+          <!-- The adapter badge is the one thing in the hero that appears
+               after load rather than with it, and it costs a whole row: the
+               hero went 473px to 523px and the glow, positioned at 10% of that
+               height, slid down with it. A visible drop and swell on every
+               load of a copy opened from disk.
+
+               Both conditions are readable the moment this line is parsed, so
+               the state is settled here instead of in the main script at the
+               foot of the page. The badge is laid out once, correctly, and the
+               hero never resizes. paintAdapter() below owns it from then on,
+               for the online and offline events that can still fire.
+
+               Not a class on <html> and a CSS rule, which is the usual shape
+               of this: the site build confines the tool's stylesheet to
+               .sc-workshop, so a selector rooted outside that wrapper would
+               never match. -->
+          <script>
+            (function () {
+              var local = location.protocol === 'file:';
+
+              /* The same reasoning as the adapter badge beside it. This one
+                 said "Checking..." until the script at the foot of the page
+                 replaced it, which meant a 318px badge becoming a 452px one
+                 after first paint -- so it carried a reserve holding the wider
+                 measure, and the box sat two-thirds empty while it waited.
+
+                 There was never anything to wait for. It reports which
+                 protocol the page was loaded over, which is known the instant
+                 this line is parsed. Settled here, the badge is only ever the
+                 size of what it actually says: no reserve, no empty box, no
+                 growth. "Checking..." survives in the markup as the no-script
+                 fallback, which is the only case that can still see it. */
+              var where = document.getElementById('where');
+              if (where) {
+                where.className = local ? '' : 'warn';
+                where.querySelector('[data-status-text]').textContent = local
+                  ? 'Opened from a local file \u2014 this tool requires no network requests'
+                  : 'Loaded over a network \u2014 this copy is online';
+              }
+
+              var badge = document.getElementById('adapter');
+              if (badge) badge.hidden = !(local && navigator.onLine === true);
+            })();
+          </script>
         </div>
       </div>
     </div>
@@ -2576,18 +2618,18 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
 <section class="download" id="offline">
   <div class="download-copy">
-    <div id="dl-served" hidden>
+    <div id="dl-served"${offline ? ' hidden' : ''}>
       <strong>Run it offline instead</strong>
       <p>The entire tool is this one self-contained file: no external stylesheet, script, font, or network request. Put it on a USB stick and open it on an air-gapped machine, which is where any sequence worth checking belongs &mdash; even a test one.</p>
     </div>
-    <div id="dl-local" hidden>
-      <strong id="dl-local-head">You are already running the local copy</strong>
+    <div id="dl-local"${offline ? '' : ' hidden'}>
+      <strong id="dl-local-head">Running the local copy</strong>
       <p id="dl-local-copy">This self-contained file is running from your disk, not the network. Copy it to a USB stick or an air-gapped machine and it behaves exactly the same. Check it against the published checksum below before you trust anything it shows you.</p>
       <p class="verify">Running from: <code id="dl-path"></code></p>
     </div>
 
   </div>
-  <div class="download-action" id="dl-action" hidden>
+  <div class="download-action" id="dl-action"${offline ? ' hidden' : ''}>
     <div class="dl-frame">
       <a class="dl" href="entropy-offline.html" download="selfcustody-entropy-check.html">
         <svg class="dl-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -2607,8 +2649,8 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
           <code>certutil -hashfile entropy-offline.html SHA256</code><span>Windows</span>
           <code>shasum -a 256 entropy-offline.html</code><span>macOS, Linux</span>
       
-        <p class="verify" id="dl-hash-served">Compare that against <a href="entropy-offline.html.sha256">entropy-offline.html.sha256</a>, published beside this page.</p>
-        <p class="verify" id="dl-hash-local" hidden>Compare that against the published <code>entropy-offline.html.sha256</code>, which sits beside this page on selfcustody.ca. That one line is the only thing you need the network for, and you can fetch it from anywhere.</p>
+        <p class="verify" id="dl-hash-served"${offline ? ' hidden' : ''}>Compare that against <a href="entropy-offline.html.sha256">entropy-offline.html.sha256</a>, published beside this page.</p>
+        <p class="verify" id="dl-hash-local"${offline ? '' : ' hidden'}>Compare that against the published <code>entropy-offline.html.sha256</code>, which sits beside this page on selfcustody.ca. That one line is the only thing you need the network for, and you can fetch it from anywhere.</p>
     
     </details>
 </section>
@@ -2965,7 +3007,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   </div>
 </details>
 
-<p class="colophon">Part of <strong>SelfCustody.ca</strong>. The full procedure and the rules that matter more than this tool does are in <a href="guides/dice-entropy.html" data-site-link>Roll the dice</a> and <a href="guides/quickstart.html" data-site-link>Intro to Self Custody</a>.</p>
+<p class="colophon">Part of <strong>SelfCustody.ca</strong>. The full procedure and the rules that matter more than this tool does are in <a href="guides/dice-entropy.html" data-site-link>Roll the dice</a> and <a href="guides/quickstart.html" data-site-link>Intro to Self Custody</a>. How to read this page itself is in <a href="guides/bring-your-own-entropy.html" data-site-link>Bring Your Own Entropy</a>.</p>
 
 </main>`;
 
