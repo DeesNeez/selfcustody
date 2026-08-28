@@ -1831,32 +1831,31 @@ const ui = () => `
     const at = C.progress({ method: method(), input, words: state.words });
     const el = $('count');
 
-    /* Past a full deck the count restarts rather than running on. "53 of 58
-       cards" asks the reader to hold a running total against a pile they have
-       already shuffled back together; "second shuffle: 1 of 6" describes what
-       is in front of them. Only 24 words reaches this -- 12 needs 25 cards and
-       never turns the deck. */
+    /* Physical deck state is counted in cards even when progress is measured
+       in bits. The hash method has a fixed six-card second pass; the bit-table
+       method does not, so it keeps its bit counter and only gets the reshuffle
+       notice. Nothing returns from this branch: the meter, keypad and derive
+       button below must repaint at 52 and on every card after it. */
     const deck = info.deck ? 52 : 0;
-    const secondPass = deck && at.need > deck && at.have >= deck;
-    if (secondPass && !at.over) {
-      const extra = at.have - deck;
-      const wanted = at.need - deck;
-      el.textContent = 'Second shuffle: ' + extra + ' of ' + wanted + ' cards';
-      el.className = extra >= wanted ? 'ready' : 'short';
-      /* Shown at the turn and not after it: by the time a card of the second
-         pass is down, the shuffle it is asking for has happened. */
-      $('deck-turn').hidden = extra !== 0;
-      $('deck-turn').textContent =
-        'First deck complete \u2014 shuffle the entire deck again, then draw ' + wanted + ' more.';
-      paintDeal(input, deck);
-      return;
+    const deckAt = C.deckProgress({ method: method(), input, words: state.words });
+    const fixedSecondPass = deckAt && deckAt.required !== null && deckAt.second !== null
+      && deckAt.second <= deckAt.required;
+
+    const turn = $('deck-turn');
+    turn.hidden = !(deckAt && deckAt.turn);
+    if (!turn.hidden) {
+      turn.textContent = deckAt.required === null
+        ? 'First deck complete \u2014 shuffle the entire deck again, then keep drawing until the meter is full.'
+        : 'First deck complete \u2014 shuffle the entire deck again, then draw ' + deckAt.required + ' more.';
     }
-    $('deck-turn').hidden = true;
     paintDeal(input, deck);
 
     /* Three different units, because three different things are actually
        being counted -- see progress() in the core. */
-    if (at.over) {
+    if (fixedSecondPass) {
+      el.textContent = 'Second shuffle: ' + deckAt.second + ' of ' + deckAt.required + ' cards';
+      el.className = deckAt.second >= deckAt.required ? 'ready' : 'short';
+    } else if (at.over) {
       el.textContent = at.have + ' ' + at.unit + 's · ' + at.need + ' is the most';
       el.className = 'over';
     } else if (!at.ready) {
@@ -2040,6 +2039,7 @@ const ui = () => `
 
   function derive() {
     hideResults();
+    const rawInput = $('input').value;
     const input = clean();
 
     /* Checked here rather than live, so nobody watches a warning appear and
@@ -2051,7 +2051,7 @@ const ui = () => `
        page to fail -- it looks like an answer. */
     let verdict;
     try {
-      verdict = C.assessEntropy({ method: method(), input });
+      verdict = C.assessEntropy({ method: method(), input: rawInput });
     } catch (err) {
       fail('This page could not check those ' + spec().unit + 's: ' + err.message);
       return;
@@ -2074,7 +2074,7 @@ const ui = () => `
       try {
         if (state.seedKey !== key) {
           state.seed = C.deriveSeed({
-            method: method(), input, words: state.words, wordlist: WORDLIST,
+            method: method(), input: rawInput, words: state.words, wordlist: WORDLIST,
             passphrase: $('passphrase').value, choice: state.choice
           });
           state.seedKey = key;
