@@ -16,6 +16,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       # Pinned to commit SHAs rather than tags. A tag is a moving pointer the
       # action's owner can repoint, so `@v4` is a promise to run whatever that
