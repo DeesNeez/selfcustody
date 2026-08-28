@@ -6045,7 +6045,7 @@ const guides = [
         <li><strong>Coins.</strong> One bit a flip, packed straight into the seed with nothing hashed. That makes it the only source you can check entirely by hand: heads is a 1, tails a 0, in the order you flipped them. It also makes it the longest &mdash; a 12-word seed takes exactly 128 flips, and a 24-word seed exactly 256.</li>
         <li><strong>Six-sided dice.</strong> Each roll carries log2(6) = 2.585 bits, so 50 rolls fill a 12-word seed and 99 fill a 24-word one. The rolls are hashed rather than packed, which is why the count is not a round number.</li>
         <li><strong>Octal and hex dice.</strong> One eight-sided die and two sixteen-sided dice throw 3 + 4 + 4 = 11 bits between them, which is exactly one recovery word. Nothing is hashed: the three faces name the word the way the printed dictionary does.</li>
-        <li><strong>Cards.</strong> A shuffled deck, drawn without replacement, so each card is worth slightly less than the last &mdash; log2(52) = 5.70 bits for the first, then log2(51), and so on. Twenty-five cards carry enough for 12 words; fifty-eight for 24.</li>
+        <li><strong>Cards.</strong> A shuffled deck, drawn without replacement, so each card is worth slightly less than the last &mdash; log2(52) = 5.70 bits for the first, then log2(51), and so on. Twenty-five cards carry enough for 12 words. Twenty-four needs fifty-eight, which is more than a deck holds: draw all 52, shuffle them back together, and draw six more. The Workshop counts it the same way &mdash; it greys out the cards already drawn, and once the deck is finished it tells you to shuffle and carry on.</li>
       </ul>
 
       ${figure({
@@ -6098,7 +6098,7 @@ const guides = [
         <li><strong>The first addresses</strong> on both the receiving and change branches, which is usually the fastest thing to compare against a device screen.</li>
       </ul>
 
-      <p>The address type you pick changes the derivation path underneath all of it: legacy sits at m/44&rsquo;/0&rsquo;/0&rsquo;, nested SegWit at m/49&rsquo;, native SegWit at m/84&rsquo;, and taproot at m/86&rsquo;. Restoring the right words down the wrong path is the single most common reason a correctly restored wallet looks empty.</p>
+      <p>The address type you pick changes the derivation path underneath all of it: legacy sits at m/44&rsquo;/0&rsquo;/0&rsquo;, nested SegWit at m/49&rsquo;/0&rsquo;/0&rsquo;, native SegWit at m/84&rsquo;/0&rsquo;/0&rsquo;, and taproot at m/86&rsquo;/0&rsquo;/0&rsquo;. Restoring the right words down the wrong path is the single most common reason a correctly restored wallet looks empty.</p>
 
       <h2><span class="sc-article-num">6</span>The meter, and why more rolls stop helping</h2>
 
@@ -7487,7 +7487,7 @@ const guides = [
 
       ${cautions([
         "A device that arrives with words already written on the recovery card is compromised. There is no benign version of this.",
-        "A device that asks you to &ldquo;confirm&rdquo; a phrase it displays on first use, rather than generating one in front of you, is doing the same thing more politely.",
+        "Being asked to re-type words the device has just shown you is the normal backup check, and both COLDCARD and Trezor document it. The danger is a phrase that existed before you initialised the device &mdash; printed on a card, already loaded when it arrived, or read out to you by someone claiming to be support.",
         "Anyone who contacts you claiming your device needs its phrase re-entered for a firmware issue is running the same scam without the hardware."
       ])}
 
