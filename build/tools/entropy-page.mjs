@@ -439,8 +439,8 @@ ${FONTS.map(embedFont).join('\n')}
   .xprv-more > summary::-webkit-details-marker { display: none; }
   .xprv-more-head { display: flex; align-items: baseline; gap: 10px; }
   .xprv-more-head b {
-    color: #ffad4c; font-size: 0.72rem; font-weight: 800;
-    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink); font-size: 0.84rem; font-weight: 700;
+    letter-spacing: 0.01em;
   }
   /* The summary used to carry the derivation path, which did the pushing.
      The path now sits with the key it belongs to, so the chevron holds the
@@ -3440,7 +3440,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
        fingerprint. The account key is a level down and needed less often, so
        it is a fold rather than a second slab of text. -->
   <div class="xpub-box xprv-box">
-    <div class="label"><span>Private key</span><code>m &middot; Master</code></div>
+    <div class="label"><span>Private key</span><code>m</code></div>
     <p id="master-xprv"></p>
     <p class="xpub-note">The root of the tree, and the only key here that reproduces the
       <strong>master fingerprint</strong> below. Anything holding it can move every coin this phrase
