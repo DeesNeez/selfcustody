@@ -934,6 +934,33 @@ const EntropyCore = (() => {
   })();
   const CARD_ORD = card => CARD_DECK.indexOf(card);
 
+  /* What people actually write down, mapped to what the table indexes.
+
+     Two of these matter. A ten is written "10" far more often than "T", and
+     both characters are outside the card alphabet, so the pair used to be
+     dropped in silence: "10H" normalised to "H", which is half a card, and
+     the reader was told their transcript was malformed without being told
+     why. And a deal copied from anywhere that renders suits -- a notes app, a
+     spreadsheet, another tool -- arrives carrying the symbols rather than the
+     letters.
+
+     Applied before the general strip in normalise(), because that strip is
+     what was eating them. Both the filled and outline glyphs are accepted;
+     which one a font or a keyboard produces is not something the reader
+     chose. Written as escapes rather than the characters themselves so the
+     built page stays inside the subset font -- these are read by the browser,
+     never drawn.
+
+     This cannot move an existing phrase. Every alias here is a character that
+     the old parser deleted, so no transcript that was previously accepted
+     contained one. */
+  const CARD_ALIAS = raw => String(raw)
+    .replace(/[\u2660\u2664]/g, 'S')
+    .replace(/[\u2665\u2661]/g, 'H')
+    .replace(/[\u2666\u2662]/g, 'D')
+    .replace(/[\u2663\u2667]/g, 'C')
+    .replace(/10/g, 'T');
+
   /* The BIP39 tool's card codes, which are not a flat six bits per card: the
      first 32 cards get five bits, the next 16 get four, the last 4 get two.
      That is the same variable-length trick as its dice table and carries the
@@ -1114,8 +1141,9 @@ const EntropyCore = (() => {
          that counts entries goes through events(), which reads this. */
       size: 2,
       source: 'cards',
-      faces: 'a rank A, 2-9, T, J, Q or K then a suit C, D, H or S',
+      faces: 'a rank A, 2-9, T, J, Q or K then a suit C, D, H or S. 10 for the ten and the suit symbols are read too',
       keep: /[^A2-9TJQKCDHS]/g,
+      alias: CARD_ALIAS,
       deck: 52,
       /* 25 cards carry 132.4 bits and 58 carry 259.3; one short of either and
          the seed would be padded with nothing. Computed from cardEntropy
@@ -1135,8 +1163,9 @@ const EntropyCore = (() => {
       unit: 'card',
       size: 2,
       source: 'cards',
-      faces: 'a rank A, 2-9, T, J, Q or K then a suit C, D, H or S',
+      faces: 'a rank A, 2-9, T, J, Q or K then a suit C, D, H or S. 10 for the ten and the suit symbols are read too',
       keep: /[^A2-9TJQKCDHS]/g,
+      alias: CARD_ALIAS,
       deck: 52,
       /* Variable-length codes, so cards do not map to a fixed number of bits
          and no card count is the right one -- the page counts bits here, the
@@ -1190,8 +1219,15 @@ const EntropyCore = (() => {
   /* The canonical form of an input: what gets hashed, what gets counted, and
      what the field is rewritten to. Everything that is not a face of the
      chosen method is dropped, so spacing and punctuation never reach a hash. */
-  const normalise = (method, raw) =>
-    String(raw).toUpperCase().replace(/[^0-9A-Z]/g, '').replace(METHODS[method].keep, '');
+  const normalise = (method, raw) => {
+    const spec = METHODS[method];
+    /* Uppercased first so a lower-case deal aliases the same way, then the
+       method's own rewrites, then the general strip. Order matters: the strip
+       removes everything the alias pass is there to interpret. */
+    const cased = String(raw).toUpperCase();
+    const aliased = spec.alias ? spec.alias(cased) : cased;
+    return aliased.replace(/[^0-9A-Z]/g, '').replace(spec.keep, '');
+  };
 
   /* One entry per roll or flip. Every count, every statistic and every
      progress reading goes through this rather than reading the string

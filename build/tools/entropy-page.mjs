@@ -526,6 +526,40 @@ ${FONTS.map(embedFont).join('\n')}
   /* Says why entry stopped. role="status" rather than an alert: it is
      information, not an error, and it should not interrupt anyone using a
      screen reader mid-roll. */
+  /* The deal, read back. Chips rather than a run of characters, because the
+     job here is checking a physical pile against a screen, and 58 cards as one
+     unbroken string is exactly the shape that hides a transposition. */
+  .deal {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    margin: 10px 0 0; padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px;
+    background: rgba(0, 0, 0, 0.22);
+    max-height: 132px; overflow-y: auto;
+  }
+  .deal b {
+    padding: 2px 6px; border-radius: 5px;
+    background: rgba(255, 255, 255, 0.06); color: var(--ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 700; line-height: 1.5;
+  }
+  .deal b.red { color: #ff7a6b; }
+  /* Where one deck ends and the next begins. A full-width break rather than a
+     separator between two chips: the reader is holding 52 cards in one hand and
+     six in the other, and the screen should be the same shape. */
+  .deal .deal-break {
+    flex: 0 0 100%; display: flex; align-items: center; gap: 8px;
+    margin: 4px 0 2px; color: #ffad4c;
+    font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .deal .deal-break::after {
+    content: ""; flex: 1 1 auto; height: 1px; background: rgba(255, 138, 0, 0.35);
+  }
+  .deck-turn {
+    margin: 8px 0 0; padding: 8px 12px; border-radius: 9px;
+    border: 1px solid rgba(255, 138, 0, 0.4); background: rgba(255, 138, 0, 0.1);
+    color: #ffc07f; font-size: 0.85rem; font-weight: 700; line-height: 1.5;
+  }
+
   .cap-notice {
     margin: 8px 0 0; padding: 9px 12px;
     border: 1px solid rgba(255, 138, 0, 0.35); border-radius: 9px;
@@ -1762,12 +1796,63 @@ const ui = () => `
       : '';
   }
 
+  /* Reads the canonical transcript back as chips, with a break where one deck
+     ends. Never the other way round: nothing here is written back to the
+     textarea, so the string that gets hashed is untouched by anything in
+     this function. */
+  const SUIT_MARK = { C: '\u2663', D: '\u2666', H: '\u2665', S: '\u2660' };
+
+  function paintDeal(input, deck) {
+    const el = $('deal');
+    if (!deck) { el.hidden = true; return; }
+    const cards = C.events(method(), input);
+    el.hidden = cards.length === 0;
+    const out = [];
+    cards.forEach((card, i) => {
+      if (deck && i === deck) {
+        const mark = document.createElement('span');
+        mark.className = 'deal-break';
+        mark.textContent = 'Second shuffle';
+        out.push(mark);
+      }
+      const chip = document.createElement('b');
+      const suit = card.slice(1);
+      if (suit === 'H' || suit === 'D') chip.className = 'red';
+      chip.textContent = card.slice(0, 1) + (SUIT_MARK[suit] || suit);
+      out.push(chip);
+    });
+    el.replaceChildren(...out);
+  }
+
   function paintCount() {
     const info = spec();
     const { least, most } = limits();
     const input = clean();
     const at = C.progress({ method: method(), input, words: state.words });
     const el = $('count');
+
+    /* Past a full deck the count restarts rather than running on. "53 of 58
+       cards" asks the reader to hold a running total against a pile they have
+       already shuffled back together; "second shuffle: 1 of 6" describes what
+       is in front of them. Only 24 words reaches this -- 12 needs 25 cards and
+       never turns the deck. */
+    const deck = info.deck ? 52 : 0;
+    const secondPass = deck && at.need > deck && at.have >= deck;
+    if (secondPass && !at.over) {
+      const extra = at.have - deck;
+      const wanted = at.need - deck;
+      el.textContent = 'Second shuffle: ' + extra + ' of ' + wanted + ' cards';
+      el.className = extra >= wanted ? 'ready' : 'short';
+      /* Shown at the turn and not after it: by the time a card of the second
+         pass is down, the shuffle it is asking for has happened. */
+      $('deck-turn').hidden = extra !== 0;
+      $('deck-turn').textContent =
+        'First deck complete \u2014 shuffle the entire deck again, then draw ' + wanted + ' more.';
+      paintDeal(input, deck);
+      return;
+    }
+    $('deck-turn').hidden = true;
+    paintDeal(input, deck);
 
     /* Three different units, because three different things are actually
        being counted -- see progress() in the core. */
@@ -2745,6 +2830,12 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <button type="button" class="key-tool" id="clear">Clear all</button>
   </div>
   <textarea id="input" spellcheck="false" autocomplete="off" aria-label="Your recorded rolls, flips or cards"></textarea>
+  <!-- Cards only. The textarea above is the canonical transcript and the thing
+       that gets hashed; this is a reading of it, laid out so a deal can be
+       checked against the pile on the table without counting characters. It is
+       aria-hidden because it says exactly what the textarea already says. -->
+  <div class="deal" id="deal" hidden aria-hidden="true"></div>
+  <p class="deck-turn" id="deck-turn" role="status" hidden></p>
   <div class="count">
     <span id="accepts"></span>
     <b id="count"></b>
