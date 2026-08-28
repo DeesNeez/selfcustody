@@ -524,10 +524,10 @@
     .sc-workshop .export-dialog-actions .export-button, .sc-workshop .export-dialog-actions .key-tool{ width: 100%; }
   }
 
-  /* ---- the eight endings ------------------------------------------------
-     Only the lookup method reaches this. It sits between the button and the
-     results because it is a step, not an outcome: nothing downstream is a
-     wallet until one of these is chosen. */
+  /* ---- the checksum-valid endings ---------------------------------------
+     Only the lookup methods reach this. It sits between the button and the
+     results because it is a step, not an outcome: choosing an ending chooses
+     the wallet. */
   .sc-workshop .endings{
     margin-top: 22px; padding: 20px 22px;
     border: 1px solid rgba(255, 138, 0, 0.3); border-radius: 14px;
@@ -536,9 +536,46 @@
   .sc-workshop .endings strong{ display: block; margin-bottom: 8px; color: #ffad4c; font-size: 1.02rem; }
   .sc-workshop .endings p{ margin: 0 0 16px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
   .sc-workshop .ending-list{ display: flex; flex-wrap: wrap; gap: 8px; }
+  /* For a 12-word octal-and-hex seed, the physical instruction is to roll one
+     octal and one hex die. Mirror those two objects instead of making someone
+     search a 128-item control. */
+  .sc-workshop .ending-direct{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .sc-workshop .ending-face-set{
+    min-width: 0; padding: 12px; border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 11px; background: rgba(0, 0, 0, 0.16);
+  }
+  .sc-workshop .ending-face-label{
+    display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.7rem;
+    font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .sc-workshop .ending-face-options{ display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
+  .sc-workshop .ending-face{
+    min-width: 0; padding: 8px 2px; color: var(--ink-soft);
+    border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 7px;
+    background: rgba(255, 255, 255, 0.035); font: inherit; font-size: 0.82rem;
+    font-weight: 800; cursor: pointer;
+  }
+  .sc-workshop .ending-face:hover{ color: #fff; border-color: rgba(255, 138, 0, 0.5); }
+  .sc-workshop .ending-face[aria-pressed="true"]{
+    color: #fff; border-color: var(--orange); background: rgba(255, 138, 0, 0.16);
+  }
+  .sc-workshop .ending-picked{
+    grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px;
+    margin: 0; padding: 12px 14px; border: 1px solid rgba(255, 138, 0, 0.28);
+    border-radius: 11px; background: rgba(255, 138, 0, 0.06);
+  }
+  .sc-workshop .ending-picked span{
+    color: var(--muted); font-size: 0.7rem; font-weight: 800;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .sc-workshop .ending-picked b{ color: #fff; font-size: 1.05rem; }
+  .sc-workshop .ending-picked code{ margin-left: auto; color: #ffad4c; font-size: 0.8rem; }
+  .sc-workshop .ending-all{ margin-top: 14px; }
+  .sc-workshop .ending-all > summary{ color: #ffad4c; }
+  .sc-workshop .ending-all[open] > summary{ margin-bottom: 10px; }
   /* Twelve words offers 128 valid endings. Keep every one in the page flow so
-     the full choice is visible at once; this list is deliberately tall rather
-     than becoming a second, easy-to-miss scrolling area inside the page. */
+     the optional reference grid expands in the page flow rather than becoming
+     a second, easy-to-miss scrolling area inside the page. */
   .sc-workshop .ending-list.is-many{
     display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
     gap: 6px;
@@ -546,6 +583,11 @@
     background: rgba(0, 0, 0, 0.18);
   }
   .sc-workshop .ending-list.is-many .ending{ padding: 8px 10px; font-size: 0.82rem; }
+  @media (max-width: 620px) {
+    .sc-workshop .ending-direct{ grid-template-columns: 1fr; }
+    .sc-workshop .ending-picked{ grid-column: 1; }
+    .sc-workshop .ending-face-options{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
 
   /* The throw that picks this ending. */
   .sc-workshop .ending small{
@@ -1819,7 +1861,28 @@
 <div class="endings" id="endings" hidden>
   <strong>Now pick the last word.</strong>
   <p id="endings-note"></p>
-  <div class="ending-list" id="ending-list" role="group" aria-label="Valid final words"></div>
+  <div class="ending-direct" id="ending-direct" hidden>
+    <div class="ending-face-set">
+      <span class="ending-face-label">Octal die</span>
+      <div class="ending-face-options" id="ending-octal" role="group" aria-label="Octal die result"></div>
+    </div>
+    <div class="ending-face-set">
+      <span class="ending-face-label">Hex die</span>
+      <div class="ending-face-options" id="ending-hex" role="group" aria-label="Hex die result"></div>
+    </div>
+    <p class="ending-picked" aria-live="polite">
+      <span>Final word</span>
+      <b id="ending-picked-word"></b>
+      <code id="ending-picked-label"></code>
+    </p>
+  </div>
+  <div id="ending-short">
+    <div class="ending-list" id="ending-list" role="group" aria-label="Valid final words"></div>
+  </div>
+  <details class="ending-all" id="ending-all" hidden>
+    <summary>Show all 128 possible words</summary>
+    <div id="ending-all-slot"></div>
+  </details>
 </div>
 
 <div class="error" id="error" hidden></div>
@@ -5280,7 +5343,7 @@ var qrcodegen;
     words: 12,
     addressType: 'native',
     pathEdited: false,
-    choice: 0,         /* which of the eight endings, lookup method only */
+    choice: 0,         /* which checksum-valid ending, lookup methods only */
     seed: null,        /* cached: the slow half, keyed by seedKey */
     seedKey: null
   };
@@ -5980,6 +6043,7 @@ var qrcodegen;
        collected while a live object still referenced it. */
     for (const key of Object.keys(qrSources)) delete qrSources[key];
     if ($('qr-dialog').open) $('qr-dialog').close();
+    $('ending-all').open = false;
 
     for (const id of SECRET_TEXT) {
       const el = $(id);
@@ -6008,7 +6072,8 @@ var qrcodegen;
      shredding the paper. */
   const SECRET_FIELDS = ['input', 'passphrase'];
   const SECRET_TEXT = [
-    'words', 'entropy', 'ending-list',
+    'words', 'entropy', 'ending-list', 'ending-octal', 'ending-hex',
+    'ending-picked-word', 'ending-picked-label',
     'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
     'descriptor', 'descriptor-recv', 'descriptor-chng',
     'checksum-line', 'checksum-detail',
@@ -6098,8 +6163,9 @@ var qrcodegen;
     }, 20);
   }
 
-  /* The eight valid endings, shown the way the device shows them. Picking one
-     is picking a wallet: they share 23 words and nothing else. */
+  /* The checksum-valid endings, shown the way the physical procedure chooses
+     them. Picking one is picking a wallet: the phrases share every rolled word
+     and nothing downstream. */
   function paintEndings(options) {
     $('endings').hidden = false;
     /* Three unrolled bits is eight endings, and every method that reaches here
@@ -6110,7 +6176,7 @@ var qrcodegen;
     $('endings-note').textContent = method() === 'octahex'
       ? (state.words === 24
         ? 'Your throws fix the first 23 words, which carry 253 bits. A 24-word phrase needs 256 plus an 8-bit checksum, so the last word is three bits you never rolled followed by a check over all of them — which leaves exactly eight endings. Throw the octal die once more and take that numbered option, counting from the left. Your COLDCARD, SeedSigner or Jade will offer the same eight.'
-        : 'Your throws fix the first 11 words, which carry 121 bits. A 12-word phrase needs 128 plus a 4-bit checksum, so the last word is seven bits you never rolled followed by a check over all of them — which leaves 128 endings rather than eight. Seven bits is one octal die and one hex die, so throw both and take the ending labelled with those two faces. Any of them is a real wallet, and every one is a different wallet.')
+        : 'Your throws fix the first 11 words, which carry 121 bits. A 12-word phrase needs 128 plus a 4-bit checksum, so the last word is seven bits you never rolled followed by a check over all of them — which leaves 128 endings rather than eight. Seven bits is one octal die and one hex die, so throw both and select those two faces below. The page will show the matching last word. Every combination is a real wallet, and every one is a different wallet.')
       : 'Your rolls fix the first 23 words, which carry 253 bits. A 24-word phrase needs 256 plus an 8-bit checksum, so the last word is three bits you never rolled followed by a check over all of them. That leaves exactly eight valid endings, and your BitBox02 shows you these same eight. Any one of them is a real wallet — they are different wallets, so pick the one your device showed you, or roll one more die and count 1 to 8.';
     /* Label each ending with the throw that selects it, rather than leaving it
        to be counted. Eight endings can be counted along a row; a hundred and
@@ -6121,9 +6187,46 @@ var qrcodegen;
     const octahex = method() === 'octahex';
     const many = options.length > 8;
     $('ending-list').classList.toggle('is-many', many);
+    $('ending-direct').hidden = !many;
+    $('ending-short').hidden = many;
+    $('ending-all').hidden = !many;
+    (many ? $('ending-all-slot') : $('ending-short')).append($('ending-list'));
     const labelFor = i => !octahex ? String(i + 1)
       : many ? String(Math.floor(i / 16) + 1) + String.fromCharCode(183) + (i % 16).toString(16).toUpperCase()
       : String(i + 1);
+
+    /* The 128 choices are exactly the cartesian product printed on the two
+       dice, so those faces are the primary control. The complete word grid is
+       still built below as an inspectable reference, behind a disclosure. */
+    if (many) {
+      const choose = choice => {
+        state.choice = choice;
+        state.seedKey = null;
+        derive();
+      };
+      const faceButtons = (values, active, aria, choiceFor) => values.map((value, i) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'ending-face';
+        button.textContent = value;
+        button.setAttribute('aria-label', aria + ' ' + value);
+        button.setAttribute('aria-pressed', i === active ? 'true' : 'false');
+        button.addEventListener('click', () => choose(choiceFor(i)));
+        return button;
+      });
+      const octal = Math.floor(state.choice / 16);
+      const hex = state.choice % 16;
+      $('ending-octal').replaceChildren(...faceButtons(
+        Array.from({ length: 8 }, (_, i) => String(i + 1)), octal, 'Octal die',
+        i => i * 16 + hex
+      ));
+      $('ending-hex').replaceChildren(...faceButtons(
+        Array.from({ length: 16 }, (_, i) => i.toString(16).toUpperCase()), hex, 'Hex die',
+        i => octal * 16 + i
+      ));
+      $('ending-picked-word').textContent = options[state.choice].word;
+      $('ending-picked-label').textContent = labelFor(state.choice);
+    }
 
     $('ending-list').replaceChildren(...options.map((option, i) => {
       const button = document.createElement('button');

@@ -147,6 +147,19 @@ export function assertWorkshop() {
     check(/qrSources\.seedqr\s*=\s*\{\s*text:\s*digits/.test(script) &&
       !/paintQr\([^)]*digits/.test(script),
       `the ${name} build draws its SeedQR before the button asks for one`);
+    /* A 12-word octal-and-hex run has 128 checksum-valid endings, but the
+       physical choice is only two dice. Pin that direct mapping and keep the
+       complete reference list as a disclosure without an inner scrollbar. */
+    check(/id="ending-octal"[^>]*aria-label="Octal die result"/.test(html) &&
+      /id="ending-hex"[^>]*aria-label="Hex die result"/.test(html) &&
+      /<summary>Show all 128 possible words<\/summary>/.test(html),
+      `the ${name} build does not expose the two-die ending picker and its full reference list`);
+    check(/i\s*=>\s*i\s*\*\s*16\s*\+\s*hex/.test(script) &&
+      /i\s*=>\s*octal\s*\*\s*16\s*\+\s*i/.test(script),
+      `the ${name} build does not map octal and hex faces to the 128 endings`);
+    const manyEndingRule = html.match(/\.ending-list\.is-many\s*\{([^}]*)\}/)?.[1] || '';
+    check(manyEndingRule && !/max-height|overflow-y/.test(manyEndingRule),
+      `the ${name} build puts an inner scrollbar on the 128-word reference grid`);
     /* The strings parked for the QR buttons have to leave on every path that
        invalidates a wallet, not only on a full clear -- editing one roll
        invalidates too. Pinned as both placement and uniqueness: one deletion
