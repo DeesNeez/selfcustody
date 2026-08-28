@@ -951,9 +951,11 @@ const EntropyCore = (() => {
      built page stays inside the subset font -- these are read by the browser,
      never drawn.
 
-     This cannot move an existing phrase. Every alias here is a character that
-     the old parser deleted, so no transcript that was previously accepted
-     contained one. */
+     Every alias here is a character the old parser deleted. That does not by
+     itself make the change backward compatible: a long raw transcript could
+     contain a complete alias card that the old parser ignored and still have
+     enough canonical cards left to derive a wallet. deriveSeed() therefore
+     refuses the rare case where both readings are valid and different. */
   const CARD_ALIAS = raw => String(raw)
     .replace(/[\u2660\u2664]/g, 'S')
     .replace(/[\u2665\u2661]/g, 'H')
@@ -1219,6 +1221,11 @@ const EntropyCore = (() => {
   /* The canonical form of an input: what gets hashed, what gets counted, and
      what the field is rewritten to. Everything that is not a face of the
      chosen method is dropped, so spacing and punctuation never reach a hash. */
+  const legacyNormalise = (method, raw) => {
+    const spec = METHODS[method];
+    return String(raw).toUpperCase().replace(/[^0-9A-Z]/g, '').replace(spec.keep, '');
+  };
+
   const normalise = (method, raw) => {
     const spec = METHODS[method];
     /* Uppercased first so a lower-case deal aliases the same way, then the
@@ -1515,6 +1522,43 @@ const EntropyCore = (() => {
     return { least, most: spec.extra ? spec.most : least };
   };
 
+  /* Whether an already-canonical string reaches the derivation gate. Kept in
+     one place so the alias compatibility check asks the same questions as
+     deriveSeed(): shape, duplicates and the method's exact size or bit range.
+     It deliberately does not run the fabrication heuristic, which the page
+     applies separately before derivation and library callers may not use. */
+  const canDeriveCanonical = ({ method, clean, words }) => {
+    const spec = METHODS[method];
+    if (spec.valid && !spec.valid.test(clean)) return false;
+    if (spec.deck && repeatedCard(clean, spec.deck)) return false;
+
+    const count = events(method, clean).length;
+    if (spec.variable) {
+      const have = spec.bitsOf(clean).length;
+      const need = spec.bits[words];
+      return have >= need && have <= need + spec.slack;
+    }
+
+    const { least, most } = limits(method, words);
+    return count >= least && count <= most;
+  };
+
+  /* Adding meaning to formerly ignored characters creates one unavoidable
+     ambiguity: the old parser may have ignored an entire alias card while
+     still deriving from the canonical cards around it. If both the legacy and
+     alias-aware readings can derive and they differ, neither is chosen. The
+     caller must supply an explicit T/C/D/H/S transcript instead. */
+  const cardAliasAmbiguity = ({ method, input, words }) => {
+    const spec = METHODS[method];
+    if (!spec.alias) return null;
+    const legacy = legacyNormalise(method, input);
+    const aliased = normalise(method, input);
+    if (legacy === aliased) return null;
+    if (!canDeriveCanonical({ method, clean: legacy, words })) return null;
+    if (!canDeriveCanonical({ method, clean: aliased, words })) return null;
+    return { legacy, aliased };
+  };
+
   /* How far along the input is, in whatever unit the method actually measures.
 
      Three different answers hide behind one question. The hashing and coin
@@ -1563,6 +1607,23 @@ const EntropyCore = (() => {
       have: count, need: least, unit: spec.unit, rolls: count,
       ready: count >= least && count <= most,
       over: count > most, full: count >= most
+    };
+  };
+
+  /* Physical deck state is counted in cards even when the selected conversion
+     reports progress in bits. Keeping this separate from progress() prevents
+     a bit count from ever being labelled as a card count at the reshuffle. */
+  const deckProgress = ({ method, input, words }) => {
+    const spec = METHODS[method];
+    if (!spec.deck) return null;
+    const cards = events(method, input).length;
+    const turns = Number(words) === 24;
+    const second = turns && cards >= spec.deck ? cards - spec.deck : null;
+    return {
+      cards,
+      turn: turns && cards === spec.deck,
+      second,
+      required: method === 'cards' ? spec.counts[24] - spec.deck : null
     };
   };
 
@@ -1706,6 +1767,11 @@ const EntropyCore = (() => {
       return { entropy: picked.entropy, mnemonic, options, ...seedOf(mnemonic, passphrase) };
     }
 
+    const ambiguity = cardAliasAmbiguity({ method, input, words });
+    if (ambiguity) {
+      throw new Error('Those card aliases have two valid readings: older copies ignored them, while this copy reads them as cards. Re-enter the intended deal using T instead of 10 and C, D, H or S instead of suit symbols. Include that card in canonical form if it belongs to the deal, or remove it if it does not.');
+    }
+
     const { least, most } = limits(method, words);
     const clean = normalise(method, input);
     const count = events(method, input).length;
@@ -1798,10 +1864,11 @@ const EntropyCore = (() => {
     encodeXpub, encodeXprv, fingerprint, masterFingerprint, publicKeyOf,
     XPUB_VERSION, XPRV_VERSION,
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
-    ADDRESS_TYPES, METHODS, accountPath, normalise, events,
+    ADDRESS_TYPES, METHODS, accountPath, legacyNormalise, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
-    cardBits, cardEntropy, cardsLeft, repeatedCard, sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
-    progress, nextAllowed, clamp, rolledWords,
+    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity,
+    sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
+    progress, deckProgress, nextAllowed, clamp, rolledWords,
     deriveSeed, deriveAddresses, buildWallet, limits,
     assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative
   };

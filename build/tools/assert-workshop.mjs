@@ -115,6 +115,21 @@ export function assertWorkshop() {
       `the ${name} build does not set a no-referrer policy`);
     check(/http-equiv="Content-Security-Policy"/.test(html),
       `the ${name} build has no Content-Security-Policy`);
+
+    /* The deck-turn branch used to return before repainting the meter, keypad
+       and Derive button. Pin both the absence of that early exit and the raw
+       input handoff needed to detect old/new alias ambiguity. */
+    const script = codeOnlyEarly(html);
+    const paintStart = script.indexOf('function paintCount()');
+    const paintEnd = script.indexOf('function hideResults()', paintStart);
+    const paint = paintStart >= 0 && paintEnd > paintStart
+      ? script.slice(paintStart, paintEnd)
+      : '';
+    check(paint.includes('C.deckProgress') && !/\breturn\b/.test(paint),
+      `the ${name} build can leave controls stale by returning early while repainting deck progress`);
+    check(/const rawInput\s*=\s*\$\('input'\)\.value/.test(script) &&
+      /deriveSeed\(\{[\s\S]*?input:\s*rawInput/.test(script),
+      `the ${name} build canonicalises card aliases before the compatibility guard can compare their legacy reading`);
   }
 
   /* A meta CSP governs only what is parsed after it, so it has to come before

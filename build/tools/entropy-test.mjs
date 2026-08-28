@@ -919,6 +919,30 @@ export const VECTORS = [
   ['cards: and it is refused again once it repeats within the second pass',
     () => C.repeatedCard(C.CARD_DECK.join('') + 'ACAC').at, 54],
 
+  /* The reshuffle display is a physical-deck concern, not the unit used by
+     progress(). In particular, the table method reports bits: twelve of the
+     first cards already carry more than 52 bits, but are nowhere near the end
+     of a deck. */
+  ['deck turn: hash cards are one short at 51',
+    () => JSON.stringify(C.deckProgress({ method: 'cards', input: C.CARD_DECK.slice(0, 51).join(''), words: 24 })),
+    JSON.stringify({ cards: 51, turn: false, second: null, required: 6 })],
+  ['deck turn: hash cards turn exactly at 52',
+    () => JSON.stringify(C.deckProgress({ method: 'cards', input: C.CARD_DECK.join(''), words: 24 })),
+    JSON.stringify({ cards: 52, turn: true, second: 0, required: 6 })],
+  ['deck turn: hash cards count the first card after the reshuffle',
+    () => JSON.stringify(C.deckProgress({ method: 'cards', input: C.CARD_DECK.join('') + 'AC', words: 24 })),
+    JSON.stringify({ cards: 53, turn: false, second: 1, required: 6 })],
+  ['deck turn: card-table bits are never mistaken for physical cards',
+    () => JSON.stringify(C.deckProgress({ method: 'cardbits', input: C.CARD_DECK.slice(0, 12).join(''), words: 24 })),
+    JSON.stringify({ cards: 12, turn: false, second: null, required: null })],
+  ['deck turn: card-table method asks for a reshuffle without inventing a fixed remainder',
+    () => JSON.stringify(C.deckProgress({ method: 'cardbits', input: C.CARD_DECK.join(''), words: 24 })),
+    JSON.stringify({ cards: 52, turn: true, second: 0, required: null })],
+  ['deck turn: a 12-word draw never asks for a second deck',
+    () => C.deckProgress({ method: 'cards', input: C.CARD_DECK.join(''), words: 12 }).turn, false],
+  ['deck turn: non-card methods have no deck state',
+    () => C.deckProgress({ method: 'dice', input: '123456', words: 24 }), null],
+
   /* ---- aliases -----------------------------------------------------------
 
      Golden vectors. Every one of these has to normalise to the transcript the
@@ -950,6 +974,18 @@ export const VECTORS = [
     () => C.normalise('cards', REAL_DRAW), REAL_DRAW],
   ['alias: spacing is still dropped and nothing else moves',
     () => C.normalise('cards', 'AS 2C TD'), 'AS2CTD'],
+  /* A complete alias could previously be ignored inside an otherwise valid
+     transcript. Both readings then derive, but to different wallets. Refuse
+     that raw input instead of silently choosing the new interpretation. */
+  ['alias: two valid legacy readings are refused rather than moving a wallet',
+    () => {
+      try {
+        C.deriveSeed({ method: 'cards', input: '10\u2665' + CARDS_25, words: 12, wordlist: WORDLIST });
+        return 'accepted';
+      } catch (err) {
+        return err.message.startsWith('Those card aliases have two valid readings');
+      }
+    }, true],
   /* The alias pass is card-only. A dice transcript containing "10" must keep
      losing the 0 exactly as it did, or every dice phrase ever produced from a
      sloppy paste would move. */
