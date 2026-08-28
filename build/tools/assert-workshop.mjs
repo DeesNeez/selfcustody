@@ -126,6 +126,12 @@ export function assertWorkshop() {
     check(/C\.buildWalletExportTexts\(\{/.test(script) &&
       /passphraseUsed:\s*\$\('passphrase'\)\.value\.length\s*>\s*0/.test(script),
       `the ${name} build does not pass only passphrase presence to the tested export builder`);
+    /* The transcript is optional to the builder, because a wallet restored
+       from words has none. This page always has one, and a private record
+       without it cannot be checked against the paper it was rolled on. */
+    check(/source:\s*\{\s*method: method\(\), input: clean\(\), words: state\.words, choice: state\.choice/
+      .test(script),
+      `the ${name} build does not record the rolls its wallet came from`);
     check(/URL\.createObjectURL\(new Blob\(\[text\]/.test(script) &&
       /URL\.revokeObjectURL\(url\)/.test(script),
       `the ${name} build does not create and revoke its text-download Blob URLs`);
