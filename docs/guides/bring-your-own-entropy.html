@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Workshop turns coin flips, dice rolls or a shuffled deck into a wallet you can hold against your device. What it does with what you give it, what it refuses to do, and how to check it before you believe a word of it.">
+  <title>BYOE: Bring Your Own Entropy | SelfCustody.ca</title>
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://selfcustody.ca/guides/bring-your-own-entropy.html">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_CA">
+  <meta property="og:site_name" content="SelfCustody.ca">
+  <meta property="og:title" content="BYOE: Bring Your Own Entropy | SelfCustody.ca">
+  <meta property="og:description" content="The Workshop turns coin flips, dice rolls or a shuffled deck into a wallet you can hold against your device. What it does with what you give it, what it refuses to do, and how to check it before you believe a word of it.">
+  <meta property="og:url" content="https://selfcustody.ca/guides/bring-your-own-entropy.html">
+  <meta property="og:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1406">
+  <meta property="og:image:height" content="703">
+  <meta property="og:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://selfcustody.ca/assets/img/social-preview.jpg?v=5">
+  <meta name="twitter:image:alt" content="SelfCustody.ca beside an open bank vault on a dark brick wall">
+  <link rel="icon" type="image/svg+xml" href="../assets/img/self-custody-favicon.svg">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css?v=20260827-4936" rel="stylesheet">
+  <link href="../assets/css/style.css?v=20260827-4936" rel="stylesheet">
+  <link href="../assets/css/site-refresh.css?v=20260827-4936" rel="stylesheet">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"BYOE: Bring Your Own Entropy","description":"The Workshop turns coin flips, dice rolls or a shuffled deck into a wallet you can hold against your device. What it does with what you give it, what it refuses to do, and how to check it before you believe a word of it.","url":"https://selfcustody.ca/guides/bring-your-own-entropy.html","datePublished":"2026-08-27","dateModified":"2026-08-27","inLanguage":"en-CA","publisher":{"@type":"Organization","name":"SelfCustody.ca","url":"https://selfcustody.ca/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://selfcustody.ca/guides/bring-your-own-entropy.html"}}</script>
+</head>
+<body class="site-refresh" data-page="guides">
+  <div id="site-header">
+      <a class="sc-skip-link" href="#main-content">Skip to main content</a>
+      <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center">
+          <a class="sc-brand me-auto" href="../index.html" aria-label="Self Custody home">
+            <span class="sc-brand-mark" aria-hidden="true"></span>
+            <span class="sc-brand-name">SELF CUSTODY</span>
+            <span class="sc-brand-domain" aria-hidden="true"><span class="sc-brand-domain-text">.CA</span></span>
+          </a>
+          <nav id="navbar" class="navbar" aria-label="Primary navigation">
+            <ul><li><a class=" " href="../index.html"><span>Home</span></a></li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle active" type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Guides</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a href="../guides.html">Start here</a></li>
+            <li><a href="../guides.html#devices">Devices</a></li>
+            <li><a href="../guides.html#software">Software</a></li>
+            <li><a href="../guides.html#exchanges">Exchanges</a></li>
+            <li><a href="../guides.html#advanced">Techniques</a></li>
+            <li><a href="../guides.html#concepts">Concepts</a></li>
+            <li class="sc-nav-tool-item"><a class="sc-nav-tool-link" href="../entropy.html">Entropy Workshop</a></li>
+          </ul>
+        </li><li class="sc-nav-menu">
+          <button class="sc-nav-menu-toggle " type="button" aria-expanded="false" aria-haspopup="true">
+            <span>Compare</span><span class="sc-nav-menu-chevron" aria-hidden="true"></span>
+          </button>
+          <ul class="sc-nav-submenu">
+            <li><a class="" href="../devices.html">Devices</a></li>
+            <li><a class="" href="../software.html">Software</a></li>
+            <li><a class="" href="../exchanges.html">Exchanges</a></li>
+          </ul>
+        </li><li><a class=" " href="../glossary.html"><span>Glossary</span></a></li><li><a class=" " href="../dashboard.html"><span>Dashboard</span></a></li><li><a class=" sc-contact-link" href="../contact.html"><span>Get Help</span></a></li></ul>
+            <i class="bi bi-list mobile-nav-toggle" aria-label="Open navigation" role="button" tabindex="0"></i>
+          </nav>
+        </div>
+      </header></div>
+    <main id="main-content">
+    <section class="sc-guide-head">
+      <div class="container">
+        <nav class="sc-breadcrumb" aria-label="Breadcrumb">
+          <a href="../guides.html">Guides</a>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          <a href="../guides.html#advanced">Techniques</a>
+        </nav>
+        <span class="sc-eyebrow">Advanced techniques</span>
+        <div class="sc-guide-title-row"><span class="sc-die-mark" aria-hidden="true"></span><h1>BYOE: Bring Your Own Entropy</h1></div>
+        <p class="sc-lead">The Workshop turns coin flips, dice rolls or a shuffled deck into a wallet you can hold against your device. What it does with what you give it, what it refuses to do, and how to check it before you believe a word of it.</p>
+        <div class="sc-guide-meta">
+          <span class="sc-level sc-level-intermediate">Intermediate</span>
+          <span><i class="bi bi-hourglass-split" aria-hidden="true"></i> About 16 minutes</span>
+          <span>Updated Aug 27, 2026</span>
+        </div>
+        <div class="sc-tags sc-tags-lg"><a class="sc-tag sc-tag-link" href="../glossary.html#term-entropy">Entropy</a><span class="sc-tag">Seed generation</span><a class="sc-tag sc-tag-link" href="../glossary.html#term-open_source">Open source</a></div>
+        
+      </div>
+    </section>
+
+    <section class="sc-section sc-guide-body">
+      <div class="container">
+        <div class="sc-article">
+      <p class="sc-guide-intro">A wallet is one enormous secret number. The Entropy Workshop will not make that number for you &mdash; there is no random number generator anywhere in it, and that absence is the whole design. You bring the randomness in from the physical world, and the page does the arithmetic in front of you: the same arithmetic your signing device does privately, so you can hold the two side by side and see whether they agree.</p>
+
+      <p>This guide is about reading that tool. What each control changes, what comes out the other end, and how to check the page itself before you trust anything it tells you.</p>
+
+      
+      <p class="sc-mark-link">
+        <span class="sc-die-mark" aria-hidden="true"></span>
+        <a class="sc-text-link" href="../entropy.html">Open the Entropy Workshop <i class="bi bi-arrow-right"></i></a>
+      </p>
+
+      <h2><span class="sc-article-num">1</span>It cannot generate anything, and that is the feature</h2>
+
+      <p>Most "seed generator" pages you will find offer a button that produces a phrase. This one does not have that button, because it does not have anything to put behind it. There is no call to the browser&rsquo;s random number generator in the conversion path at all. Every bit that ends up in a wallet came off a coin, a die or a card that you handled.</p>
+
+      <p>The second absence matters just as much: there is nowhere on the page to type a recovery phrase you already own. The tool converts physical events into words, and only in that direction. A page that has no field for your phrase cannot be tricked into sending your phrase somewhere, which is a stronger guarantee than any promise about what it does with the field.</p>
+
+      <blockquote class="sc-pull-quote"><p>A tool that cannot accept your recovery phrase cannot leak it. That is worth more than a promise not to.</p></blockquote>
+
+      <h2><span class="sc-article-num">2</span>Pick the source you actually have</h2>
+
+      <p>Step one asks what you are going to flip, roll or draw. The three sources are not interchangeable &mdash; they differ in how much each event is worth, and therefore in how long you will be sitting there.</p>
+
+      <ul>
+        <li><strong>Coins.</strong> One bit a flip, packed straight into the seed with nothing hashed. That makes it the only source you can check entirely by hand: heads is a 1, tails a 0, in the order you flipped them. It also makes it the longest &mdash; a 12-word seed takes exactly 128 flips, and a 24-word seed exactly 256.</li>
+        <li><strong>Six-sided dice.</strong> Each roll carries log2(6) = 2.585 bits, so 50 rolls fill a 12-word seed and 99 fill a 24-word one. The rolls are hashed rather than packed, which is why the count is not a round number.</li>
+        <li><strong>Octal and hex dice.</strong> One eight-sided die and two sixteen-sided dice throw 3 + 4 + 4 = 11 bits between them, which is exactly one recovery word. Nothing is hashed: the three faces name the word the way the printed dictionary does.</li>
+        <li><strong>Cards.</strong> A shuffled deck, drawn without replacement, so each card is worth slightly less than the last &mdash; log2(52) = 5.70 bits for the first, then log2(51), and so on. Twenty-five cards carry enough for 12 words; fifty-eight for 24.</li>
+      </ul>
+
+      
+  <figure class="sc-figure">
+    <img src="../assets/img/bring-your-own-entropy-dice.jpg" alt="Two white dice caught in mid-air above a navy felt runner on a scarred wooden table, beside a whisky glass, a brass oil lamp, a leather notebook and a scatter of coins" width="1376" height="768" loading="lazy">
+    <figcaption>The part the page cannot do for you. Everything downstream is arithmetic; this is the only step that produces anything unpredictable.</figcaption>
+  </figure>
+
+      <p>Whichever you choose, the page counts events rather than characters, and refuses to count a half-entered one &mdash; a card rank with no suit yet is not a card.</p>
+
+      <h2><span class="sc-article-num">3</span>The conversion is the part that has to match your device</h2>
+
+      <p>Here is the fact that sends most people to a tool like this in the first place: <strong>the same dice rolls produce different recovery words on different devices.</strong> Not because any of them is wrong, but because they made different reasonable choices about how to turn digits into bits.</p>
+
+      <p>So step two asks which convention to follow. For six-sided dice there are four:</p>
+
+      <ul>
+        <li><strong>Hash the rolls</strong> &mdash; SHA-256 over the digits exactly as typed. COLDCARD, SeedSigner and Krux.</li>
+        <li><strong>Hash, with 6 as 0</strong> &mdash; the same, after rewriting every 6 as a 0 first. Keystone and the BIP39 HTML tool.</li>
+        <li><strong>The bit table</strong> &mdash; each face contributes one or two bits, so no fixed number of rolls fills a seed.</li>
+        <li><strong>The BitBox lookup</strong> &mdash; five four-sided dice and a coin name a word outright, with nothing hashed.</li>
+      </ul>
+
+      <p>Cards have two: hash the draw, or use the BIP39 tool&rsquo;s variable-length card codes. Coins have one, because there is only one sensible thing to do with a bit.</p>
+
+      <div class="sc-callout mt-4"><h3>If the words disagree with your device</h3><p>Change the conversion before you conclude anything. A mismatch between this page and your hardware is far more likely to be two different conventions than a dishonest device &mdash; and the page names which devices use which convention precisely so that you can check that first.</p></div>
+
+      <h2><span class="sc-article-num">4</span>The last word, and when you get to choose it</h2>
+
+      <p>A recovery phrase is not purely random. In a 12-word phrase, the first 11 words and part of the twelfth carry 128 bits of entropy, and the last four bits of the final word are a <a href="../glossary.html#term-checksum">checksum</a> computed from everything before them. In a 24-word phrase it is 256 bits and eight checksum bits. That is what makes a mistyped phrase detectable rather than silently wrong.</p>
+
+      <p>The tool always shows you whether the checksum holds, and it will open up and explain what the last word is made of if you ask it to. Where the interesting difference lies is whether you get a say in that last word:</p>
+
+      <ul>
+        <li><strong>Hashing methods leave you no choice.</strong> Hashing fixes all 128 or 256 entropy bits at once, so exactly one final word fits, and the tool fills it in.</li>
+        <li><strong>Lookup methods do.</strong> The octal-and-hex dictionary gives you 11 words from 11 throws, which is 121 bits &mdash; seven short of 128. Those seven unrolled bits are yours to pick, which means <strong>128 valid endings</strong> to choose from at 12 words, and eight at 24. The checksum itself is never a choice; it is computed either way.</li>
+      </ul>
+
+      <h2><span class="sc-article-num">5</span>What comes out</h2>
+
+      <p>Pressing the button gives you rather more than a phrase, because a phrase on its own is hard to check against anything:</p>
+
+      <ul>
+        <li><strong>The recovery words</strong>, numbered, with the checksum verdict beneath them.</li>
+        <li><strong>The account private key</strong> &mdash; the half that spends, shown openly beneath the words because the words are the more powerful secret and are already on screen. Where the address type has a SLIP-132 prefix, its twin is shown beside it, so a wallet displaying one and a device displaying the other do not look like a disagreement.</li>
+        <li><strong>The account public key</strong>, which is what a watch-only wallet means when it asks for your <a href="../glossary.html#term-xpub">xpub</a>.</li>
+        <li><strong>A watch-only <a href="../glossary.html#term-descriptor">descriptor</a></strong>, written the way a wallet wants to be handed one &mdash; script type named so it cannot be imported as the wrong address type, receiving and change covered together, and eight characters of checksum after the hash so a wallet can tell you that you mistyped rather than silently watching the wrong account.</li>
+        <li><strong>The first addresses</strong> on both the receiving and change branches, which is usually the fastest thing to compare against a device screen.</li>
+      </ul>
+
+      <p>The address type you pick changes the derivation path underneath all of it: legacy sits at m/44&rsquo;/0&rsquo;/0&rsquo;, nested SegWit at m/49&rsquo;, native SegWit at m/84&rsquo;, and taproot at m/86&rsquo;. Restoring the right words down the wrong path is the single most common reason a correctly restored wallet looks empty.</p>
+
+      <h2><span class="sc-article-num">6</span>The meter, and why more rolls stop helping</h2>
+
+      <p>As you enter events the page tracks how many bits they carry against how many the seed can hold. It is worth watching once, because the arithmetic is not intuitive: ninety-nine rolls of a six-sided die come to 255.9 bits, just under the 256 a 24-word seed holds, which is exactly why those rolls are hashed rather than packed in.</p>
+
+      <p>Keep rolling past the target and the count keeps climbing, because the count is honest about the source. What it will also tell you is that the extra lands nowhere: a seed holds what it holds, and everything above that is hashed down into the same number of bits. More rolls past the line change <em>which</em> wallet you get. They do not make it harder to guess.</p>
+
+      <h2><span class="sc-article-num">7</span>It checks itself, and it checks you</h2>
+
+      <p>Three separate guards run, and it is worth knowing what each one does and does not mean.</p>
+
+      <p><strong>It tests itself on load.</strong> The page carries published test vectors and runs them before it will show you anything. If any of them fail, it refuses to render results at all, because a conversion tool that is quietly wrong is worse than no tool.</p>
+
+      <p><strong>It refuses obviously typed input.</strong> Ninety-nine 1s, a walk up and down the faces, a neat repeating block &mdash; these get turned away. Cards get stricter treatment still, because a deck has rules: a rank must be followed by a suit, and one deck cannot deal the same card twice, so an impossible transcript is refused rather than quietly hashed.</p>
+
+      <p><strong>Neither of those is a randomness test.</strong> Passing the fabrication check means "nothing here is obviously fabricated". It does not mean the dice were fair, that you shuffled properly, or that the result is good randomness. No page can tell you that from the digits alone.</p>
+
+      <ul class="sc-caution-list"><li>A passing fabrication check is not a verdict on your dice or your shuffle.</li><li>The tool cannot detect a loaded die, a sticky coin, or a deck that was not really shuffled.</li><li>If you find yourself re-rolling because a sequence <em>looks</em> wrong, stop &mdash; that instinct is the bias the entropy guides describe, and it makes the result worse rather than better.</li></ul>
+
+      <h2><span class="sc-article-num">8</span>Check the file before you trust it</h2>
+
+      <p>The whole tool is one self-contained HTML file. It embeds its own fonts, styles, script and wordlist, carries a restrictive content-security policy, and makes no automatic network request of any kind. That is what makes it possible to carry it to a machine that has never been online.</p>
+
+      <p>Its SHA-256 is published beside it, and the page shows you how to check it:</p>
+
+      <ul>
+        <li><code>certutil -hashfile entropy-offline.html SHA256</code> on Windows</li>
+        <li><code>shasum -a 256 entropy-offline.html</code> on macOS or Linux</li>
+      </ul>
+
+      <p>Be clear about what that proves. It proves the file arrived intact &mdash; a truncated download, a proxy that rewrote something, a bad USB stick all change the hash and you will see it. <strong>It does not prove the file is genuine</strong>, because the checksum is served from the same place as the file it describes. Anyone able to replace one could replace the other. Same-origin checksums catch accidents, not adversaries. If a result is going to change what you believe about a wallet, compare a copy fetched over a different network or taken from the repository&rsquo;s history, and read the file &mdash; it is one unminified document, specifically so that reading it is possible.</p>
+
+      <h2><span class="sc-article-num">9</span>Where to run it, and the limit it will not pretend past</h2>
+
+      <p>Download it, check the hash, and open it from disk on a machine with no network. The page will tell you which copy you are running and how it was loaded, and it is careful about the wording, because there is a thing it genuinely cannot know.</p>
+
+      <p><strong>It cannot tell whether your machine is offline.</strong> From inside a browser, a local file on a fully connected laptop is indistinguishable from the same file on an air-gapped one. No badge on any page is proof of an air gap &mdash; only how you set the machine up is.</p>
+
+      <div class="sc-callout mt-4"><h3>What this tool is for</h3><p>It is experimental, and it is for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose. Use it to check that a device produced what it should have, with a sequence you are content to throw away &mdash; not to manufacture the wallet you are going to live on.</p></div>
+
+      <h2>This is the instrument, not the procedure</h2>
+
+      <p>Worth being plain about where this page sits. Everything above describes a tool for checking work — it is not the method, and it is not the part that keeps bitcoin safe. The full dice procedure lives in one guide and the rules that outrank all of this live in another, and if you only read one more thing, read those rather than coming back here.</p>
+
+      <p class="mt-4"><a class="sc-text-link" href="dice-entropy.html">Roll the dice: the full procedure, and the rules people break <i class="bi bi-arrow-right"></i></a></p>
+      <p><a class="sc-text-link" href="quickstart.html">Intro to Self Custody: back it up and prove you can recover it <i class="bi bi-arrow-right"></i></a></p>
+      <p><a class="sc-text-link" href="human-randomness.html">Why you cannot think of a random number <i class="bi bi-arrow-right"></i></a></p>
+
+      <p class="sc-source-note">
+        Conversions follow BIP32, BIP39, BIP44/49/84/86 and SLIP-132; the descriptor follows
+        <a class="sc-text-link" href="https://github.com/bitcoin/bips/blob/master/bip-0380.mediawiki" target="_blank" rel="noopener">BIP380 <i class="bi bi-arrow-up-right"></i></a>
+        with the multipath notation of
+        <a class="sc-text-link" href="https://github.com/bitcoin/bips/blob/master/bip-0389.mediawiki" target="_blank" rel="noopener">BIP389 <i class="bi bi-arrow-up-right"></i></a>.
+        Device conventions are taken from each vendor&rsquo;s own documentation and reproduced as published test vectors.
+      </p></div>
+      </div>
+    </section>
+
+    <section class="sc-guide-foot">
+      <div class="container">
+        <div class="sc-guide-next">
+          <div class="sc-guide-next-copy">
+            <span class="sc-eyebrow">Do not guess</span>
+            <h2>Stuck on a step?</h2>
+            <p>If the screen in front of you does not match the guide, stop. Review the related walkthroughs or get a second set of eyes before exposing recovery words or approving a transaction.</p>
+          </div>
+          <div class="sc-hero-actions sc-guide-next-actions">
+            <a class="sc-btn sc-btn-primary" href="../guides.html"><span>All Guides</span></a>
+            <a class="sc-btn sc-btn-ghost sc-guide-help-btn" href="../contact.html"><span>Get Help</span></a>
+          </div>
+          <div class="sc-guide-next-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sc-section sc-section-muted sc-related-guides">
+      <div class="container">
+        <div class="sc-section-head"><span class="sc-eyebrow">Keep going</span><h2>Related guides</h2></div>
+        <div class="row g-4"><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="dice-entropy.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shuffle"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Roll the dice: generating your own entropy</h3>
+              <p>Make your wallet's secret from dice you rolled yourself, instead of trusting the device to pick it. What to do, in plain terms, and the three mistakes that ruin it.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="quickstart.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-signpost-split"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Intro to Self Custody</h3>
+              <p>Create a wallet, back it up, prove you can recover it, and only then receive bitcoin.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="three-dice-seed.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-dice-3"></i></div>
+                <span class="sc-level sc-level-intermediate">Intermediate</span>
+              </div>
+              <h3>Three dice, one word: rolling a seed you can read</h3>
+              <p>One octal die and two hex dice throw exactly eleven bits — one recovery word, with nothing hashed and nothing to trust. The method, the arithmetic, and the one detail that quietly ruins it.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div><div class="col-md-6 col-xl-4"><a class="sc-card sc-guide-card sc-path-card-link" href="human-randomness.html">
+            <div class="sc-card-body">
+              <div class="sc-guide-card-top">
+                <div class="sc-icon"><i class="bi bi-shuffle"></i></div>
+                <span class="sc-level sc-level-beginner">Beginner</span>
+              </div>
+              <h3>Why you cannot think of a random number</h3>
+              <p>Every wallet rests on one unguessable number, and the one tool that cannot produce it is the one you were born with. What people get wrong, how it has been measured, and what it cost the ones who tried.</p>
+              <span class="sc-text-link">Read guide <i class="bi bi-arrow-right"></i></span>
+            </div></a></div></div>
+      </div>
+    </section></main>
+    <div id="site-footer">
+    <footer class="sc-footer">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <h3 class="sc-footer-brand"><img src="../assets/img/self-custody-favicon.svg" alt="" width="34" height="34"><span>SelfCustody.ca</span></h3>
+            <p>Clear, practical guidance to self custody your bitcoin. Learn the basics, test your backups, and keep control of your keys.</p>
+          </div>
+          <div class="col-12 col-lg-4 sc-footer-explore">
+            <h4>Explore</h4>
+            <ul class="sc-footer-links sc-footer-links-grid">
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../guides.html">Guides</a></li>
+              <li><a href="../devices.html">Devices</a></li>
+              <li><a href="../software.html">Software</a></li>
+              <li><a href="../exchanges.html">Exchanges</a></li>
+              <li><a href="../glossary.html">Glossary</a></li>
+              <li><a href="../dashboard.html">Dashboard</a></li>
+              <li><a href="../contact.html">Get Help</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-3">
+            <aside class="sc-footer-warning" aria-label="Important security warning">
+              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+              <h4>Important!</h4>
+              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+            </aside>
+          </div>
+        </div>
+        <div class="sc-footer-bottom d-flex flex-wrap justify-content-between gap-2">
+          <span>© <span data-year>2026</span> SelfCustody.ca</span>
+          <span><a href="mailto:info@selfcustody.ca">info@selfcustody.ca</a></span>
+        </div>
+      </div>
+    </footer></div>
+  <noscript><div class="container py-4"><p><strong>JavaScript is off, so the menu button will not open.</strong> Every page:</p><ul><li><a href="../index.html">Home</a></li><li><a href="../guides.html">Guides</a></li><li><a href="../devices.html">Devices</a></li><li><a href="../software.html">Software</a></li><li><a href="../exchanges.html">Exchanges</a></li><li><a href="../glossary.html">Glossary</a></li><li><a href="../dashboard.html">Dashboard</a></li><li><a href="../contact.html">Get Help</a></li></ul></div></noscript>
+  <script src="../assets/js/site-refresh.js?v=20260827-4936"></script>
+</body>
+</html>
