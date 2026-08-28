@@ -356,7 +356,8 @@
   .checksum-note.is-bad .checksum-head i,
   .checksum-note.is-bad .checksum-body { display: none; }
   .checksum-note.is-ok {
-    color: #8be3c6; border: 1px solid rgba(53, 180, 138, 0.32); background: rgba(53, 180, 138, 0.07);
+    color: #8be3c6; border: 1px solid rgba(53, 180, 138, 0.48); background: rgba(53, 180, 138, 0.13);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
   .checksum-note.is-bad {
     color: #ff9d8a; border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.1);
@@ -376,14 +377,15 @@
      because it is the one value on this page that spends.
      A modifier on .xpub-box, not its own panel, so the two key boxes cannot
      drift apart. Equal specificity, so these win on source order. */
-  .xprv-box { border-color: rgba(255, 138, 0, 0.28); background: rgba(255, 138, 0, 0.05); }
-  .xprv-box .label span { color: #ffad4c; }
+  .xprv-box { border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.085); }
+  .xprv-box .label span,
+  .xprv-box .label b { color: #ff9d8a; }
   .xprv-box #xprv-alt-row { margin-top: 14px; }
   /* Same construction as the checksum disclosure: the summary keeps its
      default display and loses its marker through list-style, with the row laid
      out by a span inside it. Setting display on a <summary> stops some
      browsers treating it as the disclosure's summary at all. */
-  .xprv-more { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 138, 0, 0.22); }
+  .xprv-more { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(214, 94, 64, 0.28); }
   .xprv-more > summary { cursor: pointer; list-style: none; }
   .xprv-more > summary::-webkit-details-marker { display: none; }
   .xprv-more-head { display: flex; align-items: baseline; gap: 10px; }
@@ -396,7 +398,7 @@
      right edge itself. */
   .xprv-more-head i {
     flex: 0 0 auto; width: 7px; height: 7px; margin: 0 2px 0 auto;
-    border-right: 2px solid #ffad4c; border-bottom: 2px solid #ffad4c;
+    border-right: 2px solid #ff9d8a; border-bottom: 2px solid #ff9d8a;
     transform: translateY(-2px) rotate(45deg); transition: transform 0.15s ease;
   }
   .xprv-more[open] .xprv-more-head i { transform: translateY(1px) rotate(-135deg); }
@@ -405,8 +407,9 @@
   /* Two sections in one disclosure, so the second announces itself. */
   #seedqr-block {
     margin-top: 18px; padding-top: 16px;
-    border-top: 1px solid rgba(255, 138, 0, 0.16);
+    border-top: 1px solid rgba(214, 94, 64, 0.22);
   }
+  .xprv-box .qr-button:hover { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.62); }
   /* Grouped in fours because four digits is exactly one word's index, so the
      grouping lines up with the numbered list above rather than being decoration.
      Margins on the spans rather than spaces between them: what a person copies
@@ -1371,7 +1374,7 @@
   }
   .workbench .go:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 20px 42px rgba(255, 138, 0, .23); }
   .workbench .go:disabled { box-shadow: none; }
-  .workbench .results { margin-top: 32px; padding: 28px; border: 1px solid rgba(53,180,138,.32); border-radius: 16px; background: linear-gradient(150deg, rgba(53,180,138,.07), rgba(53,180,138,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+  .workbench .results { margin-top: 32px; padding: 28px; border: 1px solid rgba(243,234,220,.26); border-radius: 16px; background: linear-gradient(150deg, rgba(243,234,220,.075), rgba(243,234,220,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.07); }
   .workbench .error { margin-bottom: 0; }
 
   .setup-grid {
