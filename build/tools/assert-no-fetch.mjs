@@ -68,6 +68,23 @@ const ALLOWED = {
 
    Every endpoint below is a public read-only one, called with no key and no
    identifier attached. */
+/* Origins named inside a page's own inline scripts. Same rule as
+   SCRIPT_ORIGINS above and the same reason for existing: naming an origin is
+   not fetching one, but the difference has to be declared rather than assumed.
+
+   The Workshop inlines Project Nayuki's QR generator, whose MIT notice carries
+   the project's URL. The licence requires that notice be kept, so the string
+   cannot simply be deleted -- and it sits in a comment, which no browser
+   fetches. Everything else in both builds stays under the strict rule. */
+const INLINE_ORIGINS = {
+  'entropy.html': {
+    'https://www.nayuki.io': "the vendored QR library's required copyright notice"
+  },
+  'entropy-offline.html': {
+    'https://www.nayuki.io': "the vendored QR library's required copyright notice"
+  }
+};
+
 const SCRIPT_ORIGINS = {
   'assets/js/site-refresh.js': {
     'https://mempool.space': 'blocks, fees and mempool state for the dashboard',
@@ -314,7 +331,7 @@ function checkFile(path, name) {
     const type = (m[1].match(/\btype\s*=\s*["']([^"']*)["']/i)?.[1] || '').toLowerCase();
     if (type && !/(java|ecma)script$|^module$|^text\/js$/.test(type)) continue;
 
-    for (const origin of undeclaredScriptOrigins(m[2])) {
+    for (const origin of undeclaredScriptOrigins(m[2], INLINE_ORIGINS[name] || {})) {
       problems.push(`an inline script names ${origin}, which is not declared`);
     }
   }
