@@ -1942,7 +1942,7 @@ const currentYear = new Date().getFullYear();
                 <h4>Important!</h4>
               </div>
               <p><strong>NEVER</strong> share your seed words, or other sensitive information.</p>
-              <p>This site provides education, <strong>NOT</strong> financial, tax, or legal advice.</p>
+              <p>This site provides education, <strong class="sc-footer-not">NOT</strong> financial, tax, or legal advice.</p>
             </aside>
           </div>
         </div>
