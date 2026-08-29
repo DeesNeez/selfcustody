@@ -836,6 +836,27 @@ ${FONTS.map(embedFont).join('\n')}
     color: #ff9d8a; font-size: 0.92rem;
   }
 
+  .sanity-failure { min-height: 58vh; display: grid; place-items: center; padding: 28px 0; }
+  .sanity-failure-card {
+    width: min(100%, 680px); padding: 28px 24px; text-align: center;
+    border: 1px solid rgba(214, 94, 64, 0.62); border-radius: 14px;
+    background: rgba(214, 94, 64, 0.1);
+  }
+  .sanity-failure-icon {
+    width: 54px; height: 54px; margin: 0 auto 12px; display: grid; place-items: center;
+    border: 2px solid #ff9d8a; border-radius: 50%; color: #ff9d8a;
+    font-size: 2rem; line-height: 1;
+  }
+  .sanity-failure-card h1 { margin: 0 0 8px; font-size: 1.45rem; }
+  .sanity-failure-card > p { color: var(--muted); }
+  .sanity-failure-card table { width: 100%; margin: 18px 0; border-collapse: collapse; }
+  .sanity-failure-card th, .sanity-failure-card td {
+    padding: 9px 12px; border: 1px solid rgba(255, 255, 255, 0.14); text-align: left;
+  }
+  .sanity-failure-card th { color: var(--muted); }
+  .sanity-failure-card td:last-child { color: #ff9d8a; font-weight: 800; }
+  .sanity-failure-advice { margin-bottom: 0; }
+
   /* Shown either way, saying different things: served, it offers the download;
      from a local file it confirms which file you are running and keeps the
      checksum check, which is the one moment that check is genuinely useful.
@@ -2158,27 +2179,6 @@ const ui = () => `
     status.textContent = branch + ' address #' + hit.index + ' of this wallet \u00b7 ' + hit.path + extra;
     status.className = 'hint address-match-status is-ok';
   }
-
-  .sanity-failure { min-height: 58vh; display: grid; place-items: center; padding: 28px 0; }
-  .sanity-failure-card {
-    width: min(100%, 680px); padding: 28px 24px; text-align: center;
-    border: 1px solid rgba(214, 94, 64, 0.62); border-radius: 14px;
-    background: rgba(214, 94, 64, 0.1);
-  }
-  .sanity-failure-icon {
-    width: 54px; height: 54px; margin: 0 auto 12px; display: grid; place-items: center;
-    border: 2px solid #ff9d8a; border-radius: 50%; color: #ff9d8a;
-    font-size: 2rem; line-height: 1;
-  }
-  .sanity-failure-card h1 { margin: 0 0 8px; font-size: 1.45rem; }
-  .sanity-failure-card > p { color: var(--muted); }
-  .sanity-failure-card table { width: 100%; margin: 18px 0; border-collapse: collapse; }
-  .sanity-failure-card th, .sanity-failure-card td {
-    padding: 9px 12px; border: 1px solid rgba(255, 255, 255, 0.14); text-align: left;
-  }
-  .sanity-failure-card th { color: var(--muted); }
-  .sanity-failure-card td:last-child { color: #ff9d8a; font-weight: 800; }
-  .sanity-failure-advice { margin-bottom: 0; }
 
   /* Check the five already rendered addresses immediately, then search the
      rest of receive and change indices 0-999 in small tasks. Each address is

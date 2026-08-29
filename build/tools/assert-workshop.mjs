@@ -12,6 +12,7 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { Script } from 'node:vm';
 
 const SITE = 'docs/entropy.html';
 const OFFLINE = 'docs/entropy-offline.html';
@@ -34,6 +35,25 @@ export function assertWorkshop() {
   const site = readFileSync(SITE, 'utf8');
   const offline = readFileSync(OFFLINE, 'utf8');
   const offlineBytes = readFileSync(OFFLINE);
+
+  /* The generated page is the executable artifact, so compile every inline
+     JavaScript block rather than assuming a successful string build means a
+     browser can parse it. This caught CSS accidentally inserted into the main
+     application script -- content/order guards all passed while the page was
+     dead on arrival. External script tags have an empty body and compile as a
+     no-op; non-JavaScript data blocks are skipped. */
+  for (const [name, html] of [['site', site], ['offline', offline]]) {
+    const tags = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
+    tags.forEach((match, index) => {
+      const type = match[1].match(/\btype=["']([^"']+)["']/i)?.[1]?.toLowerCase();
+      if (type && !['text/javascript', 'application/javascript', 'module'].includes(type)) return;
+      try {
+        new Script(match[2], { filename: `${name}-inline-${index + 1}.js` });
+      } catch (error) {
+        check(false, `the ${name} build's inline script ${index + 1} does not compile: ${error.message}`);
+      }
+    });
+  }
 
   /* ---- the checksum beside the file ------------------------------------
      Not a re-derivation of what the build just computed: read the sidecar
@@ -114,6 +134,9 @@ export function assertWorkshop() {
     check(/dataset\.browserChecks/.test(html) && /dataset\.browserFailed/.test(html) &&
       /window\.__entropyWorkshopPreflightPassed\s*=\s*failed\.length\s*===\s*0/.test(html),
       `the ${name} build does not run and record its browser preflight`);
+    check(/view\.setBigUint64\(/.test(html) && /dialog\.showModal/.test(html) &&
+      /holder\.replaceChildren/.test(html),
+      `the ${name} build's preflight misses binary wallet or modal DOM primitives the Workshop requires`);
     check(/if \(window\.__entropyWorkshopPreflightPassed !== true\) return;/.test(html),
       `the ${name} build starts the Workshop application after a failed browser preflight`);
     const preflight = html.indexOf('Browser preflight for the Entropy Workshop');

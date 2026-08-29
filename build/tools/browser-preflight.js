@@ -41,10 +41,16 @@
       name: 'Typed arrays and DataView',
       run: function () {
         if (typeof Uint8Array !== 'function' || typeof DataView !== 'function') return false;
-        var bytes = new Uint8Array(4);
+        /* BigInt has its own diagnostic above. Avoid reporting this second
+           check as failed only because the first primitive is absent. */
+        if (typeof BigInt !== 'function') return true;
+        var bytes = new Uint8Array(8);
         var view = new DataView(bytes.buffer);
         view.setUint32(0, 0x01020304, false);
-        return bytes[0] === 1 && bytes[1] === 2 && bytes[2] === 3 && bytes[3] === 4;
+        if (bytes[0] !== 1 || bytes[1] !== 2 || bytes[2] !== 3 || bytes[3] !== 4) return false;
+        if (typeof view.setBigUint64 !== 'function' || typeof view.getBigUint64 !== 'function') return false;
+        view.setBigUint64(0, BigInt('72623859790382856'), false);
+        return view.getBigUint64(0, false).toString(16) === '102030405060708';
       }
     },
     {
@@ -53,6 +59,16 @@
         if (!document || typeof document.createElementNS !== 'function') return false;
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         return Boolean(svg && typeof svg.setAttribute === 'function');
+      }
+    },
+    {
+      name: 'Modern DOM controls',
+      run: function () {
+        if (!document || typeof document.createElement !== 'function') return false;
+        var holder = document.createElement('div');
+        var dialog = document.createElement('dialog');
+        return typeof holder.replaceChildren === 'function'
+          && typeof dialog.showModal === 'function' && typeof dialog.close === 'function';
       }
     },
     {

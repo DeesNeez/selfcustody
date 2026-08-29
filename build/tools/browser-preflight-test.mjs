@@ -11,6 +11,10 @@ class WorkingUrl {
   static revokeObjectURL() {}
 }
 class WorkingBlob {}
+class MissingBigUint64View {
+  constructor(buffer) { this.view = new DataView(buffer); }
+  setUint32(...args) { this.view.setUint32(...args); }
+}
 
 function run(overrides = {}) {
   const workspace = { innerHTML: PAGE };
@@ -19,7 +23,11 @@ function run(overrides = {}) {
     documentElement,
     querySelector: selector => selector === '.workspace' ? workspace : null,
     createElementNS: overrides.createElementNS === false
-      ? undefined : () => ({ setAttribute() {} })
+      ? undefined : () => ({ setAttribute() {} }),
+    createElement: overrides.createElement === false ? undefined : tag => ({
+      replaceChildren() {},
+      ...(tag === 'dialog' ? { showModal() {}, close() {} } : {})
+    })
   };
   const window = {};
   const values = {
@@ -49,7 +57,7 @@ assert.doesNotMatch(source, /\b\d+n\b/, 'preflight must parse in a browser witho
 
 const healthy = run();
 assert.equal(healthy.workspace.innerHTML, PAGE);
-assert.equal(healthy.documentElement.dataset.browserChecks, '6');
+assert.equal(healthy.documentElement.dataset.browserChecks, '7');
 assert.equal(healthy.documentElement.dataset.browserFailed, '0');
 assert.equal(healthy.window.__entropyWorkshopPreflightPassed, true);
 
@@ -58,7 +66,9 @@ for (const [name, overrides] of [
   ['UTF-8 TextEncoder and TextDecoder', { TextEncoder: undefined }],
   ['String.normalize (NFKD)', { normalize: undefined }],
   ['Typed arrays and DataView', { DataView: undefined }],
+  ['Typed arrays and DataView', { DataView: MissingBigUint64View }],
   ['SVG document support', { createElementNS: false }],
+  ['Modern DOM controls', { createElement: false }],
   ['Local Blob downloads', { Blob: undefined }]
 ]) {
   const result = run(overrides);
@@ -70,4 +80,4 @@ const multiple = run({ BigInt: undefined, Blob: undefined });
 assert.deepEqual(failedNames(multiple.workspace), ['BigInt arithmetic', 'Local Blob downloads']);
 assert.match(multiple.workspace.innerHTML, /No wallet was produced/);
 
-console.log('browser preflight: healthy host passes; 6 failure paths and combined reporting verified');
+console.log('browser preflight: healthy host passes; 7 failure paths and combined reporting verified');
