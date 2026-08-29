@@ -1941,23 +1941,36 @@ const EntropyCore = (() => {
     };
   };
 
+  /* Prepare the expensive account and branch derivations once. The page
+     searches in one-index tasks so it can repaint between point
+     multiplications; repeating the hardened account path in every task made
+     those small batches several times slower than the work they contained. */
+  const prepareDerivedAddressSearch = ({ seed, addressType, path }) => {
+    const type = ADDRESS_TYPES[addressType];
+    if (!type) throw new Error('unknown address type');
+    const account = derive(masterKey(seed), path);
+    return { addressType, path, type, branches: [ckdPriv(account, 0), ckdPriv(account, 1)] };
+  };
+
   /* Search a bounded slice so the page can yield between batches instead of
      locking the browser while it checks two thousand public keys. `end` is
      exclusive. The caller owns scheduling and cancellation; this stays a
      deterministic crypto primitive that is easy to test. */
-  const findDerivedAddress = ({ seed, addressType, path, address, start = 0, end = 1000 }) => {
+  const findDerivedAddress = ({
+    seed, addressType, path, address, start = 0, end = 1000, prepared = null
+  }) => {
     const wanted = normalizeAddressCheck(address);
     if (!wanted) return { state: 'empty' };
-    const type = ADDRESS_TYPES[addressType];
-    if (!type) throw new Error('unknown address type');
-    const account = derive(masterKey(seed), path);
-    const branches = [ckdPriv(account, 0), ckdPriv(account, 1)];
+    const search = prepared || prepareDerivedAddressSearch({ seed, addressType, path });
+    if (search.addressType !== addressType || search.path !== path) {
+      throw new Error('address search context does not match this wallet');
+    }
     const from = Math.max(0, start);
     const to = Math.max(from, end);
     for (let index = from; index < to; index++) {
       for (let branch = 0; branch < 2; branch++) {
-        const leaf = ckdPriv(branches[branch], index);
-        const candidate = type.encode(compress(pointMul(toBigInt(leaf.key))));
+        const leaf = ckdPriv(search.branches[branch], index);
+        const candidate = search.type.encode(compress(pointMul(toBigInt(leaf.key))));
         if (addressesEqual(wanted, candidate)) {
           return {
             state: 'match', chain: branch === 0 ? 'receive' : 'change', index,
@@ -2182,7 +2195,7 @@ const EntropyCore = (() => {
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,
     deriveSeed, deriveAddresses, normalizeAddressCheck, matchDerivedAddress,
-    findDerivedAddress, buildWalletExportTexts, buildWallet, limits,
+    prepareDerivedAddressSearch, findDerivedAddress, buildWalletExportTexts, buildWallet, limits,
     assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative
   };
 })();

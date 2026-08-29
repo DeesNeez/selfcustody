@@ -2142,7 +2142,7 @@ const ui = () => `
   let renderedAddressRows = null;
   let addressCheckToken = 0;
   const ADDRESS_SEARCH_LIMIT = 1000;
-  const ADDRESS_SEARCH_BATCH = 20;
+  const ADDRESS_SEARCH_BATCH = 1;
 
   function showAddressMatch(hit, shown) {
     const status = $('address-match-status');
@@ -2166,7 +2166,7 @@ const ui = () => `
       status.className = 'hint address-match-status';
       return;
     }
-    const { receive, change, path } = renderedAddressRows;
+    const { receive, change, path, search } = renderedAddressRows;
     const shown = Math.max(receive.length, change.length);
     const immediate = C.matchDerivedAddress(raw, receive, change);
     if (immediate.state === 'empty') {
@@ -2189,7 +2189,7 @@ const ui = () => `
       try {
         result = C.findDerivedAddress({
           seed: state.seed.seed, addressType: state.addressType, path,
-          address: raw, start, end
+          address: raw, start, end, prepared: search
         });
       } catch (error) {
         status.textContent = 'Could not check that address: ' + error.message + '.';
@@ -2200,6 +2200,8 @@ const ui = () => `
         showAddressMatch(result, shown);
       } else if (end < ADDRESS_SEARCH_LIMIT) {
         start = end;
+        status.textContent = 'No match through index ' + (end - 1)
+          + '. Checking through ' + (ADDRESS_SEARCH_LIMIT - 1) + '\u2026';
         setTimeout(searchNext, 0);
       } else {
         status.textContent = 'No match in receive or change indices 0\u2013'
@@ -2852,6 +2854,14 @@ const ui = () => `
       return;
     }
 
+    /* Stop any queued search before parsing the new path. An invalid path
+       returns early below, so waiting until the replacement rows exist left
+       the old wallet's expensive search running invisibly in the background. */
+    addressCheckToken += 1;
+    renderedAddressRows = null;
+    $('address-match-status').textContent = '';
+    $('address-match-status').className = 'hint address-match-status';
+
     /* A rerender means at least the account presentation may have changed.
        Close a pending confirmation and retire any Blob URL before painting
        the new result, so no control remains attached to the prior one. */
@@ -2976,6 +2986,9 @@ const ui = () => `
     runInto($('chng-more'), addresses.moreChange);
     renderedAddressRows = {
       path,
+      search: C.prepareDerivedAddressSearch({
+        seed: state.seed.seed, addressType: state.addressType, path
+      }),
       receive: [addresses.receive, ...addresses.moreReceive].map((entry, index) => ({ ...entry, index })),
       change: [addresses.change, ...addresses.moreChange].map((entry, index) => ({ ...entry, index }))
     };
