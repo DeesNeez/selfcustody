@@ -351,12 +351,28 @@ export const VECTORS = [
     return C.matchDerivedAddress('bc1QCR8TE4KR609GCAWUTMRZA0J4XV80JY8Z306FYU', receive, []).state;
   }, 'miss'],
   ['address check: bounded search finds BIP84 receive index 1', () => {
+    const prepared = C.prepareDerivedAddressSearch({
+      seed: ABANDON_12_SEED, addressType: 'native', path: "m/84'/0'/0'"
+    });
     const hit = C.findDerivedAddress({
       seed: ABANDON_12_SEED, addressType: 'native', path: "m/84'/0'/0'",
-      address: 'bc1qnjg0jd8228aq7egyzacy8cys3knf9xvrerkf9g', start: 1, end: 2
+      address: 'bc1qnjg0jd8228aq7egyzacy8cys3knf9xvrerkf9g', start: 1, end: 2, prepared
     });
     return [hit.state, hit.chain, hit.index, hit.path].join('|');
   }, "match|receive|1|m/84'/0'/0'/0/1"],
+  ['address check: rejects a prepared context for another path', () => {
+    const prepared = C.prepareDerivedAddressSearch({
+      seed: ABANDON_12_SEED, addressType: 'native', path: "m/84'/0'/0'"
+    });
+    try {
+      C.findDerivedAddress({
+        addressType: 'native', path: "m/84'/0'/1'", address: 'bc1qwrong', prepared
+      });
+      return 'accepted';
+    } catch (error) {
+      return error.message;
+    }
+  }, 'address search context does not match this wallet'],
 
   /* ---- the two input methods ---- */
   ['coin flips pack straight into entropy',
