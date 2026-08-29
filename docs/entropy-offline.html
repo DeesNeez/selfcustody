@@ -779,6 +779,27 @@
     color: #ff9d8a; font-size: 0.92rem;
   }
 
+  .sanity-failure { min-height: 58vh; display: grid; place-items: center; padding: 28px 0; }
+  .sanity-failure-card {
+    width: min(100%, 680px); padding: 28px 24px; text-align: center;
+    border: 1px solid rgba(214, 94, 64, 0.62); border-radius: 14px;
+    background: rgba(214, 94, 64, 0.1);
+  }
+  .sanity-failure-icon {
+    width: 54px; height: 54px; margin: 0 auto 12px; display: grid; place-items: center;
+    border: 2px solid #ff9d8a; border-radius: 50%; color: #ff9d8a;
+    font-size: 2rem; line-height: 1;
+  }
+  .sanity-failure-card h1 { margin: 0 0 8px; font-size: 1.45rem; }
+  .sanity-failure-card > p { color: var(--muted); }
+  .sanity-failure-card table { width: 100%; margin: 18px 0; border-collapse: collapse; }
+  .sanity-failure-card th, .sanity-failure-card td {
+    padding: 9px 12px; border: 1px solid rgba(255, 255, 255, 0.14); text-align: left;
+  }
+  .sanity-failure-card th { color: var(--muted); }
+  .sanity-failure-card td:last-child { color: #ff9d8a; font-weight: 800; }
+  .sanity-failure-advice { margin-bottom: 0; }
+
   /* Shown either way, saying different things: served, it offers the download;
      from a local file it confirms which file you are running and keeps the
      checksum check, which is the one moment that check is genuinely useful.
@@ -2238,10 +2259,16 @@
       name: 'Typed arrays and DataView',
       run: function () {
         if (typeof Uint8Array !== 'function' || typeof DataView !== 'function') return false;
-        var bytes = new Uint8Array(4);
+        /* BigInt has its own diagnostic above. Avoid reporting this second
+           check as failed only because the first primitive is absent. */
+        if (typeof BigInt !== 'function') return true;
+        var bytes = new Uint8Array(8);
         var view = new DataView(bytes.buffer);
         view.setUint32(0, 0x01020304, false);
-        return bytes[0] === 1 && bytes[1] === 2 && bytes[2] === 3 && bytes[3] === 4;
+        if (bytes[0] !== 1 || bytes[1] !== 2 || bytes[2] !== 3 || bytes[3] !== 4) return false;
+        if (typeof view.setBigUint64 !== 'function' || typeof view.getBigUint64 !== 'function') return false;
+        view.setBigUint64(0, BigInt('72623859790382856'), false);
+        return view.getBigUint64(0, false).toString(16) === '102030405060708';
       }
     },
     {
@@ -2250,6 +2277,16 @@
         if (!document || typeof document.createElementNS !== 'function') return false;
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         return Boolean(svg && typeof svg.setAttribute === 'function');
+      }
+    },
+    {
+      name: 'Modern DOM controls',
+      run: function () {
+        if (!document || typeof document.createElement !== 'function') return false;
+        var holder = document.createElement('div');
+        var dialog = document.createElement('dialog');
+        return typeof holder.replaceChildren === 'function'
+          && typeof dialog.showModal === 'function' && typeof dialog.close === 'function';
       }
     },
     {
@@ -6549,27 +6586,6 @@ var qrcodegen;
     status.textContent = branch + ' address #' + hit.index + ' of this wallet · ' + hit.path + extra;
     status.className = 'hint address-match-status is-ok';
   }
-
-  .sanity-failure { min-height: 58vh; display: grid; place-items: center; padding: 28px 0; }
-  .sanity-failure-card {
-    width: min(100%, 680px); padding: 28px 24px; text-align: center;
-    border: 1px solid rgba(214, 94, 64, 0.62); border-radius: 14px;
-    background: rgba(214, 94, 64, 0.1);
-  }
-  .sanity-failure-icon {
-    width: 54px; height: 54px; margin: 0 auto 12px; display: grid; place-items: center;
-    border: 2px solid #ff9d8a; border-radius: 50%; color: #ff9d8a;
-    font-size: 2rem; line-height: 1;
-  }
-  .sanity-failure-card h1 { margin: 0 0 8px; font-size: 1.45rem; }
-  .sanity-failure-card > p { color: var(--muted); }
-  .sanity-failure-card table { width: 100%; margin: 18px 0; border-collapse: collapse; }
-  .sanity-failure-card th, .sanity-failure-card td {
-    padding: 9px 12px; border: 1px solid rgba(255, 255, 255, 0.14); text-align: left;
-  }
-  .sanity-failure-card th { color: var(--muted); }
-  .sanity-failure-card td:last-child { color: #ff9d8a; font-weight: 800; }
-  .sanity-failure-advice { margin-bottom: 0; }
 
   /* Check the five already rendered addresses immediately, then search the
      rest of receive and change indices 0-999 in small tasks. Each address is
