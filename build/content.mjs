@@ -1937,8 +1937,10 @@ const currentYear = new Date().getFullYear();
           </div>
           <div class="col-lg-3">
             <aside class="sc-footer-warning" aria-label="Important security warning">
-              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
-              <h4>Important!</h4>
+              <div class="sc-footer-warning-heading">
+                <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+                <h4>Important!</h4>
+              </div>
               <p><strong>NEVER</strong> share your seed words, or other sensitive information.</p>
               <p>This site provides education, not financial, tax, or legal advice.</p>
             </aside>
