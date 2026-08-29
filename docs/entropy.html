@@ -6508,7 +6508,10 @@ var qrcodegen;
      Always dark-on-white with a quiet zone, whatever the page around it is
      doing. A scanner needs the contrast and the margin; a QR that matches the
      site's palette is a QR that does not read. */
-  const QR_QUIET = 3;
+  /* ISO/IEC 18004's minimum four-module quiet zone. It matters most for the
+     dense numeric SeedQR, but every code uses the same renderer so none can
+     accidentally lose the scanner's required white border. */
+  const QR_QUIET = 4;
 
   /* What each button would encode, set when a wallet is derived and emptied
      with everything else. Holding the strings or bytes here rather than in
