@@ -157,6 +157,9 @@ export function assertWorkshop() {
     check(/i\s*=>\s*i\s*\*\s*16\s*\+\s*hex/.test(script) &&
       /i\s*=>\s*octal\s*\*\s*16\s*\+\s*i/.test(script),
       `the ${name} build does not map octal and hex faces to the 128 endings`);
+    check(/id="results-loading"[^>]*role="status"/.test(html) &&
+      /hideResults\(\{\s*keepEndings,\s*loading:\s*keepEndings\s*\}\)/.test(script),
+      `the ${name} build hides the ending picker while it updates the selected wallet`);
     const manyEndingRule = html.match(/\.ending-list\.is-many\s*\{([^}]*)\}/)?.[1] || '';
     check(manyEndingRule && !/max-height|overflow-y/.test(manyEndingRule),
       `the ${name} build puts an inner scrollbar on the 128-word reference grid`);
@@ -173,7 +176,7 @@ export function assertWorkshop() {
     check(/delete qrSources\[key\];/.test(invalidate),
       `the ${name} build keeps parked QR strings alive after its wallet is invalidated`);
     const paintStart = script.indexOf('function paintCount()');
-    const paintEnd = script.indexOf('function hideResults()', paintStart);
+    const paintEnd = script.indexOf('function hideResults(', paintStart);
     const paint = paintStart >= 0 && paintEnd > paintStart
       ? script.slice(paintStart, paintEnd)
       : '';

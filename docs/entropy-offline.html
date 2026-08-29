@@ -1000,6 +1000,12 @@
   .results { margin-top: 34px; padding-top: 28px; border-top: 1px solid rgba(110, 105, 94, 0.4); }
   .results h2 { margin: 0 0 4px; font-size: 1.2rem; color: #fff; }
   .results h3 { margin: 28px 0 10px; font-size: 1rem; color: #fff; }
+  .results-loading {
+    margin-top: 34px; padding-top: 28px;
+    border-top: 1px solid rgba(110, 105, 94, 0.4);
+  }
+  .results-loading h2 { margin: 0 0 5px; font-size: 1.2rem; color: #fff; }
+  .results-loading p { margin: 0; color: var(--muted); font-size: 0.9rem; }
 
   ol.words {
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px;
@@ -1853,6 +1859,11 @@
     <button type="button" class="key-tool" id="alarm-back">Back to my entries</button>
   </div>
 </dialog>
+
+<section class="results-loading" id="results-loading" role="status" aria-live="polite" hidden>
+  <h2>What your sequence produces</h2>
+  <p>Updating for the selected ending&hellip;</p>
+</section>
 
 <section class="results" id="results" hidden>
   <h2>What your sequence produces</h2>
@@ -5906,10 +5917,11 @@ var qrcodegen;
 
   /* ---- deriving ---- */
 
-  function hideResults() {
+  function hideResults({ keepEndings = false, loading = false } = {}) {
     $('results').hidden = true;
     $('error').hidden = true;
-    $('endings').hidden = true;
+    $('results-loading').hidden = !loading;
+    if (!keepEndings) $('endings').hidden = true;
   }
 
   /* ---- invalidating a result -------------------------------------------
@@ -6026,12 +6038,19 @@ var qrcodegen;
 
   function fail(message) {
     $('results').hidden = true;
+    $('results-loading').hidden = true;
     $('error').hidden = false;
     $('error').textContent = message;
   }
 
   function derive() {
-    hideResults();
+    /* Changing an ending is a refinement of a choice already on screen. Keep
+       that picker anchored while the slower key derivation catches up; only
+       the wallet below it is replaced by a loading line. Initial derivation
+       still starts with the whole ending step hidden because it does not exist
+       yet. */
+    const keepEndings = spec().lookup && !$('endings').hidden;
+    hideResults({ keepEndings, loading: keepEndings });
     const rawInput = $('input').value;
     const input = clean();
 
@@ -6121,6 +6140,16 @@ var qrcodegen;
     if (many) {
       const choose = choice => {
         state.choice = choice;
+        const octal = Math.floor(choice / 16);
+        const hex = choice % 16;
+        $('ending-octal').querySelectorAll('button').forEach((button, i) => {
+          button.setAttribute('aria-pressed', i === octal ? 'true' : 'false');
+        });
+        $('ending-hex').querySelectorAll('button').forEach((button, i) => {
+          button.setAttribute('aria-pressed', i === hex ? 'true' : 'false');
+        });
+        $('ending-picked-word').textContent = options[choice].word;
+        $('ending-picked-label').textContent = labelFor(choice);
         state.seedKey = null;
         derive();
       };
@@ -6356,6 +6385,7 @@ var qrcodegen;
       qrSources.seedqr = { text: digits, title: 'SeedQR' };
     }
     $('type-note').textContent = C.ADDRESS_TYPES[state.addressType].note;
+    $('results-loading').hidden = true;
     $('results').hidden = false;
   }
 
