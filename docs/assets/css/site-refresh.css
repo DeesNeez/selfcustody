@@ -5228,14 +5228,12 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
 .sc-footer-warning-icon {
   display: grid;
   place-items: center;
-  flex: 0 0 42px;
-  width: 42px;
-  height: 42px;
-  color: var(--sc-ink);
-  background: var(--sc-orange);
-  border-radius: 11px;
-  box-shadow: 0 8px 20px rgba(242, 138, 0, 0.16);
-  font-size: 1.25rem;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  color: var(--sc-orange);
+  font-size: 1.65rem;
+  line-height: 1;
 }
 
 .sc-footer-warning-heading {
