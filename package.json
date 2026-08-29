@@ -9,6 +9,7 @@
     "test:entropy": "node build/tools/entropy-test.mjs",
     "test:wallet-dat": "node build/tools/wallet-dat-test.mjs",
     "test:browser-preflight": "node build/tools/browser-preflight-test.mjs",
-    "test:lifehash": "node build/tools/lifehash-test.mjs"
+    "test:lifehash": "node build/tools/lifehash-test.mjs",
+    "test:die-distribution": "node build/tools/die-distribution-test.mjs"
   }
 }

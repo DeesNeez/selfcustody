@@ -1451,6 +1451,84 @@ const EntropyCore = (() => {
     }, 0);
   };
 
+  /* Pearson goodness-of-fit for the optional distribution inspector. This is
+     deliberately separate from assessEntropy(): that refusal check runs only
+     when a wallet is produced and uses extremely remote thresholds to catch
+     fabrication. The inspector uses the conventional 5% significance line,
+     labels it as an advisory, and never changes which entries are accepted. */
+  const LANCZOS_GAMMA = [
+    0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+  ];
+  const logGamma = z => {
+    if (!(z > 0) || !Number.isFinite(z)) return Infinity;
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - logGamma(1 - z);
+    const shifted = z - 1;
+    let x = LANCZOS_GAMMA[0];
+    for (let i = 1; i < LANCZOS_GAMMA.length; i += 1) x += LANCZOS_GAMMA[i] / (shifted + i);
+    const t = shifted + 7.5;
+    return 0.5 * Math.log(2 * Math.PI) + (shifted + 0.5) * Math.log(t) - t + Math.log(x);
+  };
+  const lowerRegularizedGamma = (shape, x) => {
+    if (!(shape > 0) || !(x > 0) || !Number.isFinite(shape) || !Number.isFinite(x)) return 0;
+    const logPrefix = -x + shape * Math.log(x) - logGamma(shape);
+    if (x < shape + 1) {
+      let term = 1 / shape, sum = term;
+      for (let n = 1; n < 200; n += 1) {
+        term *= x / (shape + n);
+        sum += term;
+        if (Math.abs(term) < Math.abs(sum) * 1e-15) break;
+      }
+      return logPrefix < -745 ? 0 : Math.min(1, Math.max(0, Math.exp(logPrefix) * sum));
+    }
+    let b = x + 1 - shape, c = 1 / 1e-300, d = 1 / b, h = d;
+    for (let i = 1; i <= 200; i += 1) {
+      const a = -i * (i - shape);
+      b += 2;
+      d = a * d + b;
+      if (Math.abs(d) < 1e-300) d = 1e-300;
+      c = b + a / c;
+      if (Math.abs(c) < 1e-300) c = 1e-300;
+      d = 1 / d;
+      const delta = d * c;
+      h *= delta;
+      if (Math.abs(delta - 1) < 1e-12) break;
+    }
+    return logPrefix < -745 ? 1 : Math.min(1, Math.max(0, 1 - Math.exp(logPrefix) * h));
+  };
+  const chiSquaredPValue = (score, degrees) => {
+    if (!(score >= 0) || !(degrees >= 1) || !Number.isFinite(score) || !Number.isFinite(degrees)) return 0;
+    return 1 - lowerRegularizedGamma(degrees / 2, score / 2);
+  };
+  const distributionReport = (title, labels, samples) => {
+    const counts = labels.map(label => ({ label, count: samples.filter(sample => sample === label).length }));
+    const expected = samples.length / labels.length;
+    const score = expected ? counts.reduce((sum, face) => sum + (face.count - expected) ** 2 / expected, 0) : 0;
+    const minimum = labels.length * 5;
+    const p = samples.length ? chiSquaredPValue(score, labels.length - 1) : 1;
+    return {
+      title, counts, samples: samples.length, expected, score, p, minimum,
+      state: samples.length < minimum ? 'insufficient' : p < 0.05 ? 'uneven' : 'balanced'
+    };
+  };
+  const dieDistributionReports = (method, input) => {
+    const values = events(method, input);
+    if (method === 'bitbox') {
+      return [
+        distributionReport('Four-sided dice', [...'1234'], values.filter((_, i) => i % 6 !== 5)),
+        distributionReport('Coin', [...'HT'], values.filter((_, i) => i % 6 === 5))
+      ];
+    }
+    if (method === 'octahex') {
+      return [
+        distributionReport('Octal die', [...'12345678'], values.filter((_, i) => i % 3 === 0)),
+        distributionReport('Hex dice', [...'0123456789ABCDEF'], values.filter((_, i) => i % 3 !== 0))
+      ];
+    }
+    return [distributionReport('Six-sided die', [...'123456'], values)];
+  };
+
   /* LZ78 phrase count, normalised against the length. Structure of any kind --
      repeats, ascending runs, alternation -- means fewer distinct phrases, so
      this catches patterns that survive both a flat face count and a period
@@ -2247,7 +2325,8 @@ const EntropyCore = (() => {
     progress, deckProgress, nextAllowed, clamp, rolledWords,
     deriveSeed, deriveAddresses, normalizeAddressCheck, matchDerivedAddress,
     prepareDerivedAddressSearch, findDerivedAddress, buildWalletExportTexts, buildWallet, limits,
-    assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative
+    assessEntropy, smallestPeriod, longestRun, chiSquared, chiSquaredPValue,
+    distributionReport, dieDistributionReports, lzComplexity, derivative
   };
 })();
 
