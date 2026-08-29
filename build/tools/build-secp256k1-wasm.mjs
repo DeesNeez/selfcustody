@@ -11,18 +11,20 @@ const root = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 const crateDir = join(root, 'secp256k1-wasm');
 const wasmPath = join(crateDir, 'target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm');
 const outPath = join(root, 'build/tools/secp256k1-wasm-b64.js');
-const userProfile = process.env.USERPROFILE ?? '';
-const cargoHome = process.env.CARGO_HOME ?? (userProfile ? join(userProfile, '.cargo') : '');
-const rustupHome = process.env.RUSTUP_HOME ?? (userProfile ? join(userProfile, '.rustup') : '');
+const portablePath = value => value.replaceAll('\\', '/');
+const userRoot = process.env.USERPROFILE ?? process.env.HOME ?? '';
+const cargoHome = process.env.CARGO_HOME ?? (userRoot ? join(userRoot, '.cargo') : '');
+const rustupHome = process.env.RUSTUP_HOME ?? (userRoot ? join(userRoot, '.rustup') : '');
 const rustflags = [
-  cargoHome ? `--remap-path-prefix=${cargoHome.replaceAll('\\', '/')}=cargo` : '',
-  rustupHome ? `--remap-path-prefix=${rustupHome.replaceAll('\\', '/')}=rustup` : ''
-].filter(Boolean).join(' ');
+  `--remap-path-prefix=${portablePath(root)}=workspace`,
+  cargoHome ? `--remap-path-prefix=${portablePath(cargoHome)}=cargo` : '',
+  rustupHome ? `--remap-path-prefix=${portablePath(rustupHome)}=rustup` : ''
+].filter(Boolean);
 
 execFileSync('cargo', ['build', '--locked', '--release', '--target', 'wasm32-unknown-unknown'], {
   cwd: crateDir,
   stdio: 'inherit',
-  env: { ...process.env, RUSTFLAGS: rustflags }
+  env: { ...process.env, CARGO_ENCODED_RUSTFLAGS: rustflags.join('\x1f') }
 });
 
 const wasm = readFileSync(wasmPath);
@@ -38,4 +40,3 @@ export const SECP256K1_WASM_B64 =
 
 writeFileSync(outPath, output);
 console.log(`Built ${wasm.length} bytes of libsecp256k1 WebAssembly (${sha256})`);
-
