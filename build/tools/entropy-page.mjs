@@ -4085,10 +4085,18 @@ ${ui()}
 /* Measured against the assembled file rather than hand-maintained, so it can
    never drift from what a reader receives. Rounded to the nearest 10 KB, which
    absorbs the bytes the number itself adds to the string describing it. */
-const withFileSize = html => html.replace(
-  '{{FILESIZE}}',
-  `~${Math.round(html.length / 1024 / 10) * 10} KB`
-);
+const withFileSize = html => {
+  /* Measure the bytes we actually publish. Source files can be checked out
+     with CRLF on Windows, but render.mjs writes this artifact LF-only. Using
+     the pre-normalized string length made the rounded label flip between
+     ~440 KB and ~450 KB across operating systems; because the label is inside
+     the file, that also changed the checksum it was meant to describe. */
+  const normalized = html.replace(/\r\n/g, '\n');
+  return normalized.replace(
+    '{{FILESIZE}}',
+    `~${Math.round(Buffer.byteLength(normalized, 'utf8') / 1024 / 10) * 10} KB`
+  );
+};
 
 const payload = () => ({
   core: readFileSync(CORE, 'utf8'),
