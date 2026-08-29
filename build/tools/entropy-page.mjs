@@ -407,7 +407,8 @@ ${FONTS.map(embedFont).join('\n')}
   .checksum-note.is-bad .checksum-head i,
   .checksum-note.is-bad .checksum-body { display: none; }
   .checksum-note.is-ok {
-    color: #8be3c6; border: 1px solid rgba(53, 180, 138, 0.32); background: rgba(53, 180, 138, 0.07);
+    color: #8be3c6; border: 1px solid rgba(53, 180, 138, 0.48); background: rgba(53, 180, 138, 0.13);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
   .checksum-note.is-bad {
     color: #ff9d8a; border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.1);
@@ -427,14 +428,15 @@ ${FONTS.map(embedFont).join('\n')}
      because it is the one value on this page that spends.
      A modifier on .xpub-box, not its own panel, so the two key boxes cannot
      drift apart. Equal specificity, so these win on source order. */
-  .xprv-box { border-color: rgba(255, 138, 0, 0.28); background: rgba(255, 138, 0, 0.05); }
-  .xprv-box .label span { color: #ffad4c; }
+  .xprv-box { border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.085); }
+  .xprv-box .label span,
+  .xprv-box .label b { color: #ff9d8a; }
   .xprv-box #xprv-alt-row { margin-top: 14px; }
   /* Same construction as the checksum disclosure: the summary keeps its
      default display and loses its marker through list-style, with the row laid
      out by a span inside it. Setting display on a <summary> stops some
      browsers treating it as the disclosure's summary at all. */
-  .xprv-more { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 138, 0, 0.22); }
+  .xprv-more { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(214, 94, 64, 0.28); }
   .xprv-more > summary { cursor: pointer; list-style: none; }
   .xprv-more > summary::-webkit-details-marker { display: none; }
   .xprv-more-head { display: flex; align-items: baseline; gap: 10px; }
@@ -447,7 +449,7 @@ ${FONTS.map(embedFont).join('\n')}
      right edge itself. */
   .xprv-more-head i {
     flex: 0 0 auto; width: 7px; height: 7px; margin: 0 2px 0 auto;
-    border-right: 2px solid #ffad4c; border-bottom: 2px solid #ffad4c;
+    border-right: 2px solid #ff9d8a; border-bottom: 2px solid #ff9d8a;
     transform: translateY(-2px) rotate(45deg); transition: transform 0.15s ease;
   }
   .xprv-more[open] .xprv-more-head i { transform: translateY(1px) rotate(-135deg); }
@@ -456,8 +458,9 @@ ${FONTS.map(embedFont).join('\n')}
   /* Two sections in one disclosure, so the second announces itself. */
   #seedqr-block {
     margin-top: 18px; padding-top: 16px;
-    border-top: 1px solid rgba(255, 138, 0, 0.16);
+    border-top: 1px solid rgba(214, 94, 64, 0.22);
   }
+  .xprv-box .qr-button:hover { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.62); }
   /* Grouped in fours because four digits is exactly one word's index, so the
      grouping lines up with the numbered list above rather than being decoration.
      Margins on the spans rather than spaces between them: what a person copies
@@ -548,10 +551,10 @@ ${FONTS.map(embedFont).join('\n')}
     .export-dialog-actions .export-button, .export-dialog-actions .key-tool { width: 100%; }
   }
 
-  /* ---- the eight endings ------------------------------------------------
-     Only the lookup method reaches this. It sits between the button and the
-     results because it is a step, not an outcome: nothing downstream is a
-     wallet until one of these is chosen. */
+  /* ---- the checksum-valid endings ---------------------------------------
+     Only the lookup methods reach this. It sits between the button and the
+     results because it is a step, not an outcome: choosing an ending chooses
+     the wallet. */
   .endings {
     margin-top: 22px; padding: 20px 22px;
     border: 1px solid rgba(255, 138, 0, 0.3); border-radius: 14px;
@@ -560,16 +563,58 @@ ${FONTS.map(embedFont).join('\n')}
   .endings strong { display: block; margin-bottom: 8px; color: #ffad4c; font-size: 1.02rem; }
   .endings p { margin: 0 0 16px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
   .ending-list { display: flex; flex-wrap: wrap; gap: 8px; }
-  /* A hundred and twenty-eight of these is a wall rather than a list: stacked
-     one per column on a phone it ran to 2673px. Given a fixed height it becomes
-     a panel you scroll instead of a page you lose your place in. */
+  /* For a 12-word octal-and-hex seed, the physical instruction is to roll one
+     octal and one hex die. Mirror those two objects instead of making someone
+     search a 128-item control. */
+  .ending-direct { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ending-face-set {
+    min-width: 0; padding: 12px; border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 11px; background: rgba(0, 0, 0, 0.16);
+  }
+  .ending-face-label {
+    display: block; margin-bottom: 8px; color: var(--muted); font-size: 0.7rem;
+    font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .ending-face-options { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
+  .ending-face {
+    min-width: 0; padding: 8px 2px; color: var(--ink-soft);
+    border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 7px;
+    background: rgba(255, 255, 255, 0.035); font: inherit; font-size: 0.82rem;
+    font-weight: 800; cursor: pointer;
+  }
+  .ending-face:hover { color: #fff; border-color: rgba(255, 138, 0, 0.5); }
+  .ending-face[aria-pressed="true"] {
+    color: #fff; border-color: var(--orange); background: rgba(255, 138, 0, 0.16);
+  }
+  .ending-picked {
+    grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px;
+    margin: 0; padding: 12px 14px; border: 1px solid rgba(255, 138, 0, 0.28);
+    border-radius: 11px; background: rgba(255, 138, 0, 0.06);
+  }
+  .ending-picked span {
+    color: var(--muted); font-size: 0.7rem; font-weight: 800;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .ending-picked b { color: #fff; font-size: 1.05rem; }
+  .ending-picked code { margin-left: auto; color: #ffad4c; font-size: 0.8rem; }
+  .ending-all { margin-top: 14px; }
+  .ending-all > summary { color: #ffad4c; }
+  .ending-all[open] > summary { margin-bottom: 10px; }
+  /* Twelve words offers 128 valid endings. Keep every one in the page flow so
+     the optional reference grid expands in the page flow rather than becoming
+     a second, easy-to-miss scrolling area inside the page. */
   .ending-list.is-many {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
-    gap: 6px; max-height: 46vh; overflow-y: auto;
+    gap: 6px;
     padding: 10px; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 11px;
     background: rgba(0, 0, 0, 0.18);
   }
   .ending-list.is-many .ending { padding: 8px 10px; font-size: 0.82rem; }
+  @media (max-width: 620px) {
+    .ending-direct { grid-template-columns: 1fr; }
+    .ending-picked { grid-column: 1; }
+    .ending-face-options { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
 
   /* The throw that picks this ending. */
   .ending small {
@@ -1006,6 +1051,12 @@ ${FONTS.map(embedFont).join('\n')}
   .results { margin-top: 34px; padding-top: 28px; border-top: 1px solid rgba(110, 105, 94, 0.4); }
   .results h2 { margin: 0 0 4px; font-size: 1.2rem; color: #fff; }
   .results h3 { margin: 28px 0 10px; font-size: 1rem; color: #fff; }
+  .results-loading {
+    margin-top: 34px; padding-top: 28px;
+    border-top: 1px solid rgba(110, 105, 94, 0.4);
+  }
+  .results-loading h2 { margin: 0 0 5px; font-size: 1.2rem; color: #fff; }
+  .results-loading p { margin: 0; color: var(--muted); font-size: 0.9rem; }
 
   ol.words {
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px;
@@ -1422,7 +1473,7 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .workbench .go:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 20px 42px rgba(255, 138, 0, .23); }
   .workbench .go:disabled { box-shadow: none; }
-  .workbench .results { margin-top: 32px; padding: 28px; border: 1px solid rgba(53,180,138,.32); border-radius: 16px; background: linear-gradient(150deg, rgba(53,180,138,.07), rgba(53,180,138,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+  .workbench .results { margin-top: 32px; padding: 28px; border: 1px solid rgba(243,234,220,.26); border-radius: 16px; background: linear-gradient(150deg, rgba(243,234,220,.075), rgba(243,234,220,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.07); }
   .workbench .error { margin-bottom: 0; }
 
   .setup-grid {
@@ -1695,7 +1746,7 @@ const ui = () => `
     words: 12,
     addressType: 'native',
     pathEdited: false,
-    choice: 0,         /* which of the eight endings, lookup method only */
+    choice: 0,         /* which checksum-valid ending, lookup methods only */
     seed: null,        /* cached: the slow half, keyed by seedKey */
     seedKey: null
   };
@@ -2338,10 +2389,11 @@ const ui = () => `
 
   /* ---- deriving ---- */
 
-  function hideResults() {
+  function hideResults({ keepEndings = false, loading = false } = {}) {
     $('results').hidden = true;
     $('error').hidden = true;
-    $('endings').hidden = true;
+    $('results-loading').hidden = !loading;
+    if (!keepEndings) $('endings').hidden = true;
   }
 
   /* ---- invalidating a result -------------------------------------------
@@ -2395,6 +2447,7 @@ const ui = () => `
        collected while a live object still referenced it. */
     for (const key of Object.keys(qrSources)) delete qrSources[key];
     if ($('qr-dialog').open) $('qr-dialog').close();
+    $('ending-all').open = false;
 
     for (const id of SECRET_TEXT) {
       const el = $(id);
@@ -2423,7 +2476,8 @@ const ui = () => `
      shredding the paper. */
   const SECRET_FIELDS = ['input', 'passphrase'];
   const SECRET_TEXT = [
-    'words', 'entropy', 'ending-list',
+    'words', 'entropy', 'ending-list', 'ending-octal', 'ending-hex',
+    'ending-picked-word', 'ending-picked-label',
     'xpub', 'xpub-path', 'xpub-alt', 'xpub-alt-label',
     'descriptor', 'descriptor-recv', 'descriptor-chng',
     'checksum-line', 'checksum-detail',
@@ -2456,12 +2510,19 @@ const ui = () => `
 
   function fail(message) {
     $('results').hidden = true;
+    $('results-loading').hidden = true;
     $('error').hidden = false;
     $('error').textContent = message;
   }
 
   function derive() {
-    hideResults();
+    /* Changing an ending is a refinement of a choice already on screen. Keep
+       that picker anchored while the slower key derivation catches up; only
+       the wallet below it is replaced by a loading line. Initial derivation
+       still starts with the whole ending step hidden because it does not exist
+       yet. */
+    const keepEndings = spec().lookup && !$('endings').hidden;
+    hideResults({ keepEndings, loading: keepEndings });
     const rawInput = $('input').value;
     const input = clean();
 
@@ -2513,8 +2574,9 @@ const ui = () => `
     }, 20);
   }
 
-  /* The eight valid endings, shown the way the device shows them. Picking one
-     is picking a wallet: they share 23 words and nothing else. */
+  /* The checksum-valid endings, shown the way the physical procedure chooses
+     them. Picking one is picking a wallet: the phrases share every rolled word
+     and nothing downstream. */
   function paintEndings(options) {
     $('endings').hidden = false;
     /* Three unrolled bits is eight endings, and every method that reaches here
@@ -2525,7 +2587,7 @@ const ui = () => `
     $('endings-note').textContent = method() === 'octahex'
       ? (state.words === 24
         ? 'Your throws fix the first 23 words, which carry 253 bits. A 24-word phrase needs 256 plus an 8-bit checksum, so the last word is three bits you never rolled followed by a check over all of them \u2014 which leaves exactly eight endings. Throw the octal die once more and take that numbered option, counting from the left. Your COLDCARD, SeedSigner or Jade will offer the same eight.'
-        : 'Your throws fix the first 11 words, which carry 121 bits. A 12-word phrase needs 128 plus a 4-bit checksum, so the last word is seven bits you never rolled followed by a check over all of them \u2014 which leaves 128 endings rather than eight. Seven bits is one octal die and one hex die, so throw both and take the ending labelled with those two faces. Any of them is a real wallet, and every one is a different wallet.')
+        : 'Your throws fix the first 11 words, which carry 121 bits. A 12-word phrase needs 128 plus a 4-bit checksum, so the last word is seven bits you never rolled followed by a check over all of them \u2014 which leaves 128 endings rather than eight. Seven bits is one octal die and one hex die, so throw both and select those two faces below. The page will show the matching last word. Every combination is a real wallet, and every one is a different wallet.')
       : 'Your rolls fix the first 23 words, which carry 253 bits. A 24-word phrase needs 256 plus an 8-bit checksum, so the last word is three bits you never rolled followed by a check over all of them. That leaves exactly eight valid endings, and your BitBox02 shows you these same eight. Any one of them is a real wallet \u2014 they are different wallets, so pick the one your device showed you, or roll one more die and count 1 to 8.';
     /* Label each ending with the throw that selects it, rather than leaving it
        to be counted. Eight endings can be counted along a row; a hundred and
@@ -2536,9 +2598,56 @@ const ui = () => `
     const octahex = method() === 'octahex';
     const many = options.length > 8;
     $('ending-list').classList.toggle('is-many', many);
+    $('ending-direct').hidden = !many;
+    $('ending-short').hidden = many;
+    $('ending-all').hidden = !many;
+    (many ? $('ending-all-slot') : $('ending-short')).append($('ending-list'));
     const labelFor = i => !octahex ? String(i + 1)
       : many ? String(Math.floor(i / 16) + 1) + String.fromCharCode(183) + (i % 16).toString(16).toUpperCase()
       : String(i + 1);
+
+    /* The 128 choices are exactly the cartesian product printed on the two
+       dice, so those faces are the primary control. The complete word grid is
+       still built below as an inspectable reference, behind a disclosure. */
+    if (many) {
+      const choose = choice => {
+        state.choice = choice;
+        const octal = Math.floor(choice / 16);
+        const hex = choice % 16;
+        $('ending-octal').querySelectorAll('button').forEach((button, i) => {
+          button.setAttribute('aria-pressed', i === octal ? 'true' : 'false');
+        });
+        $('ending-hex').querySelectorAll('button').forEach((button, i) => {
+          button.setAttribute('aria-pressed', i === hex ? 'true' : 'false');
+        });
+        $('ending-picked-word').textContent = options[choice].word;
+        $('ending-picked-label').textContent = labelFor(choice);
+        state.seedKey = null;
+        derive();
+      };
+      const faceButtons = (values, active, aria, choiceFor) => values.map((value, i) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'ending-face';
+        button.textContent = value;
+        button.setAttribute('aria-label', aria + ' ' + value);
+        button.setAttribute('aria-pressed', i === active ? 'true' : 'false');
+        button.addEventListener('click', () => choose(choiceFor(i)));
+        return button;
+      });
+      const octal = Math.floor(state.choice / 16);
+      const hex = state.choice % 16;
+      $('ending-octal').replaceChildren(...faceButtons(
+        Array.from({ length: 8 }, (_, i) => String(i + 1)), octal, 'Octal die',
+        i => i * 16 + hex
+      ));
+      $('ending-hex').replaceChildren(...faceButtons(
+        Array.from({ length: 16 }, (_, i) => i.toString(16).toUpperCase()), hex, 'Hex die',
+        i => octal * 16 + i
+      ));
+      $('ending-picked-word').textContent = options[state.choice].word;
+      $('ending-picked-label').textContent = labelFor(state.choice);
+    }
 
     $('ending-list').replaceChildren(...options.map((option, i) => {
       const button = document.createElement('button');
@@ -2748,6 +2857,7 @@ const ui = () => `
       qrSources.seedqr = { text: digits, title: 'SeedQR' };
     }
     $('type-note').textContent = C.ADDRESS_TYPES[state.addressType].note;
+    $('results-loading').hidden = true;
     $('results').hidden = false;
   }
 
@@ -3389,7 +3499,28 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 <div class="endings" id="endings" hidden>
   <strong>Now pick the last word.</strong>
   <p id="endings-note"></p>
-  <div class="ending-list" id="ending-list" role="group" aria-label="Valid final words"></div>
+  <div class="ending-direct" id="ending-direct" hidden>
+    <div class="ending-face-set">
+      <span class="ending-face-label">Octal die</span>
+      <div class="ending-face-options" id="ending-octal" role="group" aria-label="Octal die result"></div>
+    </div>
+    <div class="ending-face-set">
+      <span class="ending-face-label">Hex die</span>
+      <div class="ending-face-options" id="ending-hex" role="group" aria-label="Hex die result"></div>
+    </div>
+    <p class="ending-picked" aria-live="polite">
+      <span>Final word</span>
+      <b id="ending-picked-word"></b>
+      <code id="ending-picked-label"></code>
+    </p>
+  </div>
+  <div id="ending-short">
+    <div class="ending-list" id="ending-list" role="group" aria-label="Valid final words"></div>
+  </div>
+  <details class="ending-all" id="ending-all" hidden>
+    <summary>Show all 128 possible words</summary>
+    <div id="ending-all-slot"></div>
+  </details>
 </div>
 
 <div class="error" id="error" hidden></div>
@@ -3411,8 +3542,13 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   </div>
 </dialog>
 
+<section class="results-loading" id="results-loading" role="status" aria-live="polite" hidden>
+  <h2>What your sequence produces</h2>
+  <p>Updating for the selected ending&hellip;</p>
+</section>
+
 <section class="results" id="results" hidden>
-  <h2>What those rolls produce</h2>
+  <h2>What your sequence produces</h2>
   <p class="hint">Compare this against your device. If it disagrees, your device may use a different conversion &mdash; that is common and does not mean either is broken.</p>
 
   <div class="fingerprint" id="fingerprint-box">
