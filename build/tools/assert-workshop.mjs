@@ -137,12 +137,23 @@ export function assertWorkshop() {
     check(/view\.setBigUint64\(/.test(html) && /dialog\.showModal/.test(html) &&
       /holder\.replaceChildren/.test(html),
       `the ${name} build's preflight misses binary wallet or modal DOM primitives the Workshop requires`);
+    check(/WebAssembly \(libsecp256k1 engine\)/.test(html) &&
+      /new WebAssembly\.Module\(/.test(html),
+      `the ${name} build does not preflight its libsecp256k1 WebAssembly engine`);
     check(/if \(window\.__entropyWorkshopPreflightPassed !== true\) return;/.test(html),
       `the ${name} build starts the Workshop application after a failed browser preflight`);
     const preflight = html.indexOf('Browser preflight for the Entropy Workshop');
+    const secp = html.indexOf('Minimal classic-script facade over the libsecp256k1 WebAssembly module');
     const core = html.indexOf('Crypto core for the entropy tool');
-    check(preflight >= 0 && core > preflight,
-      `the ${name} build does not run its browser preflight before the crypto core`);
+    check(preflight >= 0 && secp > preflight && core > secp,
+      `the ${name} build does not load preflight, libsecp256k1 and the crypto core in order`);
+    check(/EntropySecp256k1Ready\.then\(/.test(html) &&
+      /Cryptography engine failed to start/.test(html),
+      `the ${name} build does not gate application boot on libsecp256k1 initialization`);
+    check(/EntropySecp256k1\.publicKeyCreate/.test(html) &&
+      /EntropySecp256k1\.pointAdd/.test(html) &&
+      !/const Gx\s*=|const Gy\s*=|const inv\s*=|const modPow\s*=/.test(html),
+      `the ${name} build still contains a hand-written secp256k1 curve path`);
     check(/name="referrer" content="no-referrer"/.test(html),
       `the ${name} build does not set a no-referrer policy`);
     check(/http-equiv="Content-Security-Policy"/.test(html),
@@ -262,6 +273,9 @@ export function assertWorkshop() {
     "the offline build's CSP does not start from default-src 'none'");
   check(/connect-src 'none'/.test(site),
     "the site build's CSP does not forbid connect-src; this page has nothing to send anywhere");
+  check(/script-src[^;]*'wasm-unsafe-eval'/.test(site) &&
+    /script-src[^;]*'wasm-unsafe-eval'/.test(offline),
+    "the Workshop CSP does not permit its inlined libsecp256k1 WebAssembly module");
 
   /* navigator.onLine is allowed in one direction only, and this checks that
      structurally rather than by reading the copy.

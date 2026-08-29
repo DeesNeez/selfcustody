@@ -348,7 +348,7 @@ const entropySite = `<!DOCTYPE html>
 
        frame-ancestors is absent on purpose: meta CSP cannot enforce it. It
        needs a response header, which GitHub Pages does not let us set. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="x-dns-prefetch-control" content="off">
   <meta name="viewport" content="width=device-width, initial-scale=1">

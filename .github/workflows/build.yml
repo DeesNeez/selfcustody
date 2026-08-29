@@ -43,6 +43,9 @@ jobs:
       - name: Browser startup preflight
         run: node build/tools/browser-preflight-test.mjs
 
+      - name: Committed libsecp256k1 WebAssembly
+        run: node build/tools/secp256k1-wasm-test.mjs
+
       # Also runs, in order: the icon-subset check, the fetch guard, the glyph
       # guard and the Workshop guard. Any of them failing exits non-zero.
       - name: Build and guards
@@ -71,3 +74,17 @@ jobs:
             git status --porcelain
             exit 1
           fi
+
+  build-wasm:
+    name: Build · libsecp256k1 WASM from pinned Rust sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
+      - name: Rebuild the WebAssembly artifact
+        run: npm run build:wasm
+      - name: Test the freshly built engine
+        run: node build/tools/secp256k1-wasm-test.mjs

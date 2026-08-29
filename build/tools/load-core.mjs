@@ -11,5 +11,15 @@ import { readFileSync } from 'node:fs';
 export const CORE_PATH = 'build/tools/entropy-core.js';
 export const coreSource = () => readFileSync(CORE_PATH, 'utf8');
 
+const wasmPayload = () => {
+  const source = readFileSync('build/tools/secp256k1-wasm-b64.js', 'utf8');
+  const match = source.match(/export const SECP256K1_WASM_B64\s*=\s*"([A-Za-z0-9+/=]+)";/);
+  if (!match) throw new Error('libsecp256k1 WebAssembly payload is malformed');
+  return match[1];
+};
+
 export const loadCore = () =>
-  new Function(`${coreSource()}\nreturn EntropyCore;`)();
+  new Function(
+    'SECP256K1_WASM_B64',
+    `${readFileSync('build/tools/secp256k1-wasm.js', 'utf8')}\n${coreSource()}\nreturn EntropyCore;`
+  )(wasmPayload());
