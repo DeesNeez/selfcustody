@@ -5255,6 +5255,10 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
   line-height: 1.65;
 }
 
+.sc-footer .sc-footer-warning p + p {
+  margin-top: 0.45rem;
+}
+
 .sc-footer .sc-footer-warning p strong {
   display: inline-block;
   padding: 2px 7px;
