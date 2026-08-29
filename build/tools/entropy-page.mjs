@@ -3780,6 +3780,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <button class="export-dialog-close" value="cancel" aria-label="Close">&times;</button>
       <h2 id="export-private-title">These files can spend the wallet</h2>
       <p>The private text record contains the recovery words, SeedQR digits and private keys shown above. The Bitcoin Core wallet.dat contains the selected account private key and its receiving and change descriptors. Anyone who gets either file can move the coins it controls.</p>
+      <p><strong>The generated wallet.dat is not encrypted.</strong> Put it in a new, dedicated Bitcoin Core wallet directory. Never replace or overwrite an existing wallet.dat file.</p>
       <p><strong>Download it only on the offline computer</strong>, then move it directly to the protected backup storage you chose. Do not put it in cloud storage, email or chat.</p>
       <p>The BIP39 passphrase value is deliberately left out of both files. The private text record says whether one was used; the wallet.dat already contains the account derived with it.</p>
       <p class="export-dialog-error" id="export-private-error" role="alert"></p>

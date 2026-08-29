@@ -262,7 +262,7 @@ var hodlWalletExport = (() => {
   };
 
   const walletDatFilename = (includePrivate = false) =>
-    includePrivate ? "private-wallet-secrets.dat" : "watch-only-wallet.dat";
+    includePrivate ? "wallet.dat" : "watch-only-wallet.dat";
 
   const walletDatButtonLabel = (includePrivate = false) =>
     includePrivate ? "Download wallet.dat with secrets (xprvs)" : "Download watch-only wallet.dat";
