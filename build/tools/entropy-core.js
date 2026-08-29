@@ -1058,6 +1058,18 @@ const EntropyCore = (() => {
     return null;
   };
 
+  /* Ian Coleman's BIP39 tool can hash cards as a human-readable UTF-8
+     transcript: ranks and suit glyphs separated by spaces. Keep this as an
+     explicit conversion rather than silently changing the Workshop's existing
+     compact ASCII hash, because the two formats deliberately produce different
+     wallets from the same draw. */
+  const colemanCardTranscript = input => {
+    const suits = { C: '♣', D: '♦', H: '♥', S: '♠' };
+    const out = [];
+    for (let i = 0; i + 2 <= input.length; i += 2) out.push(input[i] + suits[input[i + 1]]);
+    return out.join(' ');
+  };
+
   const METHODS = {
     dice: {
       label: 'Dice',
@@ -1187,6 +1199,25 @@ const EntropyCore = (() => {
       matches: 'SHA-256 over the cards as drawn, the same way the dice methods hash rolls. Every card goes in whole, so nothing is wasted and no card is worth more than another.',
       valid: /^([A2-9TJQK][CDHS])*$/,
       entropy: (input, bytes) => sha256(utf8(input)).slice(0, bytes)
+    },
+    cardscoleman: {
+      label: 'Cards, Ian Coleman hash',
+      unit: 'card',
+      size: 2,
+      source: 'cards',
+      faces: 'a rank A, 2-9, T, J, Q or K then a suit C, D, H or S. 10 for the ten and the suit symbols are read too',
+      keep: /[^A2-9TJQKCDHS]/g,
+      alias: CARD_ALIAS,
+      deck: 52,
+      counts: { 12: 25, 24: 58 },
+      extra: true,
+      most: 104,
+      allow: [CARD_RANKS, CARD_SUITS],
+      shape: /^[A2-9TJQK][CDHS]$/,
+      wrong: 'each card is a rank then a suit, like AS or 7H',
+      matches: 'Ian Coleman\'s BIP39 tool in hashed-card mode. It hashes a spaced UTF-8 transcript with suit glyphs, such as A♠ 2♣ T♦, so it is not interchangeable with the compact ASCII hash.',
+      valid: /^([A2-9TJQK][CDHS])*$/,
+      entropy: (input, bytes) => sha256(utf8(colemanCardTranscript(input))).slice(0, bytes)
     },
     cardbits: {
       label: 'Cards, BIP39 tool table',
@@ -1365,6 +1396,11 @@ const EntropyCore = (() => {
        past all three, and is caught by the step-period test every method
        already shares. */
     cards: {
+      alphabet: CARD_DECK, minDistinct: 2, maxRun: 3, maxChi: Infinity, minLz: 0,
+      ordinal: CARD_ORD,
+      maxAdjacent: 0.40, maxSameSuit: 0.80, maxSuitRun: 13
+    },
+    cardscoleman: {
       alphabet: CARD_DECK, minDistinct: 2, maxRun: 3, maxChi: Infinity, minLz: 0,
       ordinal: CARD_ORD,
       maxAdjacent: 0.40, maxSameSuit: 0.80, maxSuitRun: 13
@@ -2205,7 +2241,7 @@ const EntropyCore = (() => {
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, legacyNormalise, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
-    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity,
+    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity, colemanCardTranscript,
     seedQrDigits, compactSeedQrBytes,
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,

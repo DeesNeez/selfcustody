@@ -812,7 +812,7 @@ ${FONTS.map(embedFont).join('\n')}
      past the key's own edge. The tracking goes and the size comes down until
      the longest name fits the narrowest key. */
   .key[data-suit] small { letter-spacing: 0; font-size: 0.54rem; }
-  .pad[data-method="cards"], .pad[data-method="cardbits"] {
+  .pad[data-method="cards"], .pad[data-method="cardscoleman"], .pad[data-method="cardbits"] {
     grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
   }
 
@@ -1783,7 +1783,7 @@ const ui = () => `
     source: 'dice',      /* 'coin' | 'dice' | 'cards' -- the physical thing */
     dice: 'd6',          /* 'd6' | 'octahex'  -- which dice, when source is dice */
     conversion: 'dice',  /* which device convention, for a six-sided die */
-    cardconv: 'cards',   /* 'cards' | 'cardbits' */
+    cardconv: 'cards',   /* 'cards' | 'cardscoleman' | 'cardbits' */
     /* The shorter seed is the one most people are choosing between these
        days, and it is the cheaper thing to try: 50 rolls rather than 99. The
        24-word option is one tap away for anyone who wants it. */
@@ -1979,6 +1979,7 @@ const ui = () => `
        rather than from the position: ranks with nothing left face-down go
        grey, and once a rank is picked only its remaining suits stay lit. */
     cards: CARD_KEYS,
+    cardscoleman: CARD_KEYS,
     cardbits: CARD_KEYS
   };
 
@@ -3648,8 +3649,9 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     { value: 'dicebits', label: 'Bit table', sub: 'BIP39 tool, raw' },
     { value: 'bitbox', label: 'Lookup table', sub: 'BitBox02' }
   ])}</div>
-  <div class="seg seg-even" id="conv-cards" hidden>${segment('cardconv', [
-    { value: 'cards', label: 'Hash the draw', sub: 'every card counts in full' },
+  <div class="seg seg-tall" id="conv-cards" hidden>${segment('cardconv', [
+    { value: 'cards', label: 'Compact hash', sub: 'SHA-256 of AS2CTD' },
+    { value: 'cardscoleman', label: 'Ian Coleman hash', sub: 'SHA-256 of A♠ 2♣ T♦' },
     { value: 'cardbits', label: 'Bit table', sub: 'BIP39 tool, card mode' }
   ])}</div>
   <p class="hint" id="matches"></p>
@@ -4087,6 +4089,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     </div>
 
     <p class="src-tail">The Bitcoin Core wallet.dat encoder is adapted from <a href="https://github.com/w-s-bitcoin/entropylab/pull/32" target="_blank" rel="noopener noreferrer">EntropyLab pull request #32</a>, whose generated descriptor wallets were checked against Bitcoin Core 28.3.0. Used under the MIT License.</p>
+    <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>

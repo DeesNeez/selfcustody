@@ -779,7 +779,7 @@
      past the key's own edge. The tracking goes and the size comes down until
      the longest name fits the narrowest key. */
   .sc-workshop .key[data-suit] small{ letter-spacing: 0; font-size: 0.54rem; }
-  .sc-workshop .pad[data-method="cards"], .sc-workshop .pad[data-method="cardbits"]{
+  .sc-workshop .pad[data-method="cards"], .sc-workshop .pad[data-method="cardscoleman"], .sc-workshop .pad[data-method="cardbits"]{
     grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
   }
 
@@ -1812,8 +1812,9 @@
             <button type="button" data-group="conversion" data-value="dicezero" aria-pressed="false">Hash, 6 as 0<small>Keystone, BIP39 tool</small></button>
             <button type="button" data-group="conversion" data-value="dicebits" aria-pressed="false">Bit table<small>BIP39 tool, raw</small></button>
             <button type="button" data-group="conversion" data-value="bitbox" aria-pressed="false">Lookup table<small>BitBox02</small></button></div>
-  <div class="seg seg-even" id="conv-cards" hidden>
-            <button type="button" data-group="cardconv" data-value="cards" aria-pressed="false">Hash the draw<small>every card counts in full</small></button>
+  <div class="seg seg-tall" id="conv-cards" hidden>
+            <button type="button" data-group="cardconv" data-value="cards" aria-pressed="false">Compact hash<small>SHA-256 of AS2CTD</small></button>
+            <button type="button" data-group="cardconv" data-value="cardscoleman" aria-pressed="false">Ian Coleman hash<small>SHA-256 of A♠ 2♣ T♦</small></button>
             <button type="button" data-group="cardconv" data-value="cardbits" aria-pressed="false">Bit table<small>BIP39 tool, card mode</small></button></div>
   <p class="hint" id="matches"></p>
 </fieldset>
@@ -2248,6 +2249,7 @@
     </div>
 
     <p class="src-tail">The Bitcoin Core wallet.dat encoder is adapted from <a href="https://github.com/w-s-bitcoin/entropylab/pull/32" target="_blank" rel="noopener noreferrer">EntropyLab pull request #32</a>, whose generated descriptor wallets were checked against Bitcoin Core 28.3.0. Used under the MIT License.</p>
+    <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
@@ -3471,6 +3473,18 @@ const EntropyCore = (() => {
     return null;
   };
 
+  /* Ian Coleman's BIP39 tool can hash cards as a human-readable UTF-8
+     transcript: ranks and suit glyphs separated by spaces. Keep this as an
+     explicit conversion rather than silently changing the Workshop's existing
+     compact ASCII hash, because the two formats deliberately produce different
+     wallets from the same draw. */
+  const colemanCardTranscript = input => {
+    const suits = { C: '♣', D: '♦', H: '♥', S: '♠' };
+    const out = [];
+    for (let i = 0; i + 2 <= input.length; i += 2) out.push(input[i] + suits[input[i + 1]]);
+    return out.join(' ');
+  };
+
   const METHODS = {
     dice: {
       label: 'Dice',
@@ -3600,6 +3614,25 @@ const EntropyCore = (() => {
       matches: 'SHA-256 over the cards as drawn, the same way the dice methods hash rolls. Every card goes in whole, so nothing is wasted and no card is worth more than another.',
       valid: /^([A2-9TJQK][CDHS])*$/,
       entropy: (input, bytes) => sha256(utf8(input)).slice(0, bytes)
+    },
+    cardscoleman: {
+      label: 'Cards, Ian Coleman hash',
+      unit: 'card',
+      size: 2,
+      source: 'cards',
+      faces: 'a rank A, 2-9, T, J, Q or K then a suit C, D, H or S. 10 for the ten and the suit symbols are read too',
+      keep: /[^A2-9TJQKCDHS]/g,
+      alias: CARD_ALIAS,
+      deck: 52,
+      counts: { 12: 25, 24: 58 },
+      extra: true,
+      most: 104,
+      allow: [CARD_RANKS, CARD_SUITS],
+      shape: /^[A2-9TJQK][CDHS]$/,
+      wrong: 'each card is a rank then a suit, like AS or 7H',
+      matches: 'Ian Coleman\'s BIP39 tool in hashed-card mode. It hashes a spaced UTF-8 transcript with suit glyphs, such as A♠ 2♣ T♦, so it is not interchangeable with the compact ASCII hash.',
+      valid: /^([A2-9TJQK][CDHS])*$/,
+      entropy: (input, bytes) => sha256(utf8(colemanCardTranscript(input))).slice(0, bytes)
     },
     cardbits: {
       label: 'Cards, BIP39 tool table',
@@ -3778,6 +3811,11 @@ const EntropyCore = (() => {
        past all three, and is caught by the step-period test every method
        already shares. */
     cards: {
+      alphabet: CARD_DECK, minDistinct: 2, maxRun: 3, maxChi: Infinity, minLz: 0,
+      ordinal: CARD_ORD,
+      maxAdjacent: 0.40, maxSameSuit: 0.80, maxSuitRun: 13
+    },
+    cardscoleman: {
       alphabet: CARD_DECK, minDistinct: 2, maxRun: 3, maxChi: Infinity, minLz: 0,
       ordinal: CARD_ORD,
       maxAdjacent: 0.40, maxSameSuit: 0.80, maxSuitRun: 13
@@ -4618,7 +4656,7 @@ const EntropyCore = (() => {
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, legacyNormalise, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
-    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity,
+    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity, colemanCardTranscript,
     seedQrDigits, compactSeedQrBytes,
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,
@@ -6270,7 +6308,7 @@ var qrcodegen;
     source: 'dice',      /* 'coin' | 'dice' | 'cards' -- the physical thing */
     dice: 'd6',          /* 'd6' | 'octahex'  -- which dice, when source is dice */
     conversion: 'dice',  /* which device convention, for a six-sided die */
-    cardconv: 'cards',   /* 'cards' | 'cardbits' */
+    cardconv: 'cards',   /* 'cards' | 'cardscoleman' | 'cardbits' */
     /* The shorter seed is the one most people are choosing between these
        days, and it is the cheaper thing to try: 50 rolls rather than 99. The
        24-word option is one tap away for anyone who wants it. */
@@ -6466,6 +6504,7 @@ var qrcodegen;
        rather than from the position: ranks with nothing left face-down go
        grey, and once a rank is picked only its remaining suits stay lit. */
     cards: CARD_KEYS,
+    cardscoleman: CARD_KEYS,
     cardbits: CARD_KEYS
   };
 
