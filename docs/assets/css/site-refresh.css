@@ -5279,6 +5279,15 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
   line-height: 1.35;
 }
 
+.sc-footer .sc-footer-warning .sc-footer-not {
+  padding: 0;
+  color: #ff686d;
+  background: transparent;
+  border-radius: 0;
+  letter-spacing: 0.04em;
+  line-height: inherit;
+}
+
 .sc-footer-links {
   margin: 0;
   padding: 0;
