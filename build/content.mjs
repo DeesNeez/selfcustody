@@ -1938,7 +1938,7 @@ const currentYear = new Date().getFullYear();
           <div class="col-lg-3">
             <aside class="sc-footer-warning" aria-label="Important security warning">
               <div class="sc-footer-warning-heading">
-                <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
+                <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-exclamation-triangle-fill"></i></div>
                 <h4>Important!</h4>
               </div>
               <p><strong>NEVER</strong> share your seed words, or other sensitive information.</p>
