@@ -135,6 +135,13 @@ export function assertWorkshop() {
     check(/URL\.createObjectURL\(new Blob\(\[text\]/.test(script) &&
       /URL\.revokeObjectURL\(url\)/.test(script),
       `the ${name} build does not create and revoke its text-download Blob URLs`);
+    check(/id="export-wallet-open"/.test(html) &&
+      /id="export-wallet-confirm"/.test(html) &&
+      /hodlWalletExport\.buildWalletDat\(wallet, true, walletDatDeps\(accountNode\)\)/.test(script),
+      `the ${name} build does not offer the private Bitcoin Core wallet.dat behind the export warning`);
+    check(/new Blob\(\[bytes\], \{ type: 'application\/octet-stream' \}\)/.test(script) &&
+      /downloadBinaryRecord\(bytes, hodlWalletExport\.walletDatFilename\(true\)\)/.test(script),
+      `the ${name} build does not create the wallet.dat as a revocable binary download`);
     check(/function invalidateDerivedState\(\)\s*\{[\s\S]*?clearExportState\(\);[\s\S]*?state\.seed\s*=\s*null/.test(script),
       `the ${name} build does not clear export state when its derived wallet is invalidated`);
     /* The SeedQR is the recovery words in another alphabet. Its wipe is not

@@ -371,6 +371,34 @@ const EntropyCore = (() => {
     return out;
   };
 
+  /* The inverse is needed by the Bitcoin Core wallet.dat encoder, which
+     stores an account private key as Core's DER key record rather than as an
+     extended-key string. Decode and verify Base58Check here so that boundary
+     never accepts a mistyped or truncated xprv silently. */
+  const base58checkDecode = text => {
+    if (typeof text !== 'string' || !text.length) throw new Error('empty base58check value');
+    let n = 0n;
+    for (const ch of text) {
+      const digit = B58.indexOf(ch);
+      if (digit < 0) throw new Error(`invalid base58 character: ${ch}`);
+      n = n * 58n + BigInt(digit);
+    }
+    const tail = [];
+    while (n > 0n) { tail.push(Number(n & 0xffn)); n >>= 8n; }
+    tail.reverse();
+    let leading = 0;
+    while (leading < text.length && text[leading] === '1') leading++;
+    const full = concat(new Uint8Array(leading), Uint8Array.from(tail));
+    if (full.length < 5) throw new Error('base58check value is too short');
+    const payload = full.slice(0, -4);
+    const checksum = full.slice(-4);
+    const expected = hash256(payload).slice(0, 4);
+    if (!checksum.every((byte, i) => byte === expected[i])) {
+      throw new Error('base58check checksum does not match');
+    }
+    return payload;
+  };
+
   /* ---- extended public keys ---------------------------------------------
 
      78 bytes in a fixed order, base58check encoded: version, depth, parent
@@ -2078,7 +2106,7 @@ const EntropyCore = (() => {
     hex, fromHex, utf8, concat,
     sha256, sha512, hmacSha512, pbkdf2Sha512, ripemd160,
     hash160, hash256, taggedHash,
-    pointMul, compress, base58check, segwitAddress, convertBits,
+    pointMul, compress, base58check, base58checkDecode, segwitAddress, convertBits,
     entropyToMnemonic, checkMnemonic, mnemonicToSeed, masterKey, ckdPriv, derive, parsePath,
     encodeXpub, encodeXprv, fingerprint, masterFingerprint, publicKeyOf,
     XPUB_VERSION, XPRV_VERSION,
