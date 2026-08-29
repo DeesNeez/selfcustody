@@ -29,6 +29,8 @@ import { readFileSync } from 'node:fs';
 import { scopeCss } from './scope-css.mjs';
 
 const CORE = 'build/tools/entropy-core.js';
+const SECP_WASM_B64 = 'build/tools/secp256k1-wasm-b64.js';
+const SECP_WASM = 'build/tools/secp256k1-wasm.js';
 const LIFEHASH = 'build/tools/lifehash.js';
 const PREFLIGHT = 'build/tools/browser-preflight.js';
 /* EntropyLab's Bitcoin Core descriptor-wallet exporter from pull request #32.
@@ -4265,6 +4267,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
     <p class="src-tail">Visual fingerprints use <a href="https://lifehash.info/" target="_blank" rel="noopener noreferrer">LifeHash version2</a>, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/74" target="_blank" rel="noopener noreferrer">EntropyLab pull request #74</a> and the Blockchain Commons reference implementation. Used under the MIT License.</p>
     <p class="src-tail">The optional die-distribution inspector adapts the Pearson chi-square idea from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/36" target="_blank" rel="noopener noreferrer">EntropyLab pull request #36</a>. Its disclosure, histogram, threshold and wording are original to this Workshop.</p>
+    <p class="src-tail">Public-key and Taproot curve operations use Bitcoin Core&rsquo;s libsecp256k1 compiled to WebAssembly, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/103" target="_blank" rel="noopener noreferrer">EntropyLab pull request #103</a>. The pinned source, build recipe and artifact checksum ship with this site.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
@@ -4275,8 +4278,14 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
 </main>`;
 
-const toolScripts = ({ preflight, core, lifehash, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
+const toolScripts = ({ preflight, secpWasmB64, secpWasm, core, lifehash, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
 ${preflight}
+</script>
+<script>
+${secpWasmB64.replace('export const SECP256K1_WASM_B64', 'const SECP256K1_WASM_B64')}
+</script>
+<script>
+${secpWasm}
 </script>
 <script>
 ${core}
@@ -4297,11 +4306,25 @@ ${qrlib}
 'use strict';
 (function () {
   if (window.__entropyWorkshopPreflightPassed !== true) return;
-  const OFFLINE_BUILD = ${offline};
-  const C = EntropyCore;
-  const WORDLIST_RAW = '${wordlist}';
+  EntropySecp256k1Ready.then(() => {
+    const OFFLINE_BUILD = ${offline};
+    const C = EntropyCore;
+    const WORDLIST_RAW = '${wordlist}';
 ${selfTest()}
 ${ui()}
+  }).catch(() => {
+    window.__entropyWorkshopPreflightPassed = false;
+    document.documentElement.dataset.browserFailed = '1';
+    const workspace = document.querySelector('.workspace');
+    if (!workspace) return;
+    workspace.innerHTML = '<section class="sanity-failure" role="alert">'
+      + '<div class="sanity-failure-card">'
+      + '<div class="sanity-failure-icon" aria-hidden="true">&times;</div>'
+      + '<h1>Cryptography engine failed to start</h1>'
+      + '<p>This browser could not initialize libsecp256k1. No wallet was produced.</p>'
+      + '<p class="sanity-failure-advice">Open this file in a current Firefox, Chrome, Edge or Safari browser on the trusted offline computer.</p>'
+      + '</div></section>';
+  });
 })();
 </script>`;
 
@@ -4323,6 +4346,8 @@ const withFileSize = html => {
 
 const payload = () => ({
   preflight: readFileSync(PREFLIGHT, 'utf8'),
+  secpWasmB64: readFileSync(SECP_WASM_B64, 'utf8'),
+  secpWasm: readFileSync(SECP_WASM, 'utf8'),
   core: readFileSync(CORE, 'utf8'),
   lifehash: readFileSync(LIFEHASH, 'utf8'),
   sqliteWriter: readFileSync(SQLITE_WRITER, 'utf8'),
@@ -4341,7 +4366,7 @@ export function renderEntropyOffline() {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src data:; img-src data:; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline' 'wasm-unsafe-eval'; font-src data:; img-src data:; form-action 'none'; base-uri 'none'">
   <meta name="referrer" content="no-referrer">
   <!-- The links in this file are documentation, and the request guard treats
        an anchor as inert because clicking is a decision. Browsers do not

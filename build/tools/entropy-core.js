@@ -3,16 +3,13 @@
    has no external requests of any kind, so it works from file:// on a machine
    that has never been online.
 
-   Everything here is written from the specifications rather than pulled from a
-   library, for one reason: the whole value of an offline tool is that a reader
-   can open the file and check what it does. A bundled dependency is a blob you
-   have to take on faith, which is the exact thing this tool exists to remove.
-
-   The trade is that hand-written crypto can be subtly wrong, so nothing here is
-   trusted on inspection. build/tools/entropy-test.mjs runs the official test
-   vectors from BIP32, BIP39, BIP84 and BIP86 plus FIPS hash vectors, and the
-   page runs the same suite on load and refuses to render results if any of it
-   fails. A tool that cannot verify itself is worth nothing.
+   Hashes, encodings and deterministic derivation remain readable JavaScript.
+   Elliptic-curve operations run through Bitcoin Core's libsecp256k1, compiled
+   from the pinned Rust crate in secp256k1-wasm/. The generated module is
+   committed and inlined so the page remains a single inspectable, no-network
+   file. build/tools/entropy-test.mjs still checks official BIP32, BIP39, BIP84
+   and BIP86 vectors plus FIPS hash vectors; the page runs the same suite before
+   it will render results.
 
    No randomness is generated anywhere in this file. There is no call to
    Math.random or crypto.getRandomValues, and there is deliberately nothing
@@ -282,79 +279,26 @@ const EntropyCore = (() => {
 
   /* ---- secp256k1 --------------------------------------------------------
 
-     Public-key derivation only. Nothing here signs anything, so there is no
-     nonce to get wrong -- the classic catastrophic failure of hand-written
-     curve code is not reachable from this file. Points are kept in affine
-     coordinates with a modular inversion per addition, which is slower than
-     Jacobian and very much easier to read against the group law. The whole
-     page needs about a dozen scalar multiplications, so the cost is invisible. */
+     All curve operations cross the narrow WebAssembly facade as byte arrays.
+     The Workshop only derives public keys and adds the BIP86 Taproot tweak; it
+     neither signs nor generates randomness. */
 
-  const P = 2n ** 256n - 2n ** 32n - 977n;
   const N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
-  const Gx = 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798n;
-  const Gy = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8n;
-
-  const mod = (a, m = P) => ((a % m) + m) % m;
-
-  /* Extended Euclid. Fermat via modPow would be a one-liner but is far slower
-     with BigInt, and this runs inside every point addition. */
-  const inv = (a, m = P) => {
-    let [lo, hi] = [mod(a, m), m];
-    let [x0, x1] = [1n, 0n];
-    while (lo > 0n) {
-      const q = hi / lo;
-      [lo, hi] = [hi - q * lo, lo];
-      [x0, x1] = [x1 - q * x0, x0];
-    }
-    return mod(x1, m);
-  };
-
-  const pointAdd = (a, b) => {
-    if (!a) return b;
-    if (!b) return a;
-    if (a.x === b.x) {
-      /* Same x with opposite y is the point at infinity. */
-      if (mod(a.y + b.y) === 0n) return null;
-      const l = mod(3n * a.x * a.x * inv(2n * a.y));
-      const x = mod(l * l - 2n * a.x);
-      return { x, y: mod(l * (a.x - x) - a.y) };
-    }
-    const l = mod((b.y - a.y) * inv(b.x - a.x));
-    const x = mod(l * l - a.x - b.x);
-    return { x, y: mod(l * (a.x - x) - a.y) };
-  };
-
-  const pointMul = (k, point = { x: Gx, y: Gy }) => {
-    let acc = null;
-    let add = point;
-    for (let n = mod(k, N); n > 0n; n >>= 1n) {
-      if (n & 1n) acc = pointAdd(acc, add);
-      add = pointAdd(add, add);
-    }
-    return acc;
-  };
-
+  const mod = (a, m) => ((a % m) + m) % m;
   const toBytes32 = n => fromHex(n.toString(16).padStart(64, '0'));
-  const compress = point =>
-    concat(new Uint8Array([point.y % 2n === 0n ? 0x02 : 0x03]), toBytes32(point.x));
-
-  const modPow = (base, exp, m) => {
-    let result = 1n;
-    let b = mod(base, m);
-    for (let e = exp; e > 0n; e >>= 1n) {
-      if (e & 1n) result = result * b % m;
-      b = b * b % m;
-    }
-    return result;
+  const scalarBytes = scalar => {
+    const normalized = mod(scalar, N);
+    if (normalized === 0n) throw new Error('scalar is outside the secp256k1 range');
+    return toBytes32(normalized);
   };
+  const pointMul = scalar => EntropySecp256k1.publicKeyCreate(scalarBytes(scalar));
+  const pointAdd = (left, right) => EntropySecp256k1.pointAdd(left, right);
+  const compress = point => point.slice();
 
   /* BIP340 lift_x: the x-only key names the point with even y. */
-  const liftX = x => {
-    const ySq = mod(x * x % P * x + 7n);
-    const y = modPow(ySq, (P + 1n) / 4n, P);
-    if (mod(y * y) !== ySq) throw new Error('x is not on the curve');
-    return { x, y: y % 2n === 0n ? y : P - y };
-  };
+  const liftX = x => EntropySecp256k1.pointValidate(
+    concat(new Uint8Array([0x02]), toBytes32(x))
+  );
 
   /* ---- base58check ------------------------------------------------------ */
 
@@ -690,7 +634,7 @@ const EntropyCore = (() => {
         const internal = pub.slice(1);
         const tweak = toBigInt(taggedHash('TapTweak', internal));
         const output = pointAdd(liftX(toBigInt(internal)), pointMul(tweak));
-        return segwitAddress('bc', 1, toBytes32(output.x));
+        return segwitAddress('bc', 1, output.slice(1));
       }
     }
   };
