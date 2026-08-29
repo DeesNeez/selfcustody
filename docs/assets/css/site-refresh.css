@@ -5257,6 +5257,8 @@ body.site-refresh[data-page="home"] .sc-close .sc-close-actions {
 
 .sc-footer .sc-footer-warning p + p {
   margin-top: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--sc-orange);
 }
 
 .sc-footer .sc-footer-warning p strong {
