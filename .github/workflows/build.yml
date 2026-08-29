@@ -46,6 +46,9 @@ jobs:
       - name: Committed libsecp256k1 WebAssembly
         run: node build/tools/secp256k1-wasm-test.mjs
 
+      - name: Beta acknowledgement and sticky warning
+        run: node build/tools/beta-warning-test.mjs
+
       # Also runs, in order: the icon-subset check, the fetch guard, the glyph
       # guard and the Workshop guard. Any of them failing exits non-zero.
       - name: Build and guards

@@ -31,6 +31,7 @@ import { scopeCss } from './scope-css.mjs';
 const CORE = 'build/tools/entropy-core.js';
 const SECP_WASM_B64 = 'build/tools/secp256k1-wasm-b64.js';
 const SECP_WASM = 'build/tools/secp256k1-wasm.js';
+const BETA_WARNING = 'build/tools/beta-warning.js';
 const LIFEHASH = 'build/tools/lifehash.js';
 const PREFLIGHT = 'build/tools/browser-preflight.js';
 /* EntropyLab's Bitcoin Core descriptor-wallet exporter from pull request #32.
@@ -43,6 +44,9 @@ const WALLET_DAT = 'build/tools/wallet-dat.js';
    is here when the crypto beside it is written from the specifications. */
 const QRLIB = 'build/vendor/qr/qrcodegen.js';
 const WORDS = 'build/tools/bip39-english.txt';
+/* Bump only when the Entropy Workshop itself is released. Acceptance stores
+   this public label and nothing derived from the reader's input. */
+const ENTROPY_RELEASE = '2026-08-29-beta-1';
 
 /* The page wears the site's chrome, which means it needs the site's two
    typefaces and its logo -- and it cannot fetch any of them, because the whole
@@ -1500,15 +1504,17 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .workspace { padding-bottom: 56px; }
   .security-brief {
-    position: relative; margin: -22px 0 16px; padding: 20px 22px 20px 68px;
+    position: sticky; z-index: 30; top: 78px;
+    margin: -22px 0 16px; padding: 20px 22px 20px 68px;
     border-color: rgba(255, 138, 0, 0.46); border-radius: 16px;
-    background: linear-gradient(135deg, #29231d, #211f1c);
+    background: linear-gradient(135deg, #29231d 0%, #211f1c 100%);
     box-shadow: 0 18px 44px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.05);
   }
-  .security-brief::before {
-    content: "!"; position: absolute; left: 20px; top: 20px; display: grid; place-items: center;
-    width: 32px; height: 32px; color: #241300; background: var(--orange); border-radius: 10px;
-    font-family: "Jost", sans-serif; font-size: 1.2rem; font-weight: 800;
+  body.is-offline-copy .security-brief { top: 0; }
+  .security-icon {
+    position: absolute; left: 20px; top: 20px;
+    width: 32px; height: 32px; color: var(--orange);
+    filter: drop-shadow(0 0 12px rgba(255, 138, 0, .16));
   }
   .security-brief strong { color: #ffad4c; }
   .security-brief .critical-line {
@@ -1520,6 +1526,48 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .security-brief strong.critical {
     color: #ff4d5d; text-shadow: 0 0 14px rgba(255, 44, 65, .18);
+  }
+
+  .security-sticky-mobile { display: none; }
+
+  body.beta-gate-open { overflow: hidden; }
+  .beta-disclaimer {
+    position: fixed; z-index: 2200; inset: 0; display: grid; place-items: center;
+    padding: 24px; overflow-y: auto;
+    background: rgba(3, 3, 4, .86); backdrop-filter: blur(12px);
+    opacity: 0; transition: opacity .22s ease;
+  }
+  .beta-disclaimer[hidden] { display: none; }
+  .beta-disclaimer.is-visible { opacity: 1; }
+  .beta-disclaimer.is-dismissed { opacity: 0; pointer-events: none; }
+  .beta-disclaimer-card {
+    position: relative; width: min(100%, 590px); padding: 30px 30px 28px 86px;
+    border: 1px solid rgba(255, 138, 0, .48); border-radius: 18px;
+    color: var(--ink-soft); background: linear-gradient(145deg, #28231e, #171719 72%);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, .62), inset 0 1px 0 rgba(255, 255, 255, .06);
+  }
+  .beta-disclaimer-card::before {
+    content: ""; position: absolute; top: 0; right: 28px; left: 28px; height: 3px;
+    border-radius: 0 0 3px 3px; background: var(--orange);
+  }
+  .beta-disclaimer-card .security-icon { left: 28px; top: 30px; width: 38px; height: 38px; }
+  .beta-disclaimer-card h2 { margin: 0 0 14px; color: #fff; font-size: 1.65rem; }
+  .beta-disclaimer-card p { margin: 0 0 13px; line-height: 1.65; }
+  .beta-disclaimer-card p strong { color: #ffad4c; }
+  .beta-disclaimer-card .critical-copy {
+    margin-top: 16px; padding: 13px 15px; border: 1px solid rgba(255, 48, 72, .3);
+    border-radius: 10px; background: rgba(5, 5, 6, .38);
+  }
+  .beta-disclaimer-card .critical-copy strong { color: #ff4d5d; }
+  .beta-disclaimer-accept {
+    min-height: 44px; margin-top: 8px; padding: 11px 21px; border: 0; border-radius: 9px;
+    color: #211300; background: var(--orange); font: 800 .94rem/1 "Jost", sans-serif;
+    cursor: pointer; box-shadow: 0 8px 24px rgba(255, 138, 0, .18);
+  }
+  .beta-disclaimer-accept:hover { background: #ffad4c; }
+  .beta-disclaimer-accept:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    .beta-disclaimer, .security-sticky-chevron { transition: none; }
   }
 
 
@@ -1635,7 +1683,8 @@ ${FONTS.map(embedFont).join('\n')}
   @media (max-width: 820px) {
     .hero { min-height: auto; padding: 108px 0 44px; }
     .hero h1 { font-size: clamp(2.8rem, 9vw, 3.8rem); }
-    .security-brief { margin-top: -20px; }
+    .security-brief { top: 70px; margin-top: -20px; }
+    body.is-offline-copy .security-brief { top: 0; }
     .workbench-intro { grid-template-columns: 1fr; gap: 12px; }
     .setup-grid { grid-template-columns: 1fr; }
     .workbench .setup-grid .setup-wide { grid-column: auto; }
@@ -1652,8 +1701,45 @@ ${FONTS.map(embedFont).join('\n')}
     .hero-meta { display: grid; gap: 10px; }
     .github-link { justify-content: center; width: 100%; }
     .hero .status { display: grid; gap: 10px; }
-    .security-brief { margin-top: -16px; padding: 58px 18px 18px; }
-    .security-brief::before { left: 18px; top: 16px; }
+    .security-brief { position: relative; top: auto; margin-top: -16px; padding: 58px 18px 18px; }
+    .security-brief .security-icon { left: 18px; top: 16px; }
+    .security-sticky-mobile {
+      position: fixed; z-index: 990; top: 70px; right: 10px; left: 10px;
+      display: block; border: 1px solid rgba(255, 138, 0, .52); border-radius: 12px;
+      color: var(--ink-soft); background: rgba(27, 25, 23, .985);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, .48);
+    }
+    body.is-offline-copy .security-sticky-mobile { top: 0; }
+    .security-sticky-mobile[hidden] { display: none; }
+    .security-sticky-toggle {
+      display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px;
+      padding: 9px 12px; border: 0; color: #fff; background: transparent;
+      font: 800 .9rem/1.2 "Jost", sans-serif; text-align: left; cursor: pointer;
+    }
+    .security-sticky-toggle .security-icon {
+      position: static; flex: 0 0 auto; width: 24px; height: 24px;
+    }
+    .security-sticky-toggle-label { flex: 1; }
+    .security-sticky-chevron {
+      width: 9px; height: 9px; border-right: 2px solid #ffad4c;
+      border-bottom: 2px solid #ffad4c; transform: rotate(45deg) translateY(-2px);
+      transition: transform .18s ease;
+    }
+    .security-sticky-toggle[aria-expanded="true"] .security-sticky-chevron {
+      transform: rotate(225deg) translate(-2px, -2px);
+    }
+    .security-sticky-panel {
+      padding: 0 14px 14px 46px; border-top: 1px solid rgba(255, 255, 255, .08);
+      color: #c9c4bc; font-size: .8rem; line-height: 1.52;
+    }
+    .security-sticky-panel[hidden] { display: none; }
+    .security-sticky-panel p { margin: 11px 0 0; }
+    .security-sticky-panel strong { color: #ffad4c; }
+    .security-sticky-panel .critical { color: #ff4d5d; }
+    .beta-disclaimer { padding: 14px; }
+    .beta-disclaimer-card { padding: 66px 20px 22px; border-radius: 15px; }
+    .beta-disclaimer-card .security-icon { left: 20px; top: 20px; width: 34px; height: 34px; }
+    .beta-disclaimer-card h2 { font-size: 1.42rem; }
     .download { margin-bottom: 34px; padding: 19px 18px; }
     .step-map { display: none; }
     .workbench { padding: 12px 14px 20px; border-radius: 18px; }
@@ -3613,6 +3699,10 @@ const ICON_CARDS = sourceIcon(`
       <path d="M16 11.3l3.5 4.7-3.5 4.7-3.5-4.7z" fill="currentColor" stroke="none"/>
     </g>`);
 
+/* Bootstrap Icons' filled warning triangle path, inlined because the
+   standalone Workshop cannot depend on the site's icon font. */
+const warningTriangle = className => `<svg class="${className}" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233C-.292 14.01.256 15 1.145 15h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>`;
+
 const segment = (group, options) => options.map(o => {
   const body = `${o.label}${o.sub ? `<small>${o.sub}</small>` : ''}`;
   return `
@@ -3739,9 +3829,32 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   </div>
 </noscript>
 
-<div class="banner security-brief">
+<div class="banner security-brief" id="security-brief">
+  ${warningTriangle('security-icon')}
   <p><strong>Beta software.</strong> This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.</p>
   <p class="critical-line"><strong class="critical">Never enter an existing recovery phrase into any page</strong> &mdash; including this one, which is why there is nowhere here to do it.</p>
+</div>
+
+<aside class="security-sticky-mobile" id="security-sticky-mobile" aria-label="Beta software warning" hidden>
+  <button class="security-sticky-toggle" id="security-sticky-toggle" type="button" aria-expanded="false" aria-controls="security-sticky-panel">
+    ${warningTriangle('security-icon')}
+    <span class="security-sticky-toggle-label">Beta software</span>
+    <span class="security-sticky-chevron" aria-hidden="true"></span>
+  </button>
+  <div class="security-sticky-panel" id="security-sticky-panel" hidden>
+    <p><strong>Beta software.</strong> This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.</p>
+    <p><strong class="critical">Never enter an existing recovery phrase into any page</strong> &mdash; including this one, which is why there is nowhere here to do it.</p>
+  </div>
+</aside>
+
+<div class="beta-disclaimer" id="beta-disclaimer" role="alertdialog" aria-modal="true" aria-labelledby="beta-disclaimer-title" aria-describedby="beta-disclaimer-copy beta-disclaimer-critical" hidden>
+  <div class="beta-disclaimer-card">
+    ${warningTriangle('security-icon')}
+    <h2 id="beta-disclaimer-title">Before you use the Workshop</h2>
+    <p id="beta-disclaimer-copy"><strong>Beta software.</strong> This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.</p>
+    <p class="critical-copy" id="beta-disclaimer-critical"><strong>Never enter an existing recovery phrase into any page</strong> &mdash; including this one, which is why there is nowhere here to do it.</p>
+    <button class="beta-disclaimer-accept" id="beta-disclaimer-accept" type="button">I understand</button>
+  </div>
 </div>
 
 <section class="download" id="offline">
@@ -4268,6 +4381,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <p class="src-tail">Visual fingerprints use <a href="https://lifehash.info/" target="_blank" rel="noopener noreferrer">LifeHash version2</a>, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/74" target="_blank" rel="noopener noreferrer">EntropyLab pull request #74</a> and the Blockchain Commons reference implementation. Used under the MIT License.</p>
     <p class="src-tail">The optional die-distribution inspector adapts the Pearson chi-square idea from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/36" target="_blank" rel="noopener noreferrer">EntropyLab pull request #36</a>. Its disclosure, histogram, threshold and wording are original to this Workshop.</p>
     <p class="src-tail">Public-key and Taproot curve operations use Bitcoin Core&rsquo;s libsecp256k1 compiled to WebAssembly, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/103" target="_blank" rel="noopener noreferrer">EntropyLab pull request #103</a>. The pinned source, build recipe and artifact checksum ship with this site.</p>
+    <p class="src-tail">The per-release beta acknowledgement adapts merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/106" target="_blank" rel="noopener noreferrer">EntropyLab pull request #106</a>. Its compact mobile warning is specific to this Workshop.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
@@ -4278,7 +4392,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
 </main>`;
 
-const toolScripts = ({ preflight, secpWasmB64, secpWasm, core, lifehash, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
+const toolScripts = ({ preflight, secpWasmB64, secpWasm, betaWarning, core, lifehash, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
 ${preflight}
 </script>
 <script>
@@ -4286,6 +4400,9 @@ ${secpWasmB64.replace('export const SECP256K1_WASM_B64', 'const SECP256K1_WASM_B
 </script>
 <script>
 ${secpWasm}
+</script>
+<script>
+${betaWarning}
 </script>
 <script>
 ${core}
@@ -4310,6 +4427,7 @@ ${qrlib}
     const OFFLINE_BUILD = ${offline};
     const C = EntropyCore;
     const WORDLIST_RAW = '${wordlist}';
+    EntropyBetaWarning.init({ version: '${ENTROPY_RELEASE}' });
 ${selfTest()}
 ${ui()}
   }).catch(() => {
@@ -4348,6 +4466,7 @@ const payload = () => ({
   preflight: readFileSync(PREFLIGHT, 'utf8'),
   secpWasmB64: readFileSync(SECP_WASM_B64, 'utf8'),
   secpWasm: readFileSync(SECP_WASM, 'utf8'),
+  betaWarning: readFileSync(BETA_WARNING, 'utf8'),
   core: readFileSync(CORE, 'utf8'),
   lifehash: readFileSync(LIFEHASH, 'utf8'),
   sqliteWriter: readFileSync(SQLITE_WRITER, 'utf8'),
