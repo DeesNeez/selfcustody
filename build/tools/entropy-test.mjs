@@ -756,6 +756,20 @@ export const VECTORS = [
       const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'");
       return [C.encodeXprv(node).length > 100, C.encodeXpub(node).length > 100].join();
     }, 'true,true'],
+  ['xprv: Base58Check decoding recovers the 78-byte payload',
+    () => {
+      const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'");
+      const raw = C.base58checkDecode(C.encodeXprv(node));
+      return [raw.length, C.hex(raw.slice(0, 4)), raw[45]].join();
+    }, '78,0488ade4,0'],
+  ['xprv: Base58Check decoding refuses a changed checksum',
+    () => {
+      const node = C.derive(C.masterKey(C.mnemonicToSeed(ABANDON_12.split(' '))), "m/84'/0'/0'");
+      const encoded = C.encodeXprv(node);
+      try { C.base58checkDecode(encoded.slice(0, -1) + (encoded.endsWith('1') ? '2' : '1')); }
+      catch (error) { return /checksum/.test(error.message); }
+      return false;
+    }, true],
   /* And it must never reach the descriptor, which is the one thing on the page
      that is meant to be safe to hand out. */
   ['xprv: never appears in a watch-only descriptor',
