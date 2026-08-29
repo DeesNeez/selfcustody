@@ -40,6 +40,9 @@ jobs:
       - name: Bitcoin Core wallet.dat export
         run: node build/tools/wallet-dat-test.mjs
 
+      - name: Browser startup preflight
+        run: node build/tools/browser-preflight-test.mjs
+
       # Also runs, in order: the icon-subset check, the fetch guard, the glyph
       # guard and the Workshop guard. Any of them failing exits non-zero.
       - name: Build and guards

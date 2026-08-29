@@ -111,6 +111,15 @@ export function assertWorkshop() {
       `the ${name} build cancels derivation on passphrase edits without restoring the Derive button`);
     check(/<noscript>/.test(html),
       `the ${name} build has no noscript notice; with scripting off it is a page of dead controls`);
+    check(/dataset\.browserChecks/.test(html) && /dataset\.browserFailed/.test(html) &&
+      /window\.__entropyWorkshopPreflightPassed\s*=\s*failed\.length\s*===\s*0/.test(html),
+      `the ${name} build does not run and record its browser preflight`);
+    check(/if \(window\.__entropyWorkshopPreflightPassed !== true\) return;/.test(html),
+      `the ${name} build starts the Workshop application after a failed browser preflight`);
+    const preflight = html.indexOf('Browser preflight for the Entropy Workshop');
+    const core = html.indexOf('Crypto core for the entropy tool');
+    check(preflight >= 0 && core > preflight,
+      `the ${name} build does not run its browser preflight before the crypto core`);
     check(/name="referrer" content="no-referrer"/.test(html),
       `the ${name} build does not set a no-referrer policy`);
     check(/http-equiv="Content-Security-Policy"/.test(html),
