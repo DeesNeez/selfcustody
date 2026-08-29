@@ -1036,6 +1036,18 @@ export const VECTORS = [
   ['cards: the entropy is SHA-256 of the transcript',
     () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy,
     C.hex(C.sha256(C.utf8(REAL_DRAW)).slice(0, 16))],
+  ['cards: Ian Coleman transcript uses UTF-8 suit glyphs and spaces',
+    () => C.colemanCardTranscript('AS2CTD'), 'A♠ 2♣ T♦'],
+  ['cards: Ian Coleman reference transcript has the pinned SHA-256 digest',
+    () => C.hex(C.sha256(C.utf8(C.colemanCardTranscript('AS2CTD')))),
+    '487361395544bff8135d18c2d3370570d7e689983fbcf5dd545066d056010ce2'],
+  ['cards: Ian Coleman mode derives from the displayed transcript',
+    () => C.deriveSeed({ method: 'cardscoleman', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy,
+    C.hex(C.sha256(C.utf8(C.colemanCardTranscript(REAL_DRAW))).slice(0, 16))],
+  ['cards: compact and Ian Coleman hashes remain distinct conversions',
+    () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy
+      !== C.deriveSeed({ method: 'cardscoleman', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy,
+    true],
   ['cards: 27 drawn cards make a 12-word phrase',
     () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).mnemonic.length, 12],
   /* The boundary itself. 25 cards carry 132.4 bits and 24 carry 127.6, so 25
