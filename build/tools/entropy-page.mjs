@@ -29,6 +29,7 @@ import { readFileSync } from 'node:fs';
 import { scopeCss } from './scope-css.mjs';
 
 const CORE = 'build/tools/entropy-core.js';
+const LIFEHASH = 'build/tools/lifehash.js';
 const PREFLIGHT = 'build/tools/browser-preflight.js';
 /* EntropyLab's Bitcoin Core descriptor-wallet exporter from pull request #32.
    Both scripts are MIT licensed; the retained notice is beside them under
@@ -334,6 +335,14 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .fp-row { display: flex; align-items: flex-start; gap: 6px 14px; flex-wrap: wrap; }
   .fp-cell { display: flex; align-items: baseline; gap: 10px; }
+  .fp-identity { display: flex; align-items: center; gap: 10px; }
+  .fp-copy { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .fp-lifehash {
+    width: 48px; height: 48px; flex: 0 0 48px; image-rendering: pixelated;
+    border: 3px solid rgba(255, 255, 255, 0.13); border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+  }
+  .fp-lifehash[hidden] { display: none; }
   /* An author display rule beats the browser's [hidden] { display: none }, so
      the arrow half needs to opt back out explicitly. Without this it shows the
      same fingerprint twice whenever there is no passphrase. */
@@ -2642,6 +2651,7 @@ const ui = () => `
     state.seedKey = null;
     renderedAddressRows = null;
     addressCheckToken += 1;
+    clearLifeHashes();
 
     /* The strings parked for the QR buttons are derived material like any
        other, and this is the only place that drops them. Clearing the page is
@@ -2694,6 +2704,23 @@ const ui = () => `
     'fp-base', 'fp-pass', 'fp-base-tag',
     'seedqr-digits', 'seedqr-grid'
   ];
+
+  function clearLifeHashes() {
+    for (const id of ['lifehash-base', 'lifehash-pass']) {
+      const image = $(id);
+      if (!image) continue;
+      image.removeAttribute('src');
+      image.alt = '';
+      image.hidden = true;
+    }
+  }
+
+  function paintLifeHash(id, fingerprint) {
+    const image = $(id);
+    image.src = WorkshopLifeHash.fromFingerprint(fingerprint, 2);
+    image.alt = 'LifeHash visual fingerprint for ' + fingerprint;
+    image.hidden = false;
+  }
 
   function clearSensitiveState() {
     for (const id of SECRET_FIELDS) {
@@ -2962,6 +2989,13 @@ const ui = () => `
     $('fp-arrow-wrap').hidden = base === withPass;
     $('fp-pass').textContent = withPass;
     $('fp-base-tag').textContent = base === withPass ? '' : 'without passphrase';
+    paintLifeHash('lifehash-base', base);
+    if (base === withPass) {
+      $('lifehash-pass').removeAttribute('src');
+      $('lifehash-pass').hidden = true;
+    } else {
+      paintLifeHash('lifehash-pass', withPass);
+    }
     $('fp-note').textContent = base === withPass
       ? 'Your device should be showing this. If it shows something else, it is holding a different wallet.'
       : 'Words alone on the left, words plus your passphrase on the right. Your device should be showing the one on the right \u2014 if it shows the one on the left, the passphrase did not take.';
@@ -3793,8 +3827,8 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   <div class="fingerprint" id="fingerprint-box">
     <span class="fp-label">Master fingerprint</span>
     <span class="fp-row">
-      <span class="fp-cell"><b id="fp-base"></b><em id="fp-base-tag"></em></span>
-      <span class="fp-cell" id="fp-arrow-wrap" hidden><i class="fp-arrow" aria-hidden="true">&rarr;</i><b id="fp-pass"></b><em>with passphrase</em></span>
+      <span class="fp-cell"><span class="fp-identity"><img class="fp-lifehash" id="lifehash-base" alt="" hidden><span class="fp-copy"><b id="fp-base"></b><em id="fp-base-tag"></em></span></span></span>
+      <span class="fp-cell" id="fp-arrow-wrap" hidden><i class="fp-arrow" aria-hidden="true">&rarr;</i><span class="fp-identity"><img class="fp-lifehash" id="lifehash-pass" alt="" hidden><span class="fp-copy"><b id="fp-pass"></b><em>with passphrase</em></span></span></span></span>
     </span>
     <p class="hint" id="fp-note"></p>
   </div>
@@ -4090,6 +4124,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
     <p class="src-tail">The Bitcoin Core wallet.dat encoder is adapted from <a href="https://github.com/w-s-bitcoin/entropylab/pull/32" target="_blank" rel="noopener noreferrer">EntropyLab pull request #32</a>, whose generated descriptor wallets were checked against Bitcoin Core 28.3.0. Used under the MIT License.</p>
     <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
+    <p class="src-tail">Visual fingerprints use <a href="https://lifehash.info/" target="_blank" rel="noopener noreferrer">LifeHash version2</a>, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/74" target="_blank" rel="noopener noreferrer">EntropyLab pull request #74</a> and the Blockchain Commons reference implementation. Used under the MIT License.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
@@ -4100,11 +4135,14 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
 </main>`;
 
-const toolScripts = ({ preflight, core, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
+const toolScripts = ({ preflight, core, lifehash, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
 ${preflight}
 </script>
 <script>
 ${core}
+</script>
+<script>
+${lifehash}
 </script>
 <script>
 ${sqliteWriter}
@@ -4146,6 +4184,7 @@ const withFileSize = html => {
 const payload = () => ({
   preflight: readFileSync(PREFLIGHT, 'utf8'),
   core: readFileSync(CORE, 'utf8'),
+  lifehash: readFileSync(LIFEHASH, 'utf8'),
   sqliteWriter: readFileSync(SQLITE_WRITER, 'utf8'),
   walletDat: readFileSync(WALLET_DAT, 'utf8'),
   qrlib: readFileSync(QRLIB, 'utf8'),
