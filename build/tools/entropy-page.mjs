@@ -1165,6 +1165,7 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .qr-button:hover { color: var(--orange); border-color: rgba(255, 138, 0, 0.55); }
   .qr-row { margin: 12px 0 0; }
+  .seedqr-actions { display: flex; flex-wrap: wrap; gap: 8px; }
   /* Opened, it is sized to be read by a phone held to the screen. */
   .qr-dialog {
     max-width: min(92vw, 360px); padding: 18px; border: 1px solid rgba(255, 255, 255, 0.16);
@@ -1638,6 +1639,8 @@ const selfTest = () => `
         [{ index: 0, path: "m/84'/0'/0'/0/0", address }], []);
       return hit.state + ':' + hit.chain + ':' + hit.index;
     }, 'match:receive:0'],
+    ['CompactSeedQR carries the raw BIP39 entropy bytes',
+      () => C.hex(C.compactSeedQrBytes('00'.repeat(16))), '00'.repeat(16)],
     ['BIP84 change address', () => vectorAddress('native', "m/84'/0'/0'", 1), 'bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el'],
     ['BIP86 taproot address', () => vectorAddress('taproot', "m/86'/0'/0'", 0), 'bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr'],
     /* The conversions themselves. A wrong table here is the worst failure this
@@ -2136,8 +2139,8 @@ const ui = () => `
   const QR_QUIET = 3;
 
   /* What each button would encode, set when a wallet is derived and emptied
-     with everything else. Holding the strings here rather than in the markup
-     keeps them out of the DOM until somebody asks to see one. */
+     with everything else. Holding the strings or bytes here rather than in
+     the markup keeps them out of the DOM until somebody asks to see one. */
   const qrSources = Object.create(null);
   let renderedAddressRows = null;
   let addressCheckToken = 0;
@@ -2385,8 +2388,10 @@ const ui = () => `
     }
   }
 
-  function qrSvg(text, ecc) {
-    const qr = qrcodegen.QrCode.encodeText(text, ecc);
+  function qrSvg(payload, ecc, binary) {
+    const qr = binary
+      ? qrcodegen.QrCode.encodeBinary(payload, ecc)
+      : qrcodegen.QrCode.encodeText(payload, ecc);
     const dim = qr.size + QR_QUIET * 2;
     let d = '';
     for (let y = 0; y < qr.size; y++) {
@@ -2414,10 +2419,10 @@ const ui = () => `
      the picture. Cleared rather than left stale when there is nothing to draw:
      an old wallet's QR under a new wallet's address would be the worst kind of
      wrong, because it would scan. */
-  function paintQr(el, text, label, ecc) {
+  function paintQr(el, payload, label, ecc, binary) {
     if (!el) return;
-    if (!text) { el.replaceChildren(); return; }
-    const svg = qrSvg(text, ecc || qrcodegen.QrCode.Ecc.MEDIUM);
+    if (!payload || payload.length === 0) { el.replaceChildren(); return; }
+    const svg = qrSvg(payload, ecc || qrcodegen.QrCode.Ecc.MEDIUM, binary);
     svg.setAttribute('aria-label', label);
     el.replaceChildren(svg);
   }
@@ -3041,6 +3046,7 @@ const ui = () => `
     $('seedqr-block').hidden = !grid;
     if (grid) {
       const digits = C.seedQrDigits(state.seed.mnemonic, WORDLIST);
+      const compact = C.compactSeedQrBytes(state.seed.entropy);
       $('seedqr-grid').textContent = grid;
       $('seedqr-digits').replaceChildren(...(digits.match(/.{4}/g) || []).map(group => {
         const cell = document.createElement('span');
@@ -3048,6 +3054,10 @@ const ui = () => `
         return cell;
       }));
       qrSources.seedqr = { text: digits, title: 'SeedQR' };
+      qrSources.compactseedqr = {
+        bytes: compact, display: C.hex(compact), title: 'CompactSeedQR',
+        ecc: qrcodegen.QrCode.Ecc.LOW
+      };
     }
     $('type-note').textContent = C.ADDRESS_TYPES[state.addressType].note;
     $('results-loading').hidden = true;
@@ -3145,10 +3155,12 @@ const ui = () => `
   for (const button of document.querySelectorAll('[data-qr]')) {
     button.addEventListener('click', () => {
       const source = qrSources[button.dataset.qr];
-      if (!source || !source.text) return;
-      paintQr($('qr-dialog-code'), source.text, source.title + ' as a QR code');
+      const payload = source && (source.bytes || source.text);
+      if (!payload || payload.length === 0) return;
+      paintQr($('qr-dialog-code'), payload, source.title + ' as a QR code',
+        source.ecc, Boolean(source.bytes));
       $('qr-dialog-title').textContent = source.title;
-      $('qr-dialog-text').textContent = source.text;
+      $('qr-dialog-text').textContent = source.text || ('BIP39 entropy bytes (hex): ' + source.display);
       $('qr-dialog').showModal();
     });
   }
@@ -3802,10 +3814,11 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
         <div id="seedqr-block">
           <div class="label"><span>SeedQR recovery code</span></div>
-          <p class="xpub-note">The recovery words as numbers: each word&rsquo;s place in the BIP39 list, four digits per word, in the order they appear above. <a href="https://github.com/SeedSigner/seedsigner/blob/dev/docs/seed_qr/README.md" target="_blank" rel="noopener noreferrer">SeedSigner</a> and compatible signing devices scan it. This one is a <b id="seedqr-grid"></b> grid &mdash; the size of the job if you punch it into metal.</p>
+          <p class="xpub-note">The recovery words as numbers: each word&rsquo;s place in the BIP39 list, four digits per word, in the order they appear above. <a href="https://github.com/SeedSigner/seedsigner/blob/dev/docs/seed_qr/README.md" target="_blank" rel="noopener noreferrer">SeedSigner</a> and compatible signing devices scan it. The numeric code is a <b id="seedqr-grid"></b> grid &mdash; the size of the job if you punch it into metal.</p>
           <p class="seedqr-digits" id="seedqr-digits"></p>
-          <p class="xpub-note">This is the phrase in another alphabet, nothing weaker. Anything that reads it can spend the wallet.</p>
-          <p class="qr-row"><button type="button" class="qr-button" data-qr="seedqr">Show QR</button></p>
+          <p class="xpub-note"><b>CompactSeedQR</b> encodes the same BIP39 entropy as smaller binary data. SeedSigner, Krux, Jade and Passport support it; use the numeric SeedQR for COLDCARD Q.</p>
+          <p class="xpub-note">Both codes are the phrase in another alphabet, nothing weaker. Anything that reads either one can spend the wallet. If you use a passphrase, enter it separately on the signer after scanning.</p>
+          <p class="qr-row seedqr-actions"><button type="button" class="qr-button" data-qr="seedqr">Show numeric SeedQR</button><button type="button" class="qr-button" data-qr="compactseedqr">Show CompactSeedQR</button></p>
         </div>
       </div>
     </details>

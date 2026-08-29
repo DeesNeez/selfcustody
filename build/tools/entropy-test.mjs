@@ -1327,6 +1327,23 @@ export const VECTORS = [
         C.seedQrDigits(words, WORDLIST), QR.QrCode.Ecc.MEDIUM)
         .errorCorrectionLevel.ordinal).join(),
     [QR.QrCode.Ecc.QUARTILE.ordinal, QR.QrCode.Ecc.MEDIUM.ordinal].join()],
+  ['compact seedqr: all-zero entropy becomes 16 or 32 zero bytes', () => {
+    const twelve = C.compactSeedQrBytes('00'.repeat(16));
+    const twentyFour = C.compactSeedQrBytes('00'.repeat(32));
+    return [twelve.length, twentyFour.length, C.hex(twelve), C.hex(twentyFour)].join();
+  }, ['16', '32', '00'.repeat(16), '00'.repeat(32)].join()],
+  ['compact seedqr: any non-BIP39 entropy length is refused', () => {
+    try {
+      C.compactSeedQrBytes('00'.repeat(24));
+      return 'accepted';
+    } catch (error) {
+      return error.message;
+    }
+  }, 'CompactSeedQR needs 128-bit or 256-bit BIP39 entropy'],
+  ['compact seedqr: binary codes are 21x21 and 25x25', () =>
+    [16, 32].map(length => QR.QrCode.encodeBinary(
+      new Uint8Array(length), QR.QrCode.Ecc.LOW).size).join(),
+    '21,25'],
 
   /* The boundary itself, from both sides. The rule is per pass, so the same
      card is a mistake at 52 and a legitimate draw at 53 -- these pin that the
