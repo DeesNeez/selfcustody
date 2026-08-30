@@ -1301,18 +1301,21 @@ const EntropyCore = (() => {
      And it is not a reason to roll again. The dice guide is blunt about why:
      rejecting results because they look wrong replaces the die's judgement
      with yours, and yours is predictable. So every threshold below is set far
-     out in the tail -- calibrated in build/tools/entropy-test.mjs against a
-     million generated sequences, with the worst case observed still leaving
-     headroom -- so that a genuine roll effectively never trips it. When one
-     does fire, the honest reading is that the input was typed rather than
-     rolled, and the answer is to go and roll, not to edit until it passes. */
+     out in the tail -- exercised by the deterministic Monte Carlo calibration
+     in build/tools/entropy-calibrate.mjs, with the worst case observed still
+     leaving headroom -- so that a genuine roll effectively never trips it.
+     When one does fire, the honest reading is that the input was typed rather
+     than rolled, and the answer is to go and roll, not to edit until it passes. */
 
-  /* Worst case seen across a million generated sequences, against the limit:
-       dice  chi 35.7 / 55    run 11 / 15    lz 0.92 / 0.55    distinct 5 / 4
-       coin  chi 25.0 / 40    run 27 / 34    lz 1.64 / 0.55    distinct 2 / 2
-     Every limit sits well past anything real randomness produced. Fabricated
-     input is not close to these edges -- 99 identical rolls scores chi 495 and
-     a run of 99 -- so the gap costs nothing in detection. */
+  /* The current one-million-sequence seeded run is recorded in
+     build/tools/entropy-calibration.md. Representative worst cases against
+     the limit were:
+       dice  chi 35.30 / 55   run 11 / 15   lz 0.917 / 0.55  distinct 5 / 4
+       coin  chi 22.78 / 40   run 26 / 34   lz 1.641 / 0.55  distinct 2 / 2
+     No simulated sequence was refused. Fabricated input is not close to these
+     edges -- 99 identical rolls scores chi 495 and a run of 99 -- so the
+     headroom preserves the useful distinction without turning an ordinary
+     surprising result into a reason to roll again. */
   /* The bit-table method rolls the same six-sided die as the hashing one, so
      it is held to the same thresholds. The BitBox method is checked on its
      dice alone: the coin column is a separate two-sided alphabet and mixing
@@ -1373,6 +1376,25 @@ const EntropyCore = (() => {
       ordinal: CARD_ORD,
       maxAdjacent: 0.40, maxSameSuit: 0.80, maxSuitRun: 13
     }
+  };
+
+  /* A read-only copy for the calibration report. Keeping the report on these
+     exact values avoids a second set of thresholds quietly drifting away from
+     the rules the page actually applies. Functions used to select or order
+     events stay private; only the numeric decision boundaries are exposed. */
+  const entropyRule = method => {
+    const rule = RULES[method];
+    if (!rule) throw new Error(`unknown entropy method: ${method}`);
+    return Object.freeze({
+      alphabetSize: rule.alphabet.length,
+      minDistinct: rule.minDistinct,
+      maxRun: rule.maxRun,
+      maxChi: rule.maxChi,
+      minLz: rule.minLz,
+      maxAdjacent: rule.maxAdjacent ?? null,
+      maxSameSuit: rule.maxSameSuit ?? null,
+      maxSuitRun: rule.maxSuitRun ?? null
+    });
   };
 
   /* The smallest unit the whole string is built from: 6 for "123456123456",
@@ -2300,7 +2322,7 @@ const EntropyCore = (() => {
     progress, deckProgress, nextAllowed, clamp, rolledWords,
     deriveSeed, deriveAddresses, normalizeAddressCheck, matchDerivedAddress,
     prepareDerivedAddressSearch, findDerivedAddress, buildWalletExportTexts, buildWallet, limits,
-    assessEntropy, smallestPeriod, longestRun, chiSquared, chiSquaredPValue,
+    assessEntropy, entropyRule, smallestPeriod, longestRun, chiSquared, chiSquaredPValue,
     distributionReport, dieDistributionReports, lzComplexity, derivative
   };
 })();
