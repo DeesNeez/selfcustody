@@ -1532,4 +1532,17 @@ for (const r of results) {
   if (!r.ok) console.log(`        got  ${r.got}\n        want ${r.want}`);
 }
 console.log(`\n${passed}/${total} vectors pass`);
-process.exit(passed === total ? 0 : 1);
+
+if (passed !== total) process.exit(1);
+
+if (process.argv.includes('--calibrate')) {
+  const { calibrate, calibrationOptions, printCalibration } = await import('./entropy-calibrate.mjs');
+  try {
+    const options = calibrationOptions(process.argv.slice(2));
+    const report = calibrate(options);
+    printCalibration(report);
+  } catch (error) {
+    console.error(`calibration failed: ${error.message}`);
+    process.exit(1);
+  }
+}

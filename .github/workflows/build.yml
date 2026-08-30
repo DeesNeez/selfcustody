@@ -37,6 +37,12 @@ jobs:
       - name: Crypto vectors
         run: node build/tools/entropy-test.mjs
 
+      # The full deterministic run is intentionally manual: one million
+      # profiles measure a false-refusal rate rather than asserting a build
+      # invariant. This tiny run ensures its public command path stays alive.
+      - name: Entropy calibration harness
+        run: node build/tools/entropy-calibrate.mjs --samples 150
+
       - name: Bitcoin Core wallet.dat export
         run: node build/tools/wallet-dat-test.mjs
 
