@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const workflow = readFileSync('.github/workflows/build.yml', 'utf8');
+const workflow = readFileSync('.github/workflows/build.yml', 'utf8')
+  .replace(/\r\n?/g, '\n');
 const security = readFileSync('SECURITY.md', 'utf8');
 const job = workflow.match(/^  attest-offline:\n[\s\S]*$/m)?.[0] ?? '';
 
