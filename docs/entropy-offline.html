@@ -1872,7 +1872,7 @@
         <span data-dl-label>Download</span>
       </a>
     </div>
-    <small data-dl-note>~570 KB &middot; no installer</small>
+    <small data-dl-note>~580 KB &middot; no installer</small>
   </div>
     <details class="verify-details" open>
       <summary>Verify this file against the published checksum</summary>
@@ -3724,6 +3724,25 @@ const EntropyCore = (() => {
     return bits;
   };
 
+  /* The smallest without-replacement draw that reaches a BIP39 entropy
+     target. Keep this derived from cardEntropy rather than repeating 25 and
+     58 as policy constants: the progress meter and the acceptance boundary
+     must always be answering the same mathematical question. Two complete
+     shuffles are already more than any BIP39 phrase can require. */
+  const cardsNeeded = targetBits => {
+    if (!Number.isFinite(targetBits) || targetBits <= 0) {
+      throw new Error('card entropy target must be a positive number');
+    }
+    for (let drawn = 1; drawn <= 104; drawn++) {
+      if (cardEntropy(drawn) >= targetBits) return drawn;
+    }
+    throw new Error('card entropy target exceeds two shuffled decks');
+  };
+
+  const HASHED_CARD_COUNTS = Object.freeze(Object.fromEntries(
+    [12, 24].map(words => [words, cardsNeeded(words * 32 / 3)])
+  ));
+
   /* Which cards are still face-down, given what has been drawn. Resets on each
      fresh shuffle so the keypad can offer the whole deck again. */
   const cardsLeft = input => {
@@ -3888,9 +3907,9 @@ const EntropyCore = (() => {
       alias: CARD_ALIAS,
       deck: 52,
       /* 25 cards carry 132.4 bits and 58 carry 259.3; one short of either and
-         the seed would be padded with nothing. Computed from cardEntropy
-         rather than rounded off a bits-per-card average. */
-      counts: { 12: 25, 24: 58 },
+         the seed would be padded with nothing. Derived from cardEntropy above
+         rather than duplicated as rounded policy constants. */
+      counts: HASHED_CARD_COUNTS,
       extra: true,
       most: 104,
       allow: [CARD_RANKS, CARD_SUITS],
@@ -3909,7 +3928,7 @@ const EntropyCore = (() => {
       keep: /[^A2-9TJQKCDHS]/g,
       alias: CARD_ALIAS,
       deck: 52,
-      counts: { 12: 25, 24: 58 },
+      counts: HASHED_CARD_COUNTS,
       extra: true,
       most: 104,
       allow: [CARD_RANKS, CARD_SUITS],
@@ -5019,7 +5038,7 @@ const EntropyCore = (() => {
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, legacyNormalise, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
-    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity, colemanCardTranscript,
+    cardBits, cardEntropy, cardsNeeded, cardsLeft, repeatedCard, cardAliasAmbiguity, colemanCardTranscript,
     seedQrDigits, compactSeedQrBytes,
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,
