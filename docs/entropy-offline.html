@@ -43,6 +43,12 @@
     --line: #6e695e;
     --success: #35b48a;
     --danger: #d65e40;
+    /* The embedded Jost and Open Sans subsets do not contain the four card
+       suits. Name local symbol faces before the generic fallback so the
+       keypad and recorded deal remain unambiguous on Windows, macOS and
+       Linux without downloading another font. */
+    --workshop-sans: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols", "DejaVu Sans", sans-serif;
+    --workshop-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols", "DejaVu Sans Mono", "DejaVu Sans", monospace;
   }
 
   * { box-sizing: border-box; }
@@ -54,7 +60,7 @@
     background:
       radial-gradient(circle at 18% 38%, rgba(255, 138, 0, 0.035), transparent 30rem),
       #151514;
-    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--workshop-sans);
     font-size: 16px;
     line-height: 1.7;
   }
@@ -595,7 +601,7 @@
     width: 100%; padding: 12px 14px; color: var(--ink);
     background: rgba(0, 0, 0, 0.28);
     border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 10px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-family: var(--workshop-mono);
     font-size: 0.95rem; line-height: 1.6;
   }
   input[type="text"]:focus, textarea:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
@@ -672,7 +678,7 @@
   .deal b {
     padding: 2px 6px; border-radius: 5px;
     background: rgba(255, 255, 255, 0.06); color: var(--ink);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-family: var(--workshop-mono);
     font-size: 0.78rem; font-weight: 700; line-height: 1.5;
   }
   .deal b.red { color: #ff7a6b; }
@@ -812,7 +818,10 @@
      pad where the glyph carries meaning the letter does not. */
   .key[data-suit="H"], .key[data-suit="D"] { color: #ff7a6b; }
   /* The glyph is the label here, so it gets the room a face value would. */
-  .key[data-suit] { padding-left: 4px; padding-right: 4px; font-size: 1.95rem; line-height: 1; }
+  .key[data-suit] {
+    padding-left: 4px; padding-right: 4px; font-family: var(--workshop-sans);
+    font-size: 1.95rem; line-height: 1;
+  }
   /* "DIAMONDS" is three characters longer than any other name on the pad and
      was the one that did not fit: 66px of text in a 53px box, painting out
      past the key's own edge. The tracking goes and the size comes down until
@@ -2374,6 +2383,7 @@
     <p class="src-tail">The Bitcoin Core wallet.dat encoder is adapted from <a href="https://github.com/w-s-bitcoin/entropylab/pull/32" target="_blank" rel="noopener noreferrer">EntropyLab pull request #32</a>, whose generated descriptor wallets were checked against Bitcoin Core 28.3.0. Used under the MIT License.</p>
     <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
     <p class="src-tail">Visual fingerprints use <a href="https://lifehash.info/" target="_blank" rel="noopener noreferrer">LifeHash version2</a>, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/74" target="_blank" rel="noopener noreferrer">EntropyLab pull request #74</a> and the Blockchain Commons reference implementation. Used under the MIT License.</p>
+    <p class="src-tail">Local symbol-font fallbacks for card suits are adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/116" target="_blank" rel="noopener noreferrer">EntropyLab pull request #116</a>. They keep the four suit marks legible across operating systems without adding a network font.</p>
     <p class="src-tail">The optional die-distribution inspector adapts the Pearson chi-square idea from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/36" target="_blank" rel="noopener noreferrer">EntropyLab pull request #36</a>. Its disclosure, histogram, threshold and wording are original to this Workshop.</p>
     <p class="src-tail">Public-key and Taproot curve operations use Bitcoin Core&rsquo;s libsecp256k1 compiled to WebAssembly, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/103" target="_blank" rel="noopener noreferrer">EntropyLab pull request #103</a>. The pinned source, build recipe and artifact checksum ship with this site.</p>
     <p class="src-tail">The per-release beta acknowledgement adapts merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/106" target="_blank" rel="noopener noreferrer">EntropyLab pull request #106</a>. Its compact mobile warning is specific to this Workshop.</p>
