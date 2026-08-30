@@ -4146,7 +4146,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 <details>
   <summary>How this page was checked</summary>
   <div class="body">
-    <p>Every routine here is written from the published specifications rather than pulled from a library, so that the file can be read end to end. Hand-written cryptography can be subtly wrong, so on load the page runs the official test vectors and refuses to produce anything if they do not pass:</p>
+    <p>The conversion, hashing, encoding and wallet-format code follows the published specifications. Public-key and Taproot curve operations use Bitcoin Core&rsquo;s libsecp256k1 compiled to WebAssembly. The surrounding code and its library bridge can still be subtly wrong, so on load the page runs published test vectors and refuses to produce anything if they do not pass:</p>
     <ul class="vectors" id="vectors"></ul>
     <p>The values come from FIPS 180-4, RFC 4231, BIP380, and the test vectors published in BIP32, BIP39, BIP84 and BIP86. None was produced by running this code.</p>
   </div>

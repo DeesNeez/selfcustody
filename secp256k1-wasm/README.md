@@ -9,4 +9,3 @@ the exact crate version and transitive build dependencies are locked in
 The integration is adapted from merged EntropyLab pull request #103. The Rust
 wrapper is Unlicensed; libsecp256k1 and secp256k1-sys retain their upstream
 licenses in the downloaded crate source used at build time.
-

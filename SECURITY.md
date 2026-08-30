@@ -132,8 +132,9 @@ do not stop at the hash:
 - Compare it against a copy fetched over a different network, on a different
   device, or from the repository's commit history rather than the live site.
 - Read the file. It is one HTML document with no minification and no
-  dependencies, specifically so that reading it is possible.
-- Derive a phrase you already control and check that the tool reproduces it.
+  runtime-loaded dependencies, specifically so that reading it is possible.
+- Use a published or otherwise disposable test sequence and compare its
+  expected phrase.
 
 If this project later publishes signed release tags or a signed manifest, that
 will be the stronger check, and this section will say so. Until it does, treat
@@ -143,9 +144,10 @@ the published hash as an integrity check and nothing more.
 
 **This tool is experimental and is meant for testing.** Do not rely on it to
 secure real bitcoin, and never test with funds you cannot afford to lose. Its
-cryptography is written from the specifications rather than taken from an
-audited library, which is what makes it readable end to end and also what makes
-it something to check rather than trust.
+conversion and wallet-format glue follows the published specifications, while
+curve operations use Bitcoin Core's libsecp256k1 compiled to WebAssembly. That
+improves the curve implementation, but the surrounding code and browser bridge
+still need independent verification rather than trust.
 
 Use it the way it is meant to be used: a test sequence rather than the rolls
 behind a wallet you use, a wallet holding nothing that you wipe afterwards, and
