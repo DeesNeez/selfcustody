@@ -1,0 +1,245 @@
+name: Publish WASM builder
+
+# Deliberately separate from the verification workflow. Routine PR runs must
+# never carry a token that can write packages; this is the only place that
+# permission exists, and it is never triggered automatically.
+#
+# workflow_dispatch only delivers events for workflows present on the default
+# branch, so this file has to reach main on its own before it can publish
+# anything. That is why it takes the source commit as an input rather than
+# building whatever it happens to be checked out at: it lives on main, but the
+# builder it publishes lives on a feature branch.
+#
+# The two jobs exist for one reason. A job's token is minted before the job
+# starts and actions can reach github.token whether or not it is passed to
+# them, so any repository code executed in a job holding packages:write runs
+# alongside that privilege. Everything from this repository therefore runs in
+# validate, which cannot write; publish holds the write permissions and
+# executes no repository code at all -- it never checks the repository out.
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: 'Full 40-character commit SHA of the builder source to publish'
+        required: true
+        type: string
+      reason:
+        description: 'Why this builder is being published (recorded in the run)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate · builder from the named source commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    outputs:
+      source_sha: ${{ steps.resolve.outputs.source_sha }}
+      image_sha256: ${{ steps.save.outputs.image_sha256 }}
+    steps:
+      # Via env, never interpolated into a script.
+      - name: Check the requested source commit is a full SHA
+        id: resolve
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          REASON: ${{ inputs.reason }}
+        run: |
+          if ! printf '%s' "$SOURCE_SHA" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "::error::source_sha must be a full 40-character lowercase commit SHA"
+            exit 1
+          fi
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "publishing builder from $SOURCE_SHA"
+          echo "reason: $REASON"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ steps.resolve.outputs.source_sha }}
+          persist-credentials: false
+
+      - name: Confirm the checkout is that exact commit
+        env:
+          SOURCE_SHA: ${{ steps.resolve.outputs.source_sha }}
+        run: |
+          head=$(git rev-parse HEAD)
+          if [ "$head" != "$SOURCE_SHA" ]; then
+            echo "::error::checked out $head, expected $SOURCE_SHA"; exit 1
+          fi
+          echo "building the builder as of $head"
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
+
+      - name: Builder scripts parse
+        run: |
+          node --check build/tools/wasm-compile.mjs
+          node --check build/tools/wasm-wrap.mjs
+          node --check build/tools/build-wasm-container.mjs
+          bash -n build/tools/snapshot-probe.sh
+          bash -n secp256k1-wasm/builder/fetch-inputs.sh
+          echo "all builder scripts parse"
+
+      - name: Fetch and verify the pinned builder inputs
+        run: bash secp256k1-wasm/builder/fetch-inputs.sh
+
+      - name: Build the candidate builder image
+        run: |
+          docker build --platform linux/amd64 --tag builder:candidate \
+            --file secp256k1-wasm/builder/Dockerfile \
+            secp256k1-wasm
+
+      # Asked-for is not the same as got. A digest can name a multi-platform
+      # index, so the platform is asserted rather than assumed.
+      - name: Confirm the image is linux/amd64
+        run: |
+          got=$(docker inspect --format '{{.Os}}/{{.Architecture}}' builder:candidate)
+          if [ "$got" != "linux/amd64" ]; then
+            echo "::error::builder image is $got, expected linux/amd64"; exit 1
+          fi
+          echo "builder platform: $got"
+
+      - name: Builder provenance
+        run: docker run --platform linux/amd64 --rm builder:candidate cat /etc/wasm-builder-provenance
+
+      # Nothing is published that has not proved itself by the same checks
+      # verification applies: compilation deterministic, packaging
+      # deterministic, and the engine it produces actually working.
+      - name: Compile twice from clean and compare the raw wasm
+        run: |
+          for pass in first second; do
+            rm -rf secp256k1-wasm/target
+            docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+              -v "$PWD:/workspace" -w /workspace builder:candidate \
+              node build/tools/wasm-compile.mjs --offline
+            sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
+              | awk '{print $1}' > "$RUNNER_TEMP/raw-$pass.sha"
+          done
+          a=$(cat "$RUNNER_TEMP/raw-first.sha"); b=$(cat "$RUNNER_TEMP/raw-second.sha")
+          if [ "$a" != "$b" ]; then
+            echo "::error::compilation is nondeterministic: $a vs $b"; exit 1
+          fi
+          echo "raw wasm stable: $a"
+
+      - name: Wrap twice and compare
+        run: |
+          for pass in first second; do
+            docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+              -v "$PWD:/workspace" -w /workspace builder:candidate \
+              node build/tools/wasm-wrap.mjs
+            cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/wrap-$pass.js"
+          done
+          if ! cmp -s "$RUNNER_TEMP/wrap-first.js" "$RUNNER_TEMP/wrap-second.js"; then
+            echo "::error::packaging is nondeterministic"; exit 1
+          fi
+          echo "wrapper stable: $(sha256sum build/tools/secp256k1-wasm-b64.js | awk '{print $1}')"
+
+      - name: Test the freshly built engine
+        run: node build/tools/secp256k1-wasm-test.mjs
+
+      # Handed to publish as bytes with a recorded hash, so the privileged job
+      # can push exactly what was proved here without rebuilding it.
+      - name: Save the proven image
+        id: save
+        run: |
+          docker save builder:candidate -o "$RUNNER_TEMP/builder.tar"
+          sha256=$(sha256sum "$RUNNER_TEMP/builder.tar" | awk '{print $1}')
+          echo "image_sha256=$sha256" >> "$GITHUB_OUTPUT"
+          echo "image tar sha256: $sha256"
+          ls -lh "$RUNNER_TEMP/builder.tar"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: wasm-builder-image
+          path: ${{ runner.temp }}/builder.tar
+          retention-days: 1
+          if-no-files-found: error
+
+  publish:
+    name: Publish · proven builder to GHCR
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Add required reviewers to this environment in repository settings to make
+    # publishing approval-gated.
+    environment: builder-publish
+    permissions:
+      contents: read
+      packages: write      # push the image to GHCR
+      id-token: write      # provenance attestation
+      attestations: write  # provenance attestation
+    steps:
+      # No checkout. This job holds the write token, so it runs no repository
+      # code -- only pinned actions and the shell below.
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: wasm-builder-image
+          path: image
+
+      - name: Verify the image is the one validate proved
+        env:
+          EXPECTED: ${{ needs.validate.outputs.image_sha256 }}
+        run: |
+          echo "$EXPECTED  image/builder.tar" | sha256sum -c -
+          docker load -i image/builder.tar
+          got=$(docker inspect --format '{{.Os}}/{{.Architecture}}' builder:candidate)
+          if [ "$got" != "linux/amd64" ]; then
+            echo "::error::loaded image is $got, expected linux/amd64"; exit 1
+          fi
+          echo "loaded builder platform: $got"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tagged by the *source* commit, not github.sha: this workflow runs from
+      # the default branch, so github.sha names this file's revision rather
+      # than the builder being published. The digest is what everything else
+      # references -- a tag can be moved, a digest cannot, and reproducibility
+      # resting on a mutable pointer is not reproducibility.
+      - name: Push and capture the immutable digest
+        id: push
+        env:
+          SOURCE_SHA: ${{ needs.validate.outputs.source_sha }}
+        run: |
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          image="ghcr.io/$owner/selfcustody-wasm-builder"
+          docker tag builder:candidate "$image:$SOURCE_SHA"
+          docker push "$image:$SOURCE_SHA"
+          digest=$(docker inspect --format='{{index .RepoDigests 0}}' "$image:$SOURCE_SHA" | cut -d@ -f2)
+          case "$digest" in
+            sha256:*) ;;
+            *) echo "::error::could not read a digest back from the push"; exit 1 ;;
+          esac
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Builder published"
+            echo
+            echo "Built from source commit \`$SOURCE_SHA\`."
+            echo
+            echo '```'
+            echo "$image@$digest"
+            echo '```'
+            echo
+            echo "Next: pin that digest in .github/workflows/build.yml, then make"
+            echo "the package public and confirm it pulls anonymously. GHCR"
+            echo "packages default to private, and a private builder gates"
+            echo "third-party verification on repository access."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Attest the builder image
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ steps.push.outputs.image }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
