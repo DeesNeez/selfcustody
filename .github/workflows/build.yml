@@ -128,6 +128,12 @@ jobs:
         run: |
           rm -rf secp256k1-wasm/target
           npm run build:wasm:container
+          # Kept beside pass one's copy until both comparisons agree, so a
+          # mismatch uploads both byte sequences rather than one file and the
+          # other's hash. Removed on success, leaving a green run to upload
+          # only the canonical filename.
+          cp build/tools/secp256k1-wasm-b64.js \
+            "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.pass-two.js"
           sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
             | awk '{print $1}' > "$RUNNER_TEMP/raw-second.sha"
           a=$(cat "$RUNNER_TEMP/raw-first.sha"); b=$(cat "$RUNNER_TEMP/raw-second.sha")
@@ -142,6 +148,7 @@ jobs:
             exit 1
           fi
           echo "wrapper stable:  $(sha256sum build/tools/secp256k1-wasm-b64.js | awk '{print $1}')"
+          rm -f "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.pass-two.js"
 
       - name: Test the freshly built engine
         run: node build/tools/secp256k1-wasm-test.mjs
@@ -154,14 +161,16 @@ jobs:
       # freshly built -- the exact bytes under suspicion, wearing the name of
       # their replacement.
       #
-      # Uploading the pass-one copy also keeps that evidence when pass two or
-      # the comparison is what failed.
+      # The directory, not one file: on success it holds only the canonical
+      # secp256k1-wasm-b64.js, and on a determinism failure it also holds
+      # pass two's, so the two byte sequences can be diffed directly instead
+      # of being described by their hashes.
       - name: Upload the built artifact
         if: always() && steps.pass_one.outcome == 'success'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: secp256k1-wasm-b64-${{ github.sha }}
-          path: ${{ runner.temp }}/candidate/secp256k1-wasm-b64.js
+          path: ${{ runner.temp }}/candidate/
           if-no-files-found: error
 
       # The provenance gate, last. Functional equivalence does not establish
