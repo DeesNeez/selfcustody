@@ -85,6 +85,20 @@ jobs:
         with:
           node-version: '22'
 
+      # First, and cheap. A backslash eaten while writing wasm-compile.mjs
+      # produced replaceAll('\', '/') -- an unterminated string that survived
+      # to CI and cost a full image build to discover. node --check exits
+      # non-zero on exactly that, so the failure class is now a fast, clearly
+      # named check rather than a puzzle ten minutes into a build.
+      - name: Builder scripts parse
+        run: |
+          node --check build/tools/wasm-compile.mjs
+          node --check build/tools/wasm-wrap.mjs
+          node --check build/tools/build-wasm-container.mjs
+          bash -n build/tools/snapshot-probe.sh
+          bash -n secp256k1-wasm/builder/fetch-inputs.sh
+          echo "all builder scripts parse"
+
       # Every input that cannot come from signed apt metadata is verified
       # against a recorded SHA-256 before it may enter the build context: the
       # two trust-bootstrap .debs, the Rust toolchain and Node.

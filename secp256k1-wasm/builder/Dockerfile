@@ -26,6 +26,14 @@ RUN dpkg -i /tmp/bootstrap/openssl.deb /tmp/bootstrap/ca-certificates.deb \
 # --- C toolchain from one immutable snapshot ---------------------------------
 # xz-utils comes along because the base image ships no xz binary at all, so
 # tar cannot unpack the Rust and Node .tar.xz inputs in the next stage.
+#
+# gcc-13 is here as the *host* linker. secp256k1-sys has a build script, which
+# cargo compiles and links for the host before it can emit any wasm at all, and
+# a minimal image has no cc. It cannot influence the artifact: the build script
+# only decides how clang is invoked for wasm32, and clang emits every byte that
+# ends up in the module. Pinned anyway, since everything else here is.
+# gcc-13 rather than the gcc metapackage, which exists only in noble while its
+# components are in noble-updates -- pinning the component avoids that skew.
 ARG SNAPSHOT=https://snapshot.ubuntu.com/ubuntu/20260824T000000Z
 RUN rm -f /etc/apt/sources.list.d/ubuntu.sources \
  && for pocket in noble noble-updates noble-security; do \
@@ -45,6 +53,9 @@ RUN rm -f /etc/apt/sources.list.d/ubuntu.sources \
       binutils-x86-64-linux-gnu=2.42-4ubuntu2.10 \
       xz-utils=5.6.1+really5.4.5-1ubuntu0.3 \
       liblzma5=5.6.1+really5.4.5-1ubuntu0.3 \
+      gcc-13=13.3.0-6ubuntu2~24.04.1 \
+      libgcc-13-dev=13.3.0-6ubuntu2~24.04.1 \
+ && ln -s /usr/bin/gcc-13 /usr/bin/cc \
  && rm -rf /var/lib/apt/lists/*
 
 # --- Rust 1.95.0 and the wasm32 std, installed offline -----------------------
