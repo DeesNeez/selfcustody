@@ -76,20 +76,29 @@ jobs:
           fi
 
   build-wasm:
-    name: Build · libsecp256k1 WASM in the pinned builder
+    name: Build · libsecp256k1 WASM in the published builder
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 30
+    env:
+      # The published, attested builder, by immutable digest. A tag can be
+      # repointed; a digest cannot, and reproducibility resting on a mutable
+      # pointer is not reproducibility. Anyone can reconstruct this image from
+      # secp256k1-wasm/builder/ and compare -- that path is exercised by the
+      # publish workflow, so it does not also need to run on every PR.
+      WASM_BUILDER_IMAGE: ghcr.io/deesneez/selfcustody-wasm-builder@sha256:1418e85a9c5fb5759fd5b4bdc42f3485cbc8dedf3c78e259fa6fe815a806f9ae
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '22'
+          # Exactly the Node the builder image carries. It does not generate
+          # the artifact -- the image's own Node writes the wrapper -- but it
+          # runs the parse gate and the engine vectors below.
+          node-version: '22.23.2'
 
       # First, and cheap. A backslash eaten while writing wasm-compile.mjs
-      # produced replaceAll('\', '/') -- an unterminated string that survived
-      # to CI and cost a full image build to discover. node --check exits
-      # non-zero on exactly that, so the failure class is now a fast, clearly
-      # named check rather than a puzzle ten minutes into a build.
+      # produced replaceAll('\', '/') -- an unterminated string that reached CI
+      # intact and cost a full image build to discover. node --check exits
+      # non-zero on exactly that.
       - name: Builder scripts parse
         run: |
           node --check build/tools/wasm-compile.mjs
@@ -99,139 +108,61 @@ jobs:
           bash -n secp256k1-wasm/builder/fetch-inputs.sh
           echo "all builder scripts parse"
 
-      # Every input that cannot come from signed apt metadata is verified
-      # against a recorded SHA-256 before it may enter the build context: the
-      # two trust-bootstrap .debs, the Rust toolchain and Node.
-      - name: Fetch and verify the pinned builder inputs
-        run: bash secp256k1-wasm/builder/fetch-inputs.sh
-
-      # Context is the crate directory: the Dockerfile needs Cargo.toml and
-      # Cargo.lock, which sit above builder/ where COPY cannot reach them.
-      - name: Build the pinned builder image
+      # Both passes go through the public entry point rather than a separate
+      # CI-only invocation, so what is verified here and what a reader runs
+      # locally cannot drift apart. build:wasm:container pulls the digest,
+      # asserts the image is linux/amd64, compiles --offline and wraps.
+      - name: Build the artifact, pass one
         run: |
-          docker build --platform linux/amd64 --tag wasm-builder:ci \
-            --file secp256k1-wasm/builder/Dockerfile \
-            secp256k1-wasm
-
-      # Asked-for is not the same as got. A digest can name a multi-platform
-      # index, so the platform is asserted rather than assumed.
-      - name: Confirm the image is linux/amd64
-        run: |
-          got=$(docker inspect --format '{{.Os}}/{{.Architecture}}' wasm-builder:ci)
-          if [ "$got" != "linux/amd64" ]; then
-            echo "::error::builder image is $got, expected linux/amd64"; exit 1
-          fi
-          echo "builder platform: $got"
-
-      - name: Builder provenance
-        run: docker run --platform linux/amd64 --rm wasm-builder:ci cat /etc/wasm-builder-provenance
-
-      # --offline: the image already carries every crate the lockfile names, so
-      # a build that reached the network would not be reproducing anything.
-      - name: Compile
-        run: |
-          docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
-            -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
-            node build/tools/wasm-compile.mjs --offline
+          npm run build:wasm:container
+          cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/wrap-first.js"
           sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
-            | tee "$RUNNER_TEMP/wasm-first.sha"
+            | awk '{print $1}' > "$RUNNER_TEMP/raw-first.sha"
+          cat "$RUNNER_TEMP/raw-first.sha"
 
       # Compilation and packaging are compared separately so a failure names
       # which half moved instead of leaving it to be guessed.
-      - name: Compile again from clean and compare the raw wasm
+      - name: Build again from clean, compare raw wasm and wrapper
         run: |
           rm -rf secp256k1-wasm/target
-          docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
-            -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
-            node build/tools/wasm-compile.mjs --offline
+          npm run build:wasm:container
           sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
-            | tee "$RUNNER_TEMP/wasm-second.sha"
-          a=$(awk '{print $1}' "$RUNNER_TEMP/wasm-first.sha")
-          b=$(awk '{print $1}' "$RUNNER_TEMP/wasm-second.sha")
-          if [ "$a" = "$b" ]; then
-            echo "STABLE: compilation is deterministic in the pinned builder ($a)"
-          else
-            echo "::error::compilation is nondeterministic in one fixed environment: $a vs $b"
+            | awk '{print $1}' > "$RUNNER_TEMP/raw-second.sha"
+          a=$(cat "$RUNNER_TEMP/raw-first.sha"); b=$(cat "$RUNNER_TEMP/raw-second.sha")
+          if [ "$a" != "$b" ]; then
+            echo "::error::compilation is nondeterministic in the published builder: $a vs $b"
             exit 1
           fi
-
-      # Wrapped twice as well, from the same raw wasm. Proving compilation
-      # deterministic while exercising the packaging step once would leave the
-      # half that actually writes the shipped file unverified.
-      - name: Wrap
-        id: wrap
-        run: |
-          docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
-            -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
-            node build/tools/wasm-wrap.mjs
-          cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/wrap-first.js"
-          docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
-            -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
-            node build/tools/wasm-wrap.mjs
-          if cmp -s "$RUNNER_TEMP/wrap-first.js" build/tools/secp256k1-wasm-b64.js; then
-            echo "STABLE: packaging is deterministic"
-            sha256sum build/tools/secp256k1-wasm-b64.js
-          else
-            echo "::error::two wraps of one raw wasm disagree -- packaging is nondeterministic"
+          echo "raw wasm stable: $a"
+          if ! cmp -s "$RUNNER_TEMP/wrap-first.js" build/tools/secp256k1-wasm-b64.js; then
+            echo "::error::packaging is nondeterministic in the published builder"
             sha256sum "$RUNNER_TEMP/wrap-first.js" build/tools/secp256k1-wasm-b64.js
             exit 1
           fi
+          echo "wrapper stable:  $(sha256sum build/tools/secp256k1-wasm-b64.js | awk '{print $1}')"
 
       - name: Test the freshly built engine
         run: node build/tools/secp256k1-wasm-test.mjs
 
-      # Uploaded before the gate and unconditionally: on a mismatch these are
-      # exactly the bytes under consideration, and a red gate must not discard
-      # its own candidate. Explicitly labelled a candidate -- it becomes
-      # canonical only by passing the vectors and the determinism check above.
-      # Conditioned on the wrap actually having run. With a bare always() this
-      # uploaded the committed file untouched when an earlier step failed,
-      # labelling the very bytes under suspicion a "candidate".
-      - name: Upload the candidate artifact
-        if: always() && steps.wrap.outcome == 'success'
+      # Uploaded unconditionally once a build has happened: on a mismatch these
+      # are the bytes under consideration, and a red gate must not discard its
+      # own evidence.
+      - name: Upload the built artifact
+        if: always() && hashFiles('build/tools/secp256k1-wasm-b64.js') != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: secp256k1-wasm-b64-candidate-${{ github.sha }}
+          name: secp256k1-wasm-b64-${{ github.sha }}
           path: build/tools/secp256k1-wasm-b64.js
           if-no-files-found: error
 
-      # The provenance gate, last and unchanged. Functional equivalence does
-      # not establish provenance, so passing vectors above does not substitute
-      # for this: the shipped wrapper must be what the pinned builder makes.
-      - name: Wrapper matches the committed artifact
+      # The provenance gate, last. Functional equivalence does not establish
+      # provenance: passing the vectors above says the engine works, not that
+      # the committed bytes are the ones this builder produces.
+      - name: Committed artifact matches the published builder's output
         run: |
           if ! git diff --quiet -- build/tools/secp256k1-wasm-b64.js; then
-            echo "::error::the committed libsecp256k1 WebAssembly is not what the pinned builder produces -- download the candidate artifact from this run and commit it"
+            echo "::error::the committed libsecp256k1 WebAssembly is not what the published builder produces -- download the artifact from this run and commit it"
             git diff --stat -- build/tools/secp256k1-wasm-b64.js
             exit 1
           fi
-
-  # TEMPORARY. Establishes the builder's input set before any Dockerfile
-  # exists. Delete once the pinned builder image is published and referenced
-  # by digest. The script it runs is build/tools/snapshot-probe.sh.
-  snapshot-probe:
-    name: Probe · pinned Ubuntu snapshot for the WASM builder
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      # No mounts, so the answer is the base image's own. Expected to stop at
-      # apt-get update if the image ships no CA bundle -- which is itself the
-      # finding: the Dockerfile would then need a pinned ca-certificates
-      # bootstrap before it can reach an HTTPS archive.
-      - name: Base image CA state, unassisted
-        run: |
-          docker run --platform linux/amd64 --rm \
-            -v "$PWD/build/tools/snapshot-probe.sh:/probe.sh:ro" \
-            ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 \
-            bash /probe.sh \
-          || echo "(stopped without CA trust -- Dockerfile needs a pinned ca-certificates bootstrap)"
-
-      - name: Snapshot resolves the measured toolchain in a clean container
-        run: |
-          docker run --platform linux/amd64 --rm \
-            -v "$PWD/build/tools/snapshot-probe.sh:/probe.sh:ro" \
-            -v /etc/ssl/certs:/etc/ssl/certs:ro \
-            ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 \
-            bash /probe.sh
+          echo "committed artifact matches the published builder"
