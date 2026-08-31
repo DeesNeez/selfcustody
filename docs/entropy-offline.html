@@ -1010,6 +1010,11 @@
     width: 100%; padding: 15px 20px; white-space: nowrap;
     color: #fff; text-decoration: none; text-shadow: none;
     font-size: 0.95rem; font-weight: 800; text-align: center;
+    /* font-family and cursor are inherited by an <a> but not by a <button>.
+       Stating them here lets the acknowledgement button wear this same skin
+       instead of a near-copy of it -- see .beta-disclaimer-actions. Both are
+       no-ops for the download link. */
+    font-family: inherit; cursor: pointer;
     border: 1px solid transparent;
     border-radius: 10px;
     background:
@@ -1046,6 +1051,13 @@
     outline: 2px solid #fff; outline-offset: 3px;
   }
   .dl-icon { flex: 0 0 auto; display: block; }
+  /* On the skin itself rather than on either button, so the lift and the
+     sweep cannot survive in one place after being removed from the other. */
+  @media (prefers-reduced-motion: reduce) {
+    .dl { transition: none; }
+    .dl:hover { transform: none; }
+    .dl::after { display: none; }
+  }
   .download-action small { color: var(--muted); font-size: 0.75rem; }
 
   @media (max-width: 620px) {
@@ -1495,32 +1507,39 @@
   .beta-disclaimer[hidden] { display: none; }
   .beta-disclaimer.is-visible { opacity: 1; }
   .beta-disclaimer.is-dismissed { opacity: 0; pointer-events: none; }
+  /* Padding is even on all four sides now that the icon leads the card on its
+     own line rather than sitting in an 86px left gutter, and the ::before bar
+     that used to sit along the top edge is gone: a 3px orange rule above a 1px
+     orange border read as one heavier side rather than as a deliberate accent. */
   .beta-disclaimer-card {
-    position: relative; width: min(100%, 590px); padding: 30px 30px 28px 86px;
+    position: relative; width: min(100%, 590px); padding: 30px 34px 28px;
     border: 1px solid rgba(255, 138, 0, .48); border-radius: 18px;
     color: var(--ink-soft); background: linear-gradient(145deg, #28231e, #171719 72%);
     box-shadow: 0 30px 90px rgba(0, 0, 0, .62), inset 0 1px 0 rgba(255, 255, 255, .06);
   }
-  .beta-disclaimer-card::before {
-    content: ""; position: absolute; top: 0; right: 28px; left: 28px; height: 3px;
-    border-radius: 0 0 3px 3px; background: var(--orange);
-  }
-  .beta-disclaimer-card .security-icon { left: 28px; top: 30px; width: 38px; height: 38px; }
-  .beta-disclaimer-card h2 { margin: 0 0 14px; color: #fff; font-size: 1.65rem; }
-  .beta-disclaimer-card p { margin: 0 0 13px; line-height: 1.65; }
+  .beta-disclaimer-icon { display: flex; justify-content: center; margin-bottom: 14px; }
+  /* The shared .security-icon is absolutely positioned for the in-page brief,
+     which is not what a centred row wants. */
+  .beta-disclaimer-card .security-icon { position: static; width: 38px; height: 38px; }
+  .beta-disclaimer-card h2 { margin: 0 0 22px; color: #fff; font-size: 1.65rem; text-align: center; }
+  /* Heading centred, the warnings themselves left-aligned: centred prose is
+     harder to track back to the start of each line, and these two paragraphs
+     are the part that has to be read rather than glanced at. */
+  .beta-disclaimer-body { display: grid; gap: 18px; text-align: left; }
+  .beta-disclaimer-card p { margin: 0; line-height: 1.65; }
   .beta-disclaimer-card p strong { color: #ffad4c; }
+  .beta-disclaimer-divider { height: 1px; background: rgba(255, 244, 233, .13); }
+  /* Keeps its red, loses its box. With a divider now separating the two
+     warnings, the outlined panel made the card two frames deep. */
   .beta-disclaimer-card .critical-copy {
-    margin-top: 16px; padding: 13px 15px; border: 1px solid rgba(255, 48, 72, .3);
-    border-radius: 10px; background: rgba(5, 5, 6, .38);
+    margin: 0; padding: 0; border: 0; border-radius: 0; background: none;
   }
   .beta-disclaimer-card .critical-copy strong { color: #ff4d5d; }
-  .beta-disclaimer-accept {
-    min-height: 44px; margin-top: 8px; padding: 11px 21px; border: 0; border-radius: 9px;
-    color: #211300; background: var(--orange); font: 800 .94rem/1 "Jost", sans-serif;
-    cursor: pointer; box-shadow: 0 8px 24px rgba(255, 138, 0, .18);
-  }
-  .beta-disclaimer-accept:hover { background: #ffad4c; }
-  .beta-disclaimer-accept:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  /* Wears .dl-frame and .dl -- the download action's own skin, not a copy of
+     it -- so the two buttons cannot drift as the site changes. Only the width
+     is set here; everything visible comes from the shared rules above. */
+  .beta-disclaimer-actions { display: flex; justify-content: center; margin-top: 26px; }
+  .beta-disclaimer-actions .dl-frame { width: min(100%, 236px); }
   @media (prefers-reduced-motion: reduce) {
     .beta-disclaimer { transition: none; }
   }
@@ -1658,9 +1677,11 @@
     .security-brief { margin-top: -16px; padding: 58px 18px 18px; }
     .security-brief .security-icon { left: 18px; top: 16px; }
     .beta-disclaimer { padding: 14px; }
-    .beta-disclaimer-card { padding: 66px 20px 22px; border-radius: 15px; }
-    .beta-disclaimer-card .security-icon { left: 20px; top: 20px; width: 34px; height: 34px; }
-    .beta-disclaimer-card h2 { font-size: 1.42rem; }
+    .beta-disclaimer-card { padding: 24px 20px 22px; border-radius: 15px; }
+    .beta-disclaimer-card .security-icon { width: 34px; height: 34px; }
+    .beta-disclaimer-card h2 { margin-bottom: 18px; font-size: 1.42rem; }
+    .beta-disclaimer-body { gap: 15px; }
+    .beta-disclaimer-actions { margin-top: 22px; }
     .download { margin-bottom: 34px; padding: 19px 18px; }
     .step-map { display: none; }
     .workbench { padding: 12px 14px 20px; border-radius: 18px; }
@@ -1805,11 +1826,18 @@
 
 <div class="beta-disclaimer" id="beta-disclaimer" role="alertdialog" aria-modal="true" aria-labelledby="beta-disclaimer-title" aria-describedby="beta-disclaimer-copy beta-disclaimer-critical" hidden>
   <div class="beta-disclaimer-card">
-    <svg class="security-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233C-.292 14.01.256 15 1.145 15h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+    <div class="beta-disclaimer-icon"><svg class="security-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233C-.292 14.01.256 15 1.145 15h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg></div>
     <h2 id="beta-disclaimer-title">Before you use the Workshop</h2>
-    <p id="beta-disclaimer-copy"><strong>Beta software.</strong> This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.</p>
-    <p class="critical-copy" id="beta-disclaimer-critical"><strong>Never enter an existing recovery phrase into any page</strong> &mdash; including this one, which is why there is nowhere here to do it.</p>
-    <button class="beta-disclaimer-accept" id="beta-disclaimer-accept" type="button">I understand</button>
+    <div class="beta-disclaimer-body">
+      <p id="beta-disclaimer-copy"><strong>Beta software.</strong> This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.</p>
+      <div class="beta-disclaimer-divider" aria-hidden="true"></div>
+      <p class="critical-copy" id="beta-disclaimer-critical"><strong>Never enter an existing recovery phrase into any page</strong> &mdash; including this one, which is why there is nowhere here to do it.</p>
+    </div>
+    <div class="beta-disclaimer-actions">
+      <div class="dl-frame">
+        <button class="dl beta-disclaimer-accept" id="beta-disclaimer-accept" type="button"><span>I understand</span></button>
+      </div>
+    </div>
   </div>
 </div>
 
