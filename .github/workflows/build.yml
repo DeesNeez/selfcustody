@@ -91,14 +91,26 @@ jobs:
       # clang -- and nothing pins that. Record what actually built the artifact
       # so the hypothesis becomes a measurement.
       - name: Toolchain provenance
+        # rust-toolchain.toml lives in the crate, not the repo root, so a probe
+        # run from the root reports the runner default rather than the pinned
+        # toolchain that actually compiles this artifact.
+        working-directory: secp256k1-wasm
         run: |
-          echo "runner:   ${ImageOS:-unknown} ${ImageVersion:-unknown}"
-          echo "rustc:    $(rustc --version 2>&1 || true)"
-          echo "cargo:    $(cargo --version 2>&1 || true)"
-          echo "clang:    $(clang --version 2>&1 | head -1 || true)"
-          echo "clang at: $(command -v clang || echo 'not on PATH')"
-          echo "llvm-ar:  $(command -v llvm-ar || echo 'not on PATH')"
-          echo "cc env:   CC=${CC:-unset} AR=${AR:-unset}"
+          echo "runner:      ${ImageOS:-unknown} ${ImageVersion:-unknown}"
+          echo "-- rust, resolved where rust-toolchain.toml applies"
+          echo "rustc:       $(rustc --version 2>&1 || true)"
+          echo "cargo:       $(cargo --version 2>&1 || true)"
+          echo "-- the C toolchain the cc crate actually invokes"
+          echo "clang:       $(clang --version 2>&1 | head -1 || true)"
+          echo "clang at:    $(command -v clang || echo 'not on PATH')"
+          echo "ar:          $(ar --version 2>&1 | head -1 || true)"
+          echo "ar at:       $(command -v ar || echo 'not on PATH')"
+          echo "llvm-ar:     $(command -v llvm-ar || echo 'not on PATH')"
+          echo "cc env:      CC=${CC:-unset} AR=${AR:-unset}"
+          echo "-- owning packages and exact versions, for pinning the builder"
+          echo "ar from:     $(dpkg -S "$(readlink -f "$(command -v ar)")" 2>&1 | head -1 || true)"
+          echo "clang from:  $(dpkg -S "$(readlink -f "$(command -v clang)")" 2>&1 | head -1 || true)"
+          dpkg-query -W -f='pkg:         ${Package}=${Version}\n' binutils binutils-common libbinutils clang-18 libclang-common-18-dev llvm-18 2>&1 || true
 
       - name: Rebuild the WebAssembly artifact
         run: npm run build:wasm
@@ -145,3 +157,15 @@ jobs:
             git diff --stat -- build/tools/secp256k1-wasm-b64.js
             exit 1
           fi
+
+      # The candidate bytes must be retrievable even when the gate rejects
+      # them -- that is the whole point of a comparison failure: we need the
+      # thing that was built in order to decide whether it should become
+      # canonical.
+      - name: Upload the rebuilt artifact
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: secp256k1-wasm-b64-${{ github.run_id }}
+          path: build/tools/secp256k1-wasm-b64.js
+          if-no-files-found: error
