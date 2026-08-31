@@ -156,8 +156,15 @@ export function assertWorkshop() {
       !/const Gx\s*=|const Gy\s*=|const inv\s*=|const modPow\s*=/.test(html),
       `the ${name} build still contains a hand-written secp256k1 curve path`);
     check(/id="beta-disclaimer"[^>]*role="alertdialog"[^>]*aria-modal="true"[^>]*hidden/.test(html) &&
-      /id="beta-disclaimer-accept"[^>]*>I understand<\/button>/.test(html),
+      /id="beta-disclaimer-accept"[^>]*><span>I understand<\/span><\/button>/.test(html),
       `the ${name} build does not ship a hidden, accessible beta acknowledgement`);
+    // The label is wrapped so `.dl > *` can lift it above the shine sweep; an
+    // unwrapped text node would sit under it. The acknowledgement wears the
+    // download action's own classes rather than a copy of its rules, which is
+    // the only thing keeping the two buttons from drifting apart.
+    check(/<div class="dl-frame">\s*<button class="dl beta-disclaimer-accept"/.test(html) &&
+      !/\.beta-disclaimer-accept\s*\{/.test(html),
+      `the ${name} build does not give the acknowledgement the shared download-action skin`);
     check(/selfcustody-entropy-beta-accepted/.test(script) &&
       /localStorage\.getItem\(STORAGE_KEY\)\s*===\s*version/.test(script) &&
       /localStorage\.setItem\(STORAGE_KEY, version\)/.test(script) &&
