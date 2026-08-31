@@ -43,6 +43,9 @@ jobs:
       - name: Browser startup preflight
         run: node build/tools/browser-preflight-test.mjs
 
+      - name: Committed libsecp256k1 WebAssembly
+        run: node build/tools/secp256k1-wasm-test.mjs
+
       # Also runs, in order: the icon-subset check, the fetch guard, the glyph
       # guard and the Workshop guard. Any of them failing exits non-zero.
       - name: Build and guards
@@ -71,3 +74,113 @@ jobs:
             git status --porcelain
             exit 1
           fi
+
+  build-wasm:
+    name: Build · libsecp256k1 WASM in the published builder
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # The published, attested builder, by immutable digest. A tag can be
+      # repointed; a digest cannot, and reproducibility resting on a mutable
+      # pointer is not reproducibility. Anyone can reconstruct this image from
+      # secp256k1-wasm/builder/ and compare -- that path is exercised by the
+      # publish workflow, so it does not also need to run on every PR.
+      WASM_BUILDER_IMAGE: ghcr.io/deesneez/selfcustody-wasm-builder@sha256:1418e85a9c5fb5759fd5b4bdc42f3485cbc8dedf3c78e259fa6fe815a806f9ae
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          # Exactly the Node the builder image carries. It does not generate
+          # the artifact -- the image's own Node writes the wrapper -- but it
+          # runs the parse gate and the engine vectors below.
+          node-version: '22.23.2'
+
+      # First, and cheap. A backslash eaten while writing wasm-compile.mjs
+      # produced replaceAll('\', '/') -- an unterminated string that reached CI
+      # intact and cost a full image build to discover. node --check exits
+      # non-zero on exactly that.
+      - name: Builder scripts parse
+        run: |
+          node --check build/tools/wasm-compile.mjs
+          node --check build/tools/wasm-wrap.mjs
+          node --check build/tools/build-wasm-container.mjs
+          bash -n build/tools/snapshot-probe.sh
+          bash -n secp256k1-wasm/builder/fetch-inputs.sh
+          echo "all builder scripts parse"
+
+      # Both passes go through the public entry point rather than a separate
+      # CI-only invocation, so what is verified here and what a reader runs
+      # locally cannot drift apart. build:wasm:container pulls the digest,
+      # asserts the image is linux/amd64, compiles --offline and wraps.
+      - name: Build the artifact, pass one
+        id: pass_one
+        run: |
+          npm run build:wasm:container
+          mkdir -p "$RUNNER_TEMP/candidate"
+          cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.js"
+          sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
+            | awk '{print $1}' > "$RUNNER_TEMP/raw-first.sha"
+          cat "$RUNNER_TEMP/raw-first.sha"
+
+      # Compilation and packaging are compared separately so a failure names
+      # which half moved instead of leaving it to be guessed.
+      - name: Build again from clean, compare raw wasm and wrapper
+        run: |
+          rm -rf secp256k1-wasm/target
+          npm run build:wasm:container
+          # Kept beside pass one's copy until both comparisons agree, so a
+          # mismatch uploads both byte sequences rather than one file and the
+          # other's hash. Removed on success, leaving a green run to upload
+          # only the canonical filename.
+          cp build/tools/secp256k1-wasm-b64.js \
+            "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.pass-two.js"
+          sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
+            | awk '{print $1}' > "$RUNNER_TEMP/raw-second.sha"
+          a=$(cat "$RUNNER_TEMP/raw-first.sha"); b=$(cat "$RUNNER_TEMP/raw-second.sha")
+          if [ "$a" != "$b" ]; then
+            echo "::error::compilation is nondeterministic in the published builder: $a vs $b"
+            exit 1
+          fi
+          echo "raw wasm stable: $a"
+          if ! cmp -s "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.js" build/tools/secp256k1-wasm-b64.js; then
+            echo "::error::packaging is nondeterministic in the published builder"
+            sha256sum "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.js" build/tools/secp256k1-wasm-b64.js
+            exit 1
+          fi
+          echo "wrapper stable:  $(sha256sum build/tools/secp256k1-wasm-b64.js | awk '{print $1}')"
+          rm -f "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.pass-two.js"
+
+      - name: Test the freshly built engine
+        run: node build/tools/secp256k1-wasm-test.mjs
+
+      # Gated on pass one having actually run, and uploading pass one's own
+      # copy rather than the workspace file. hashFiles() was worse than no
+      # condition at all: the wrapper is committed, so it is present the moment
+      # checkout finishes, and a failure in the parse gate, the pull or the
+      # compile would have uploaded the untouched committed file labelled as
+      # freshly built -- the exact bytes under suspicion, wearing the name of
+      # their replacement.
+      #
+      # The directory, not one file: on success it holds only the canonical
+      # secp256k1-wasm-b64.js, and on a determinism failure it also holds
+      # pass two's, so the two byte sequences can be diffed directly instead
+      # of being described by their hashes.
+      - name: Upload the built artifact
+        if: always() && steps.pass_one.outcome == 'success'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: secp256k1-wasm-b64-${{ github.sha }}
+          path: ${{ runner.temp }}/candidate/
+          if-no-files-found: error
+
+      # The provenance gate, last. Functional equivalence does not establish
+      # provenance: passing the vectors above says the engine works, not that
+      # the committed bytes are the ones this builder produces.
+      - name: Committed artifact matches the published builder's output
+        run: |
+          if ! git diff --quiet -- build/tools/secp256k1-wasm-b64.js; then
+            echo "::error::the committed libsecp256k1 WebAssembly is not what the published builder produces -- download the artifact from this run and commit it"
+            git diff --stat -- build/tools/secp256k1-wasm-b64.js
+            exit 1
+          fi
+          echo "committed artifact matches the published builder"

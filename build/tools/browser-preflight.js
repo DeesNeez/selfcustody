@@ -2,7 +2,8 @@
 
    This runs before the crypto core and UI. It tests only host features the
    Workshop actually uses: BigInt key arithmetic, UTF-8, BIP39 NFKD
-   normalization, typed binary views, SVG creation and local Blob downloads.
+   normalization, typed binary views, WebAssembly, SVG creation and local Blob
+   downloads.
    It deliberately does not test or call a random-number generator: this tool
    converts entropy supplied by the reader and must never generate any.
 
@@ -51,6 +52,19 @@
         if (typeof view.setBigUint64 !== 'function' || typeof view.getBigUint64 !== 'function') return false;
         view.setBigUint64(0, BigInt('72623859790382856'), false);
         return view.getBigUint64(0, false).toString(16) === '102030405060708';
+      }
+    },
+    {
+      name: 'WebAssembly (libsecp256k1 engine)',
+      run: function () {
+        if (typeof WebAssembly !== 'object'
+            || typeof WebAssembly.Module !== 'function') return false;
+        /* Compile the smallest valid module. This checks both browser support
+           and the page's Content Security Policy before the real engine boots. */
+        new WebAssembly.Module(new Uint8Array([
+          0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00
+        ]));
+        return true;
       }
     },
     {
