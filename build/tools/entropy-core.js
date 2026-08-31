@@ -1879,6 +1879,20 @@ const EntropyCore = (() => {
     return String(at).padStart(4, '0');
   }).join('');
 
+  /* CompactSeedQR is the BIP39 entropy bytes, without the checksum bits that
+     are folded into the last mnemonic word. This Workshop already retains
+     that entropy as hex, so decoding it is both simpler and less error-prone
+     than reconstructing bits from the words. Only the two SeedQR-defined
+     BIP39 sizes are accepted. */
+  const compactSeedQrBytes = entropyHex => {
+    const clean = String(entropyHex ?? '').replace(/\s/g, '').toLowerCase();
+    if (clean.length !== 32 && clean.length !== 64) {
+      throw new Error('CompactSeedQR needs 128-bit or 256-bit BIP39 entropy');
+    }
+    if (!/^[0-9a-f]+$/.test(clean)) throw new Error('CompactSeedQR entropy is not hexadecimal');
+    return fromHex(clean);
+  };
+
   const deriveAddresses = ({ seed, addressType, path, extra = 4 }) => {
     const account = derive(masterKey(seed), path);
     const type = ADDRESS_TYPES[addressType];
@@ -2191,7 +2205,8 @@ const EntropyCore = (() => {
     descriptorChecksum, withChecksum, descriptorOrigin, watchOnlyDescriptor,
     ADDRESS_TYPES, METHODS, accountPath, legacyNormalise, normalise, events,
     diceBits, sixToZero, bitsToBytes, tailBits, bitboxIndex, lookupDraft,
-    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity, seedQrDigits,
+    cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity,
+    seedQrDigits, compactSeedQrBytes,
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,
     deriveSeed, deriveAddresses, normalizeAddressCheck, matchDerivedAddress,
