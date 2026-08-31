@@ -1442,6 +1442,21 @@
   }
   .hero .status [data-status-text], .hero .status .status-reserve { grid-area: 1 / 1; }
   .hero .status .status-reserve { visibility: hidden; pointer-events: none; }
+  /* The local-file badge is the one status line reporting what this file is
+     rather than the result of a check, so it carries no state colour and fell
+     through to the neutral wash. It says the same thing the offline panel
+     says -- this is the self-contained copy -- so it gets the same surface,
+     and the two read as one family instead of two unrelated greys. Scoped to
+     the local state: online, .warn still wins. */
+  .hero .status li#where:not(.warn) {
+    /* --ink-soft, the same weight the warning copy is set in, rather than the
+       dimmer --muted the neutral badges use. */
+    color: var(--ink-soft);
+    border-color: rgba(232, 214, 181, 0.34);
+    background:
+      radial-gradient(circle at 100% 0%, rgba(232, 214, 181, 0.055), transparent 250px),
+      linear-gradient(145deg, #28251f, #1a1917 72%);
+  }
   .hero .status li::before {
     content: ""; position: absolute; left: 12px; top: 50%; width: 7px; height: 7px;
     border-radius: 50%; background: #8e887e; transform: translateY(-50%);
