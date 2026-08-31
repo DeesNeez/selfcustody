@@ -12,6 +12,7 @@
     "test:wallet-dat": "node build/tools/wallet-dat-test.mjs",
     "test:browser-preflight": "node build/tools/browser-preflight-test.mjs",
     "test:lifehash": "node build/tools/lifehash-test.mjs",
-    "test:die-distribution": "node build/tools/die-distribution-test.mjs"
+    "test:die-distribution": "node build/tools/die-distribution-test.mjs",
+    "build:wasm:container": "node build/tools/build-wasm-container.mjs"
   }
 }
