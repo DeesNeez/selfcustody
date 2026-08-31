@@ -165,6 +165,13 @@ export function assertWorkshop() {
     check(/qrSources\.seedqr\s*=\s*\{\s*text:\s*digits/.test(script) &&
       !/paintQr\([^)]*digits/.test(script),
       `the ${name} build draws its SeedQR before the button asks for one`);
+    check(/data-qr="compactseedqr"/.test(html) &&
+      /qrSources\.compactseedqr\s*=\s*\{\s*bytes:\s*compact/.test(script) &&
+      /qrcodegen\.QrCode\.encodeBinary\(payload, ecc\)/.test(script) &&
+      /C\.compactSeedQrBytes\(state\.seed\.entropy\)/.test(script),
+      `the ${name} build does not offer CompactSeedQR as binary BIP39 entropy`);
+    check(/const QR_QUIET\s*=\s*4/.test(script),
+      `the ${name} build's QR renderer does not preserve the four-module quiet zone`);
     /* A 12-word octal-and-hex run has 128 checksum-valid endings, but the
        physical choice is only two dice. Pin that direct mapping and keep the
        complete reference list as a disclosure without an inner scrollbar. */
