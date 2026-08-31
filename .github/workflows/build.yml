@@ -86,5 +86,19 @@ jobs:
           node-version: '22'
       - name: Rebuild the WebAssembly artifact
         run: npm run build:wasm
+      # The whole point of the pinned toolchain and the committed lockfile.
+      # Without this the job proves the sources compile and pass vectors, and
+      # says nothing about the blob readers actually receive: a substituted
+      # artifact is never compared to anything, because build:wasm overwrites
+      # it before the test runs and the tree-dirty check lives in a job that
+      # never builds the WASM. Those two controls have to meet somewhere, and
+      # this is the only place they can.
+      - name: Rebuilt artifact matches the committed one
+        run: |
+          if ! git diff --quiet -- build/tools/secp256k1-wasm-b64.js; then
+            echo "::error::the committed libsecp256k1 WebAssembly is not what these pinned Rust sources build -- run 'npm run build:wasm' and commit the result"
+            git diff --stat -- build/tools/secp256k1-wasm-b64.js
+            exit 1
+          fi
       - name: Test the freshly built engine
         run: node build/tools/secp256k1-wasm-test.mjs
