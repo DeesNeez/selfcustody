@@ -138,9 +138,15 @@ var hodlWalletExport = (() => {
 
   const reverseHex = (hexText) => hex(hexText).reverse();
 
-  // Descriptor bodies end in "/*)" for every descriptor this app produces, so
-  // a digit+h before a path separator or bracket is always a hardened step.
-  const toCompatForm = (body) => body.replace(/(\d)h(?=[/\]])/g, "$1'");
+  // Core stores the descriptor with h for hardened but computes DescriptorID
+  // over ToString(), which writes the apostrophe form. Rewrite only inside the
+  // [origin] brackets: base58 contains both digits and the letter h, so an
+  // account key ending in digit+h sits directly before the /0/* separator, and
+  // an unanchored pattern rewrites the key itself -- producing an ID Bitcoin
+  // Core will not agree with. Every hardened step this app emits is inside the
+  // origin, so confining the rewrite there is both correct and sufficient.
+  const toCompatForm = (body) =>
+    body.replace(/\[[^\]]*\]/g, (origin) => origin.replace(/(\d)h/g, "$1'"));
 
   const stripChecksum = (descriptor) => {
     const hash = descriptor.lastIndexOf("#");
