@@ -1036,6 +1036,16 @@ export const VECTORS = [
   ['cards: the entropy is SHA-256 of the transcript',
     () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy,
     C.hex(C.sha256(C.utf8(REAL_DRAW)).slice(0, 16))],
+  /* External interoperability vector, not a restatement of our own output.
+     Captured from Ian Coleman's published BIP39 tool at iancoleman.io/bip39
+     with Entropy Type "card", mnemonic length "12 Words", and this draw
+     entered as "7h 2c ts 4d jh as 9c 6s kd 3h 8d qc tc 5h 2s jd 9h kc 4s 7d
+     ah 6c 3s td 8s". The tool returned the phrase below. Everything else in
+     this group checks that we hash our own transcript consistently; only
+     this one shows the two tools agree on the wallet. */
+  ['cards: Ian Coleman mode reproduces the tool\'s own 12-word result',
+    () => C.deriveSeed({ method: 'cardscoleman', input: CARDS_25, words: 12, wordlist: WORDLIST }).mnemonic.join(' '),
+    'filter quantum follow clutch guess then monster decorate festival mask dose spoil'],
   ['cards: Ian Coleman transcript uses UTF-8 suit glyphs and spaces',
     () => C.colemanCardTranscript('AS2CTD'), 'A♠ 2♣ T♦'],
   ['cards: Ian Coleman reference transcript has the pinned SHA-256 digest',
