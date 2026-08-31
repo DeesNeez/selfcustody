@@ -165,6 +165,27 @@ export function assertWorkshop() {
     check(/<div class="dl-frame">\s*<button class="dl beta-disclaimer-accept"/.test(html) &&
       !/\.beta-disclaimer-accept\s*\{/.test(html),
       `the ${name} build does not give the acknowledgement the shared download-action skin`);
+    /* The local badge reports what the *file* is. It must not drift into
+       claiming anything about the machine, which is the same line the
+       navigator.onLine check below is drawn on: "no network required" is a
+       property of this file and stays true on a connected laptop. Both
+       variants ship in the markup so the row settles before paint. */
+    check(/<span class="where-local" hidden>/.test(html) &&
+      /class="where-doc"[^>]*aria-hidden="true"/.test(html) &&
+      /<span class="where-main">Local copy<\/span>/.test(html) &&
+      /<span class="where-sep" aria-hidden="true"><\/span>/.test(html) &&
+      /<span class="where-sub">No network required<\/span>/.test(html),
+      `the ${name} build does not label the local copy as a property of the file`);
+    check(/id="adapter"[^>]*>This machine reports a connection</.test(html),
+      `the ${name} build does not keep the machine-connection warning`);
+    /* Only .good and .warn ever coloured the status dot, so a self-test that
+       FAILED showed the same neutral grey as one still running -- the state
+       that most needs to be unmistakable was the one with no mark of its own.
+       Neither mark animates: a failure that moves reads as progress. */
+    check(/class="selftest-mark selftest-pass"[^>]*aria-hidden="true"/.test(html) &&
+      /class="selftest-mark selftest-fail"[^>]*aria-hidden="true"/.test(html) &&
+      !/\.selftest-mark[^{}]*\{[^{}]*animation/.test(html),
+      `the ${name} build does not give the self-test a static pass and fail mark`);
     check(/selfcustody-entropy-beta-accepted/.test(script) &&
       /localStorage\.getItem\(STORAGE_KEY\)\s*===\s*version/.test(script) &&
       /localStorage\.setItem\(STORAGE_KEY, version\)/.test(script) &&
