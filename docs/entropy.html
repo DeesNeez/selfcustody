@@ -7687,7 +7687,7 @@ var qrcodegen;
     intro.textContent = 'The white mark is the count expected at each face. Pearson’s chi-square asks how surprising the differences would be if the source were even.';
     const caveat = document.createElement('p');
     caveat.className = 'distribution-caveat';
-    caveat.textContent = 'Advisory only. This cannot prove a die is fair. Do not edit or reroll individual outcomes in response; test the physical die in a separate run if something concerns you.';
+    caveat.textContent = 'Advisory only. Fair input can trigger this warning by chance. This is a spellcheck, not proof of randomness. Do not edit or reroll individual outcomes in response; test the physical die in a separate run if something concerns you.';
     body.replaceChildren(intro, ...C.dieDistributionReports(method(), input).map(distributionReportElement), caveat);
   }
 
