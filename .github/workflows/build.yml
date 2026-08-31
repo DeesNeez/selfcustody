@@ -169,3 +169,20 @@ jobs:
           name: secp256k1-wasm-b64-diagnostic-${{ github.sha }}
           path: build/tools/secp256k1-wasm-b64.js
           if-no-files-found: error
+
+  # TEMPORARY. Establishes the builder's input set before any Dockerfile
+  # exists. Delete once the pinned builder image is published and referenced
+  # by digest. The script it runs is build/tools/snapshot-probe.sh.
+  snapshot-probe:
+    name: Probe · pinned Ubuntu snapshot for the WASM builder
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Snapshot resolves the measured toolchain in a clean container
+        run: |
+          docker run --rm \
+            -v "$PWD/build/tools/snapshot-probe.sh:/probe.sh:ro" \
+            -v /etc/ssl/certs:/etc/ssl/certs:ro \
+            ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 \
+            bash /probe.sh

@@ -8,3 +8,4 @@
 # following the verify instructions got a mismatch and was right to stop.
 docs/entropy-offline.html       -text
 docs/entropy-offline.html.sha256 -text
+build/tools/snapshot-probe.sh text eol=lf
