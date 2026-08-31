@@ -1345,9 +1345,44 @@ ${FONTS.map(embedFont).join('\n')}
   .addr-run b { flex: 1 1 auto; min-width: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.86rem; font-weight: 400; color: var(--ink); word-break: break-all; }
 
-  .address-match { margin-top: 18px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px; background: rgba(255, 255, 255, 0.025); }
-  .address-match label { display: block; margin-bottom: 8px; color: var(--ink-soft); font-weight: 800; }
+  /* The one control here that takes something in from outside the page. A
+     gold, deeper and more saturated than the cream the workbench rests at, so
+     it separates without reading as a warning: pasting an address you already
+     have is a different kind of task, not a riskier one. Far enough from the
+     cream to look chosen rather than like a near-miss of it. */
+  .address-match {
+    margin-top: 18px; padding: 16px;
+    border: 1px solid rgba(205, 173, 98, 0.40); border-radius: 10px;
+    background:
+      radial-gradient(
+        circle at 100% 0%,
+        rgba(212, 175, 84, 0.12),
+        transparent 260px
+      ),
+      linear-gradient(145deg, #262015, #16140e 72%);
+  }
+  .address-match label {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px; color: var(--ink-soft); font-weight: 800;
+  }
+  .address-match .addr-icon { flex: 0 0 auto; width: 15px; height: 15px; color: #dcc68a; }
+  /* The description only. The status line below shares .hint but carries its
+     own colours for the ok and bad states, and must keep them. */
+  .address-match .hint:not(.address-match-status) { color: #bfb49b; }
+  /* No control beside the field: the check runs on input, so there is nothing
+     to press and nothing to lay out beside it. A field on its own row is a
+     field. */
+  .address-match input[type="text"] { border-color: rgba(205, 176, 110, 0.30); }
+  /* Border only. The orange focus ring is the accessible affordance and is
+     left exactly as it is. */
+  .address-match input[type="text"]:focus { border-color: rgba(220, 198, 138, 0.72); }
+  /* Reassurance rather than instruction, so it is quiet and sits at the foot
+     of the panel as a standing property of it. */
+  .address-match-local {
+    display: flex; align-items: center; gap: 6px;
+    margin: 10px 0 0; color: #968d74; font-size: 0.8rem;
+  }
+  .address-match-local svg { flex: 0 0 auto; width: 12px; height: 12px; color: #c6b68a; }
   .address-match-status { min-height: 1.35em; }
   .address-match-status.is-ok { color: #8be3c6; }
   .address-match-status.is-bad { color: #ff9d8a; }
@@ -4257,10 +4292,11 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   </div>
 
   <div class="address-match">
-    <label for="address-match">Check an address</label>
-    <input type="text" id="address-match" spellcheck="false" autocomplete="off" placeholder="Paste a bc1, 1, or 3 address">
+    <label for="address-match"><svg class="addr-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="6.9" cy="6.9" r="4.6"/><path d="m10.5 10.5 3.5 3.5"/></svg>Check an address</label>
     <p class="hint">Paste an address shown by another wallet. This page checks receive and change indices 0&ndash;999 for the account path and address type above, entirely offline.</p>
+    <input type="text" id="address-match" spellcheck="false" autocomplete="off" placeholder="Paste a bc1, 1, or 3 address">
     <p class="hint address-match-status" id="address-match-status" role="status" aria-live="polite"></p>
+    <p class="address-match-local"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.4" y="6.9" width="9.2" height="6.4" rx="1.4"/><path d="M5.6 6.9V5.1a2.4 2.4 0 0 1 4.8 0v1.8"/></svg>Checked locally on this page</p>
   </div>
 
   <div class="xpub-box">

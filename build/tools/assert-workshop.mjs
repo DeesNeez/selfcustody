@@ -257,6 +257,17 @@ export function assertWorkshop() {
       `the ${name} build does not create the wallet.dat as a revocable binary download`);
     check(/function invalidateDerivedState\(\)\s*\{[\s\S]*?clearExportState\(\);[\s\S]*?state\.seed\s*=\s*null/.test(script),
       `the ${name} build does not clear export state when its derived wallet is invalidated`);
+    /* The check runs on input, so the field is the whole control -- there is
+       no button, and the live status is what confirms a match. Both icons are
+       decoration; the label's `for` and the status's live region are what
+       carry it. */
+    check(/class="addr-icon"[^>]*aria-hidden="true"/.test(html) &&
+      /<\/svg>Check an address<\/label>/.test(html) &&
+      /class="address-match-local"><svg[^>]*aria-hidden="true"/.test(html) &&
+      /Checked locally on this page<\/p>/.test(html) &&
+      /address-match input\[type="text"\]:focus\s*\{[^}]*border-color: rgba\(220, 198, 138, 0\.72\)/.test(html) &&
+      /input\[type="text"\]:focus[^{]*\{[^}]*outline: 2px solid var\(--orange\)/.test(html),
+      `the ${name} build does not keep the address panel's icons, local note and focus ring`);
     check(/id="address-match"/.test(html) && /id="address-match-status"[^>]*role="status"/.test(html),
       `the ${name} build does not expose the derived-wallet address check`);
     check(/const ADDRESS_SEARCH_LIMIT\s*=\s*1000/.test(script) &&
