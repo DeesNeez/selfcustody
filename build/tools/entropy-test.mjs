@@ -976,6 +976,18 @@ export const VECTORS = [
     () => [C.cardEntropy(24) < 128, C.cardEntropy(25) >= 128].join(),  'true,true'],
   ['cards: 58 is the first draw to carry 256 bits',
     () => [C.cardEntropy(57) < 256, C.cardEntropy(58) >= 256].join(), 'true,true'],
+  ['cards: requirements are the smallest deals reaching each entropy target',
+    () => [12, 24].map(words => {
+      const target = words * 32 / 3;
+      const needed = C.cardsNeeded(target);
+      return [
+        needed,
+        C.METHODS.cards.counts[words],
+        C.METHODS.cardscoleman.counts[words],
+        C.cardEntropy(needed - 1) < target,
+        C.cardEntropy(needed) >= target
+      ].join(':');
+    }).join(','), '25:25:25:true:true,58:58:58:true:true'],
   ['cards: the 53rd card is worth a full log2(52) again',
     () => (C.cardEntropy(53) - C.cardEntropy(52)).toFixed(6), Math.log2(52).toFixed(6)],
 
@@ -1036,6 +1048,11 @@ export const VECTORS = [
   ['cards: the entropy is SHA-256 of the transcript',
     () => C.deriveSeed({ method: 'cards', input: REAL_DRAW, words: 12, wordlist: WORDLIST }).entropy,
     C.hex(C.sha256(C.utf8(REAL_DRAW)).slice(0, 16))],
+  ['cards: a complete 58-card transcript uses both shuffled decks',
+    () => {
+      const deal = C.CARD_DECK.join('') + C.CARD_DECK.slice(0, 6).join('');
+      return C.deriveSeed({ method: 'cards', input: deal, words: 24, wordlist: WORDLIST }).entropy;
+    }, C.hex(C.sha256(C.utf8(C.CARD_DECK.join('') + C.CARD_DECK.slice(0, 6).join(''))))],
   /* External interoperability vector, not a restatement of our own output.
      Captured from Ian Coleman's published BIP39 tool at iancoleman.io/bip39
      with Entropy Type "card", mnemonic length "12 Words", and this draw
