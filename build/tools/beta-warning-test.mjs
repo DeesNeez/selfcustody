@@ -12,7 +12,7 @@ function classList(initial = []) {
   };
 }
 
-function element({ hidden = false, bottom = 200 } = {}) {
+function element({ hidden = false } = {}) {
   const listeners = {};
   const attrs = new Map();
   return {
@@ -23,25 +23,15 @@ function element({ hidden = false, bottom = 200 } = {}) {
     remove() { this.removed = true; },
     getAttribute: name => attrs.get(name) ?? null,
     setAttribute: (name, value) => attrs.set(name, value),
-    getBoundingClientRect: () => ({ bottom }),
-    setBottom: value => { bottom = value; }
   };
 }
 
-function setup({ stored = null, storageThrows = false, mobile = false, matchMediaMissing = false } = {}) {
+function setup({ stored = null, storageThrows = false } = {}) {
   const overlay = element({ hidden: true });
   const accept = element();
-  const brief = element();
-  const sticky = element({ hidden: true });
-  const toggle = element();
-  const panel = element({ hidden: true });
   const elements = {
     'beta-disclaimer': overlay,
-    'beta-disclaimer-accept': accept,
-    'security-brief': brief,
-    'security-sticky-mobile': sticky,
-    'security-sticky-toggle': toggle,
-    'security-sticky-panel': panel
+    'beta-disclaimer-accept': accept
   };
   const body = { classList: classList(), style: { overflow: '' } };
   const document = {
@@ -49,13 +39,9 @@ function setup({ stored = null, storageThrows = false, mobile = false, matchMedi
     getElementById: id => elements[id] ?? null,
     querySelector: () => null
   };
-  const windowListeners = {};
   const window = {
-    addEventListener: (name, fn) => { windowListeners[name] = fn; }
+    matchMedia: () => ({ matches: false })
   };
-  if (!matchMediaMissing) {
-    window.matchMedia = query => ({ matches: query.includes('max-width') ? mobile : false });
-  }
   let written = null;
   const localStorage = {
     getItem: () => { if (storageThrows) throw new Error('denied'); return stored; },
@@ -65,7 +51,7 @@ function setup({ stored = null, storageThrows = false, mobile = false, matchMedi
     'document', 'window', 'localStorage', 'requestAnimationFrame', 'setTimeout',
     `${source}\nreturn EntropyBetaWarning;`
   )(document, window, localStorage, fn => { fn(); return 0; }, fn => fn());
-  return { api, overlay, accept, brief, sticky, toggle, panel, body, windowListeners, written: () => written };
+  return { api, overlay, accept, body, written: () => written };
 }
 
 const first = setup();
@@ -93,25 +79,7 @@ assert.equal(denied.api.init({ version: 'release-1' }), true);
 denied.accept.dispatch('click');
 assert.equal(denied.overlay.removed, true);
 
-const noMediaQuery = setup({ stored: 'release-1', matchMediaMissing: true });
-assert.doesNotThrow(() => noMediaQuery.api.init({ version: 'release-1' }));
-assert.equal(noMediaQuery.sticky.hidden, true);
-
-const mobileSticky = setup({ stored: 'release-1', mobile: true });
-mobileSticky.api.init({ version: 'release-1' });
-assert.equal(mobileSticky.sticky.hidden, true, 'compact warning starts hidden beside the full warning');
-mobileSticky.brief.setBottom(60);
-mobileSticky.windowListeners.scroll();
-assert.equal(mobileSticky.sticky.hidden, false, 'compact warning appears after the full warning passes the header');
-mobileSticky.toggle.dispatch('click');
-assert.equal(mobileSticky.toggle.getAttribute('aria-expanded'), 'true');
-assert.equal(mobileSticky.panel.hidden, false);
-mobileSticky.brief.setBottom(100);
-mobileSticky.windowListeners.scroll();
-assert.equal(mobileSticky.sticky.hidden, true);
-assert.equal(mobileSticky.panel.hidden, true, 'returning to the full warning collapses the compact copy');
-
 assert.doesNotMatch(source, /seed|mnemonic|passphrase|privateKey|getRandomValues|fetch\s*\(/i,
   'the warning controller must not touch secret inputs, randomness, or the network');
 
-console.log('beta warning: first boot, persistence, release bump, storage failure and mobile sticky behavior pass');
+console.log('beta warning: first boot, persistence, release bump and storage failure pass');
