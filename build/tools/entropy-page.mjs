@@ -4298,7 +4298,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 <details id="sources">
   <summary>Sources</summary>
   <div class="body">
-    <p>This page claims that four named devices convert dice four different ways, and refuses to show a wallet unless it agrees with published test vectors. Both are checkable, so here is everything they rest on. Nothing below was written by this project.</p>
+    <p>This page claims that four named devices convert dice four different ways, and refuses to show a wallet unless it agrees with published test vectors. Both are checkable, so here are the published sources and the places where this Workshop adds its own conservative checks.</p>
     <p>These open in a new tab, because leaving this one would lose the rolls you have entered. They need a connection, which the tool itself never does.</p>
 
     <div class="src-group">
@@ -4403,6 +4403,15 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
             <span>The 2048 rounds standing between your words and your seed, and the vectors showing this file runs them correctly.</span>
           </div>
         </li>
+        <li>
+          <b>Input-health checks</b>
+          <div>
+            <a href="https://csrc.nist.gov/pubs/sp/800/90/b/final" target="_blank" rel="noopener noreferrer">NIST SP 800-90B</a>,
+            <a href="https://www.itl.nist.gov/div898/handbook/prc/section2/prc211.htm" target="_blank" rel="noopener noreferrer">NIST chi-square goodness-of-fit</a>,
+            <a href="https://www.rfc-editor.org/rfc/rfc4086" target="_blank" rel="noopener noreferrer">RFC 4086</a>
+            <span>Established references for repetition and proportion health checks, comparing observed outcome counts with an expected distribution, and the limitation that statistical tests do not establish unpredictability. The Workshop&rsquo;s combined decision rule is not one of these standards.</span>
+          </div>
+        </li>
       </ul>
     </div>
 
@@ -4410,12 +4419,12 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
     <p class="src-tail">Visual fingerprints use <a href="https://lifehash.info/" target="_blank" rel="noopener noreferrer">LifeHash version2</a>, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/74" target="_blank" rel="noopener noreferrer">EntropyLab pull request #74</a> and the Blockchain Commons reference implementation. Used under the MIT License.</p>
     <p class="src-tail">Local symbol-font fallbacks for card suits are adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/116" target="_blank" rel="noopener noreferrer">EntropyLab pull request #116</a>. They keep the four suit marks legible across operating systems without adding a network font.</p>
-    <p class="src-tail">The optional die-distribution inspector adapts the Pearson chi-square idea from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/36" target="_blank" rel="noopener noreferrer">EntropyLab pull request #36</a>. Its disclosure, histogram, threshold and wording are original to this Workshop.</p>
+    <p class="src-tail">The optional distribution inspector applies the <a href="https://www.itl.nist.gov/div898/handbook/prc/section2/prc211.htm" target="_blank" rel="noopener noreferrer">Pearson chi-square goodness-of-fit method documented by NIST</a> and adapts the compact presentation idea from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/36" target="_blank" rel="noopener noreferrer">EntropyLab pull request #36</a>. Its disclosure, histogram and wording are original to this Workshop.</p>
     <p class="src-tail">Public-key and Taproot curve operations use Bitcoin Core&rsquo;s libsecp256k1 compiled to WebAssembly, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/103" target="_blank" rel="noopener noreferrer">EntropyLab pull request #103</a>. The pinned source, build recipe and artifact checksum ship with this site.</p>
     <p class="src-tail">The per-release beta acknowledgement adapts merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/106" target="_blank" rel="noopener noreferrer">EntropyLab pull request #106</a>. Its compact mobile warning is specific to this Workshop.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
-    <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
+    <p>The refusal you get when a sequence looks typed rather than rolled is Workshop-specific, not an implementation of the standards above. Its repetition and dominant-value checks address the same health concerns documented by NIST, and its distribution calculation is Pearson chi-square; the period, step-pattern, compression and card-order heuristics, their thresholds and the combined decision are ours. A reproducible seeded exercise refused 0 of 1,000,000 ideal-model simulations across the supported input profiles; run <code>npm run test:entropy -- --calibrate</code> in the source repository to repeat it. That measures false refusals under those models. It cannot validate a physical entropy source or prove that an entered sequence is unpredictable &mdash; this remains a spellcheck, not a randomness test.</p>
   </div>
 </details>
 
