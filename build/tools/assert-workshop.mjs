@@ -168,17 +168,16 @@ export function assertWorkshop() {
     check(wasmReady >= 0 && betaInit > wasmReady,
       `the ${name} build can reveal the beta acknowledgement before the cryptography engine succeeds`);
     check(/id="security-brief"/.test(html) &&
-      /id="security-sticky-mobile"[^>]*hidden/.test(html) &&
-      /id="security-sticky-toggle"[^>]*aria-expanded="false"/.test(html) &&
-      /position:\s*sticky/.test(html) && /position:\s*fixed/.test(html),
-      `the ${name} build does not preserve the desktop warning and compact mobile disclosure`);
+      /\.security-brief\s*\{\s*position:\s*relative/.test(html) &&
+      !/security-sticky-mobile|security-sticky-toggle|security-sticky-panel/.test(html),
+      `the ${name} build does not preserve the normal in-page warning`);
     check(/M8\.982 1\.566a1\.13 1\.13/.test(html),
       `the ${name} build does not use the filled warning triangle in its safety notices`);
     const betaCopy = 'This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.';
     const phraseCopy = 'Never enter an existing recovery phrase into any page';
-    check((html.match(new RegExp(betaCopy.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length >= 3 &&
-      (html.match(new RegExp(phraseCopy, 'g')) || []).length >= 3,
-      `the ${name} build lets its modal, full warning and mobile warning wording drift apart`);
+    check((html.match(new RegExp(betaCopy.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length === 2 &&
+      (html.match(new RegExp(phraseCopy, 'g')) || []).length === 2,
+      `the ${name} build lets its modal and in-page warning wording drift apart`);
     check(/name="referrer" content="no-referrer"/.test(html),
       `the ${name} build does not set a no-referrer policy`);
     check(/http-equiv="Content-Security-Policy"/.test(html),

@@ -52,7 +52,7 @@ jobs:
       - name: Committed libsecp256k1 WebAssembly
         run: node build/tools/secp256k1-wasm-test.mjs
 
-      - name: Beta acknowledgement and sticky warning
+      - name: Beta acknowledgement and in-page warning
         run: node build/tools/beta-warning-test.mjs
 
       - name: Card-suit font fallbacks

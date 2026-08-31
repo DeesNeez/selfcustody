@@ -1,6 +1,6 @@
-/* Beta acknowledgement and responsive persistent warning for the Entropy
-   Workshop. This classic script is inlined into both builds and stores only
-   the accepted release string; it never reads or writes entropy input. */
+/* Beta acknowledgement for the Entropy Workshop. This classic script is
+   inlined into both builds and stores only the accepted release string; it
+   never reads or writes entropy input. */
 
 'use strict';
 
@@ -56,47 +56,8 @@ const EntropyBetaWarning = (() => {
     return true;
   };
 
-  const initSticky = () => {
-    const source = document.getElementById('security-brief');
-    const sticky = document.getElementById('security-sticky-mobile');
-    const toggle = document.getElementById('security-sticky-toggle');
-    const panel = document.getElementById('security-sticky-panel');
-    if (!source || !sticky || !toggle || !panel) return;
-
-    const collapse = () => {
-      toggle.setAttribute('aria-expanded', 'false');
-      panel.hidden = true;
-    };
-    const update = () => {
-      const mobile = typeof window.matchMedia === 'function'
-        && window.matchMedia('(max-width: 620px)').matches;
-      const headerBottom = document.body.classList.contains('is-offline-copy') ? 0 : 70;
-      const passed = mobile && source.getBoundingClientRect().bottom <= headerBottom;
-      sticky.hidden = !passed;
-      if (!passed) collapse();
-    };
-    let frame = 0;
-    const schedule = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        update();
-      });
-    };
-
-    toggle.addEventListener('click', () => {
-      const expanded = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-      panel.hidden = expanded;
-    });
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
-    update();
-  };
-
   const init = ({ version }) => {
     if (typeof version !== 'string' || !version) throw new Error('beta release version is required');
-    initSticky();
     return initGate(version);
   };
 
