@@ -131,12 +131,27 @@ jobs:
             exit 1
           fi
 
+      # Wrapped twice as well, from the same raw wasm. Proving compilation
+      # deterministic while exercising the packaging step once would leave the
+      # half that actually writes the shipped file unverified.
       - name: Wrap
+        id: wrap
         run: |
           docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
             -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
             node build/tools/wasm-wrap.mjs
-          sha256sum build/tools/secp256k1-wasm-b64.js
+          cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/wrap-first.js"
+          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+            -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
+            node build/tools/wasm-wrap.mjs
+          if cmp -s "$RUNNER_TEMP/wrap-first.js" build/tools/secp256k1-wasm-b64.js; then
+            echo "STABLE: packaging is deterministic"
+            sha256sum build/tools/secp256k1-wasm-b64.js
+          else
+            echo "::error::two wraps of one raw wasm disagree -- packaging is nondeterministic"
+            sha256sum "$RUNNER_TEMP/wrap-first.js" build/tools/secp256k1-wasm-b64.js
+            exit 1
+          fi
 
       - name: Test the freshly built engine
         run: node build/tools/secp256k1-wasm-test.mjs
@@ -145,8 +160,11 @@ jobs:
       # exactly the bytes under consideration, and a red gate must not discard
       # its own candidate. Explicitly labelled a candidate -- it becomes
       # canonical only by passing the vectors and the determinism check above.
+      # Conditioned on the wrap actually having run. With a bare always() this
+      # uploaded the committed file untouched when an earlier step failed,
+      # labelling the very bytes under suspicion a "candidate".
       - name: Upload the candidate artifact
-        if: always()
+        if: always() && steps.wrap.outcome == 'success'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: secp256k1-wasm-b64-candidate-${{ github.sha }}
