@@ -812,7 +812,7 @@ ${FONTS.map(embedFont).join('\n')}
      past the key's own edge. The tracking goes and the size comes down until
      the longest name fits the narrowest key. */
   .key[data-suit] small { letter-spacing: 0; font-size: 0.54rem; }
-  .pad[data-method="cards"], .pad[data-method="cardbits"] {
+  .pad[data-method="cards"], .pad[data-method="cardscoleman"], .pad[data-method="cardbits"] {
     grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
   }
 
@@ -1783,7 +1783,7 @@ const ui = () => `
     source: 'dice',      /* 'coin' | 'dice' | 'cards' -- the physical thing */
     dice: 'd6',          /* 'd6' | 'octahex'  -- which dice, when source is dice */
     conversion: 'dice',  /* which device convention, for a six-sided die */
-    cardconv: 'cards',   /* 'cards' | 'cardbits' */
+    cardconv: 'cards',   /* 'cards' | 'cardscoleman' | 'cardbits' */
     /* The shorter seed is the one most people are choosing between these
        days, and it is the cheaper thing to try: 50 rolls rather than 99. The
        24-word option is one tap away for anyone who wants it. */
@@ -1796,7 +1796,7 @@ const ui = () => `
   };
 
   /* Three physical sources, and a different number of conventions behind
-     each. A coin has one. Cards have two. A six-sided die has four, and which
+     each. A coin has one. Cards have three. A six-sided die has four, and which
      one a device uses is the entire question this page exists to answer --
      while the octal-and-hex dice are their own method with nothing to choose,
      so they sit under the dice source rather than beside it. */
@@ -1979,6 +1979,7 @@ const ui = () => `
        rather than from the position: ranks with nothing left face-down go
        grey, and once a rank is picked only its remaining suits stay lit. */
     cards: CARD_KEYS,
+    cardscoleman: CARD_KEYS,
     cardbits: CARD_KEYS
   };
 
@@ -3648,8 +3649,9 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     { value: 'dicebits', label: 'Bit table', sub: 'BIP39 tool, raw' },
     { value: 'bitbox', label: 'Lookup table', sub: 'BitBox02' }
   ])}</div>
-  <div class="seg seg-even" id="conv-cards" hidden>${segment('cardconv', [
-    { value: 'cards', label: 'Hash the draw', sub: 'every card counts in full' },
+  <div class="seg seg-tall" id="conv-cards" hidden>${segment('cardconv', [
+    { value: 'cards', label: 'Compact hash', sub: 'SHA-256 of AS2CTD' },
+    { value: 'cardscoleman', label: 'Ian Coleman hash', sub: 'SHA-256 of A♠ 2♣ T♦' },
     { value: 'cardbits', label: 'Bit table', sub: 'BIP39 tool, card mode' }
   ])}</div>
   <p class="hint" id="matches"></p>
@@ -3960,7 +3962,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <p>A coin gives exactly one bit, so 256 flips are 256 bits and go straight in unchanged. You can check that mapping by hand.</p>
     <p>A six-sided die face carries log&#8322;(6) = 2.58 bits, which is not a whole number, so the rolls are hashed with SHA-256 instead and the result used as the entropy. That is what COLDCARD, SeedSigner, Krux and Gordian all do, and it is why 99 rolls is the number you see everywhere.</p>
     <p>Three dice at once sidestep the problem rather than solving it. Eight faces is three bits and sixteen is four, so an octal die and two hex dice throw 3 + 4 + 4 = 11 bits together &mdash; which is one word index exactly, with no remainder to hash away and no bias to correct. A 24-word seed takes 23 throws of all three dice, then one final octal throw to select among eight checksum-valid endings. A 12-word seed takes 11 three-dice throws, then one octal and one hex die to select among 128 endings. The printed dictionary names every word directly; the six-sided-die method instead needs 99 rolls and calculates a checksum you cannot see.</p>
-    <p>Cards shorten as you draw them, which no other source here does. The first card is one of 52 and worth log&#8322;(52) = 5.70 bits, the next one of 51, and so on &mdash; so a whole deck is 225.6 bits rather than 52 &times; 5.70, and one deck cannot fill a 24-word seed. Shuffle it and keep drawing. Both conversions above use every card: one hashes the draw, the other reads the BIP39 tool&rsquo;s codes, which run two, four or five bits long depending on the card.</p>
+    <p>Cards shorten as you draw them, which no other source here does. The first card is one of 52 and worth log&#8322;(52) = 5.70 bits, the next one of 51, and so on &mdash; so a whole deck is 225.6 bits rather than 52 &times; 5.70, and one deck cannot fill a 24-word seed. Shuffle it and keep drawing. All three conversions above use every card: the two hash modes encode the same draw differently before SHA-256, while the bit-table mode reads the BIP39 tool&rsquo;s codes, which run two, four or five bits long depending on the card.</p>
     <p><strong>There is no standard here.</strong> Four of the conversions in use are offered above, and they disagree with each other on purpose: hashing the digits as rolled, hashing them after rewriting every 6 to a 0, reading them as bits without hashing at all, and looking each word up in a table. The same column of rolls produces four unrelated wallets. Others are not offered &mdash; BlueWallet packs bits its own way, and SeedSigner used a different method before February 2022 &mdash; so a mismatch against all four still does not mean your device is broken.</p>
     <p>Which is the point worth leaving with. Your recovery words are the backup. The column of rolls, flips or cards in your notebook is not, because what you wrote down does not say which of these conversions produced the wallet.</p>
   </div>
@@ -4087,6 +4089,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     </div>
 
     <p class="src-tail">The Bitcoin Core wallet.dat encoder is adapted from <a href="https://github.com/w-s-bitcoin/entropylab/pull/32" target="_blank" rel="noopener noreferrer">EntropyLab pull request #32</a>, whose generated descriptor wallets were checked against Bitcoin Core 28.3.0. Used under the MIT License.</p>
+    <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
