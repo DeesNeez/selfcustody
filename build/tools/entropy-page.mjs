@@ -4562,7 +4562,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       </ul>
     </div>
 
-    <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a>.</p>
+    <p class="src-tail">Inspired by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a>.</p>
 
     <p>The refusal you get when a sequence looks typed rather than rolled is Workshop-specific, not an implementation of the standards above. Its repetition and dominant-value checks address the same health concerns documented by NIST, and its distribution calculation is Pearson chi-square; the period, step-pattern, compression and card-order heuristics, their thresholds and the combined decision are ours. A reproducible seeded exercise refused 0 of 1,000,000 ideal-model simulations across the supported input profiles; run <code>npm run test:entropy -- --calibrate</code> in the source repository to repeat it. That measures false refusals under those models. It cannot validate a physical entropy source or prove that an entered sequence is unpredictable &mdash; this remains a spellcheck, not a randomness test.</p>
   </div>
