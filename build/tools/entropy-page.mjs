@@ -29,6 +29,11 @@ import { readFileSync } from 'node:fs';
 import { scopeCss } from './scope-css.mjs';
 
 const CORE = 'build/tools/entropy-core.js';
+/* EntropyLab's Bitcoin Core descriptor-wallet exporter from pull request #32.
+   Both scripts are MIT licensed; the retained notice is beside them under
+   build/vendor/entropylab-wallet-export/. */
+const SQLITE_WRITER = 'build/tools/sqlite-writer.js';
+const WALLET_DAT = 'build/tools/wallet-dat.js';
 /* Project Nayuki's QR generator, MIT, vendored and compiled once. See
    build/vendor/qr/README.md for the upstream commit and why this one library
    is here when the crypto beside it is written from the specifications. */
@@ -504,6 +509,7 @@ ${FONTS.map(embedFont).join('\n')}
   .export-card h4 { margin: 0 0 7px; color: #fff; font-size: 0.98rem; }
   .export-card p { margin: 0 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
   .export-card .export-button { margin-top: auto; }
+  .export-card .export-button + .export-button { margin-top: 8px; }
   .export-button {
     width: 100%; padding: 10px 13px; border: 1px solid rgba(255, 255, 255, 0.17);
     border-radius: 8px; color: var(--ink); background: rgba(255, 255, 255, 0.055);
@@ -2156,6 +2162,88 @@ const ui = () => `
     setTimeout(() => revokeExportUrl(url), 1000);
   }
 
+  function downloadBinaryRecord(bytes, filename) {
+    const url = URL.createObjectURL(new Blob([bytes], { type: 'application/octet-stream' }));
+    exportUrls.add(url);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.hidden = true;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => revokeExportUrl(url), 1000);
+  }
+
+  /* Translate the one account currently shown by this Workshop into the
+     descriptor units consumed by EntropyLab's wallet.dat encoder. The file
+     contains receiving and change descriptors for this selected script type,
+     plus the account xprv records that let Bitcoin Core spend from them. */
+  function walletDatInput(path) {
+    const accountNode = C.derive(C.masterKey(state.seed.seed), path);
+    const xpub = C.encodeXpub(accountNode);
+    const xprv = C.encodeXprv(accountNode);
+    const fingerprint = C.masterFingerprint(state.seed.seed);
+    const descriptor = (key, branch) => C.watchOnlyDescriptor({
+      addressType: state.addressType, fingerprint, path, xpub: key, branch
+    });
+    const outputId = {
+      legacy: 'bip44', nested: 'bip49', native: 'bip84', taproot: 'bip86'
+    }[state.addressType];
+    return {
+      accountNode,
+      wallet: {
+        kind: 'hd',
+        network: 'mainnet',
+        accounts: [{
+          def: { id: outputId },
+          receiveDescriptor: descriptor(xpub, 0),
+          changeDescriptor: descriptor(xpub, 1),
+          receiveDescriptorPriv: descriptor(xprv, 0),
+          changeDescriptorPriv: descriptor(xprv, 1)
+        }]
+      }
+    };
+  }
+
+  function walletDatDeps(accountNode) {
+    return {
+      sha256: C.sha256,
+      checksum: C.descriptorChecksum,
+      base58Decode: C.base58checkDecode,
+      deriveBranchBody: (unusedXpub, branch) => {
+        const node = C.ckdPriv(accountNode, branch);
+        const body = new Uint8Array(74);
+        const view = new DataView(body.buffer);
+        body[0] = node.depth;
+        body.set(node.parentFingerprint, 1);
+        view.setUint32(5, node.index >>> 0, false);
+        body.set(node.chainCode, 9);
+        body.set(C.publicKeyOf(node), 41);
+        return body;
+      },
+      publicKeyForPrivate: secret => C.publicKeyOf({ key: secret })
+    };
+  }
+
+  function prepareWalletDat() {
+    if (!state.seed || $('results').hidden) return;
+    try {
+      if (state.seedKey !== seedKeyFor(clean())) {
+        throw new Error('the wallet changed before the file was ready');
+      }
+      const { wallet, accountNode } = walletDatInput($('path').value.trim());
+      const bytes = hodlWalletExport.buildWalletDat(wallet, true, walletDatDeps(accountNode));
+      downloadBinaryRecord(bytes, hodlWalletExport.walletDatFilename(true));
+      if ($('export-private-dialog').open) $('export-private-dialog').close();
+      $('export-status').textContent = 'Private Bitcoin Core wallet.dat download requested. It can spend this account; treat it like the wallet itself.';
+    } catch (error) {
+      const line = $('export-private-dialog').open
+        ? $('export-private-error') : $('export-status');
+      line.textContent = 'Could not prepare wallet.dat: ' + error.message + '.';
+    }
+  }
+
   /* The builder receives the cached seed and only a boolean for passphrase
      state. The passphrase value itself never crosses this boundary. Kept in
      the click handler's task so the Blob download retains the browser's user
@@ -2966,7 +3054,13 @@ const ui = () => `
     $('export-private-error').textContent = '';
     $('export-private-dialog').showModal();
   });
+  $('export-wallet-open').addEventListener('click', () => {
+    $('export-private-error').textContent = '';
+    $('export-private-dialog').showModal();
+    requestAnimationFrame(() => $('export-wallet-confirm').focus());
+  });
   $('export-private-confirm').addEventListener('click', () => prepareExport('private'));
+  $('export-wallet-confirm').addEventListener('click', prepareWalletDat);
   $('export-watch').addEventListener('click', () => prepareExport('watch'));
 
   $('go').addEventListener('click', derive);
@@ -3670,6 +3764,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <h4>Private recovery record</h4>
       <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value.</p>
       <button type="button" class="export-button" id="export-private-open">Review and download</button>
+      <button type="button" class="export-button" id="export-wallet-open">Download Bitcoin Core wallet.dat</button>
     </article>
     <article class="export-card is-watch">
       <span class="export-tag">No spending keys</span>
@@ -3683,13 +3778,15 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   <dialog class="export-dialog" id="export-private-dialog" aria-labelledby="export-private-title">
     <form method="dialog">
       <button class="export-dialog-close" value="cancel" aria-label="Close">&times;</button>
-      <h2 id="export-private-title">This file can spend the wallet</h2>
-      <p>It contains the recovery words, SeedQR digits and private keys shown above. Anyone who gets the file can move the wallet&rsquo;s coins.</p>
+      <h2 id="export-private-title">These files can spend the wallet</h2>
+      <p>The private text record contains the recovery words, SeedQR digits and private keys shown above. The Bitcoin Core wallet.dat contains the selected account private key and its receiving and change descriptors. Anyone who gets either file can move the coins it controls.</p>
+      <p><strong>The generated wallet.dat is not encrypted.</strong> Put it in a new, dedicated Bitcoin Core wallet directory. Never replace or overwrite an existing wallet.dat file.</p>
       <p><strong>Download it only on the offline computer</strong>, then move it directly to the protected backup storage you chose. Do not put it in cloud storage, email or chat.</p>
-      <p>The BIP39 passphrase value is deliberately left out. If one was used, the file says so and the passphrase must remain stored separately.</p>
+      <p>The BIP39 passphrase value is deliberately left out of both files. The private text record says whether one was used; the wallet.dat already contains the account derived with it.</p>
       <p class="export-dialog-error" id="export-private-error" role="alert"></p>
       <div class="export-dialog-actions">
         <button type="button" class="export-button" id="export-private-confirm">Download private record</button>
+        <button type="button" class="export-button" id="export-wallet-confirm">Download Bitcoin Core wallet.dat</button>
         <button type="submit" class="key-tool" value="cancel">Cancel</button>
       </div>
     </form>
@@ -3838,6 +3935,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       </ul>
     </div>
 
+    <p class="src-tail">The Bitcoin Core wallet.dat encoder is adapted from <a href="https://github.com/w-s-bitcoin/entropylab/pull/32" target="_blank" rel="noopener noreferrer">EntropyLab pull request #32</a>, whose generated descriptor wallets were checked against Bitcoin Core 28.3.0. Used under the MIT License.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
@@ -3848,8 +3946,14 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
 </main>`;
 
-const toolScripts = ({ core, qrlib, wordlist, offline }) => `<script>
+const toolScripts = ({ core, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
 ${core}
+</script>
+<script>
+${sqliteWriter}
+</script>
+<script>
+${walletDat}
 </script>
 <script>
 ${qrlib}
@@ -3875,6 +3979,8 @@ const withFileSize = html => html.replace(
 
 const payload = () => ({
   core: readFileSync(CORE, 'utf8'),
+  sqliteWriter: readFileSync(SQLITE_WRITER, 'utf8'),
+  walletDat: readFileSync(WALLET_DAT, 'utf8'),
   qrlib: readFileSync(QRLIB, 'utf8'),
   wordlist: readFileSync(WORDS, 'utf8').trim().split(/\r?\n/).join(' ')
 });
