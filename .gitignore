@@ -30,3 +30,4 @@ docs/_contact-preview.html
 
 # Local agent tooling (preview server config), not project config.
 .claude/
+secp256k1-wasm/target/
