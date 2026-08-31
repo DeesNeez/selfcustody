@@ -969,16 +969,19 @@ ${FONTS.map(embedFont).join('\n')}
     margin: 0 0 38px; padding: 21px 22px; border-radius: 16px;
     /* Warm rather than the flat white wash it had: the panel sits directly
        under the hero and above the workbench, and a neutral grey read as a
-       gap between them rather than as part of the same surface. The radial
-       highlight is anchored to the top-right corner, where the download
-       button is. */
+       gap between them rather than as part of the same surface.
+
+       The same fade and border as the Local copy badge, deliberately. The two
+       are the pair that describe the self-contained file -- the badge says
+       what this copy is, this panel offers you one -- so they are the same
+       surface at two sizes rather than two warm greys that nearly match. */
     background:
-      radial-gradient(
-        circle at 100% 0%,
-        rgba(232, 214, 181, 0.055),
-        transparent 250px
+      linear-gradient(
+        145deg,
+        rgba(232, 214, 181, 0.13),
+        rgba(232, 214, 181, 0.035)
       ),
-      linear-gradient(145deg, #28251f, #1a1917 72%);
+      rgba(8, 8, 8, 0.28);
     border: 1px solid rgba(232, 214, 181, 0.34);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
@@ -1508,19 +1511,59 @@ ${FONTS.map(embedFont).join('\n')}
   .hero .status .status-reserve { visibility: hidden; pointer-events: none; }
   /* The local-file badge is the one status line reporting what this file is
      rather than the result of a check, so it carries no state colour and fell
-     through to the neutral wash. It says the same thing the offline panel
-     says -- this is the self-contained copy -- so it gets the same surface,
-     and the two read as one family instead of two unrelated greys. Scoped to
-     the local state: online, .warn still wins. */
-  .hero .status li#where:not(.warn) {
-    /* --ink-soft, the same weight the warning copy is set in, rather than the
-       dimmer --muted the neutral badges use. */
-    color: var(--ink-soft);
+     through to the neutral wash. It reads as a label rather than a verdict:
+     what the file is, then what follows from that. Scoped to the local state
+     -- online the badge still takes .warn, untouched. */
+  .hero .status li#where.local {
+    color: #c1b49d;
     border-color: rgba(232, 214, 181, 0.34);
     background:
-      radial-gradient(circle at 100% 0%, rgba(232, 214, 181, 0.055), transparent 250px),
-      linear-gradient(145deg, #28251f, #1a1917 72%);
+      linear-gradient(145deg, rgba(232, 214, 181, 0.13), rgba(232, 214, 181, 0.035)),
+      rgba(8, 8, 8, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
   }
+  /* The document mark takes the status dot's place rather than sitting beside
+     it: two leading marks on one badge is one too many, and dropping into the
+     dot's slot leaves the box's height and its 30px text inset exactly as the
+     other badges have them. */
+  .hero .status li#where.local::before { display: none; }
+  .hero .status li#where.local .where-doc {
+    position: absolute; left: 11px; top: 50%;
+    width: 13px; height: 13px; color: #d9c8aa;
+    transform: translateY(-50%);
+  }
+  .hero .status li#where .where-local {
+    grid-area: 1 / 1;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  }
+  .hero .status li#where .where-main { color: #f0dfc2; }
+  .hero .status li#where .where-sub { color: #c1b49d; }
+  .hero .status li#where .where-sep {
+    width: 1px; height: 11px; background: rgba(217, 200, 170, 0.24);
+  }
+  /* A dot says something happened and leaves which thing to the text. That is
+     thinnest exactly where it matters most: only .good and .warn ever
+     overrode the dot's colour, so a self-test that FAILED showed the same
+     neutral grey as one still running. A check and a cross say it outright.
+     The dot stays while the test is running -- there is no verdict yet to
+     draw -- and neither mark moves, because a failure that animates reads as
+     progress. */
+  .hero .status li#selftest::before { display: none; }
+  .hero .status li#selftest .selftest-mark {
+    position: absolute; left: 10px; top: 50%;
+    width: 15px; height: 15px;
+    transform: translateY(-50%);
+  }
+  /* Running is the same circle, empty and grey. Swapping a 7px dot for a 15px
+     ringed mark would move the badge's leading mark at the exact moment the
+     verdict lands; keeping the ring and filling it in changes only the thing
+     that actually changed. */
+  .hero .status li#selftest .selftest-pass,
+  .hero .status li#selftest .selftest-fail { display: none; }
+  .hero .status li#selftest.good .selftest-idle,
+  .hero .status li#selftest.bad .selftest-idle { display: none; }
+  .hero .status li#selftest.good .selftest-pass { display: block; }
+  .hero .status li#selftest.bad .selftest-fail { display: block; }
   .hero .status li::before {
     content: ""; position: absolute; left: 12px; top: 50%; width: 7px; height: 7px;
     border-radius: 50%; background: #8e887e; transform: translateY(-50%);
@@ -3786,8 +3829,8 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
             <span>View source on GitHub</span>
           </a>
           <ul class="status">
-            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: ${selfTestCount()}/${selfTestCount()} vectors pass</span></li>
-            <li id="adapter" class="warn" hidden>This machine reports a network connection</li>
+            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: ${selfTestCount()}/${selfTestCount()} vectors pass</span><svg class="selftest-mark selftest-idle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/></svg><svg class="selftest-mark selftest-pass" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="M5.3 8.2 7.2 10.1 10.8 6.2"/></svg><svg class="selftest-mark selftest-fail" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="m5.9 5.9 4.2 4.2"/><path d="m10.1 5.9-4.2 4.2"/></svg></li>
+            <li id="adapter" class="warn" hidden>This machine reports a connection</li>
             <!-- Reserving the longer of the two things this badge can end up
                  saying. Without it the badge was laid out for "Checking..." and
                  then grew to nearly three times that the moment the script ran
@@ -3796,7 +3839,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
                  The offline wording is the longer one, and either copy can show
                  either message, since the site build opened from disk reports
                  itself as a local file. -->
-            <li id="where"><span data-status-text>Checking&hellip;</span></li>${offline
+            <li id="where"><span data-status-text>Checking&hellip;</span><span class="where-local" hidden><svg class="where-doc" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.4 1.8H4.3a1.5 1.5 0 0 0-1.5 1.5v9.4a1.5 1.5 0 0 0 1.5 1.5h7.4a1.5 1.5 0 0 0 1.5-1.5V5.6z"/><path d="M9.4 1.8v3.8h3.8"/></svg><span class="where-main">Local copy</span><span class="where-sep" aria-hidden="true"></span><span class="where-sub">No network required</span></span></li>${offline
             /* Only the downloaded file makes this claim, because only it can:
                the site page loads a stylesheet, a script and two webfonts. It
                is also the one claim here worth a badge of its own -- "running
@@ -3843,10 +3886,20 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
                  fallback, which is the only case that can still see it. */
               var where = document.getElementById('where');
               if (where) {
-                where.className = local ? '' : 'warn';
-                where.querySelector('[data-status-text]').textContent = local
-                  ? 'Opened from a local file \u2014 this tool requires no network requests'
-                  : 'Loaded over a network \u2014 this copy is online';
+                where.className = local ? 'local' : 'warn';
+                /* Both variants ship in the markup and one is revealed, rather
+                   than a string being written in. The local reading is a
+                   labelled row -- mark, label, rule, consequence -- which is
+                   structure, not text, and structure does not belong in a
+                   quoted string here. Same timing either way: this still
+                   settles before paint, so the row cannot jump. */
+                var plain = where.querySelector('[data-status-text]');
+                var labelled = where.querySelector('.where-local');
+                plain.hidden = local;
+                if (labelled) labelled.hidden = !local;
+                if (!local) {
+                  plain.textContent = 'Loaded over a network \u2014 this copy is online';
+                }
               }
 
               var badge = document.getElementById('adapter');
