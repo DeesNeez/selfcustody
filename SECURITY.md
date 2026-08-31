@@ -48,7 +48,11 @@ them is false is a valid security report**, and the most useful kind:
 4. **The published checksum matches the artifact.** `entropy-offline.html.sha256`
    is generated from the exact bytes written, in the same build step. If the two
    ever disagree, that is a reportable defect.
-5. **Conversions are correct.** The tool reproduces the published conventions it
+5. **The release artifact has build provenance.** After the ordinary build and
+   pinned-source WebAssembly checks pass, every push to `main` publishes a
+   keyless GitHub/Sigstore attestation for the exact
+   `docs/entropy-offline.html` bytes in that commit.
+6. **Conversions are correct.** The tool reproduces the published conventions it
    claims to reproduce — BIP32/39/44/49/84/86, SLIP-132, and the specific
    dice/card conventions of COLDCARD, Keystone, BitBox02, the BIP39 HTML tool
    and the printed octal-and-hex dictionary. A vector where the tool disagrees
@@ -124,22 +128,35 @@ place as the file it describes. Anyone who could replace one could replace the
 other, and you would compare a tampered file against a tampered hash and get a
 clean result. Same-origin checksums detect accidents, not adversaries.
 
+For a stronger origin check, verify the keyless build-provenance attestation
+published by this repository's release workflow:
+
+```
+gh attestation verify entropy-offline.html -R DeesNeez/selfcustody
+```
+
+That proves the file's bytes were attested by this repository's GitHub Actions
+workflow after its verification jobs passed. It does not prove that the source
+itself is correct, that every reviewer is trustworthy, or that the machine on
+which you open the file is safe. For an independent check, inspect the source
+and reproduce the build locally.
+
 The tool is for testing rather than for securing real bitcoin, so this matters
 less than it would otherwise. It still matters: a tampered copy could report a
 wrong phrase for a device you were checking, and send you looking for a fault
 in the device. If a result is going to change what you believe about a wallet,
 do not stop at the hash:
 
-- Compare it against a copy fetched over a different network, on a different
-  device, or from the repository's commit history rather than the live site.
+- Verify the repository attestation, then compare against a copy fetched over
+  a different network or from the repository's commit history.
 - Read the file. It is one HTML document with no minification and no
   runtime-loaded dependencies, specifically so that reading it is possible.
 - Use a published or otherwise disposable test sequence and compare its
   expected phrase.
 
-If this project later publishes signed release tags or a signed manifest, that
-will be the stronger check, and this section will say so. Until it does, treat
-the published hash as an integrity check and nothing more.
+Treat the published hash as an integrity check, the attestation as evidence of
+the file's build origin, and a source review plus reproducible local build as
+the independent verification path.
 
 ## Using the tool safely
 

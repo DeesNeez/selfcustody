@@ -12,6 +12,7 @@
     "test:browser-preflight": "node build/tools/browser-preflight-test.mjs",
     "test:beta-warning": "node build/tools/beta-warning-test.mjs",
     "test:card-suit-fonts": "node build/tools/card-suit-font-test.mjs",
+    "test:attestation-workflow": "node build/tools/attestation-workflow-test.mjs",
     "test:lifehash": "node build/tools/lifehash-test.mjs",
     "test:die-distribution": "node build/tools/die-distribution-test.mjs",
     "build:wasm:container": "node build/tools/build-wasm-container.mjs"
