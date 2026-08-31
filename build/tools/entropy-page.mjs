@@ -795,6 +795,61 @@ ${FONTS.map(embedFont).join('\n')}
   }
   @media (prefers-reduced-motion: reduce) { .meter-track i { transition: none; } }
 
+  /* Optional equipment check. A native disclosure keeps every statistic out
+     of sight unless it is deliberately opened, and the columns read as a
+     small histogram rather than duplicating EntropyLab's verdict card. */
+  .distribution {
+    margin-top: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px; background: rgba(0, 0, 0, 0.16);
+  }
+  .distribution[hidden] { display: none; }
+  .distribution > summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 11px 13px; cursor: pointer; color: var(--ink); font-weight: 750;
+    list-style: none;
+  }
+  .distribution > summary::-webkit-details-marker { display: none; }
+  .distribution > summary::before { content: '+'; color: #ffad4c; font-size: 1.1rem; }
+  .distribution[open] > summary::before { content: '\\2212'; }
+  .distribution > summary span:first-child { margin-right: auto; }
+  .distribution > summary small {
+    color: var(--muted); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .distribution-body { padding: 0 13px 14px; }
+  .distribution-intro, .distribution-wait, .distribution-caveat {
+    margin: 0; color: var(--muted); font-size: 0.8rem; line-height: 1.55;
+  }
+  .distribution-wait { padding-top: 3px; }
+  .distribution-report { padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+  .distribution-report + .distribution-report { margin-top: 14px; }
+  .distribution-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .distribution-head strong { font-size: 0.88rem; }
+  .distribution-status { color: var(--muted); font-size: 0.72rem; font-weight: 800; }
+  .distribution-status.is-balanced { color: #8be3c6; }
+  .distribution-status.is-uneven { color: #ff9d8a; }
+  .distribution-stats { margin: 4px 0 10px; color: var(--muted); font-size: 0.72rem; }
+  .distribution-chart {
+    display: grid; grid-template-columns: repeat(var(--faces), minmax(20px, 1fr));
+    align-items: end; gap: 5px; min-height: 112px;
+  }
+  .distribution-face { display: grid; grid-template-rows: 18px 72px 18px; gap: 3px; text-align: center; }
+  .distribution-face > b, .distribution-face > small {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.68rem; font-variant-numeric: tabular-nums;
+  }
+  .distribution-face > b { color: var(--ink); }
+  .distribution-face > small { color: var(--muted); }
+  .distribution-column {
+    position: relative; display: flex; align-items: end; overflow: hidden;
+    border-radius: 5px 5px 2px 2px; background: rgba(255, 255, 255, 0.06);
+  }
+  .distribution-column > i { width: 100%; min-height: 1px; background: rgba(255, 138, 0, 0.7); }
+  .distribution-column > span {
+    position: absolute; left: 0; right: 0; height: 1px;
+    background: rgba(255, 255, 255, 0.65);
+  }
+  .distribution-caveat { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+
   /* The dice source has two kinds behind it; the toggle only appears once the
      dice card is chosen, so the first row stays three even choices.
 
@@ -2566,6 +2621,7 @@ const ui = () => `
 
     const allowed = C.nextAllowed(method(), input);
     paintMeter(input);
+    paintDistribution(input, at);
     $('pad-hint').textContent = state.source === 'dice' && state.dice === 'octahex'
       ? (allowed && allowed.length === 8
         ? 'Throw all three, then enter the octal die first — it shows 1 to 8.'
@@ -2713,6 +2769,80 @@ const ui = () => `
       image.alt = '';
       image.hidden = true;
     }
+  }
+
+  const formatDistributionP = p => p < 0.001 ? '<0.001' : p.toFixed(3);
+
+  function distributionReportElement(report) {
+    const section = document.createElement('section');
+    section.className = 'distribution-report';
+    const head = document.createElement('div');
+    head.className = 'distribution-head';
+    const title = document.createElement('strong');
+    title.textContent = report.title;
+    const status = document.createElement('span');
+    status.className = 'distribution-status is-' + report.state;
+    status.textContent = report.state === 'insufficient'
+      ? 'More observations needed'
+      : report.state === 'uneven' ? 'Unusually uneven' : 'No strong imbalance detected';
+    head.append(title, status);
+
+    const stats = document.createElement('p');
+    stats.className = 'distribution-stats';
+    stats.textContent = report.samples < report.minimum
+      ? report.samples + ' observations · ' + report.minimum + ' needed for the chi-square approximation'
+      : report.samples + ' observations · expected ' + report.expected.toFixed(1)
+        + ' per face · chi-square ' + report.score.toFixed(2) + ' · p ' + formatDistributionP(report.p);
+
+    const peak = Math.max(report.expected, ...report.counts.map(face => face.count), 1);
+    const chart = document.createElement('div');
+    chart.className = 'distribution-chart';
+    chart.style.setProperty('--faces', report.counts.length);
+    chart.setAttribute('aria-label', report.title + ' face counts');
+    for (const face of report.counts) {
+      const item = document.createElement('span');
+      item.className = 'distribution-face';
+      const count = document.createElement('b');
+      count.textContent = face.count;
+      const column = document.createElement('span');
+      column.className = 'distribution-column';
+      const bar = document.createElement('i');
+      bar.style.height = (face.count / peak * 100).toFixed(1) + '%';
+      const expected = document.createElement('span');
+      expected.style.bottom = (report.expected / peak * 100).toFixed(1) + '%';
+      const label = document.createElement('small');
+      label.textContent = face.label;
+      column.append(bar, expected);
+      item.append(count, column, label);
+      chart.append(item);
+    }
+    section.append(head, stats, chart);
+    return section;
+  }
+
+  function paintDistribution(input, progress) {
+    const details = $('distribution');
+    const relevant = state.source === 'dice';
+    details.hidden = !relevant;
+    if (!relevant) { details.open = false; $('distribution-body').replaceChildren(); return; }
+    if (!details.open) { $('distribution-body').replaceChildren(); return; }
+
+    const body = $('distribution-body');
+    if (!progress.ready) {
+      const waiting = document.createElement('p');
+      waiting.className = 'distribution-wait';
+      waiting.textContent = 'Finish the minimum sequence first. The chart stays withheld while you are still entering outcomes, so it cannot influence which ones you keep.';
+      body.replaceChildren(waiting);
+      return;
+    }
+
+    const intro = document.createElement('p');
+    intro.className = 'distribution-intro';
+    intro.textContent = 'The white mark is the count expected at each face. Pearson’s chi-square asks how surprising the differences would be if the source were even.';
+    const caveat = document.createElement('p');
+    caveat.className = 'distribution-caveat';
+    caveat.textContent = 'Advisory only. Fair input can trigger this warning by chance. This is a spellcheck, not proof of randomness. Do not edit or reroll individual outcomes in response; test the physical die in a separate run if something concerns you.';
+    body.replaceChildren(intro, ...C.dieDistributionReports(method(), input).map(distributionReportElement), caveat);
   }
 
   function paintLifeHash(id, fingerprint) {
@@ -3175,6 +3305,10 @@ const ui = () => `
     }
     paintCount();
     invalidateDerivedState();
+  });
+  $('distribution').addEventListener('toggle', () => {
+    const input = clean();
+    paintDistribution(input, C.progress({ method: method(), input, words: state.words }));
   });
   $('path').addEventListener('input', () => {
     state.pathEdited = $('path').value.trim() !== defaultPath();
@@ -3765,6 +3899,11 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <div class="meter-track"><i id="meter-fill"></i></div>
     <p class="meter-note" id="meter-note"><span id="meter-note-base"></span><span class="meter-cap" id="meter-cap" hidden></span></p>
   </div>
+
+  <details class="distribution" id="distribution">
+    <summary><span>Inspect die distribution</span><small>optional</small></summary>
+    <div class="distribution-body" id="distribution-body" role="status" aria-live="polite"></div>
+  </details>
 </fieldset>
 
 <button type="button" class="go" id="go" disabled>Produce wallet</button>
@@ -4125,6 +4264,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <p class="src-tail">The Bitcoin Core wallet.dat encoder is adapted from <a href="https://github.com/w-s-bitcoin/entropylab/pull/32" target="_blank" rel="noopener noreferrer">EntropyLab pull request #32</a>, whose generated descriptor wallets were checked against Bitcoin Core 28.3.0. Used under the MIT License.</p>
     <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
     <p class="src-tail">Visual fingerprints use <a href="https://lifehash.info/" target="_blank" rel="noopener noreferrer">LifeHash version2</a>, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/74" target="_blank" rel="noopener noreferrer">EntropyLab pull request #74</a> and the Blockchain Commons reference implementation. Used under the MIT License.</p>
+    <p class="src-tail">The optional die-distribution inspector adapts the Pearson chi-square idea from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/36" target="_blank" rel="noopener noreferrer">EntropyLab pull request #36</a>. Its disclosure, histogram, threshold and wording are original to this Workshop.</p>
     <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
 
     <p>One thing above has no source: the refusal you get when a sequence looks typed rather than rolled. That check is ours, its thresholds come from simulated rolls rather than a specification, and it is a spellcheck &mdash; not a randomness test.</p>
