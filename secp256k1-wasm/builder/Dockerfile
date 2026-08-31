@@ -10,7 +10,10 @@
 # ar 2.42 are what produced the two deterministic builds that passed the
 # functional vectors; see build/tools/snapshot-probe.sh for how each was
 # established.
-FROM ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517
+# linux/amd64 declared explicitly: the digest names a manifest list, and on an
+# ARM host Docker would otherwise select a different platform or emulate one,
+# quietly building the artifact with a toolchain nobody measured.
+FROM --platform=linux/amd64 ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517
 
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
@@ -29,9 +32,13 @@ RUN dpkg -i /tmp/bootstrap/openssl.deb /tmp/bootstrap/ca-certificates.deb \
 #
 # gcc-13 is here as the *host* linker. secp256k1-sys has a build script, which
 # cargo compiles and links for the host before it can emit any wasm at all, and
-# a minimal image has no cc. It cannot influence the artifact: the build script
-# only decides how clang is invoked for wasm32, and clang emits every byte that
-# ends up in the module. Pinned anyway, since everything else here is.
+# a minimal image has no cc.
+#
+# gcc is not the wasm code generator -- clang emits the module bytes. What gcc
+# links is the host build helper, and that helper's execution decides how clang
+# is invoked, so it sits in the transitive build environment rather than
+# outside it. Pinned on that basis, not on a claim that it cannot matter.
+#
 # gcc-13 rather than the gcc metapackage, which exists only in noble while its
 # components are in noble-updates -- pinning the component avoids that skew.
 ARG SNAPSHOT=https://snapshot.ubuntu.com/ubuntu/20260824T000000Z
@@ -90,6 +97,9 @@ RUN mkdir -p /seed/secp256k1-wasm/src \
 # --- the toolchain this image is, recorded in the image ----------------------
 ENV CC_wasm32_unknown_unknown=/usr/lib/llvm-18/bin/clang
 ENV AR_wasm32_unknown_unknown=/usr/bin/x86_64-linux-gnu-ar
+# Named outright rather than left to resolve through the cc symlink, so the
+# host linker is a stated input like everything else here.
+ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=/usr/bin/gcc-13
 RUN { echo "base:  ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517"; \
       echo "snap:  ${SNAPSHOT}"; \
       echo "rustc: $(rustc --version)"; \
@@ -97,6 +107,8 @@ RUN { echo "base:  ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503e
       echo "node:  $(node --version)"; \
       echo "clang: $(${CC_wasm32_unknown_unknown} --version | head -1)"; \
       echo "ar:    $(${AR_wasm32_unknown_unknown} --version | head -1)"; \
+      echo "host linker: $(${CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER} --version | head -1)"; \
+      echo "platform: linux/amd64  arch: $(uname -m)"; \
     } > /etc/wasm-builder-provenance \
  && cat /etc/wasm-builder-provenance
 

@@ -109,18 +109,28 @@ jobs:
       # Cargo.lock, which sit above builder/ where COPY cannot reach them.
       - name: Build the pinned builder image
         run: |
-          docker build --tag wasm-builder:ci \
+          docker build --platform linux/amd64 --tag wasm-builder:ci \
             --file secp256k1-wasm/builder/Dockerfile \
             secp256k1-wasm
 
+      # Asked-for is not the same as got. A digest can name a multi-platform
+      # index, so the platform is asserted rather than assumed.
+      - name: Confirm the image is linux/amd64
+        run: |
+          got=$(docker inspect --format '{{.Os}}/{{.Architecture}}' wasm-builder:ci)
+          if [ "$got" != "linux/amd64" ]; then
+            echo "::error::builder image is $got, expected linux/amd64"; exit 1
+          fi
+          echo "builder platform: $got"
+
       - name: Builder provenance
-        run: docker run --rm wasm-builder:ci cat /etc/wasm-builder-provenance
+        run: docker run --platform linux/amd64 --rm wasm-builder:ci cat /etc/wasm-builder-provenance
 
       # --offline: the image already carries every crate the lockfile names, so
       # a build that reached the network would not be reproducing anything.
       - name: Compile
         run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+          docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
             -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
             node build/tools/wasm-compile.mjs --offline
           sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
@@ -131,7 +141,7 @@ jobs:
       - name: Compile again from clean and compare the raw wasm
         run: |
           rm -rf secp256k1-wasm/target
-          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+          docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
             -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
             node build/tools/wasm-compile.mjs --offline
           sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
@@ -151,11 +161,11 @@ jobs:
       - name: Wrap
         id: wrap
         run: |
-          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+          docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
             -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
             node build/tools/wasm-wrap.mjs
           cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/wrap-first.js"
-          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+          docker run --platform linux/amd64 --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
             -v "$PWD:/workspace" -w /workspace wasm-builder:ci \
             node build/tools/wasm-wrap.mjs
           if cmp -s "$RUNNER_TEMP/wrap-first.js" build/tools/secp256k1-wasm-b64.js; then
@@ -212,7 +222,7 @@ jobs:
       # bootstrap before it can reach an HTTPS archive.
       - name: Base image CA state, unassisted
         run: |
-          docker run --rm \
+          docker run --platform linux/amd64 --rm \
             -v "$PWD/build/tools/snapshot-probe.sh:/probe.sh:ro" \
             ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 \
             bash /probe.sh \
@@ -220,7 +230,7 @@ jobs:
 
       - name: Snapshot resolves the measured toolchain in a clean container
         run: |
-          docker run --rm \
+          docker run --platform linux/amd64 --rm \
             -v "$PWD/build/tools/snapshot-probe.sh:/probe.sh:ro" \
             -v /etc/ssl/certs:/etc/ssl/certs:ro \
             ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab3078a2d7a57a2ab987517 \
