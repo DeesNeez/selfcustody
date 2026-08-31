@@ -1308,7 +1308,14 @@
   /* No control beside the field: the check runs on input, so there is nothing
      to press and nothing to lay out beside it. A field on its own row is a
      field. */
-  .address-match input[type="text"] { border-color: rgba(205, 176, 110, 0.30); }
+  /* Even gaps above and below. The field inherited .hint's 7px underneath it
+     from the status line and nothing on top, so it sat against the
+     description and floated away from its own result. */
+  .address-match input[type="text"] {
+    margin-top: 10px;
+    border-color: rgba(205, 176, 110, 0.30);
+  }
+  .address-match .address-match-status { margin-top: 10px; }
   /* Border only. The orange focus ring is the accessible affordance and is
      left exactly as it is. */
   .address-match input[type="text"]:focus { border-color: rgba(220, 198, 138, 0.72); }
@@ -1331,6 +1338,10 @@
   summary { user-select: none; -webkit-user-select: none; }
 
   details { margin-top: 26px; }
+  /* The 26px every other disclosure needs separates it from a paragraph. This
+     one follows the export cards, which already end in their own padding, so
+     the two gaps stacked and it drifted away from the section it belongs to. */
+  details.raw-entropy { margin-top: 14px; }
   summary { cursor: pointer; color: var(--ink-soft); font-size: 0.9rem; font-weight: 700; }
   details .body { margin-top: 12px; color: var(--muted); font-size: 0.88rem; }
   details code { color: var(--ink-soft); word-break: break-all; }
@@ -2351,7 +2362,7 @@
     </form>
   </dialog>
 
-  <details>
+  <details class="raw-entropy">
     <summary>Show the raw entropy</summary>
     <div class="body">
       <p>The number your rolls became, before it was written out as words:</p>
