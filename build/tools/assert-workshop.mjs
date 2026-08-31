@@ -186,6 +186,25 @@ export function assertWorkshop() {
       /class="selftest-mark selftest-fail"[^>]*aria-hidden="true"/.test(html) &&
       !/\.selftest-mark[^{}]*\{[^{}]*animation/.test(html),
       `the ${name} build does not give the self-test a static pass and fail mark`);
+    /* One resting edge for every workbench control, defined once and referenced
+       by each skin. The point of the token is the pads that are hidden until
+       the source changes: they inherit it without appearing on any list, so a
+       new method cannot ship with the old white edge.
+
+       Counted rather than named, because naming the three would have to be
+       revisited every time a control is added -- which is the failure this
+       replaces. State colours are asserted separately: they set their own
+       border-color and must keep winning over the resting one. */
+    check(/--edge-rest: rgba\(232, 214, 181, 0\.34\)/.test(html) &&
+      (html.match(/border: 1px solid var\(--edge-rest\)/g) || []).length >= 3,
+      `the ${name} build does not share one resting edge across the workbench controls`);
+    /* \s* before each brace: the site build scopes its selectors and closes
+       them up, the offline build leaves them unscoped with a space. Matching
+       one form silently passes on one build and fails on the other. */
+    check(/seg button\[aria-pressed="true"\]\s*\{[^}]*border-color: var\(--orange\)/.test(html) &&
+      /seg button:hover\s*\{[^}]*border-color: rgba\(255, 138, 0, 0\.45\)/.test(html) &&
+      /key:hover:not\(:disabled\)\s*\{[^}]*border-color: rgba\(255, 138, 0, 0\.6\)/.test(html),
+      `the ${name} build lost a control's hover or selected edge to the resting one`);
     check(/selfcustody-entropy-beta-accepted/.test(script) &&
       /localStorage\.getItem\(STORAGE_KEY\)\s*===\s*version/.test(script) &&
       /localStorage\.setItem\(STORAGE_KEY, version\)/.test(script) &&
