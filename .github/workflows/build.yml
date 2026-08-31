@@ -49,6 +49,9 @@ jobs:
       - name: Beta acknowledgement and sticky warning
         run: node build/tools/beta-warning-test.mjs
 
+      - name: Card-suit font fallbacks
+        run: node build/tools/card-suit-font-test.mjs
+
       # Also runs, in order: the icon-subset check, the fetch guard, the glyph
       # guard and the Workshop guard. Any of them failing exits non-zero.
       - name: Build and guards
