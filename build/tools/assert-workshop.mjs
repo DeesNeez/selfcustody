@@ -268,6 +268,23 @@ export function assertWorkshop() {
       /address-match input\[type="text"\]:focus\s*\{[^}]*border-color: rgba\(220, 198, 138, 0\.72\)/.test(html) &&
       /input\[type="text"\]:focus[^{]*\{[^}]*outline: 2px solid var\(--orange\)/.test(html),
       `the ${name} build does not keep the address panel's icons, local note and focus ring`);
+    /* The two export cards say opposite things and must not be shades of one
+       colour. Red is the private record; green -- the checksum's green, not a
+       third one -- is the watch-only. It was orange, the page's caution
+       colour, which read as a milder warning rather than as the safe option.
+       The wallet.dat control is the one filled button in the pair and is
+       keyed by id so it wins over the private card's red. */
+    check(/export-card\.is-private\s*\{[^}]*rgba\(214, 94, 64/.test(html) &&
+      /export-card\.is-watch\s*\{[^}]*rgba\(53, 180, 138/.test(html) &&
+      /is-watch \.export-tag\s*\{[^}]*color: #8be3c6/.test(html) &&
+      /is-watch \.export-button\s*\{[^}]*color: #8be3c6/.test(html) &&
+      !/is-watch[^{]*\{[^}]*rgba\(255, 138, 0/.test(html),
+      `the ${name} build does not keep the export cards red for private and green for watch-only`);
+    check(/<div class="export-actions">/.test(html) &&
+      /export-actions \.export-button\s*\{[^}]*min-height: 40px/.test(html) &&
+      /export-actions \.export-button\s*\{[^}]*min-height: 44px/.test(html) &&
+      /#export-wallet-open\s*\{[^}]*background: rgba\(255, 138, 0, 0\.20\)/.test(html),
+      `the ${name} build does not lay the private card's two actions out side by side`);
     check(/id="address-match"/.test(html) && /id="address-match-status"[^>]*role="status"/.test(html),
       `the ${name} build does not expose the derived-wallet address check`);
     check(/const ADDRESS_SEARCH_LIMIT\s*=\s*1000/.test(script) &&
