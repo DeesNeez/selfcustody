@@ -29,6 +29,7 @@ import { readFileSync } from 'node:fs';
 import { scopeCss } from './scope-css.mjs';
 
 const CORE = 'build/tools/entropy-core.js';
+const PREFLIGHT = 'build/tools/browser-preflight.js';
 /* EntropyLab's Bitcoin Core descriptor-wallet exporter from pull request #32.
    Both scripts are MIT licensed; the retained notice is beside them under
    build/vendor/entropylab-wallet-export/. */
@@ -834,6 +835,27 @@ ${FONTS.map(embedFont).join('\n')}
     border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.1);
     color: #ff9d8a; font-size: 0.92rem;
   }
+
+  .sanity-failure { min-height: 58vh; display: grid; place-items: center; padding: 28px 0; }
+  .sanity-failure-card {
+    width: min(100%, 680px); padding: 28px 24px; text-align: center;
+    border: 1px solid rgba(214, 94, 64, 0.62); border-radius: 14px;
+    background: rgba(214, 94, 64, 0.1);
+  }
+  .sanity-failure-icon {
+    width: 54px; height: 54px; margin: 0 auto 12px; display: grid; place-items: center;
+    border: 2px solid #ff9d8a; border-radius: 50%; color: #ff9d8a;
+    font-size: 2rem; line-height: 1;
+  }
+  .sanity-failure-card h1 { margin: 0 0 8px; font-size: 1.45rem; }
+  .sanity-failure-card > p { color: var(--muted); }
+  .sanity-failure-card table { width: 100%; margin: 18px 0; border-collapse: collapse; }
+  .sanity-failure-card th, .sanity-failure-card td {
+    padding: 9px 12px; border: 1px solid rgba(255, 255, 255, 0.14); text-align: left;
+  }
+  .sanity-failure-card th { color: var(--muted); }
+  .sanity-failure-card td:last-child { color: #ff9d8a; font-weight: 800; }
+  .sanity-failure-advice { margin-bottom: 0; }
 
   /* Shown either way, saying different things: served, it offers the download;
      from a local file it confirms which file you are running and keeps the
@@ -4075,7 +4097,10 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
 </main>`;
 
-const toolScripts = ({ core, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
+const toolScripts = ({ preflight, core, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
+${preflight}
+</script>
+<script>
 ${core}
 </script>
 <script>
@@ -4090,6 +4115,7 @@ ${qrlib}
 <script>
 'use strict';
 (function () {
+  if (window.__entropyWorkshopPreflightPassed !== true) return;
   const OFFLINE_BUILD = ${offline};
   const C = EntropyCore;
   const WORDLIST_RAW = '${wordlist}';
@@ -4115,6 +4141,7 @@ const withFileSize = html => {
 };
 
 const payload = () => ({
+  preflight: readFileSync(PREFLIGHT, 'utf8'),
   core: readFileSync(CORE, 'utf8'),
   sqliteWriter: readFileSync(SQLITE_WRITER, 'utf8'),
   walletDat: readFileSync(WALLET_DAT, 'utf8'),
