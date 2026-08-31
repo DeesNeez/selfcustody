@@ -75,7 +75,10 @@ jobs:
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '22'
+          # Exactly the Node the builder image carries. It does not generate
+          # the artifact, but it runs the parse check and the engine vectors, and
+          # a floating major is the one unpinned link in an otherwise fixed chain.
+          node-version: '22.23.2'
 
       - name: Builder scripts parse
         run: |
