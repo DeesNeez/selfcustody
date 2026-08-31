@@ -113,9 +113,11 @@ jobs:
       # locally cannot drift apart. build:wasm:container pulls the digest,
       # asserts the image is linux/amd64, compiles --offline and wraps.
       - name: Build the artifact, pass one
+        id: pass_one
         run: |
           npm run build:wasm:container
-          cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/wrap-first.js"
+          mkdir -p "$RUNNER_TEMP/candidate"
+          cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.js"
           sha256sum secp256k1-wasm/target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm \
             | awk '{print $1}' > "$RUNNER_TEMP/raw-first.sha"
           cat "$RUNNER_TEMP/raw-first.sha"
@@ -134,9 +136,9 @@ jobs:
             exit 1
           fi
           echo "raw wasm stable: $a"
-          if ! cmp -s "$RUNNER_TEMP/wrap-first.js" build/tools/secp256k1-wasm-b64.js; then
+          if ! cmp -s "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.js" build/tools/secp256k1-wasm-b64.js; then
             echo "::error::packaging is nondeterministic in the published builder"
-            sha256sum "$RUNNER_TEMP/wrap-first.js" build/tools/secp256k1-wasm-b64.js
+            sha256sum "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.js" build/tools/secp256k1-wasm-b64.js
             exit 1
           fi
           echo "wrapper stable:  $(sha256sum build/tools/secp256k1-wasm-b64.js | awk '{print $1}')"
@@ -144,15 +146,22 @@ jobs:
       - name: Test the freshly built engine
         run: node build/tools/secp256k1-wasm-test.mjs
 
-      # Uploaded unconditionally once a build has happened: on a mismatch these
-      # are the bytes under consideration, and a red gate must not discard its
-      # own evidence.
+      # Gated on pass one having actually run, and uploading pass one's own
+      # copy rather than the workspace file. hashFiles() was worse than no
+      # condition at all: the wrapper is committed, so it is present the moment
+      # checkout finishes, and a failure in the parse gate, the pull or the
+      # compile would have uploaded the untouched committed file labelled as
+      # freshly built -- the exact bytes under suspicion, wearing the name of
+      # their replacement.
+      #
+      # Uploading the pass-one copy also keeps that evidence when pass two or
+      # the comparison is what failed.
       - name: Upload the built artifact
-        if: always() && hashFiles('build/tools/secp256k1-wasm-b64.js') != ''
+        if: always() && steps.pass_one.outcome == 'success'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: secp256k1-wasm-b64-${{ github.sha }}
-          path: build/tools/secp256k1-wasm-b64.js
+          path: ${{ runner.temp }}/candidate/secp256k1-wasm-b64.js
           if-no-files-found: error
 
       # The provenance gate, last. Functional equivalence does not establish
