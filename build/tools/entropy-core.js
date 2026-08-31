@@ -1904,6 +1904,84 @@ const EntropyCore = (() => {
     };
   };
 
+  /* Address comparison for the result-page check. Bitcoin payment URIs are
+     accepted because that is what many wallets copy. Bech32 is
+     case-insensitive only when the whole address uses one case; mixed-case
+     Bech32 is invalid and must not be made to look like a match by lowering it
+     first. Base58 remains case-sensitive. */
+  const isBech32Address = value => /^(bc1|tb1|bcrt1)/i.test(value);
+  const hasMixedCase = value => /[a-z]/.test(value) && /[A-Z]/.test(value);
+  const normalizeAddressCheck = value => {
+    const text = String(value ?? '').trim()
+      .replace(/^bitcoin:/i, '').replace(/\?.*$/, '').trim();
+    if (!text || !isBech32Address(text) || hasMixedCase(text)) return text;
+    return text.toLowerCase();
+  };
+  const addressesEqual = (left, right) => {
+    if (!left || !right) return false;
+    if (isBech32Address(left) || isBech32Address(right)) {
+      if (hasMixedCase(left) || hasMixedCase(right)) return false;
+      return left.toLowerCase() === right.toLowerCase();
+    }
+    return left === right;
+  };
+  const matchDerivedAddress = (raw, receive = [], change = []) => {
+    const address = normalizeAddressCheck(raw);
+    if (!address) return { state: 'empty' };
+    const find = (rows, chain) => {
+      for (const row of rows) {
+        if (addressesEqual(address, String(row.address || ''))) {
+          return { state: 'match', chain, index: row.index, path: row.path, address: row.address };
+        }
+      }
+      return null;
+    };
+    return find(receive, 'receive') || find(change, 'change') || {
+      state: 'miss', receiveCount: receive.length, changeCount: change.length
+    };
+  };
+
+  /* Prepare the expensive account and branch derivations once. The page
+     searches in one-index tasks so it can repaint between point
+     multiplications; repeating the hardened account path in every task made
+     those small batches several times slower than the work they contained. */
+  const prepareDerivedAddressSearch = ({ seed, addressType, path }) => {
+    const type = ADDRESS_TYPES[addressType];
+    if (!type) throw new Error('unknown address type');
+    const account = derive(masterKey(seed), path);
+    return { addressType, path, type, branches: [ckdPriv(account, 0), ckdPriv(account, 1)] };
+  };
+
+  /* Search a bounded slice so the page can yield between batches instead of
+     locking the browser while it checks two thousand public keys. `end` is
+     exclusive. The caller owns scheduling and cancellation; this stays a
+     deterministic crypto primitive that is easy to test. */
+  const findDerivedAddress = ({
+    seed, addressType, path, address, start = 0, end = 1000, prepared = null
+  }) => {
+    const wanted = normalizeAddressCheck(address);
+    if (!wanted) return { state: 'empty' };
+    const search = prepared || prepareDerivedAddressSearch({ seed, addressType, path });
+    if (search.addressType !== addressType || search.path !== path) {
+      throw new Error('address search context does not match this wallet');
+    }
+    const from = Math.max(0, start);
+    const to = Math.max(from, end);
+    for (let index = from; index < to; index++) {
+      for (let branch = 0; branch < 2; branch++) {
+        const leaf = ckdPriv(search.branches[branch], index);
+        const candidate = search.type.encode(compress(pointMul(toBigInt(leaf.key))));
+        if (addressesEqual(wanted, candidate)) {
+          return {
+            state: 'match', chain: branch === 0 ? 'receive' : 'change', index,
+            path: `${path}/${branch}/${index}`, address: candidate
+          };
+        }
+      }
+    }
+    return { state: 'miss', searchedTo: to ? to - 1 : -1 };
+  };
+
   /* Build the two text records that an export control can later download.
 
      Keeping this in the core, rather than assembling strings in the page,
@@ -2116,7 +2194,8 @@ const EntropyCore = (() => {
     cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity, seedQrDigits,
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,
-    deriveSeed, deriveAddresses, buildWalletExportTexts, buildWallet, limits,
+    deriveSeed, deriveAddresses, normalizeAddressCheck, matchDerivedAddress,
+    prepareDerivedAddressSearch, findDerivedAddress, buildWalletExportTexts, buildWallet, limits,
     assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative
   };
 })();

@@ -334,6 +334,45 @@ export const VECTORS = [
     'bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr'],
   ['bip86 taproot change', () => addressFor('taproot', "m/86'/0'/0'", 1),
     'bc1p3qkhfews2uk44qtvauqyr2ttdsw7svhkl9nkm9s9c3x4ax5h60wqwruhk7'],
+  ['address check: strips a BIP21 query and accepts uppercase Bech32',
+    () => C.normalizeAddressCheck(' bitcoin:BC1QCR8TE4KR609GCAWUTMRZA0J4XV80JY8Z306FYU?amount=1 '),
+    'bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu'],
+  ['address check: reports the matching branch and index', () => {
+    const receive = [{ index: 0, path: "m/84'/0'/0'/0/0", address: 'bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu' }];
+    const hit = C.matchDerivedAddress('bitcoin:BC1QCR8TE4KR609GCAWUTMRZA0J4XV80JY8Z306FYU', receive, []);
+    return [hit.state, hit.chain, hit.index].join();
+  }, 'match,receive,0'],
+  ['address check: Base58 remains case-sensitive', () => {
+    const change = [{ index: 0, path: "m/49'/0'/0'/1/0", address: '37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf' }];
+    return C.matchDerivedAddress('37vucYSaXLCAsxYyAPfbSi9eh4iEcbShgf', [], change).state;
+  }, 'miss'],
+  ['address check: mixed-case Bech32 is not treated as a match', () => {
+    const receive = [{ index: 0, path: "m/84'/0'/0'/0/0", address: 'bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu' }];
+    return C.matchDerivedAddress('bc1QCR8TE4KR609GCAWUTMRZA0J4XV80JY8Z306FYU', receive, []).state;
+  }, 'miss'],
+  ['address check: bounded search finds BIP84 receive index 1', () => {
+    const prepared = C.prepareDerivedAddressSearch({
+      seed: ABANDON_12_SEED, addressType: 'native', path: "m/84'/0'/0'"
+    });
+    const hit = C.findDerivedAddress({
+      seed: ABANDON_12_SEED, addressType: 'native', path: "m/84'/0'/0'",
+      address: 'bc1qnjg0jd8228aq7egyzacy8cys3knf9xvrerkf9g', start: 1, end: 2, prepared
+    });
+    return [hit.state, hit.chain, hit.index, hit.path].join('|');
+  }, "match|receive|1|m/84'/0'/0'/0/1"],
+  ['address check: rejects a prepared context for another path', () => {
+    const prepared = C.prepareDerivedAddressSearch({
+      seed: ABANDON_12_SEED, addressType: 'native', path: "m/84'/0'/0'"
+    });
+    try {
+      C.findDerivedAddress({
+        addressType: 'native', path: "m/84'/0'/1'", address: 'bc1qwrong', prepared
+      });
+      return 'accepted';
+    } catch (error) {
+      return error.message;
+    }
+  }, 'address search context does not match this wallet'],
 
   /* ---- the two input methods ---- */
   ['coin flips pack straight into entropy',
