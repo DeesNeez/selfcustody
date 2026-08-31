@@ -526,18 +526,37 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .export-intro { margin-bottom: 15px; }
   .export-card.is-private { border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.085); }
-  .export-card.is-watch { border-color: rgba(255, 138, 0, 0.34); background: rgba(255, 138, 0, 0.055); }
+  /* Green rather than orange. Orange is the page's caution colour -- it is
+     what the connection warning and the beta notice are set in -- and the
+     watch-only record is the safe one of the pair. Reading as a milder
+     version of the private card's warning had it exactly backwards. This is
+     the green the checksum and the self-test already use. */
+  .export-card.is-watch { border-color: rgba(53, 180, 138, 0.34); background: rgba(53, 180, 138, 0.055); }
   .export-tag {
     width: fit-content; margin-bottom: 9px; padding: 4px 9px; border-radius: 5px;
     color: var(--muted); background: rgba(255, 255, 255, 0.06);
     font-size: 0.76rem; font-weight: 800; line-height: 1.25; letter-spacing: 0.07em; text-transform: uppercase;
   }
   .is-private .export-tag { color: #ff9d8a; background: rgba(214, 94, 64, 0.14); }
-  .is-watch .export-tag { color: #ffad4c; background: rgba(255, 138, 0, 0.11); }
+  .is-watch .export-tag { color: #8be3c6; background: rgba(53, 180, 138, 0.14); }
   .export-card h4 { margin: 0 0 7px; color: #fff; font-size: 0.98rem; }
   .export-card p { margin: 0 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
   .export-card .export-button { margin-top: auto; }
-  .export-card .export-button + .export-button { margin-top: 8px; }
+  /* Side by side. Stacked, the private card ran two full-width buttons deep
+     and made the safe record look like the lesser of the two. */
+  .export-actions { display: flex; gap: 8px; margin-top: auto; }
+  .export-actions .export-button {
+    /* Shorter than a primary action, because neither of these is one: both
+       open something rather than finish it.
+
+       Sized to their labels rather than split evenly: "Download Bitcoin Core
+       wallet.dat" is two-thirds longer than "Review and download", and equal
+       halves wrapped it onto a second line and took the pair to 51px. */
+    flex: 1 1 auto; width: auto; min-width: 0;
+    margin-top: 0; min-height: 40px; padding: 8px 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    text-align: center; line-height: 1.25;
+  }
   .export-button {
     width: 100%; padding: 10px 13px; border: 1px solid rgba(255, 255, 255, 0.17);
     border-radius: 8px; color: var(--ink); background: rgba(255, 255, 255, 0.055);
@@ -547,7 +566,18 @@ ${FONTS.map(embedFont).join('\n')}
   .export-button:disabled { opacity: 0.55; cursor: wait; }
   .is-private .export-button { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
   .is-private .export-button:hover:not(:disabled) { border-color: rgba(255, 157, 138, 0.72); }
-  .is-watch .export-button { color: #ffad4c; border-color: rgba(255, 138, 0, 0.36); }
+  .is-watch .export-button { color: #8be3c6; border-color: rgba(53, 180, 138, 0.36); }
+  /* The one filled control in the pair. It writes a wallet file a node will
+     open, which is a heavier act than reviewing text on screen, so it carries
+     more weight than the button beside it without becoming a primary action.
+     Keyed by id so it wins over .is-private's red without an !important. */
+  #export-wallet-open {
+    color: #ffd0a0;
+    background: rgba(255, 138, 0, 0.20);
+    border: 1px solid rgba(255, 138, 0, 0.56);
+    box-shadow: inset 0 1px 0 rgba(255, 210, 161, 0.08);
+  }
+  #export-wallet-open:hover:not(:disabled) { color: #fff; border-color: rgba(255, 138, 0, 0.78); }
   .export-status { min-height: 1.4em; margin: 9px 0 0; color: var(--muted); font-size: 0.78rem; }
 
   .export-dialog {
@@ -580,6 +610,10 @@ ${FONTS.map(embedFont).join('\n')}
 
   @media (max-width: 620px) {
     .export-grid { grid-template-columns: 1fr; }
+    /* Side by side on a phone leaves neither label readable, and 40px is
+       under the 44px a finger needs. Stacked, they get it back. */
+    .export-actions { flex-direction: column; }
+    .export-actions .export-button { min-height: 44px; }
     .export-dialog { padding: 22px 20px; }
     .export-dialog-actions { display: grid; }
     .export-dialog-actions .export-button, .export-dialog-actions .key-tool { width: 100%; }
@@ -4345,8 +4379,10 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <span class="export-tag">Keep secret</span>
       <h4>Private recovery record</h4>
       <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value.</p>
-      <button type="button" class="export-button" id="export-private-open">Review and download</button>
-      <button type="button" class="export-button" id="export-wallet-open">Download Bitcoin Core wallet.dat</button>
+      <div class="export-actions">
+        <button type="button" class="export-button" id="export-private-open">Review and download</button>
+        <button type="button" class="export-button" id="export-wallet-open">Download Bitcoin Core wallet.dat</button>
+      </div>
     </article>
     <article class="export-card is-watch">
       <span class="export-tag">No spending keys</span>
