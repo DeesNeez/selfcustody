@@ -47,6 +47,40 @@ done > /etc/apt/sources.list
 cat /etc/apt/sources.list
 apt-get update
 
+echo "===== BOOTSTRAP: what the pinned base image lacks for HTTPS ====="
+echo "Run against pristine dpkg state, before any toolchain install, so the"
+echo "Inst list below is exactly the delta from the base image."
+# shellcheck disable=SC2086
+apt-get install -s --no-install-recommends ca-certificates openssl \
+  | grep '^Inst' | sort
+
+echo "===== BOOTSTRAP: explicit base-image status of likely dependencies ====="
+for p in ca-certificates openssl libssl3t64 debconf perl-base libc6 \
+         libgcc-s1 zlib1g dpkg tar gpgv; do
+  v=$(dpkg-query -W -f='${Version}' "$p" 2>/dev/null || true)
+  if [ -n "$v" ]; then
+    echo "$p=$v  PROVIDED BY BASE IMAGE (bytes covered by the base digest)"
+  else
+    echo "$p  ABSENT from base -- needs an explicit pinned .deb"
+  fi
+done
+
+echo "===== BOOTSTRAP: URLs, sizes and SHA-256 for each missing .deb ====="
+BOOT=$(apt-get install -s --no-install-recommends ca-certificates openssl \
+  | awk '/^Inst /{print $2}')
+echo "closure to fetch: ${BOOT:-<none>}"
+for p in $BOOT; do
+  apt-get download --print-uris "$p" | sed 's/^/  /'
+done
+
+echo "===== BOOTSTRAP: matching entries from the signed Packages metadata ====="
+for p in $BOOT; do
+  apt-cache show "$p" | awk '
+    /^Package: /{pk=$2} /^Version: /{v=$2} /^Filename: /{f=$2} /^Size: /{sz=$2}
+    /^SHA256: /{print pk"="v"\n  filename: "f"\n  size:     "sz"\n  sha256:   "$2; exit}
+  '
+done
+
 echo "===== dependency closure, simulated, --no-install-recommends ====="
 # shellcheck disable=SC2086
 apt-get install -s --no-install-recommends $PINS | grep '^Inst' | sort
