@@ -1,5 +1,8 @@
-# Pinned so `npm run build:wasm` produces byte-identical output locally and in
-# CI (the workflow diffs the regenerated artifact against the committed one).
+# Pinned, but pinning rustc was never sufficient on its own: secp256k1-sys
+# compiles the vendored libsecp256k1 C sources through the cc crate, which
+# calls the host clang, and nothing here pins that. Byte-identical output comes
+# from the builder image in secp256k1-wasm/builder/, which pins the whole
+# environment; run `npm run build:wasm:container`.
 [toolchain]
 channel = "1.95.0"
 targets = ["wasm32-unknown-unknown"]

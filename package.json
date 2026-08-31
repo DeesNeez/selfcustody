@@ -6,7 +6,6 @@
     "build": "node build/render.mjs",
     "preview:contact": "node build/preview-contact.mjs",
     "icons:subset": "node build/subset-icons.mjs",
-    "build:wasm": "node build/tools/build-secp256k1-wasm.mjs",
     "test:entropy": "node build/tools/entropy-test.mjs",
     "test:secp256k1-wasm": "node build/tools/secp256k1-wasm-test.mjs",
     "test:wallet-dat": "node build/tools/wallet-dat-test.mjs",
