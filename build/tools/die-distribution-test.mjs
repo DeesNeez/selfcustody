@@ -19,18 +19,29 @@ test('an even D6 sequence has no strong detected imbalance', () => {
   assert.equal(report.p, 1);
   assert.equal(report.state, 'balanced');
   assert.deepEqual(report.counts.map(face => face.count), [5, 5, 5, 5, 5, 5]);
+  assert.ok(report.counts.every(face => !face.unusual));
 });
 
 test('an all-one D6 sequence is unusually uneven', () => {
   const [report] = C.dieDistributionReports('dice', '1'.repeat(30));
   assert.equal(report.state, 'uneven');
   assert.ok(report.p < 0.001);
+  assert.ok(report.counts.find(face => face.label === '1').unusual);
+  assert.ok(report.counts.find(face => face.label === '2').unusual);
 });
 
 test('the five-observations-per-face rule withholds early verdicts', () => {
   const [report] = C.dieDistributionReports('dice', '123456');
   assert.equal(report.minimum, 30);
   assert.equal(report.state, 'insufficient');
+  assert.ok(report.counts.every(face => !face.unusual));
+});
+
+test('standalone coin flips receive their own two-outcome report', () => {
+  const [report] = C.dieDistributionReports('coin', 'HT'.repeat(64));
+  assert.equal(report.title, 'Coin');
+  assert.deepEqual(report.counts.map(face => face.count), [64, 64]);
+  assert.equal(report.state, 'balanced');
 });
 
 test('BitBox keeps its four-sided dice and coin samples separate', () => {
@@ -47,11 +58,19 @@ test('octal and hexadecimal dice are not mixed into one distribution', () => {
   assert.equal(hex.counts.find(face => face.label === 'F').count, 1);
 });
 
-test('the inspector is collapsed, dice-only, and withheld until entry is complete', () => {
+test('the inspector is collapsed, dice-and-coin-only, and withheld until entry is complete', () => {
   assert.match(pageSource, /<details class="distribution" id="distribution">/);
   assert.doesNotMatch(pageSource, /<details class="distribution" id="distribution" open>/);
-  assert.match(pageSource, /const relevant = state\.source === 'dice'/);
+  assert.match(pageSource, /const relevant = state\.source === 'dice' \|\| state\.source === 'coin'/);
   assert.match(pageSource, /if \(!progress\.ready\)/);
   assert.match(pageSource, /The chart stays withheld while you are still entering outcomes/);
-  assert.match(pageSource, /Do not edit or reroll individual outcomes in response/);
+  assert.match(pageSource, /Do not edit, reroll or reflip individual outcomes in response/);
+});
+
+test('the chart uses compact horizontal tracks with gated per-outcome warnings', () => {
+  assert.match(pageSource, /\.distribution-track/);
+  assert.match(pageSource, /bar\.style\.width/);
+  assert.doesNotMatch(pageSource, /bar\.style\.height/);
+  assert.match(pageSource, /if \(face\.unusual\) item\.classList\.add\('is-unusual'\)/);
+  assert.match(pageSource, /Red marks an outcome that contributes strongly/);
 });

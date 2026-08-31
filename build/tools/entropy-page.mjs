@@ -808,8 +808,8 @@ ${FONTS.map(embedFont).join('\n')}
   @media (prefers-reduced-motion: reduce) { .meter-track i { transition: none; } }
 
   /* Optional equipment check. A native disclosure keeps every statistic out
-     of sight unless it is deliberately opened, and the columns read as a
-     small histogram rather than duplicating EntropyLab's verdict card. */
+     of sight unless it is deliberately opened. Compact horizontal tracks make
+     the comparison readable without giving the check a large visual footprint. */
   .distribution {
     margin-top: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px; background: rgba(0, 0, 0, 0.16);
@@ -837,28 +837,42 @@ ${FONTS.map(embedFont).join('\n')}
   .distribution-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
   .distribution-head strong { font-size: 0.88rem; }
   .distribution-status { color: var(--muted); font-size: 0.72rem; font-weight: 800; }
-  .distribution-status.is-balanced { color: #8be3c6; }
+  /* A passing check stays neutral: it cannot prove that a source is fair. */
+  .distribution-status.is-balanced { color: var(--ink-soft); }
   .distribution-status.is-uneven { color: #ff9d8a; }
   .distribution-stats { margin: 4px 0 10px; color: var(--muted); font-size: 0.72rem; }
   .distribution-chart {
-    display: grid; grid-template-columns: repeat(var(--faces), minmax(20px, 1fr));
-    align-items: end; gap: 5px; min-height: 112px;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 16px;
   }
-  .distribution-face { display: grid; grid-template-rows: 18px 72px 18px; gap: 3px; text-align: center; }
+  .distribution-chart.is-dense { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .distribution-face {
+    display: grid; grid-template-columns: minmax(20px, auto) minmax(42px, 1fr) 30px;
+    align-items: center; gap: 7px; min-width: 0;
+  }
   .distribution-face > b, .distribution-face > small {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.68rem; font-variant-numeric: tabular-nums;
   }
-  .distribution-face > b { color: var(--ink); }
-  .distribution-face > small { color: var(--muted); }
-  .distribution-column {
-    position: relative; display: flex; align-items: end; overflow: hidden;
-    border-radius: 5px 5px 2px 2px; background: rgba(255, 255, 255, 0.06);
+  .distribution-face > b { color: var(--ink); text-align: right; }
+  .distribution-face > small { overflow: hidden; color: var(--muted); text-overflow: ellipsis; }
+  .distribution-track {
+    position: relative; height: 10px; overflow: hidden;
+    border-radius: 999px; background: rgba(255, 255, 255, 0.07);
   }
-  .distribution-column > i { width: 100%; min-height: 1px; background: rgba(255, 138, 0, 0.7); }
-  .distribution-column > span {
-    position: absolute; left: 0; right: 0; height: 1px;
-    background: rgba(255, 255, 255, 0.65);
+  .distribution-track > i {
+    position: absolute; inset: 0 auto 0 0;
+    border-radius: inherit; background: rgba(255, 138, 0, 0.76);
+  }
+  .distribution-track > span {
+    position: absolute; top: 0; bottom: 0; width: 2px;
+    background: rgba(255, 255, 255, 0.82); transform: translateX(-1px);
+  }
+  .distribution-face.is-unusual > b, .distribution-face.is-unusual > small { color: #ff9d8a; }
+  .distribution-face.is-unusual .distribution-track { background: rgba(214, 94, 64, 0.16); }
+  .distribution-face.is-unusual .distribution-track > i { background: #d65e40; }
+  @media (max-width: 620px) {
+    .distribution-chart.is-dense { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   .distribution-caveat { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
 
@@ -2889,28 +2903,35 @@ const ui = () => `
     stats.textContent = report.samples < report.minimum
       ? report.samples + ' observations · ' + report.minimum + ' needed for the chi-square approximation'
       : report.samples + ' observations · expected ' + report.expected.toFixed(1)
-        + ' per face · chi-square ' + report.score.toFixed(2) + ' · p ' + formatDistributionP(report.p);
+        + ' per outcome · chi-square ' + report.score.toFixed(2) + ' · p ' + formatDistributionP(report.p);
 
-    const peak = Math.max(report.expected, ...report.counts.map(face => face.count), 1);
+    /* Leave a little room beyond expectation so the white marker does not sit
+       against the end of a balanced bar. Every row in a report shares this
+       scale, preserving direct comparison between outcomes. */
+    const peak = Math.max(report.expected * 1.2, ...report.counts.map(face => face.count), 1);
     const chart = document.createElement('div');
     chart.className = 'distribution-chart';
-    chart.style.setProperty('--faces', report.counts.length);
-    chart.setAttribute('aria-label', report.title + ' face counts');
+    if (report.counts.length > 8) chart.classList.add('is-dense');
+    chart.setAttribute('aria-label', report.title + ' outcome counts');
     for (const face of report.counts) {
       const item = document.createElement('span');
       item.className = 'distribution-face';
-      const count = document.createElement('b');
-      count.textContent = face.count;
-      const column = document.createElement('span');
-      column.className = 'distribution-column';
-      const bar = document.createElement('i');
-      bar.style.height = (face.count / peak * 100).toFixed(1) + '%';
-      const expected = document.createElement('span');
-      expected.style.bottom = (report.expected / peak * 100).toFixed(1) + '%';
+      if (face.unusual) item.classList.add('is-unusual');
+      const direction = face.count < report.expected ? 'below' : 'above';
+      item.setAttribute('aria-label', face.label + ': ' + face.count + ' observations'
+        + (face.unusual ? ', unusually ' + direction + ' the expected ' + report.expected.toFixed(1) : ''));
       const label = document.createElement('small');
       label.textContent = face.label;
-      column.append(bar, expected);
-      item.append(count, column, label);
+      const track = document.createElement('span');
+      track.className = 'distribution-track';
+      const bar = document.createElement('i');
+      bar.style.width = (face.count / peak * 100).toFixed(1) + '%';
+      const expected = document.createElement('span');
+      expected.style.left = (report.expected / peak * 100).toFixed(1) + '%';
+      const count = document.createElement('b');
+      count.textContent = face.count;
+      track.append(bar, expected);
+      item.append(label, track, count);
       chart.append(item);
     }
     section.append(head, stats, chart);
@@ -2919,7 +2940,7 @@ const ui = () => `
 
   function paintDistribution(input, progress) {
     const details = $('distribution');
-    const relevant = state.source === 'dice';
+    const relevant = state.source === 'dice' || state.source === 'coin';
     details.hidden = !relevant;
     if (!relevant) { details.open = false; $('distribution-body').replaceChildren(); return; }
     if (!details.open) { $('distribution-body').replaceChildren(); return; }
@@ -2935,10 +2956,10 @@ const ui = () => `
 
     const intro = document.createElement('p');
     intro.className = 'distribution-intro';
-    intro.textContent = 'The white mark is the count expected at each face. Pearson’s chi-square asks how surprising the differences would be if the source were even.';
+    intro.textContent = 'The white mark is the count expected for each outcome. Pearson’s chi-square asks how surprising the differences would be if the source were even. Red marks an outcome that contributes strongly to an unusual overall result.';
     const caveat = document.createElement('p');
     caveat.className = 'distribution-caveat';
-    caveat.textContent = 'Advisory only. Fair input can trigger this warning by chance. This is a spellcheck, not proof of randomness. Do not edit or reroll individual outcomes in response; test the physical die in a separate run if something concerns you.';
+    caveat.textContent = 'Advisory only. Fair input can trigger this warning by chance. This is a spellcheck, not proof of randomness. Do not edit, reroll or reflip individual outcomes in response; test the physical source in a separate run if something concerns you.';
     body.replaceChildren(intro, ...C.dieDistributionReports(method(), input).map(distributionReportElement), caveat);
   }
 
@@ -4025,7 +4046,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   </div>
 
   <details class="distribution" id="distribution">
-    <summary><span>Inspect die distribution</span><small>optional</small></summary>
+    <summary><span>Distribution check</span><small>optional</small></summary>
     <div class="distribution-body" id="distribution-body" role="status" aria-live="polite"></div>
   </details>
 </fieldset>

@@ -1465,18 +1465,30 @@ const EntropyCore = (() => {
     return 1 - lowerRegularizedGamma(degrees / 2, score / 2);
   };
   const distributionReport = (title, labels, samples) => {
-    const counts = labels.map(label => ({ label, count: samples.filter(sample => sample === label).length }));
+    const tallies = labels.map(label => ({ label, count: samples.filter(sample => sample === label).length }));
     const expected = samples.length / labels.length;
-    const score = expected ? counts.reduce((sum, face) => sum + (face.count - expected) ** 2 / expected, 0) : 0;
+    const score = expected ? tallies.reduce((sum, face) => sum + (face.count - expected) ** 2 / expected, 0) : 0;
     const minimum = labels.length * 5;
     const p = samples.length ? chiSquaredPValue(score, labels.length - 1) : 1;
+    const state = samples.length < minimum ? 'insufficient' : p < 0.05 ? 'uneven' : 'balanced';
+    /* Colour is held behind both gates. A face being a little above or below
+       its expected count is ordinary variation, especially early on. Only a
+       report that is unusual as a whole may call out an individual face, and
+       then only when its Pearson residual is at least two standard deviations
+       from expectation. The signed residual lets the UI describe both the
+       over- and under-represented cases without inventing a fixed count limit. */
+    const counts = tallies.map(face => {
+      const residual = expected ? (face.count - expected) / Math.sqrt(expected) : 0;
+      return { ...face, residual, unusual: state === 'uneven' && Math.abs(residual) >= 2 };
+    });
     return {
       title, counts, samples: samples.length, expected, score, p, minimum,
-      state: samples.length < minimum ? 'insufficient' : p < 0.05 ? 'uneven' : 'balanced'
+      state
     };
   };
   const dieDistributionReports = (method, input) => {
     const values = events(method, input);
+    if (method === 'coin') return [distributionReport('Coin', [...'HT'], values)];
     if (method === 'bitbox') {
       return [
         distributionReport('Four-sided dice', [...'1234'], values.filter((_, i) => i % 6 !== 5)),
