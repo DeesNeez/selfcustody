@@ -24,6 +24,8 @@ RUN dpkg -i /tmp/bootstrap/openssl.deb /tmp/bootstrap/ca-certificates.deb \
  && echo "CA bundle established"
 
 # --- C toolchain from one immutable snapshot ---------------------------------
+# xz-utils comes along because the base image ships no xz binary at all, so
+# tar cannot unpack the Rust and Node .tar.xz inputs in the next stage.
 ARG SNAPSHOT=https://snapshot.ubuntu.com/ubuntu/20260824T000000Z
 RUN rm -f /etc/apt/sources.list.d/ubuntu.sources \
  && for pocket in noble noble-updates noble-security; do \
@@ -41,6 +43,8 @@ RUN rm -f /etc/apt/sources.list.d/ubuntu.sources \
       binutils-common=2.42-4ubuntu2.10 \
       libbinutils=2.42-4ubuntu2.10 \
       binutils-x86-64-linux-gnu=2.42-4ubuntu2.10 \
+      xz-utils=5.6.1+really5.4.5-1ubuntu0.3 \
+      liblzma5=5.6.1+really5.4.5-1ubuntu0.3 \
  && rm -rf /var/lib/apt/lists/*
 
 # --- Rust 1.95.0 and the wasm32 std, installed offline -----------------------
