@@ -255,7 +255,7 @@ const currentYear = new Date().getFullYear();
             <div class="row sc-home-trust-grid">
               <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Education-first</span><h3>Understand Before Acting</h3><p>Learn the model before choosing a product or moving money.</p></article></div>
               <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Transparent</span><h3>See the Tradeoffs</h3><p>Workflow, privacy, custody, and compatibility are shown directly.</p></article></div>
-              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Security boundary</span><h3>Your Secrets Stay Yours</h3><p>This site never asks for recovery words, private keys, PINs, or passphrases.</p></article></div>
+              <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Security boundary</span><h3>Your Secrets Stay Yours</h3><p>This site never asks for your recovery words or private keys.</p></article></div>
               <div class="col-md-6 col-xl-3"><article class="sc-home-trust-card"><span>Safer habits</span><h3>Testing and Backups</h3><p>Verify on-device, start small, and prove recovery before storing meaningful savings.</p></article></div>
             </div>
           </div>
@@ -295,7 +295,7 @@ const currentYear = new Date().getFullYear();
               </div>
               <div class="sc-home-help-boundary">
                 <strong>Your keys, your coins.</strong>
-                <p>We guide while you operate your own devices. We never ask for recovery words, private keys, PINs, passphrases, wallet backup files, account access, or sensitive personal information—and never hold or move bitcoin for you.</p>
+                <p>We guide while you operate your own devices. We never ask for your recovery words or private keys—and never hold or move bitcoin for you.</p>
               </div>
             </div>
           </div>
@@ -1937,9 +1937,12 @@ const currentYear = new Date().getFullYear();
           </div>
           <div class="col-lg-3">
             <aside class="sc-footer-warning" aria-label="Important security warning">
-              <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-shield-exclamation"></i></div>
-              <h4>Important!</h4>
-              <p><strong>NEVER</strong> share recovery words, private keys, PINs, or passphrases. This site provides education, not financial, tax, or legal advice.</p>
+              <div class="sc-footer-warning-heading">
+                <div class="sc-footer-warning-icon" aria-hidden="true"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <h4>Important!</h4>
+              </div>
+              <p><strong>NEVER</strong> share your seed words, or other sensitive information.</p>
+              <p>This site provides education, <strong class="sc-footer-not">NOT</strong> financial, tax, or legal advice.</p>
             </aside>
           </div>
         </div>
