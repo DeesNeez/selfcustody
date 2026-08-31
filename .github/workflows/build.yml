@@ -110,7 +110,7 @@ jobs:
           echo "-- owning packages and exact versions, for pinning the builder"
           echo "ar from:     $(dpkg -S "$(readlink -f "$(command -v ar)")" 2>&1 | head -1 || true)"
           echo "clang from:  $(dpkg -S "$(readlink -f "$(command -v clang)")" 2>&1 | head -1 || true)"
-          dpkg-query -W -f='pkg:         ${Package}=${Version}\n' binutils binutils-common libbinutils clang-18 libclang-common-18-dev llvm-18 2>&1 || true
+          dpkg-query -W -f='pkg:         ${Package}=${Version}\n' binutils binutils-common libbinutils binutils-x86-64-linux-gnu clang-18 libclang-common-18-dev llvm-18 2>&1 || true
 
       - name: Rebuild the WebAssembly artifact
         run: npm run build:wasm
@@ -166,6 +166,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: secp256k1-wasm-b64-${{ github.run_id }}
+          name: secp256k1-wasm-b64-diagnostic-${{ github.sha }}
           path: build/tools/secp256k1-wasm-b64.js
           if-no-files-found: error
