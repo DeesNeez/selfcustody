@@ -967,8 +967,19 @@ ${FONTS.map(embedFont).join('\n')}
        identically in both, and the checksum row below still cannot move it. */
     align-items: start;
     margin: 0 0 38px; padding: 21px 22px; border-radius: 16px;
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    /* Warm rather than the flat white wash it had: the panel sits directly
+       under the hero and above the workbench, and a neutral grey read as a
+       gap between them rather than as part of the same surface. The radial
+       highlight is anchored to the top-right corner, where the download
+       button is. */
+    background:
+      radial-gradient(
+        circle at 100% 0%,
+        rgba(232, 214, 181, 0.055),
+        transparent 250px
+      ),
+      linear-gradient(145deg, #28251f, #1a1917 72%);
+    border: 1px solid rgba(232, 214, 181, 0.34);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   /* Without this the grid item keeps its default min-width:auto, which is the
