@@ -6,6 +6,10 @@
 # Runs inside a digest-pinned ubuntu:24.04 container. Every version below was
 # measured on the runner that produced the two deterministic builds which
 # passed the functional vectors; none of it is inferred.
+#
+# Run it twice: once with no mounts, to learn whether the base image can reach
+# an HTTPS archive on its own, and once with the runner's CA bundle mounted so
+# the rest of the checks can proceed regardless.
 set -eu
 
 SNAP=https://snapshot.ubuntu.com/ubuntu/20260824T000000Z
@@ -20,11 +24,19 @@ libbinutils=2.42-4ubuntu2.10
 binutils-x86-64-linux-gnu=2.42-4ubuntu2.10
 "
 
-echo "===== base image CA state (does the Dockerfile need a CA bootstrap?) ====="
-dpkg-query -W -f='ca-certificates=${Version}\n' ca-certificates 2>/dev/null \
-  || echo "ca-certificates: NOT INSTALLED in base image"
-ls -l /etc/ssl/certs/ca-certificates.crt 2>/dev/null \
-  || echo "no CA bundle in base image"
+echo "===== base image CA state ====="
+echo "NOTE: only meaningful when this runs with no /etc/ssl/certs mount."
+ver=$(dpkg-query -W -f='${Version}' ca-certificates 2>/dev/null || true)
+if [ -n "$ver" ]; then
+  echo "ca-certificates INSTALLED in base image: $ver"
+else
+  echo "ca-certificates NOT installed in base image"
+fi
+if [ -e /etc/ssl/certs/ca-certificates.crt ]; then
+  echo "CA bundle visible at /etc/ssl/certs/ca-certificates.crt"
+else
+  echo "NO CA bundle at /etc/ssl/certs/ca-certificates.crt"
+fi
 test -f "$KEY" && echo "archive keyring present: $KEY"
 
 echo "===== point apt at the immutable snapshot ====="
@@ -54,12 +66,15 @@ dpkg-query -W -f='${Package}=${Version}\n' \
   clang-18 libclang-common-18-dev llvm-18 \
   binutils binutils-common libbinutils binutils-x86-64-linux-gnu
 
-echo "===== signed metadata and package hashes retained as evidence ====="
+echo "===== signed metadata retained as evidence ====="
 sha256sum /var/lib/apt/lists/*InRelease
-for pkg in clang-18 libclang-common-18-dev llvm-18 \
-           binutils binutils-common libbinutils binutils-x86-64-linux-gnu; do
-  awk -v P="$pkg" '
-    /^Package: /{pk=$2} /^Version: /{v=$2}
-    /^SHA256: /{if (pk==P) print pk"="v"  sha256:"$2}
-  ' /var/lib/apt/lists/*_Packages
+
+echo "===== per-package hashes from the signed indices ====="
+# apt-cache reads the indices whatever compression apt chose to store them in;
+# globbing /var/lib/apt/lists/*_Packages assumed they were left uncompressed.
+for pin in $PINS; do
+  apt-cache show "$pin" | awk '
+    /^Package: /{p=$2} /^Version: /{v=$2}
+    /^SHA256: /{print p"="v"  sha256:"$2; exit}
+  '
 done
