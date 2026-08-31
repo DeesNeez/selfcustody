@@ -121,6 +121,7 @@ export function assertWorkshop() {
 
   /* ---- the safeguards nobody can see ------------------------------------ */
   for (const [name, html] of [['site', site], ['offline', offline]]) {
+    const script = codeOnlyEarly(html);
     check(/addEventListener\('pagehide', clearSensitiveState\)/.test(html),
       `the ${name} build does not clear entered material when the page is left`);
     check(/addEventListener\('pageshow', clearSensitiveState\)/.test(html),
@@ -154,6 +155,30 @@ export function assertWorkshop() {
       /EntropySecp256k1\.pointAdd/.test(html) &&
       !/const Gx\s*=|const Gy\s*=|const inv\s*=|const modPow\s*=/.test(html),
       `the ${name} build still contains a hand-written secp256k1 curve path`);
+    check(/id="beta-disclaimer"[^>]*role="alertdialog"[^>]*aria-modal="true"[^>]*hidden/.test(html) &&
+      /id="beta-disclaimer-accept"[^>]*>I understand<\/button>/.test(html),
+      `the ${name} build does not ship a hidden, accessible beta acknowledgement`);
+    check(/selfcustody-entropy-beta-accepted/.test(script) &&
+      /localStorage\.getItem\(STORAGE_KEY\)\s*===\s*version/.test(script) &&
+      /localStorage\.setItem\(STORAGE_KEY, version\)/.test(script) &&
+      /EntropyBetaWarning\.init\(\{ version: '2026-08-29-beta-1' \}\)/.test(script),
+      `the ${name} build does not remember acknowledgement by Workshop release`);
+    const wasmReady = script.indexOf('EntropySecp256k1Ready.then');
+    const betaInit = script.indexOf('EntropyBetaWarning.init');
+    check(wasmReady >= 0 && betaInit > wasmReady,
+      `the ${name} build can reveal the beta acknowledgement before the cryptography engine succeeds`);
+    check(/id="security-brief"/.test(html) &&
+      /id="security-sticky-mobile"[^>]*hidden/.test(html) &&
+      /id="security-sticky-toggle"[^>]*aria-expanded="false"/.test(html) &&
+      /position:\s*sticky/.test(html) && /position:\s*fixed/.test(html),
+      `the ${name} build does not preserve the desktop warning and compact mobile disclosure`);
+    check(/M8\.982 1\.566a1\.13 1\.13/.test(html),
+      `the ${name} build does not use the filled warning triangle in its safety notices`);
+    const betaCopy = 'This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.';
+    const phraseCopy = 'Never enter an existing recovery phrase into any page';
+    check((html.match(new RegExp(betaCopy.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length >= 3 &&
+      (html.match(new RegExp(phraseCopy, 'g')) || []).length >= 3,
+      `the ${name} build lets its modal, full warning and mobile warning wording drift apart`);
     check(/name="referrer" content="no-referrer"/.test(html),
       `the ${name} build does not set a no-referrer policy`);
     check(/http-equiv="Content-Security-Policy"/.test(html),
@@ -162,7 +187,6 @@ export function assertWorkshop() {
     /* The deck-turn branch used to return before repainting the meter, keypad
        and Derive button. Pin both the absence of that early exit and the raw
        input handoff needed to detect old/new alias ambiguity. */
-    const script = codeOnlyEarly(html);
     check(/id="export-private-open"/.test(html) && /id="export-watch"/.test(html) &&
       /id="export-private-dialog"/.test(html),
       `the ${name} build does not expose both export records and the private-file warning`);

@@ -69,7 +69,8 @@ on load, because a conversion tool that is quietly wrong is worse than none.
   that was typed rather than rolled. Passing it means "nothing here is obviously
   fabricated", never "this is good randomness".
 - **It is not a wallet.** It does not sign, does not broadcast, does not hold
-  funds, and does not store anything between visits.
+  funds, and does not store entered or derived wallet material between visits.
+  Its only persistent value is the current beta-warning acknowledgement version.
 
 ## Scope
 
