@@ -1197,6 +1197,13 @@ ${FONTS.map(embedFont).join('\n')}
   .addr-run b { flex: 1 1 auto; min-width: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.86rem; font-weight: 400; color: var(--ink); word-break: break-all; }
 
+  .address-match { margin-top: 18px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px; background: rgba(255, 255, 255, 0.025); }
+  .address-match label { display: block; margin-bottom: 8px; color: var(--ink-soft); font-weight: 800; }
+  .address-match-status { min-height: 1.35em; }
+  .address-match-status.is-ok { color: #8be3c6; }
+  .address-match-status.is-bad { color: #ff9d8a; }
+
   /* Every <summary> here is a control, so none of them should behave like
      prose. Left selectable, a second click inside one starts the browser's
      word selection -- and on the address folds, whose summary is a bare
@@ -1625,6 +1632,12 @@ const selfTest = () => `
     ['BIP44 legacy address', () => vectorAddress('legacy', "m/44'/0'/0'", 0), '1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA'],
     ['BIP49 nested address', () => vectorAddress('nested', "m/49'/0'/0'", 0), '37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf'],
     ['BIP84 native address', () => vectorAddress('native', "m/84'/0'/0'", 0), 'bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu'],
+    ['Address check accepts a BIP21 URI', () => {
+      const address = 'bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu';
+      const hit = C.matchDerivedAddress('bitcoin:' + address.toUpperCase() + '?amount=1',
+        [{ index: 0, path: "m/84'/0'/0'/0/0", address }], []);
+      return hit.state + ':' + hit.chain + ':' + hit.index;
+    }, 'match:receive:0'],
     ['BIP84 change address', () => vectorAddress('native', "m/84'/0'/0'", 1), 'bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el'],
     ['BIP86 taproot address', () => vectorAddress('taproot', "m/86'/0'/0'", 0), 'bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr'],
     /* The conversions themselves. A wrong table here is the worst failure this
@@ -2126,6 +2139,78 @@ const ui = () => `
      with everything else. Holding the strings here rather than in the markup
      keeps them out of the DOM until somebody asks to see one. */
   const qrSources = Object.create(null);
+  let renderedAddressRows = null;
+  let addressCheckToken = 0;
+  const ADDRESS_SEARCH_LIMIT = 1000;
+  const ADDRESS_SEARCH_BATCH = 1;
+
+  function showAddressMatch(hit, shown) {
+    const status = $('address-match-status');
+    const branch = hit.chain === 'receive' ? 'Receiving' : 'Change';
+    const extra = hit.index >= shown ? ' (beyond the ' + shown + ' shown)' : '';
+    status.textContent = branch + ' address #' + hit.index + ' of this wallet \u00b7 ' + hit.path + extra;
+    status.className = 'hint address-match-status is-ok';
+  }
+
+  /* Check the five already rendered addresses immediately, then search the
+     rest of receive and change indices 0-999 in small tasks. Each address is
+     public, but deriving it still costs an elliptic-curve multiplication; the
+     batches keep the offline page responsive and the token cancels stale work
+     when the pasted address or wallet changes. */
+  function checkAddressMatch() {
+    const status = $('address-match-status');
+    const raw = $('address-match').value;
+    const mine = ++addressCheckToken;
+    if (!renderedAddressRows || !state.seed) {
+      status.textContent = '';
+      status.className = 'hint address-match-status';
+      return;
+    }
+    const { receive, change, path, search } = renderedAddressRows;
+    const shown = Math.max(receive.length, change.length);
+    const immediate = C.matchDerivedAddress(raw, receive, change);
+    if (immediate.state === 'empty') {
+      status.textContent = '';
+      status.className = 'hint address-match-status';
+      return;
+    }
+    if (immediate.state === 'match') {
+      showAddressMatch(immediate, shown);
+      return;
+    }
+    status.textContent = 'Not in the ' + shown + ' shown addresses. Checking indices 0\u2013'
+      + (ADDRESS_SEARCH_LIMIT - 1) + '\u2026';
+    status.className = 'hint address-match-status';
+    let start = shown;
+    const searchNext = () => {
+      if (mine !== addressCheckToken || !state.seed) return;
+      const end = Math.min(start + ADDRESS_SEARCH_BATCH, ADDRESS_SEARCH_LIMIT);
+      let result;
+      try {
+        result = C.findDerivedAddress({
+          seed: state.seed.seed, addressType: state.addressType, path,
+          address: raw, start, end, prepared: search
+        });
+      } catch (error) {
+        status.textContent = 'Could not check that address: ' + error.message + '.';
+        status.className = 'hint address-match-status is-bad';
+        return;
+      }
+      if (result.state === 'match') {
+        showAddressMatch(result, shown);
+      } else if (end < ADDRESS_SEARCH_LIMIT) {
+        start = end;
+        status.textContent = 'No match through index ' + (end - 1)
+          + '. Checking through ' + (ADDRESS_SEARCH_LIMIT - 1) + '\u2026';
+        setTimeout(searchNext, 0);
+      } else {
+        status.textContent = 'No match in receive or change indices 0\u2013'
+          + (ADDRESS_SEARCH_LIMIT - 1) + ' for this derivation.';
+        status.className = 'hint address-match-status is-bad';
+      }
+    };
+    setTimeout(searchNext, 0);
+  }
 
   /* Download URLs are capabilities for the bytes inside their Blob, so they
      get the same lifecycle as every other derived value. Revoke shortly after
@@ -2524,6 +2609,8 @@ const ui = () => `
     clearExportState();
     state.seed = null;
     state.seedKey = null;
+    renderedAddressRows = null;
+    addressCheckToken += 1;
 
     /* The strings parked for the QR buttons are derived material like any
        other, and this is the only place that drops them. Clearing the page is
@@ -2562,7 +2649,7 @@ const ui = () => `
      the old values persist until the garbage collector happens to reclaim
      them, and nothing here can force that. Treat it as tidying the desk, not
      shredding the paper. */
-  const SECRET_FIELDS = ['input', 'passphrase'];
+  const SECRET_FIELDS = ['input', 'passphrase', 'address-match'];
   const SECRET_TEXT = [
     'words', 'entropy', 'ending-list', 'ending-octal', 'ending-hex',
     'ending-picked-word', 'ending-picked-label',
@@ -2571,6 +2658,7 @@ const ui = () => `
     'checksum-line', 'checksum-detail',
     'master-xprv', 'xprv', 'xprv-path', 'xprv-alt', 'xprv-alt-label',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path', 'recv-more', 'chng-more',
+    'address-match-status',
     'qr-dialog-code', 'qr-dialog-text', 'qr-dialog-title',
     'fp-base', 'fp-pass', 'fp-base-tag',
     'seedqr-digits', 'seedqr-grid'
@@ -2766,6 +2854,14 @@ const ui = () => `
       return;
     }
 
+    /* Stop any queued search before parsing the new path. An invalid path
+       returns early below, so waiting until the replacement rows exist left
+       the old wallet's expensive search running invisibly in the background. */
+    addressCheckToken += 1;
+    renderedAddressRows = null;
+    $('address-match-status').textContent = '';
+    $('address-match-status').className = 'hint address-match-status';
+
     /* A rerender means at least the account presentation may have changed.
        Close a pending confirmation and retire any Blob URL before painting
        the new result, so no control remains attached to the prior one. */
@@ -2888,6 +2984,15 @@ const ui = () => `
     }));
     runInto($('recv-more'), addresses.moreReceive);
     runInto($('chng-more'), addresses.moreChange);
+    renderedAddressRows = {
+      path,
+      search: C.prepareDerivedAddressSearch({
+        seed: state.seed.seed, addressType: state.addressType, path
+      }),
+      receive: [addresses.receive, ...addresses.moreReceive].map((entry, index) => ({ ...entry, index })),
+      change: [addresses.change, ...addresses.moreChange].map((entry, index) => ({ ...entry, index }))
+    };
+    checkAddressMatch();
 
     /* Codes for the two addresses on show and for the descriptor. The folded
        run gets its own inside runInto above -- these are the ones with a fixed
@@ -3259,6 +3364,7 @@ const ui = () => `
       invalidateDerivedState();
       paintCount();
     });
+    $('address-match').addEventListener('input', checkAddressMatch);
     paintSegments();
     paintSteps();
     paintCount();
@@ -3729,6 +3835,13 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     </details>
   </div>
 
+  <div class="address-match">
+    <label for="address-match">Check an address</label>
+    <input type="text" id="address-match" spellcheck="false" autocomplete="off" placeholder="Paste a bc1, 1, or 3 address">
+    <p class="hint">Paste an address shown by another wallet. This page checks receive and change indices 0&ndash;999 for the account path and address type above, entirely offline.</p>
+    <p class="hint address-match-status" id="address-match-status" role="status" aria-live="polite"></p>
+  </div>
+
   <div class="xpub-box">
     <div class="label"><span>Account path</span><code id="xpub-path"></code></div>
     <p id="xpub"></p>
@@ -3972,10 +4085,18 @@ ${ui()}
 /* Measured against the assembled file rather than hand-maintained, so it can
    never drift from what a reader receives. Rounded to the nearest 10 KB, which
    absorbs the bytes the number itself adds to the string describing it. */
-const withFileSize = html => html.replace(
-  '{{FILESIZE}}',
-  `~${Math.round(html.length / 1024 / 10) * 10} KB`
-);
+const withFileSize = html => {
+  /* Measure the bytes we actually publish. Source files can be checked out
+     with CRLF on Windows, but render.mjs writes this artifact LF-only. Using
+     the pre-normalized string length made the rounded label flip between
+     ~440 KB and ~450 KB across operating systems; because the label is inside
+     the file, that also changed the checksum it was meant to describe. */
+  const normalized = html.replace(/\r\n/g, '\n');
+  return normalized.replace(
+    '{{FILESIZE}}',
+    `~${Math.round(Buffer.byteLength(normalized, 'utf8') / 1024 / 10) * 10} KB`
+  );
+};
 
 const payload = () => ({
   core: readFileSync(CORE, 'utf8'),

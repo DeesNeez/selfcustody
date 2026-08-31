@@ -1141,6 +1141,13 @@
   .addr-run b { flex: 1 1 auto; min-width: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.86rem; font-weight: 400; color: var(--ink); word-break: break-all; }
 
+  .address-match { margin-top: 18px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px; background: rgba(255, 255, 255, 0.025); }
+  .address-match label { display: block; margin-bottom: 8px; color: var(--ink-soft); font-weight: 800; }
+  .address-match-status { min-height: 1.35em; }
+  .address-match-status.is-ok { color: #8be3c6; }
+  .address-match-status.is-bad { color: #ff9d8a; }
+
   /* Every <summary> here is a control, so none of them should behave like
      prose. Left selectable, a second click inside one starts the browser's
      word selection -- and on the address folds, whose summary is a bare
@@ -1566,7 +1573,7 @@
             <span>View source on GitHub</span>
           </a>
           <ul class="status">
-            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: 26/26 vectors pass</span></li>
+            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: 27/27 vectors pass</span></li>
             <li id="adapter" class="warn" hidden>This machine reports a network connection</li>
             <!-- Reserving the longer of the two things this badge can end up
                  saying. Without it the badge was laid out for "Checking..." and
@@ -1952,6 +1959,13 @@
       <summary aria-label="Show four more change addresses"><i aria-hidden="true"></i></summary>
       <ol class="addr-run" id="chng-more"></ol>
     </details>
+  </div>
+
+  <div class="address-match">
+    <label for="address-match">Check an address</label>
+    <input type="text" id="address-match" spellcheck="false" autocomplete="off" placeholder="Paste a bc1, 1, or 3 address">
+    <p class="hint">Paste an address shown by another wallet. This page checks receive and change indices 0&ndash;999 for the account path and address type above, entirely offline.</p>
+    <p class="hint address-match-status" id="address-match-status" role="status" aria-live="polite"></p>
   </div>
 
   <div class="xpub-box">
@@ -4085,6 +4099,84 @@ const EntropyCore = (() => {
     };
   };
 
+  /* Address comparison for the result-page check. Bitcoin payment URIs are
+     accepted because that is what many wallets copy. Bech32 is
+     case-insensitive only when the whole address uses one case; mixed-case
+     Bech32 is invalid and must not be made to look like a match by lowering it
+     first. Base58 remains case-sensitive. */
+  const isBech32Address = value => /^(bc1|tb1|bcrt1)/i.test(value);
+  const hasMixedCase = value => /[a-z]/.test(value) && /[A-Z]/.test(value);
+  const normalizeAddressCheck = value => {
+    const text = String(value ?? '').trim()
+      .replace(/^bitcoin:/i, '').replace(/\?.*$/, '').trim();
+    if (!text || !isBech32Address(text) || hasMixedCase(text)) return text;
+    return text.toLowerCase();
+  };
+  const addressesEqual = (left, right) => {
+    if (!left || !right) return false;
+    if (isBech32Address(left) || isBech32Address(right)) {
+      if (hasMixedCase(left) || hasMixedCase(right)) return false;
+      return left.toLowerCase() === right.toLowerCase();
+    }
+    return left === right;
+  };
+  const matchDerivedAddress = (raw, receive = [], change = []) => {
+    const address = normalizeAddressCheck(raw);
+    if (!address) return { state: 'empty' };
+    const find = (rows, chain) => {
+      for (const row of rows) {
+        if (addressesEqual(address, String(row.address || ''))) {
+          return { state: 'match', chain, index: row.index, path: row.path, address: row.address };
+        }
+      }
+      return null;
+    };
+    return find(receive, 'receive') || find(change, 'change') || {
+      state: 'miss', receiveCount: receive.length, changeCount: change.length
+    };
+  };
+
+  /* Prepare the expensive account and branch derivations once. The page
+     searches in one-index tasks so it can repaint between point
+     multiplications; repeating the hardened account path in every task made
+     those small batches several times slower than the work they contained. */
+  const prepareDerivedAddressSearch = ({ seed, addressType, path }) => {
+    const type = ADDRESS_TYPES[addressType];
+    if (!type) throw new Error('unknown address type');
+    const account = derive(masterKey(seed), path);
+    return { addressType, path, type, branches: [ckdPriv(account, 0), ckdPriv(account, 1)] };
+  };
+
+  /* Search a bounded slice so the page can yield between batches instead of
+     locking the browser while it checks two thousand public keys. `end` is
+     exclusive. The caller owns scheduling and cancellation; this stays a
+     deterministic crypto primitive that is easy to test. */
+  const findDerivedAddress = ({
+    seed, addressType, path, address, start = 0, end = 1000, prepared = null
+  }) => {
+    const wanted = normalizeAddressCheck(address);
+    if (!wanted) return { state: 'empty' };
+    const search = prepared || prepareDerivedAddressSearch({ seed, addressType, path });
+    if (search.addressType !== addressType || search.path !== path) {
+      throw new Error('address search context does not match this wallet');
+    }
+    const from = Math.max(0, start);
+    const to = Math.max(from, end);
+    for (let index = from; index < to; index++) {
+      for (let branch = 0; branch < 2; branch++) {
+        const leaf = ckdPriv(search.branches[branch], index);
+        const candidate = search.type.encode(compress(pointMul(toBigInt(leaf.key))));
+        if (addressesEqual(wanted, candidate)) {
+          return {
+            state: 'match', chain: branch === 0 ? 'receive' : 'change', index,
+            path: `${path}/${branch}/${index}`, address: candidate
+          };
+        }
+      }
+    }
+    return { state: 'miss', searchedTo: to ? to - 1 : -1 };
+  };
+
   /* Build the two text records that an export control can later download.
 
      Keeping this in the core, rather than assembling strings in the page,
@@ -4297,7 +4389,8 @@ const EntropyCore = (() => {
     cardBits, cardEntropy, cardsLeft, repeatedCard, cardAliasAmbiguity, seedQrDigits,
     sourceEntropy, CARD_DECK, CARD_RANKS, CARD_SUITS,
     progress, deckProgress, nextAllowed, clamp, rolledWords,
-    deriveSeed, deriveAddresses, buildWalletExportTexts, buildWallet, limits,
+    deriveSeed, deriveAddresses, normalizeAddressCheck, matchDerivedAddress,
+    prepareDerivedAddressSearch, findDerivedAddress, buildWalletExportTexts, buildWallet, limits,
     assessEntropy, smallestPeriod, longestRun, chiSquared, lzComplexity, derivative
   };
 })();
@@ -5816,6 +5909,12 @@ var qrcodegen;
     ['BIP44 legacy address', () => vectorAddress('legacy', "m/44'/0'/0'", 0), '1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA'],
     ['BIP49 nested address', () => vectorAddress('nested', "m/49'/0'/0'", 0), '37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf'],
     ['BIP84 native address', () => vectorAddress('native', "m/84'/0'/0'", 0), 'bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu'],
+    ['Address check accepts a BIP21 URI', () => {
+      const address = 'bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu';
+      const hit = C.matchDerivedAddress('bitcoin:' + address.toUpperCase() + '?amount=1',
+        [{ index: 0, path: "m/84'/0'/0'/0/0", address }], []);
+      return hit.state + ':' + hit.chain + ':' + hit.index;
+    }, 'match:receive:0'],
     ['BIP84 change address', () => vectorAddress('native', "m/84'/0'/0'", 1), 'bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el'],
     ['BIP86 taproot address', () => vectorAddress('taproot', "m/86'/0'/0'", 0), 'bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr'],
     /* The conversions themselves. A wrong table here is the worst failure this
@@ -6316,6 +6415,78 @@ var qrcodegen;
      with everything else. Holding the strings here rather than in the markup
      keeps them out of the DOM until somebody asks to see one. */
   const qrSources = Object.create(null);
+  let renderedAddressRows = null;
+  let addressCheckToken = 0;
+  const ADDRESS_SEARCH_LIMIT = 1000;
+  const ADDRESS_SEARCH_BATCH = 1;
+
+  function showAddressMatch(hit, shown) {
+    const status = $('address-match-status');
+    const branch = hit.chain === 'receive' ? 'Receiving' : 'Change';
+    const extra = hit.index >= shown ? ' (beyond the ' + shown + ' shown)' : '';
+    status.textContent = branch + ' address #' + hit.index + ' of this wallet · ' + hit.path + extra;
+    status.className = 'hint address-match-status is-ok';
+  }
+
+  /* Check the five already rendered addresses immediately, then search the
+     rest of receive and change indices 0-999 in small tasks. Each address is
+     public, but deriving it still costs an elliptic-curve multiplication; the
+     batches keep the offline page responsive and the token cancels stale work
+     when the pasted address or wallet changes. */
+  function checkAddressMatch() {
+    const status = $('address-match-status');
+    const raw = $('address-match').value;
+    const mine = ++addressCheckToken;
+    if (!renderedAddressRows || !state.seed) {
+      status.textContent = '';
+      status.className = 'hint address-match-status';
+      return;
+    }
+    const { receive, change, path, search } = renderedAddressRows;
+    const shown = Math.max(receive.length, change.length);
+    const immediate = C.matchDerivedAddress(raw, receive, change);
+    if (immediate.state === 'empty') {
+      status.textContent = '';
+      status.className = 'hint address-match-status';
+      return;
+    }
+    if (immediate.state === 'match') {
+      showAddressMatch(immediate, shown);
+      return;
+    }
+    status.textContent = 'Not in the ' + shown + ' shown addresses. Checking indices 0–'
+      + (ADDRESS_SEARCH_LIMIT - 1) + '…';
+    status.className = 'hint address-match-status';
+    let start = shown;
+    const searchNext = () => {
+      if (mine !== addressCheckToken || !state.seed) return;
+      const end = Math.min(start + ADDRESS_SEARCH_BATCH, ADDRESS_SEARCH_LIMIT);
+      let result;
+      try {
+        result = C.findDerivedAddress({
+          seed: state.seed.seed, addressType: state.addressType, path,
+          address: raw, start, end, prepared: search
+        });
+      } catch (error) {
+        status.textContent = 'Could not check that address: ' + error.message + '.';
+        status.className = 'hint address-match-status is-bad';
+        return;
+      }
+      if (result.state === 'match') {
+        showAddressMatch(result, shown);
+      } else if (end < ADDRESS_SEARCH_LIMIT) {
+        start = end;
+        status.textContent = 'No match through index ' + (end - 1)
+          + '. Checking through ' + (ADDRESS_SEARCH_LIMIT - 1) + '…';
+        setTimeout(searchNext, 0);
+      } else {
+        status.textContent = 'No match in receive or change indices 0–'
+          + (ADDRESS_SEARCH_LIMIT - 1) + ' for this derivation.';
+        status.className = 'hint address-match-status is-bad';
+      }
+    };
+    setTimeout(searchNext, 0);
+  }
 
   /* Download URLs are capabilities for the bytes inside their Blob, so they
      get the same lifecycle as every other derived value. Revoke shortly after
@@ -6714,6 +6885,8 @@ var qrcodegen;
     clearExportState();
     state.seed = null;
     state.seedKey = null;
+    renderedAddressRows = null;
+    addressCheckToken += 1;
 
     /* The strings parked for the QR buttons are derived material like any
        other, and this is the only place that drops them. Clearing the page is
@@ -6752,7 +6925,7 @@ var qrcodegen;
      the old values persist until the garbage collector happens to reclaim
      them, and nothing here can force that. Treat it as tidying the desk, not
      shredding the paper. */
-  const SECRET_FIELDS = ['input', 'passphrase'];
+  const SECRET_FIELDS = ['input', 'passphrase', 'address-match'];
   const SECRET_TEXT = [
     'words', 'entropy', 'ending-list', 'ending-octal', 'ending-hex',
     'ending-picked-word', 'ending-picked-label',
@@ -6761,6 +6934,7 @@ var qrcodegen;
     'checksum-line', 'checksum-detail',
     'master-xprv', 'xprv', 'xprv-path', 'xprv-alt', 'xprv-alt-label',
     'recv-addr', 'recv-path', 'chng-addr', 'chng-path', 'recv-more', 'chng-more',
+    'address-match-status',
     'qr-dialog-code', 'qr-dialog-text', 'qr-dialog-title',
     'fp-base', 'fp-pass', 'fp-base-tag',
     'seedqr-digits', 'seedqr-grid'
@@ -6956,6 +7130,14 @@ var qrcodegen;
       return;
     }
 
+    /* Stop any queued search before parsing the new path. An invalid path
+       returns early below, so waiting until the replacement rows exist left
+       the old wallet's expensive search running invisibly in the background. */
+    addressCheckToken += 1;
+    renderedAddressRows = null;
+    $('address-match-status').textContent = '';
+    $('address-match-status').className = 'hint address-match-status';
+
     /* A rerender means at least the account presentation may have changed.
        Close a pending confirmation and retire any Blob URL before painting
        the new result, so no control remains attached to the prior one. */
@@ -7078,6 +7260,15 @@ var qrcodegen;
     }));
     runInto($('recv-more'), addresses.moreReceive);
     runInto($('chng-more'), addresses.moreChange);
+    renderedAddressRows = {
+      path,
+      search: C.prepareDerivedAddressSearch({
+        seed: state.seed.seed, addressType: state.addressType, path
+      }),
+      receive: [addresses.receive, ...addresses.moreReceive].map((entry, index) => ({ ...entry, index })),
+      change: [addresses.change, ...addresses.moreChange].map((entry, index) => ({ ...entry, index }))
+    };
+    checkAddressMatch();
 
     /* Codes for the two addresses on show and for the descriptor. The folded
        run gets its own inside runInto above -- these are the ones with a fixed
@@ -7449,6 +7640,7 @@ var qrcodegen;
       invalidateDerivedState();
       paintCount();
     });
+    $('address-match').addEventListener('input', checkAddressMatch);
     paintSegments();
     paintSteps();
     paintCount();

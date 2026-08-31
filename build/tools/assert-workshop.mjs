@@ -144,6 +144,17 @@ export function assertWorkshop() {
       `the ${name} build does not create the wallet.dat as a revocable binary download`);
     check(/function invalidateDerivedState\(\)\s*\{[\s\S]*?clearExportState\(\);[\s\S]*?state\.seed\s*=\s*null/.test(script),
       `the ${name} build does not clear export state when its derived wallet is invalidated`);
+    check(/id="address-match"/.test(html) && /id="address-match-status"[^>]*role="status"/.test(html),
+      `the ${name} build does not expose the derived-wallet address check`);
+    check(/const ADDRESS_SEARCH_LIMIT\s*=\s*1000/.test(script) &&
+      /const ADDRESS_SEARCH_BATCH\s*=\s*1/.test(script) &&
+      /C\.prepareDerivedAddressSearch\(\{/.test(script) &&
+      /C\.matchDerivedAddress\(raw, receive, change\)/.test(script) &&
+      /C\.findDerivedAddress\(\{/.test(script) &&
+      /setTimeout\(searchNext, 0\)/.test(script),
+      `the ${name} build does not check receive and change indices 0-999 in cancellable batches`);
+    check(/addressCheckToken\s*\+=\s*1/.test(script) && /renderedAddressRows\s*=\s*null/.test(script),
+      `the ${name} build does not cancel an address search when its wallet is invalidated`);
     /* The SeedQR is the recovery words in another alphabet. Its wipe is not
        inherited from the box it sits in -- invalidateDerivedState clears the
        ids in SECRET_TEXT and nothing else -- so the registration is the whole
