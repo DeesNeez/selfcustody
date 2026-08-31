@@ -84,8 +84,53 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '22'
+      # DIAGNOSTIC (temporary). The gate below failed on its first run: the
+      # committed artifact is 60,274 bytes and this environment builds 61,987.
+      # rust-toolchain.toml pins rustc, but secp256k1-sys compiles the vendored
+      # libsecp256k1 C sources through the cc crate, which calls the *host*
+      # clang -- and nothing pins that. Record what actually built the artifact
+      # so the hypothesis becomes a measurement.
+      - name: Toolchain provenance
+        run: |
+          echo "runner:   ${ImageOS:-unknown} ${ImageVersion:-unknown}"
+          echo "rustc:    $(rustc --version 2>&1 || true)"
+          echo "cargo:    $(cargo --version 2>&1 || true)"
+          echo "clang:    $(clang --version 2>&1 | head -1 || true)"
+          echo "clang at: $(command -v clang || echo 'not on PATH')"
+          echo "llvm-ar:  $(command -v llvm-ar || echo 'not on PATH')"
+          echo "cc env:   CC=${CC:-unset} AR=${AR:-unset}"
+
       - name: Rebuild the WebAssembly artifact
         run: npm run build:wasm
+
+      - name: Record the first rebuild
+        run: |
+          cp build/tools/secp256k1-wasm-b64.js "$RUNNER_TEMP/first-build.js"
+          sha256sum build/tools/secp256k1-wasm-b64.js
+
+      # Does what this environment builds actually work? The comparison used to
+      # run first, so on a mismatch this never executed -- and "the bytes
+      # differ" means something very different depending on whether the fresh
+      # build passes its vectors. The comparison still gates below; running the
+      # test first only means a failure is diagnosable.
+      - name: Test the freshly built engine
+        run: node build/tools/secp256k1-wasm-test.mjs
+
+      # Same job, same container, same sources, target/ removed so the C is
+      # genuinely recompiled. If these two disagree the build is nondeterministic
+      # in itself and the host-toolchain explanation is wrong.
+      - name: Rebuild a second time and compare
+        run: |
+          rm -rf secp256k1-wasm/target
+          npm run build:wasm
+          if cmp -s "$RUNNER_TEMP/first-build.js" build/tools/secp256k1-wasm-b64.js; then
+            echo "STABLE: two independent builds in this environment agree"
+          else
+            echo "::error::two builds in the same environment disagree -- the build is nondeterministic, not merely host-dependent"
+            sha256sum "$RUNNER_TEMP/first-build.js" build/tools/secp256k1-wasm-b64.js
+            exit 1
+          fi
+
       # The whole point of the pinned toolchain and the committed lockfile.
       # Without this the job proves the sources compile and pass vectors, and
       # says nothing about the blob readers actually receive: a substituted
@@ -100,5 +145,3 @@ jobs:
             git diff --stat -- build/tools/secp256k1-wasm-b64.js
             exit 1
           fi
-      - name: Test the freshly built engine
-        run: node build/tools/secp256k1-wasm-test.mjs
