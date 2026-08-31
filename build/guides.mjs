@@ -6071,7 +6071,7 @@ const guides = [
         <li><strong>The BitBox lookup</strong> &mdash; five four-sided dice and a coin name a word outright, with nothing hashed.</li>
       </ul>
 
-      <p>Cards have two: hash the draw, or use the BIP39 tool&rsquo;s variable-length card codes. Coins have one, because there is only one sensible thing to do with a bit.</p>
+      <p>Cards have three: hash a compact ASCII transcript, hash the Ian Coleman tool&rsquo;s spaced suit-symbol transcript, or use that tool&rsquo;s variable-length card codes. Coins have one, because there is only one sensible thing to do with a bit.</p>
 
       ${callout("If the words disagree with your device", `Change the conversion before you conclude anything. A mismatch between this page and your hardware is far more likely to be two different conventions than a dishonest device &mdash; and the page names which devices use which convention precisely so that you can check that first.`)}
 
