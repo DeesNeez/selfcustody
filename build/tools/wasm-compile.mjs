@@ -13,7 +13,7 @@ export const wasmPath = join(
   crateDir, 'target/wasm32-unknown-unknown/release/secp256k1_wasm.wasm'
 );
 
-const portable = value => value.replaceAll('\', '/');
+const portable = value => value.split('\\').join('/');
 const cargoHome = process.env.CARGO_HOME ?? '/usr/local/cargo';
 
 /* Absolute build paths would otherwise be baked into the artifact and differ
