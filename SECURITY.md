@@ -155,8 +155,54 @@ do not stop at the hash:
   expected phrase.
 
 Treat the published hash as an integrity check, the attestation as evidence of
-the file's build origin, and a source review plus reproducible local build as
-the independent verification path.
+the file's build origin, and a source review plus a reproduced build as the
+independent verification path.
+
+### Reproducing the file yourself
+
+Assembling `docs/entropy-offline.html` needs nothing but this repository and
+Node:
+
+```
+npm run build
+```
+
+That is deterministic on any machine and any Node version. The build only
+assembles committed inputs; it never compresses anything itself. A file that
+matches the published hash confirms the artifact is what these sources
+produce.
+
+One of the inputs it assembles cannot be re-derived that way. The libsecp256k1
+engine is committed as `build/tools/secp256k1-wasm-b64.js`, and both of its
+forms — the raw WebAssembly, and the gzip stream the page actually ships — are
+produced inside the pinned builder image, by `npm run build:wasm:container`,
+which needs Docker.
+
+Compiling the Rust reproducibly already required that image: the compiler, the
+C toolchain and the linker all have to match, which is why they are pinned by
+digest rather than by version. Compression now requires it too. Deflate output
+differs between zlib builds, and the builder's zlib and an ordinary host Node's
+have been observed producing different bytes — of identical length — for the
+same module. A gzip payload made anywhere else is a valid stream that restores
+the same engine, and it is not the published bytes.
+
+So the engine's provenance is **verified rather than rebuilt**, and that check
+needs no Docker:
+
+- The generated file declares the module's SHA-256 on its `wasm sha256:` line.
+- Decompress the `SECP256K1_WASM_GZIP_B64` payload embedded in the page and
+  hash the result. It must equal that line, and it must equal the SHA-256 of
+  the committed raw payload.
+
+The build asserts exactly that on every run, for both pages, and the
+`build-wasm` CI job separately rebuilds the engine in the pinned image twice
+and refuses any wrapper that differs from the committed one — the check that
+caught a locally-compressed payload before it shipped.
+
+The practical consequence: reproducing the page is open to anyone, while
+reproducing the engine inside it is open to anyone with Docker. Everyone else
+can still confirm that the engine in their copy is the module this repository
+committed and audited, which is the property the download's promise rests on.
 
 ## Using the tool safely
 
