@@ -12,10 +12,12 @@ and must be answered by the person who put the material here.
 
 ## What the audit found
 
-1. **The outside-contributor blocker is effectively resolved.** One commit in
-   the history comes from someone other than the maintainer. It changed two CSS
-   `padding` values, and the file it changed was deleted in `2bc242d`. Nothing
-   from it survives in the distributed tree. See [Contributor audit](#contributor-audit).
+1. **The outside-contributor blocker is resolved.** One commit in the history
+   comes from someone other than the maintainer. It changed two CSS `padding`
+   values, and the file it changed was deleted in `2bc242d`. A line-by-line
+   blame of the whole tree confirms it: of 31,028 source lines and 83 images,
+   none originate with anyone but the maintainer. See
+   [Contributor audit](#contributor-audit).
 2. **Four third-party notices are missing and one is contradictory.** The most
    serious is that `docs/entropy-offline.html` embeds two SIL Open Font License
    fonts and carries no OFL notice — and that file is distributed on its own.
@@ -37,15 +39,36 @@ Commit counts by author identity across the whole history:
 | `DeesNeez <130502840+DeesNeez@users.noreply.github.com>` | 202 | Maintainer |
 | `Dee <dee@coinkite.com>` | 75 | **Needs maintainer confirmation** — same person? |
 | `Dee <130502840+DeesNeez@users.noreply.github.com>` | 67 | Same GitHub account as row 1 |
-| `Dee <100603318+EhDee22@users.noreply.github.com>` | 27 | **Needs maintainer confirmation** — same person? |
+| `Dee <100603318+EhDee22@users.noreply.github.com>` | 27 | Confirmed by the maintainer as their own earlier account |
 | `Dee <book052@hotmail.com>` | 6 | **Needs maintainer confirmation** — same person? |
 | `Siim <46551195+siim-m@users.noreply.github.com>` | 1 | Resolved — see below |
 
-Rows 1 and 3 share one GitHub account and are certainly the same person. Rows
-2, 4 and 5 are presumed to be the same person under different machines or
-email addresses, but presumption is not evidence: if they are, the maintainer
-should say so in writing and this file should record it. If any of them is a
-different person, that person's contributions need permission before Commit 3.
+Rows 1 and 3 share one GitHub account. Row 4 is the maintainer's earlier
+GitHub account, confirmed by the maintainer. Rows 2 and 5 are presumed to be
+the same person under a work address and a personal one; presumption is not
+evidence, so the maintainer should state it in writing and this file should
+record it.
+
+### What survives, by author
+
+The question that matters is not who committed but whose expression is still
+in the distributed tree. Measured with `git blame -w` across every tracked
+text file:
+
+| Scope | Lines | EhDee22 | Siim |
+| --- | --- | --- | --- |
+| Source tree (`build/`, `.github/`, `secp256k1-wasm/`, `fuzzing/`, root files) | 31,028 | 0 | 0 |
+| Generated `docs/` | 59,512 | 12 | 0 |
+| Images (83 files, by adding commit) | — | 0 | 0 |
+
+The 12 lines are `<!DOCTYPE html>`, `<html lang="en">`, `<head>`, `</head>`,
+`</body>` and `</html>` in the two hand-maintained page shells,
+`docs/index.html` and `docs/guides.html`. They are boilerplate, not
+copyrightable expression.
+
+Every other line of the current tree, and every tracked image, comes from the
+maintainer's own identities. Nothing in what the project distributes depends
+on permission from anyone else.
 
 ### The one outside contribution
 
@@ -200,8 +223,9 @@ that stays **unknown** must be excluded by name.
 
 Commit 3 cannot proceed until these are recorded.
 
-1. Are `dee@coinkite.com`, `100603318+EhDee22`, `book052@hotmail.com` and
-   `DeesNeez` all you? A written statement covering all four is enough.
+1. `100603318+EhDee22` is confirmed as the maintainer's earlier account. Are
+   `dee@coinkite.com` and `book052@hotmail.com` also you? A written statement
+   covering both is enough.
 2. What is the correct copyright holder line for `LICENSE` — a personal name,
    or an entity?
 3. On what basis is each manufacturer logo and product image used, and does any
