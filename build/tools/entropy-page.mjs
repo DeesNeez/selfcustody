@@ -1018,7 +1018,20 @@ ${FONTS.map(embedFont).join('\n')}
   .key[data-suit] small { letter-spacing: 0; font-size: 0.54rem; }
   .pad[data-method="cards"], .pad[data-method="cardscoleman"], .pad[data-method="cardbits"] {
     grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+    /* Both rows to the height of the taller. The suit glyph is set larger than
+       a rank, so its row came out 3.8px deeper and the two read as different
+       sizes of key. 1fr on the implicit rows equalises them without naming a
+       height, so it keeps holding if either row's type changes -- the
+       alternative was shrinking the glyph, which is the one thing on this key
+       that is doing the work. */
+    grid-auto-rows: 1fr;
   }
+  /* The four suits on a row of their own, centred. Grouped in an element
+     rather than placed by grid line: the column count varies with the width,
+     so no fixed column would be the middle at every size. Shrinkable, or the
+     four of them plus their gaps overflow the pad on a narrow phone. */
+  .pad-suits { grid-column: 1 / -1; display: flex; justify-content: center; gap: 8px; }
+  .pad-suits .key { flex: 0 1 84px; }
 
   .count { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 0.85rem; }
   .count b { font-variant-numeric: tabular-nums; color: #fff; }
@@ -2452,7 +2465,7 @@ const ui = () => `
        than let the row jump around it. */
     const named = keys.some(([, label]) => label);
     pad.dataset.method = method();
-    pad.replaceChildren(...keys.map(([value, label, face]) => {
+    const buttons = keys.map(([value, label, face]) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'key';
@@ -2471,7 +2484,26 @@ const ui = () => `
       }
       button.addEventListener('click', () => press(value));
       return button;
-    }));
+    });
+    /* The four suits get a row of their own, centred, instead of trailing the
+       thirteen ranks and breaking wherever the auto-fit grid happens to run
+       out -- which left clubs sitting on the end of the rank row.
+
+       Grouped in an element rather than placed by grid line, because the
+       column count varies with the width: there is no column number to start
+       them at that would be the middle at every size. The wrapper spans the
+       full grid row and centres its own four children, which is true at any
+       count. Only the card pads have suits; every other pad falls through
+       with its keys as direct children, exactly as before. */
+    const suits = buttons.filter(button => button.dataset.suit);
+    if (suits.length) {
+      const row = document.createElement('div');
+      row.className = 'pad-suits';
+      row.append(...suits);
+      pad.replaceChildren(...buttons.filter(button => !button.dataset.suit), row);
+    } else {
+      pad.replaceChildren(...buttons);
+    }
   }
 
   const limits = () => C.limits(method(), state.words);
