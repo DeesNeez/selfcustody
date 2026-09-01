@@ -551,7 +551,10 @@ ${FONTS.map(embedFont).join('\n')}
 
      role="group" and aria-labelledby rather than a bare heading: the caption
      is part of each button's meaning, and this is what tells a screen reader
-     so without repeating the word inside both names. */
+     so without repeating the word inside the names. The watch-only card has
+     one button rather than two and still gets the group, so both cards say
+     the word once, in the same place, and the two rows stay identical in
+     markup and in height. */
   .export-card .export-actions-label {
     margin: auto 0 8px; color: var(--muted);
     font-size: 0.76rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
@@ -569,11 +572,7 @@ ${FONTS.map(embedFont).join('\n')}
        imbalance has nothing left to buy. flex-basis 0 rather than auto, or the
        labels' own widths leak back in. */
     flex: 1 1 0; width: auto; min-width: 0;
-    /* 10px sides, not the 13px .export-button sets. At even halves the longer
-       label clears its box by 10px; the narrower padding turns that into 24px,
-       which is the difference between fitting and wrapping the pair to 51px if
-       a fallback face ever renders it wider. */
-    margin-top: 0; min-height: 40px; padding: 8px 10px;
+    margin-top: 0; min-height: 40px; padding: 8px 12px;
     display: inline-flex; align-items: center; justify-content: center;
     text-align: center; line-height: 1.25;
   }
@@ -4425,18 +4424,21 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     <article class="export-card is-private">
       <span class="export-tag">Keep secret</span>
       <h4>Private recovery record</h4>
-      <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value.</p>
+      <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value. The <code>wallet.dat</code> holds the same account&rsquo;s private key and descriptors, in the file format Bitcoin Core opens.</p>
       <p class="export-actions-label" id="export-download-label">Download:</p>
       <div class="export-actions" role="group" aria-labelledby="export-download-label">
         <button type="button" class="export-button" id="export-private-open">Recovery record</button>
-        <button type="button" class="export-button" id="export-wallet-open">Bitcoin Core wallet.dat</button>
+        <button type="button" class="export-button" id="export-wallet-open">wallet.dat</button>
       </div>
     </article>
     <article class="export-card is-watch">
       <span class="export-tag">No spending keys</span>
       <h4>Watch-only record</h4>
       <p>Account public keys, checked descriptors and the first five addresses on each branch. Safe from spending, not private from balance and history.</p>
-      <button type="button" class="export-button" id="export-watch">Download watch-only record</button>
+      <p class="export-actions-label" id="export-watch-download-label">Download:</p>
+      <div class="export-actions" role="group" aria-labelledby="export-watch-download-label">
+        <button type="button" class="export-button" id="export-watch">Watch-only record</button>
+      </div>
     </article>
   </div>
   <p class="export-status" id="export-status" role="status" aria-live="polite"></p>
