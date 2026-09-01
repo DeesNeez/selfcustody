@@ -58,9 +58,40 @@ const ENTROPY_RELEASE = '2026-09-01-beta-3';
    then subset to the characters that actually appear here, which takes the
    pair from 198 KB to 39 KB. See build/vendor/fonts/README.md. */
 const FONTS = [
-  { family: 'Jost', file: 'build/vendor/fonts/jost-latin.woff2', range: '100 900' },
-  { family: 'Open Sans', file: 'build/vendor/fonts/open-sans-latin.woff2', range: '300 800' }
+  { family: 'Jost', file: 'build/vendor/fonts/jost-latin.woff2', range: '100 900',
+    version: '3.710', licence: 'build/vendor/fonts/OFL-Jost.txt' },
+  { family: 'Open Sans', file: 'build/vendor/fonts/open-sans-latin.woff2', range: '300 800',
+    version: '3.003', licence: 'build/vendor/fonts/OFL-OpenSans.txt' }
 ];
+
+/* The OFL is a bundling licence: condition 2 lets the fonts travel inside other
+   software provided each copy carries the copyright notice and the licence
+   itself. "Each copy" is the operative phrase here, because this page is not a
+   directory listing beside a LICENSE file -- entropy-offline.html is one file
+   that people download and pass around on its own. A pointer to a licence that
+   lives in the repository would be a pointer out of the only artifact the
+   reader has, which is the same mistake as fetching a font.
+
+   So both licences go in whole, in full text, next to the bytes they cover.
+   That costs about 9 KB against a 556 KB file.
+
+   A CSS comment rather than an HTML one: the licence text contains "--" three
+   times per copy, which is not valid inside <!-- -->, and contains no sequence
+   that would close a CSS comment early. embedFontLicences() enforces that
+   second half rather than trusting it. The version numbers come from each font's own
+   name table, not from a changelog, so they describe the bytes actually
+   embedded. */
+const fontLicences = () => FONTS.map(({ family, version, licence }) =>
+  `${family} ${version}\n\n${readFileSync(licence, 'utf8').replace(/\r\n/g, '\n').trim()}`
+).join(`\n\n${'='.repeat(72)}\n\n`);
+
+const embedFontLicences = () => {
+  const text = fontLicences();
+  if (text.includes('*/')) {
+    throw new Error('a vendored font licence contains */, which would close the CSS comment early');
+  }
+  return `\n/* ${'-'.repeat(72)}\n   Embedded webfonts. Both families are used under the SIL Open Font\n   License 1.1; the full text of each licence follows the family it covers.\n   The font files themselves are subsets, unmodified in outline, of the\n   upstream releases named below.\n   ${'-'.repeat(72)}\n\n${text}\n*/\n`;
+};
 
 /* font-display: block, not swap.
 
@@ -108,6 +139,7 @@ const compressedWasmPayload = source => {
 };
 
 const styles = () => `
+${embedFontLicences()}
 ${FONTS.map(embedFont).join('\n')}
 
   :root {

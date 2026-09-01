@@ -21,10 +21,11 @@ and must be answered by the person who put the material here.
    source lines and 83 images, none originated with anyone but the maintainer.
    That commit has since been removed from this repository's history. See
    [Contributor audit](#contributor-audit).
-2. **Four third-party notices are missing and one is contradictory.** The most
-   serious is that `docs/entropy-offline.html` embeds two SIL Open Font License
-   fonts and carries no OFL notice — and that file is distributed on its own.
-   See [Notice gaps](#notice-gaps).
+2. **Two third-party notices are missing and one is contradictory.** The font
+   notices, which were the most serious because the standalone offline artifact
+   carried none, are now resolved. Bootstrap and Bootstrap Icons still ship
+   without theirs, and `secp256k1-wasm` still contradicts itself. See
+   [Notice gaps](#notice-gaps).
 3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
    images are manufacturer logos, product shots or exchange marks. They cannot
    go under a project content licence. The remaining 44 need the maintainer to
@@ -81,12 +82,12 @@ branches.
 ## Notice gaps
 
 These must be fixed before licensing files are published. Each is a licence
-condition the project currently does not meet.
+condition the project does not meet, or did not until the row says otherwise.
 
 | # | Component | Licence | Gap | Required action |
 | --- | --- | --- | --- | --- |
-| 1 | Jost and Open Sans, embedded as base64 in `docs/entropy-offline.html` | SIL OFL 1.1 | The artifact is distributed as a standalone file and contains no OFL notice. `grep` finds the Nayuki and EntropyLab MIT notices in it, and nothing for the fonts. | Vendor `OFL.txt` for both families into `build/vendor/fonts/`, and include the copyright line and licence reference in the offline build. |
-| 2 | `build/vendor/fonts/` | SIL OFL 1.1 | `README.md` states both families are OFL, but no licence text is vendored. | Add the upstream `OFL.txt` for each family with its copyright line. |
+| 1 | Jost and Open Sans, embedded as base64 in `docs/entropy-offline.html` | SIL OFL 1.1 | **Resolved.** Both licences are now inlined in full in both Workshop builds, beside the bytes they cover. The full text travels rather than a reference, because the offline build is a single file people pass around. | — |
+| 2 | `build/vendor/fonts/` | SIL OFL 1.1 | **Resolved.** `OFL-Jost.txt` and `OFL-OpenSans.txt` are vendored from the Google Fonts directories the subsets were cut from, and `build/render.mjs` copies them into `docs/assets/fonts/` so the served copies carry them too. | — |
 | 3 | `docs/assets/vendor/bootstrap/css/bootstrap.min.css` | MIT | Shipped, minified, and the `/*! … */` banner Bootstrap's dist preserves has been stripped. No notice anywhere. Also has no source under `build/` — it is a hand-placed file inside otherwise-generated output. | Restore the banner or record the notice in `THIRD_PARTY_NOTICES.md`; record the exact upstream version, which is not stated anywhere. |
 | 4 | `build/vendor/bootstrap-icons/` and the generated subset in `docs/assets/vendor/bootstrap-icons/` | MIT | No licence text vendored; the generated stylesheet carries no banner. `README.md` records only "as vendored in commit a565235", not an upstream version. | Vendor the upstream `LICENSE`, record the upstream version, and carry the notice into the subset output. |
 | 5 | `build/tools/lifehash.js` | **Unclear** | Header says "adapted from the merged EntropyLab implementation in PR #74". No licence notice, and no reference to LifeHash's own upstream origin. Unlike `sqlite-writer.js` and `wallet-dat.js` — adapted from the same project and both carrying the full MIT notice inline — this file carries nothing. | Establish the licence of the EntropyLab implementation *and* of the LifeHash algorithm's upstream reference implementation, then add the notice. This one blocks calling the Workshop's licensing complete. |

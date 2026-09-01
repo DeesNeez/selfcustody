@@ -44,7 +44,13 @@ import { copyFileSync } from 'node:fs';
    verified against the upstream variable fonts, not just the subsets -- so
    they have always been drawn by a system fallback face, under Google Fonts
    exactly as here. Adding them to the subset is not possible and not needed. */
-const FONTS = ['jost-latin.woff2', 'open-sans-latin.woff2'];
+/* The licence files travel with the fonts. The OFL permits bundling only if
+   each copy carries the copyright notice and the licence, and docs/assets/fonts
+   is a copy: the browser fetches these two files from our origin, so the
+   licence has to be reachable from the same place rather than only from the
+   repository the reader never sees. The offline build solves the same problem
+   differently, by inlining the text -- see build/tools/entropy-page.mjs. */
+const FONTS = ['jost-latin.woff2', 'open-sans-latin.woff2', 'OFL-Jost.txt', 'OFL-OpenSans.txt'];
 
 /* Every generated file is written LF-only, on every platform.
 
