@@ -977,7 +977,20 @@
      the longest name fits the narrowest key. */
   .sc-workshop .key[data-suit] small{ letter-spacing: 0; font-size: 0.54rem; }
   .sc-workshop .pad[data-method="cards"], .sc-workshop .pad[data-method="cardscoleman"], .sc-workshop .pad[data-method="cardbits"]{
-    grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+    /* 62px, not 58. At 58 auto-fit fitted fourteen tracks across the 934px
+       pad and there are only thirteen ranks, so the row ran out one key early
+       and left a column of empty space on the right. The pad is never wider
+       than 934, and a 62px minimum admits at most floor(942 / 70) = 13 tracks
+       there, so the count lands exactly on the ranks and 1fr spends the rest
+       on them: 64.5px per key rather than 59.3px.
+
+       Raising the minimum rather than writing repeat(13, ...): thirteen fixed
+       columns hold at full width but keep dividing as the pad narrows, and at
+       830px they gave a 47.1px key with QUEEN painting 12.3px past its own
+       edge -- the same overflow the suit labels were once fixed for. 58px was
+       never arbitrary; it is about what the longest rank name needs. This way
+       the count falls as the pad narrows and the keys stay legible. */
+    grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
     /* Both rows to the height of the taller. The suit glyph is set larger than
        a rank, so its row came out 3.8px deeper and the two read as different
        sizes of key. 1fr on the implicit rows equalises them without naming a
