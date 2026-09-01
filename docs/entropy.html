@@ -65,6 +65,12 @@
     --paper: #1a1918;
     --surface: #242220;
     --line: #6e695e;
+    /* The resting edge every control in the workbench sits at. A token rather
+       than the literal repeated per control, so a method pad that only becomes
+       visible when the source changes inherits it without being listed
+       anywhere. Resting only: hover, pressed, disabled, warning and error all
+       set their own border-color and keep winning. */
+    --edge-rest: rgba(232, 214, 181, 0.34);
     --success: #35b48a;
     --danger: #d65e40;
     /* The embedded Jost and Open Sans subsets do not contain the four card
@@ -220,7 +226,7 @@
   .sc-workshop .seg button{
     flex: 1 1 auto; min-width: 116px; padding: 11px 14px;
     color: var(--ink); background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px;
+    border: 1px solid var(--edge-rest); border-radius: 10px;
     font: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer;
     transition: background-color 0.15s ease, border-color 0.15s ease;
   }
@@ -234,7 +240,7 @@
   /* Equal shares rather than sized to their text, so a longer label does not
      make one option look like the important one. */
   .sc-workshop .seg-even button{ flex: 1 1 0; }
-  .sc-workshop .seg button:disabled:hover{ border-color: rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.03); }
+  .sc-workshop .seg button:disabled:hover{ border-color: var(--edge-rest); background: rgba(255, 255, 255, 0.03); }
   /* Four conversions with device names under them need more room than a
      two-way choice, or the names wrap mid-word. */
   .sc-workshop .seg-tall button{ min-width: 152px; }
@@ -474,34 +480,122 @@
      and the private one gets the warning colour and a second confirmation. */
   .sc-workshop .export-grid{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .sc-workshop .export-card{
-    display: flex; flex-direction: column; min-width: 0; padding: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.11); border-radius: 12px;
+    position: relative; display: flex; flex-direction: column; min-width: 0;
+    overflow: hidden; padding: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.11); border-radius: 14px;
     background: rgba(0, 0, 0, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 14px 30px rgba(0, 0, 0, 0.15);
   }
   .sc-workshop .export-intro{ margin-bottom: 15px; }
-  .sc-workshop .export-card.is-private{ border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.085); }
-  .sc-workshop .export-card.is-watch{ border-color: rgba(255, 138, 0, 0.34); background: rgba(255, 138, 0, 0.055); }
-  .sc-workshop .export-tag{
-    width: fit-content; margin-bottom: 9px; padding: 4px 9px; border-radius: 5px;
-    color: var(--muted); background: rgba(255, 255, 255, 0.06);
-    font-size: 0.76rem; font-weight: 800; line-height: 1.25; letter-spacing: 0.07em; text-transform: uppercase;
+  .sc-workshop .export-card.is-private{
+    border-color: rgba(229, 105, 77, 0.74);
+    background: radial-gradient(circle at 18% 0, rgba(214, 94, 64, 0.24), transparent 56%), rgba(214, 94, 64, 0.075);
+    box-shadow: inset 0 1px 0 rgba(255, 157, 138, 0.08), 0 0 0 1px rgba(214, 94, 64, 0.07), 0 14px 30px rgba(0, 0, 0, 0.18);
   }
-  .sc-workshop .is-private .export-tag{ color: #ff9d8a; background: rgba(214, 94, 64, 0.14); }
-  .sc-workshop .is-watch .export-tag{ color: #ffad4c; background: rgba(255, 138, 0, 0.11); }
-  .sc-workshop .export-card h4{ margin: 0 0 7px; color: #fff; font-size: 0.98rem; }
+  /* Green rather than orange. Orange is the page's caution colour -- it is
+     what the connection warning and the beta notice are set in -- and the
+     watch-only record is the safe one of the pair. Reading as a milder
+     version of the private card's warning had it exactly backwards. This is
+     the green the checksum and the self-test already use. */
+  .sc-workshop .export-card.is-watch{
+    border-color: rgba(65, 205, 158, 0.84);
+    background: radial-gradient(circle at 18% 0, rgba(53, 180, 138, 0.24), transparent 56%), rgba(53, 180, 138, 0.075);
+    box-shadow: inset 0 1px 0 rgba(139, 227, 198, 0.1), 0 0 0 1px rgba(53, 180, 138, 0.09), 0 14px 30px rgba(0, 0, 0, 0.18);
+  }
+  .sc-workshop .export-card-heading{ display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+  .sc-workshop .export-card-heading > div{ min-width: 0; }
+  .sc-workshop .export-card-icon{
+    display: grid; flex: 0 0 36px; width: 36px; height: 36px; place-items: center;
+    border: 1px solid currentColor; border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  .sc-workshop .export-card-icon svg{ width: 19px; height: 19px; }
+  .sc-workshop .is-private .export-card-icon{ color: #ffad9c; background: rgba(214, 94, 64, 0.18); border-color: rgba(255, 157, 138, 0.52); }
+  .sc-workshop .is-watch .export-card-icon{ color: #9af0d3; background: rgba(53, 180, 138, 0.18); border-color: rgba(139, 227, 198, 0.56); }
+  /* An eyebrow, not a pill. As a pill its 8px of side padding put its letters
+     8px right of the heading directly beneath it: the box lined up, the text
+     did not, and the eye reads the text -- so the two lines stepped. Without
+     the padding they share one left edge and read as one block. The colour is
+     unchanged and still on the text, alongside the icon and the card's own
+     border, so nothing that told the two cards apart is lost. */
+  .sc-workshop .export-tag{
+    display: block; width: fit-content; margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 0.78rem; font-weight: 800; line-height: 1.25; letter-spacing: 0.075em; text-transform: uppercase;
+  }
+  .sc-workshop .is-private .export-tag{ color: #ffad9c; }
+  .sc-workshop .is-watch .export-tag{ color: #9af0d3; }
+  /* 700, not 800. The section headings around these -- "Recovery words",
+     "Addresses", "Export files" -- are Jost 500 at 16px, so the page uses Jost
+     as a light geometric face; at 800 its bowls thicken and it stops looking
+     like the same typeface. The emphasis comes from the size instead, which
+     still puts the card title above the heading that contains it.
+
+     Jost rather than the eyebrow's Open Sans: every heading on the page is
+     Jost, and the eyebrow is a label like the Download: caption below it, not
+     a heading. The two faces here are the system, not a mismatch. */
+  .sc-workshop .export-card h4{ margin: 0; color: #fff; font-size: 1.12rem; font-weight: 700; }
   .sc-workshop .export-card p{ margin: 0 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
   .sc-workshop .export-card .export-button{ margin-top: auto; }
-  .sc-workshop .export-card .export-button + .export-button{ margin-top: 8px; }
+  /* Says once what both buttons would otherwise each spend width saying, so
+     the labels can be the two things being downloaded rather than two
+     sentences about downloading. It carries the auto top margin that used to
+     sit on the row, so the pair stays pinned to the foot of the card and level
+     with the watch-only button beside it. Specificity beats .export-card p,
+     which would otherwise give it that block's 16px bottom margin.
+
+     role="group" and aria-labelledby rather than a bare heading: the caption
+     is part of each button's meaning, and this is what tells a screen reader
+     so without repeating the word inside the names. The watch-only card has
+     one button rather than two and still gets the group, so both cards say
+     the word once, in the same place, and the two rows stay identical in
+     markup and in height. */
+  .sc-workshop .export-card .export-actions-label,
+  .sc-workshop .export-dialog .export-actions-label{
+    margin: auto 0 8px; color: var(--muted);
+    font-size: 0.76rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  /* Side by side. Stacked, the private card ran two full-width buttons deep
+     and made the safe record look like the lesser of the two. */
+  .sc-workshop .export-actions{ display: flex; gap: 8px; }
+  .sc-workshop .export-actions .export-button{
+    /* Shorter than a primary action, because neither of these is one: both
+       open something rather than finish it.
+
+       Even halves. They were sized to their labels because the longer of the
+       two did not fit half the row and wrapped, taking the pair to 51px; with
+       the word "Download" lifted into the caption above, both fit and the
+       imbalance has nothing left to buy. flex-basis 0 rather than auto, or the
+       labels' own widths leak back in. */
+    flex: 1 1 0; width: auto; min-width: 0;
+    margin-top: 0; min-height: 40px; padding: 8px 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    text-align: center; line-height: 1.25;
+  }
   .sc-workshop .export-button{
     width: 100%; padding: 10px 13px; border: 1px solid rgba(255, 255, 255, 0.17);
     border-radius: 8px; color: var(--ink); background: rgba(255, 255, 255, 0.055);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
     font: inherit; font-size: 0.83rem; font-weight: 800; cursor: pointer;
+    transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
   }
-  .sc-workshop .export-button:hover:not(:disabled){ color: #fff; border-color: rgba(255, 138, 0, 0.56); }
+  .sc-workshop .export-button:hover:not(:disabled){ transform: translateY(-1px); color: #fff; border-color: rgba(255, 138, 0, 0.56); }
   .sc-workshop .export-button:disabled{ opacity: 0.55; cursor: wait; }
-  .sc-workshop .is-private .export-button{ color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
+  .sc-workshop .is-private .export-button{ color: #ffad9c; border-color: rgba(229, 105, 77, 0.62); background: rgba(214, 94, 64, 0.1); }
   .sc-workshop .is-private .export-button:hover:not(:disabled){ border-color: rgba(255, 157, 138, 0.72); }
-  .sc-workshop .is-watch .export-button{ color: #ffad4c; border-color: rgba(255, 138, 0, 0.36); }
+  .sc-workshop .is-watch .export-button{ color: #9af0d3; border-color: rgba(65, 205, 158, 0.68); background: rgba(53, 180, 138, 0.13); }
+  .sc-workshop .is-watch .export-button:hover:not(:disabled){ border-color: rgba(154, 240, 211, 0.9); background: rgba(53, 180, 138, 0.19); }
+  /* The one filled control in the pair. It writes a wallet file a node will
+     open, which is a heavier act than reviewing text on screen, so it carries
+     more weight than the button beside it without becoming a primary action.
+     Keyed by id so it wins over .is-private's red without an !important. */
+  .sc-workshop #export-wallet-open{
+    color: #ffd0a0;
+    background: rgba(255, 138, 0, 0.20);
+    border: 1px solid rgba(255, 138, 0, 0.56);
+    box-shadow: inset 0 1px 0 rgba(255, 210, 161, 0.08);
+  }
+  .sc-workshop #export-wallet-open:hover:not(:disabled){ color: #fff; border-color: rgba(255, 138, 0, 0.78); }
   .sc-workshop .export-status{ min-height: 1.4em; margin: 9px 0 0; color: var(--muted); font-size: 0.78rem; }
 
   .sc-workshop .export-dialog{
@@ -527,13 +621,30 @@
     border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.12);
     color: #ff9d8a; font-size: 0.84rem; line-height: 1.55;
   }
-  .sc-workshop .export-dialog-actions{ display: flex; flex-wrap: wrap; gap: 10px; margin-top: 19px; }
+  /* The dialog wears the same captioned pair as the card that opened it, so
+     the two buttons are named the same in both places and neither has to
+     repeat the caption's word. Cancel drops to its own row rather than sitting
+     third in the group: it is not a download, and the group is labelled as if
+     everything in it were.
+
+     Both contexts are named on the caption rule above rather than leaving it
+     scoped to the card: each of .export-card p and .export-dialog p sets its
+     own margin at the same specificity, so a single-class selector loses to
+     whichever applies and the caption renders as body text. The auto top
+     margin is for the card's flex column and computes to zero in the dialog,
+     so the spacing there is stated. */
+  .sc-workshop .export-dialog .export-actions-label{ margin: 19px 0 8px; }
+  .sc-workshop .export-dialog-actions{ display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
   .sc-workshop .export-dialog-actions .export-button{ width: auto; }
   .sc-workshop .export-dialog .export-button{ color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
   .sc-workshop .export-dialog .export-button:hover:not(:disabled){ border-color: rgba(255, 157, 138, 0.72); }
 
   @media (max-width: 620px) {
     .sc-workshop .export-grid{ grid-template-columns: 1fr; }
+    /* Side by side on a phone leaves neither label readable, and 40px is
+       under the 44px a finger needs. Stacked, they get it back. */
+    .sc-workshop .export-actions{ flex-direction: column; }
+    .sc-workshop .export-actions .export-button{ min-height: 44px; }
     .sc-workshop .export-dialog{ padding: 22px 20px; }
     .sc-workshop .export-dialog-actions{ display: grid; }
     .sc-workshop .export-dialog-actions .export-button, .sc-workshop .export-dialog-actions .key-tool{ width: 100%; }
@@ -661,7 +772,7 @@
   .sc-workshop .key{
     padding: 16px 8px; color: #fff;
     background: rgba(255, 255, 255, 0.045);
-    border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 11px;
+    border: 1px solid var(--edge-rest); border-radius: 11px;
     font: inherit; font-size: 1.35rem; font-weight: 700; line-height: 1.1;
     cursor: pointer; user-select: none;
     transition: background-color 0.12s ease, border-color 0.12s ease, transform 0.06s ease;
@@ -675,7 +786,7 @@
   .sc-workshop .key-tool{
     padding: 9px 14px; color: var(--ink-soft);
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 9px;
+    border: 1px solid var(--edge-rest); border-radius: 9px;
     font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer;
   }
   .sc-workshop .key-tool:hover:not(:disabled){ color: #fff; border-color: rgba(255, 138, 0, 0.45); }
@@ -866,8 +977,34 @@
      the longest name fits the narrowest key. */
   .sc-workshop .key[data-suit] small{ letter-spacing: 0; font-size: 0.54rem; }
   .sc-workshop .pad[data-method="cards"], .sc-workshop .pad[data-method="cardscoleman"], .sc-workshop .pad[data-method="cardbits"]{
-    grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+    /* 62px, not 58. At 58 auto-fit fitted fourteen tracks across the 934px
+       pad and there are only thirteen ranks, so the row ran out one key early
+       and left a column of empty space on the right. The pad is never wider
+       than 934, and a 62px minimum admits at most floor(942 / 70) = 13 tracks
+       there, so the count lands exactly on the ranks and 1fr spends the rest
+       on them: 64.5px per key rather than 59.3px.
+
+       Raising the minimum rather than writing repeat(13, ...): thirteen fixed
+       columns hold at full width but keep dividing as the pad narrows, and at
+       830px they gave a 47.1px key with QUEEN painting 12.3px past its own
+       edge -- the same overflow the suit labels were once fixed for. 58px was
+       never arbitrary; it is about what the longest rank name needs. This way
+       the count falls as the pad narrows and the keys stay legible. */
+    grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
+    /* Both rows to the height of the taller. The suit glyph is set larger than
+       a rank, so its row came out 3.8px deeper and the two read as different
+       sizes of key. 1fr on the implicit rows equalises them without naming a
+       height, so it keeps holding if either row's type changes -- the
+       alternative was shrinking the glyph, which is the one thing on this key
+       that is doing the work. */
+    grid-auto-rows: 1fr;
   }
+  /* The four suits on a row of their own, centred. Grouped in an element
+     rather than placed by grid line: the column count varies with the width,
+     so no fixed column would be the middle at every size. Shrinkable, or the
+     four of them plus their gaps overflow the pad on a narrow phone. */
+  .sc-workshop .pad-suits{ grid-column: 1 / -1; display: flex; justify-content: center; gap: 8px; }
+  .sc-workshop .pad-suits .key{ flex: 0 1 84px; }
 
   .sc-workshop .count{ display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 0.85rem; }
   .sc-workshop .count b{ font-variant-numeric: tabular-nums; color: #fff; }
@@ -927,8 +1064,22 @@
        identically in both, and the checksum row below still cannot move it. */
     align-items: start;
     margin: 0 0 38px; padding: 21px 22px; border-radius: 16px;
-    background: rgba(255, 255, 255, 0.035);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    /* Warm rather than the flat white wash it had: the panel sits directly
+       under the hero and above the workbench, and a neutral grey read as a
+       gap between them rather than as part of the same surface.
+
+       The same fade and border as the Local copy badge, deliberately. The two
+       are the pair that describe the self-contained file -- the badge says
+       what this copy is, this panel offers you one -- so they are the same
+       surface at two sizes rather than two warm greys that nearly match. */
+    background:
+      linear-gradient(
+        145deg,
+        rgba(232, 214, 181, 0.13),
+        rgba(232, 214, 181, 0.035)
+      ),
+      rgba(8, 8, 8, 0.28);
+    border: 1px solid rgba(232, 214, 181, 0.34);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   /* Without this the grid item keeps its default min-width:auto, which is the
@@ -1034,6 +1185,11 @@
     width: 100%; padding: 15px 20px; white-space: nowrap;
     color: #fff; text-decoration: none; text-shadow: none;
     font-size: 0.95rem; font-weight: 800; text-align: center;
+    /* font-family and cursor are inherited by an <a> but not by a <button>.
+       Stating them here lets the acknowledgement button wear this same skin
+       instead of a near-copy of it -- see .beta-disclaimer-actions. Both are
+       no-ops for the download link. */
+    font-family: inherit; cursor: pointer;
     border: 1px solid transparent;
     border-radius: 10px;
     background:
@@ -1070,6 +1226,13 @@
     outline: 2px solid #fff; outline-offset: 3px;
   }
   .sc-workshop .dl-icon{ flex: 0 0 auto; display: block; }
+  /* On the skin itself rather than on either button, so the lift and the
+     sweep cannot survive in one place after being removed from the other. */
+  @media (prefers-reduced-motion: reduce) {
+    .sc-workshop .dl{ transition: none; }
+    .sc-workshop .dl:hover{ transform: none; }
+    .sc-workshop .dl::after{ display: none; }
+  }
   .sc-workshop .download-action small{ color: var(--muted); font-size: 0.75rem; }
 
   @media (max-width: 620px) {
@@ -1273,10 +1436,60 @@
   .sc-workshop .addr-run b{ flex: 1 1 auto; min-width: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.86rem; font-weight: 400; color: var(--ink); word-break: break-all; }
 
-  .sc-workshop .address-match{ margin-top: 18px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px; background: rgba(255, 255, 255, 0.025); }
-  .sc-workshop .address-match label{ display: block; margin-bottom: 8px; color: var(--ink-soft); font-weight: 800; }
+  /* The one control here that takes something in from outside the page. A
+     gold, deeper and more saturated than the cream the workbench rests at, so
+     it separates without reading as a warning: pasting an address you already
+     have is a different kind of task, not a riskier one. Far enough from the
+     cream to look chosen rather than like a near-miss of it. */
+  .sc-workshop .address-match{
+    margin-top: 18px; padding: 16px;
+    border: 1px solid rgba(237, 200, 115, 0.46); border-radius: 10px;
+    /* A flat tint of #DEC93C, like the export cards, rather than the gradient
+       that was here. The colour is now carried by the border alone.
+
+       A tinted fill was the wrong lever twice over. Thinned over this
+       near-black ground a yellow near 52deg desaturates toward olive -- the
+       green cast was the ground showing through, not the swatch -- and any
+       fill strong enough to read as a colour also puts a wash under the body
+       text and drags the quiet note toward the contrast floor. A border owes
+       nothing to the text it surrounds, so it can hold the full #EDC873 while
+       the panel keeps the same grey as the address boxes above it. */
+    background: rgba(255, 255, 255, 0.025);
+  }
+  .sc-workshop .address-match label{
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px; color: var(--ink-soft); font-weight: 800;
+  }
+  .sc-workshop .address-match .addr-icon{ flex: 0 0 auto; width: 15px; height: 15px; color: #edc873; }
+  /* No control beside the field: the check runs on input, so there is nothing
+     to press and nothing to lay out beside it. A field on its own row is a
+     field. */
+  /* Even gaps above and below. The field inherited .hint's 7px underneath it
+     from the status line and nothing on top, so it sat against the
+     description and floated away from its own result. */
+  .sc-workshop .address-match input[type="text"]{ margin-top: 10px; }
+  .sc-workshop .address-match .address-match-status{ margin-top: 10px; }
+  /* Reassurance rather than instruction, so it is quiet and sits at the foot
+     of the panel as a standing property of it. */
+  .sc-workshop .address-match-local{
+    display: flex; align-items: center; gap: 6px;
+    margin: 10px 0 0; color: #968d74; font-size: 0.8rem;
+  }
+  .sc-workshop .address-match-local svg{ flex: 0 0 auto; width: 12px; height: 12px; color: var(--muted); }
   .sc-workshop .address-match-status{ min-height: 1.35em; }
+  /* Collapsed while it has nothing to say. The reserved line was meant to stop
+     the panel resizing as you type, but the status is only ever empty in two
+     states -- before a wallet has been derived, and when the field is cleared
+     -- and it is populated from the first character onward. So it bought
+     nothing during typing, and charged a permanent blank line under the field
+     in the state everyone sees first: 32px between field and note, almost all
+     of it empty.
+
+     Collapsed by height, not display: none. The element stays rendered and in
+     the accessibility tree, so the live region is still there to announce the
+     result when it arrives -- a region that first appears at the moment it
+     gains text is the classic way to lose that announcement. */
+  .sc-workshop .address-match .address-match-status:empty{ min-height: 0; margin-top: 0; }
   .sc-workshop .address-match-status.is-ok{ color: #8be3c6; }
   .sc-workshop .address-match-status.is-bad{ color: #ff9d8a; }
 
@@ -1288,6 +1501,10 @@
   .sc-workshop summary{ user-select: none; -webkit-user-select: none; }
 
   .sc-workshop details{ margin-top: 26px; }
+  /* The 26px every other disclosure needs separates it from a paragraph. This
+     one follows the export cards, which already end in their own padding, so
+     the two gaps stacked and it drifted away from the section it belongs to. */
+  .sc-workshop details.raw-entropy{ margin-top: 14px; }
   .sc-workshop summary{ cursor: pointer; color: var(--ink-soft); font-size: 0.9rem; font-weight: 700; }
   .sc-workshop details .body{ margin-top: 12px; color: var(--muted); font-size: 0.88rem; }
   .sc-workshop details code{ color: var(--ink-soft); word-break: break-all; }
@@ -1443,6 +1660,62 @@
   }
   .sc-workshop .hero .status [data-status-text], .sc-workshop .hero .status .status-reserve{ grid-area: 1 / 1; }
   .sc-workshop .hero .status .status-reserve{ visibility: hidden; pointer-events: none; }
+  /* The local-file badge is the one status line reporting what this file is
+     rather than the result of a check, so it carries no state colour and fell
+     through to the neutral wash. It reads as a label rather than a verdict:
+     what the file is, then what follows from that. Scoped to the local state
+     -- online the badge still takes .warn, untouched. */
+  /* Border and text only. The surface stays the one every badge in this row
+     shares -- a badge that carried its own fill sat forward of the two beside
+     it and read as the important one, which is backwards: the self-test is
+     the badge that matters. Colour is enough to say this one is a label
+     rather than a check result. */
+  .sc-workshop .hero .status li#where.local{
+    color: #c1b49d;
+    border-color: rgba(232, 214, 181, 0.34);
+  }
+  /* The document mark takes the status dot's place rather than sitting beside
+     it: two leading marks on one badge is one too many, and dropping into the
+     dot's slot leaves the box's height and its 30px text inset exactly as the
+     other badges have them. */
+  .sc-workshop .hero .status li#where.local::before{ display: none; }
+  .sc-workshop .hero .status li#where.local .where-doc{
+    position: absolute; left: 11px; top: 50%;
+    width: 13px; height: 13px; color: #d9c8aa;
+    transform: translateY(-50%);
+  }
+  .sc-workshop .hero .status li#where .where-local{
+    grid-area: 1 / 1;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  }
+  .sc-workshop .hero .status li#where .where-main{ color: #f0dfc2; }
+  .sc-workshop .hero .status li#where .where-sub{ color: #c1b49d; }
+  .sc-workshop .hero .status li#where .where-sep{
+    width: 1px; height: 11px; background: rgba(217, 200, 170, 0.24);
+  }
+  /* A dot says something happened and leaves which thing to the text. That is
+     thinnest exactly where it matters most: only .good and .warn ever
+     overrode the dot's colour, so a self-test that FAILED showed the same
+     neutral grey as one still running. A check and a cross say it outright.
+     The dot stays while the test is running -- there is no verdict yet to
+     draw -- and neither mark moves, because a failure that animates reads as
+     progress. */
+  .sc-workshop .hero .status li#selftest::before{ display: none; }
+  .sc-workshop .hero .status li#selftest .selftest-mark{
+    position: absolute; left: 10px; top: 50%;
+    width: 15px; height: 15px;
+    transform: translateY(-50%);
+  }
+  /* Running is the same circle, empty and grey. Swapping a 7px dot for a 15px
+     ringed mark would move the badge's leading mark at the exact moment the
+     verdict lands; keeping the ring and filling it in changes only the thing
+     that actually changed. */
+  .sc-workshop .hero .status li#selftest .selftest-pass,
+  .sc-workshop .hero .status li#selftest .selftest-fail{ display: none; }
+  .sc-workshop .hero .status li#selftest.good .selftest-idle,
+  .sc-workshop .hero .status li#selftest.bad .selftest-idle{ display: none; }
+  .sc-workshop .hero .status li#selftest.good .selftest-pass{ display: block; }
+  .sc-workshop .hero .status li#selftest.bad .selftest-fail{ display: block; }
   .sc-workshop .hero .status li::before{
     content: ""; position: absolute; left: 12px; top: 50%; width: 7px; height: 7px;
     border-radius: 50%; background: #8e887e; transform: translateY(-50%);
@@ -1519,32 +1792,39 @@
   .sc-workshop .beta-disclaimer[hidden]{ display: none; }
   .sc-workshop .beta-disclaimer.is-visible{ opacity: 1; }
   .sc-workshop .beta-disclaimer.is-dismissed{ opacity: 0; pointer-events: none; }
+  /* Padding is even on all four sides now that the icon leads the card on its
+     own line rather than sitting in an 86px left gutter, and the ::before bar
+     that used to sit along the top edge is gone: a 3px orange rule above a 1px
+     orange border read as one heavier side rather than as a deliberate accent. */
   .sc-workshop .beta-disclaimer-card{
-    position: relative; width: min(100%, 590px); padding: 30px 30px 28px 86px;
+    position: relative; width: min(100%, 590px); padding: 30px 34px 28px;
     border: 1px solid rgba(255, 138, 0, .48); border-radius: 18px;
     color: var(--ink-soft); background: linear-gradient(145deg, #28231e, #171719 72%);
     box-shadow: 0 30px 90px rgba(0, 0, 0, .62), inset 0 1px 0 rgba(255, 255, 255, .06);
   }
-  .sc-workshop .beta-disclaimer-card::before{
-    content: ""; position: absolute; top: 0; right: 28px; left: 28px; height: 3px;
-    border-radius: 0 0 3px 3px; background: var(--orange);
-  }
-  .sc-workshop .beta-disclaimer-card .security-icon{ left: 28px; top: 30px; width: 38px; height: 38px; }
-  .sc-workshop .beta-disclaimer-card h2{ margin: 0 0 14px; color: #fff; font-size: 1.65rem; }
-  .sc-workshop .beta-disclaimer-card p{ margin: 0 0 13px; line-height: 1.65; }
+  .sc-workshop .beta-disclaimer-icon{ display: flex; justify-content: center; margin-bottom: 14px; }
+  /* The shared .security-icon is absolutely positioned for the in-page brief,
+     which is not what a centred row wants. */
+  .sc-workshop .beta-disclaimer-card .security-icon{ position: static; width: 38px; height: 38px; }
+  .sc-workshop .beta-disclaimer-card h2{ margin: 0 0 22px; color: #fff; font-size: 1.65rem; text-align: center; }
+  /* Heading centred, the warnings themselves left-aligned: centred prose is
+     harder to track back to the start of each line, and these two paragraphs
+     are the part that has to be read rather than glanced at. */
+  .sc-workshop .beta-disclaimer-body{ display: grid; gap: 18px; text-align: left; }
+  .sc-workshop .beta-disclaimer-card p{ margin: 0; line-height: 1.65; }
   .sc-workshop .beta-disclaimer-card p strong{ color: #ffad4c; }
+  .sc-workshop .beta-disclaimer-divider{ height: 1px; background: rgba(255, 244, 233, .13); }
+  /* Keeps its red, loses its box. With a divider now separating the two
+     warnings, the outlined panel made the card two frames deep. */
   .sc-workshop .beta-disclaimer-card .critical-copy{
-    margin-top: 16px; padding: 13px 15px; border: 1px solid rgba(255, 48, 72, .3);
-    border-radius: 10px; background: rgba(5, 5, 6, .38);
+    margin: 0; padding: 0; border: 0; border-radius: 0; background: none;
   }
   .sc-workshop .beta-disclaimer-card .critical-copy strong{ color: #ff4d5d; }
-  .sc-workshop .beta-disclaimer-accept{
-    min-height: 44px; margin-top: 8px; padding: 11px 21px; border: 0; border-radius: 9px;
-    color: #211300; background: var(--orange); font: 800 .94rem/1 "Jost", sans-serif;
-    cursor: pointer; box-shadow: 0 8px 24px rgba(255, 138, 0, .18);
-  }
-  .sc-workshop .beta-disclaimer-accept:hover{ background: #ffad4c; }
-  .sc-workshop .beta-disclaimer-accept:focus-visible{ outline: 3px solid #fff; outline-offset: 3px; }
+  /* Wears .dl-frame and .dl -- the download action's own skin, not a copy of
+     it -- so the two buttons cannot drift as the site changes. Only the width
+     is set here; everything visible comes from the shared rules above. */
+  .sc-workshop .beta-disclaimer-actions{ display: flex; justify-content: center; margin-top: 26px; }
+  .sc-workshop .beta-disclaimer-actions .dl-frame{ width: min(100%, 236px); }
   @media (prefers-reduced-motion: reduce) {
     .sc-workshop .beta-disclaimer{ transition: none; }
   }
@@ -1563,16 +1843,44 @@
   .sc-workshop .step-map b{ display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid rgba(255, 138, 0, .32); border-radius: 50%; color: #ffad4c; }
   .sc-workshop .step-map i{ width: 11px; height: 1px; background: rgba(255,255,255,.12); }
 
+  /* Same treatment as .results, which sits inside it and was built the same
+     way -- fixing one and not the other would have left the two frames lit
+     differently. The drop shadow and the orange glow stay; they are cast
+     outside the box and do nothing to the border. */
   .sc-workshop .workbench{
     position: relative; padding: 16px 24px 24px; border: 1px solid rgba(255,255,255,.12);
-    border-radius: 22px; background: linear-gradient(155deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
-    box-shadow: 0 26px 68px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.06), 0 -1px 32px rgba(255,138,0,.035);
+    border-radius: 22px; background: rgba(255,255,255,.032);
+    box-shadow: 0 26px 68px rgba(0,0,0,.26), 0 -1px 32px rgba(255,138,0,.035);
   }
-  .sc-workshop .workbench fieldset{ position: relative; margin: 0; padding: 24px 0 25px 56px; border-bottom: 1px solid rgba(255,255,255,.085); }
+  .sc-workshop .workbench fieldset{ position: relative; margin: 0; padding: 24px 0 25px; border-bottom: 1px solid rgba(255,255,255,.085); }
   .sc-workshop .workbench legend{ float: left; width: 100%; margin: 0 0 13px; font-family: "Jost", sans-serif; font-size: 1.07rem; }
   .sc-workshop .workbench legend .step-num{ position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  /* The badge sits on the heading's own line, not in a gutter running down
+     the left of every fieldset. Absolutely positioning it meant all seven
+     panels carried ~56px of empty left padding purely to clear it, and the
+     numbers read as a column of their own rather than as part of the headings
+     they belong to. That padding is now content width.
+
+     inline-grid rather than making the legend a flex row: the legend's other
+     children are bare text runs and the "optional" pill, which set their own
+     spacing (.opt has its own margin-left) and would each pick up a flex gap
+     as separate items. */
   .sc-workshop .workbench legend::before{
-    content: attr(data-step); position: absolute; left: 0; top: 21px; display: grid; place-items: center;
+    content: attr(data-step); display: inline-grid; place-items: center; vertical-align: middle;
+    /* vertical-align: middle aligns the badge's centre to the baseline plus half
+       the x-height,
+       which leaves it sitting (cap - x)/2 below the centre of the heading's cap
+       band -- measured at 2.32px for Jost at 16px.
+
+       rem, not em: em on a pseudo-element resolves against its own font-size,
+       and the shorthand below sets that to 0.82rem, which gave 1.90px instead.
+       rem tracks the root, so the correction scales with the legend's font
+       under browser zoom rather than being frozen in pixels. The entry step's
+       legend is 1.07rem and strictly wants 0.155rem; the 0.16px difference is
+       not worth a second rule. Paint only -- the line box is unchanged, so
+       nothing reflows. */
+    position: relative; top: -0.145rem;
+    margin-right: 13px;
     width: 37px; height: 37px; color: #ffad4c; border: 1px solid rgba(255,138,0,.4); border-radius: 11px;
     background: rgba(255,138,0,.075); font: 800 0.82rem/1 "Open Sans", sans-serif;
   }
@@ -1593,16 +1901,58 @@
   }
   .sc-workshop .workbench .hint strong{ color: var(--ink-soft); }
   .sc-workshop .workbench textarea{ min-height: 132px; }
-  .sc-workshop .workbench .go{
-    margin-top: 27px; min-height: 56px; border-radius: 13px;
-    border: 1px solid #ffb14f;
-    background: linear-gradient(135deg, #ff9b1a, #e57700);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 16px 34px rgba(255, 138, 0, .18);
-    transition: background-color .15s ease, transform .15s ease, box-shadow .15s ease;
+  /* The one action that turns the recorded events into a result gets the same
+     two-layer construction as the offline Download control. It stays a
+     distinct primary action: the arrow means continue, while Download keeps
+     its downward file icon. */
+  .sc-workshop .workbench .go-frame{
+    display: flex; width: 100%; margin-top: 27px; padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 16px;
+    background: rgba(8, 9, 11, 0.62);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 46px rgba(0, 0, 0, 0.3);
   }
-  .sc-workshop .workbench .go:hover:not(:disabled){ transform: translateY(-1px); box-shadow: 0 20px 42px rgba(255, 138, 0, .23); }
+  .sc-workshop .workbench .go{
+    position: relative; isolation: isolate; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 0; min-height: 56px; border: 1px solid transparent; border-radius: 10px;
+    color: #fff;
+    background:
+      linear-gradient(135deg, #ff940f, #d56200) padding-box,
+      linear-gradient(135deg, #ffc36f, #7f3200) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.24), 0 10px 28px rgba(255, 122, 0, .24);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .sc-workshop .workbench .go:hover:not(:disabled){
+    color: #fff;
+    background:
+      linear-gradient(135deg, #ffab38, #df6900) padding-box,
+      linear-gradient(135deg, #ffe0b5, #9b4000) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 14px 34px rgba(255, 122, 0, .32);
+    transform: translateY(-2px);
+  }
+  .sc-workshop .workbench .go::after{
+    content: ''; position: absolute; z-index: 1; top: -45%; bottom: -45%; left: -32%; width: 22%;
+    pointer-events: none; opacity: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 245, 224, 0.42), transparent);
+    transform: skewX(-18deg) translateX(-180%);
+    transition: transform .72s cubic-bezier(.2,.72,.22,1), opacity .18s ease;
+  }
+  .sc-workshop .workbench .go:hover:not(:disabled)::after{ opacity: 1; transform: skewX(-18deg) translateX(700%); }
+  .sc-workshop .workbench .go > *{ position: relative; z-index: 2; }
+  .sc-workshop .workbench .go-icon{ flex: 0 0 auto; width: 18px; height: 18px; }
   .sc-workshop .workbench .go:disabled{ box-shadow: none; }
-  .sc-workshop .workbench .results{ margin-top: 32px; padding: 28px; border: 1px solid rgba(243,234,220,.26); border-radius: 16px; background: linear-gradient(150deg, rgba(243,234,220,.075), rgba(243,234,220,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.07); }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-workshop .workbench .go{ transition: none; }
+    .sc-workshop .workbench .go:hover:not(:disabled){ transform: none; }
+    .sc-workshop .workbench .go::after{ display: none; }
+  }
+  /* Flat fill, no inset highlight. Both were doing the same thing to the same
+     two edges: the inset 0 1px 0 laid a second bright line immediately inside
+     the top border, and the gradient put its light end in the top-left corner,
+     so top and left read heavier than right and bottom. The border is 1px on
+     all four sides and now looks it. The flat value is the midpoint of the
+     gradient it replaces, so the panel keeps the weight it had. */
+  .sc-workshop .workbench .results{ margin-top: 32px; padding: 28px; border: 1px solid rgba(243,234,220,.26); border-radius: 16px; background: rgba(243,234,220,.05); }
   .sc-workshop .workbench .error{ margin-bottom: 0; }
 
   .sc-workshop .setup-grid{
@@ -1610,11 +1960,11 @@
     padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,.085);
   }
   .sc-workshop .workbench .setup-grid fieldset{
-    padding: 18px 18px 18px 58px; border: 1px solid rgba(255,255,255,.09); border-radius: 15px;
+    padding: 18px; border: 1px solid rgba(255,255,255,.09); border-radius: 15px;
     background: rgba(255,255,255,.018);
   }
   .sc-workshop .workbench .setup-grid legend{ font-size: 1rem; }
-  .sc-workshop .workbench .setup-grid legend::before{ left: 14px; top: 15px; width: 34px; height: 34px; border-radius: 10px; }
+  .sc-workshop .workbench .setup-grid legend::before{ width: 34px; height: 34px; margin-right: 11px; border-radius: 10px; }
   .sc-workshop .workbench .setup-grid .setup-wide{ grid-column: 1 / -1; }
   .sc-workshop .workbench .setup-grid .seg button{ min-height: 52px; }
   /* Taller than the rest of the row above, because these three carry a drawing
@@ -1682,19 +2032,16 @@
     .sc-workshop .security-brief{ margin-top: -16px; padding: 58px 18px 18px; }
     .sc-workshop .security-brief .security-icon{ left: 18px; top: 16px; }
     .sc-workshop .beta-disclaimer{ padding: 14px; }
-    .sc-workshop .beta-disclaimer-card{ padding: 66px 20px 22px; border-radius: 15px; }
-    .sc-workshop .beta-disclaimer-card .security-icon{ left: 20px; top: 20px; width: 34px; height: 34px; }
-    .sc-workshop .beta-disclaimer-card h2{ font-size: 1.42rem; }
+    .sc-workshop .beta-disclaimer-card{ padding: 24px 20px 22px; border-radius: 15px; }
+    .sc-workshop .beta-disclaimer-card .security-icon{ width: 34px; height: 34px; }
+    .sc-workshop .beta-disclaimer-card h2{ margin-bottom: 18px; font-size: 1.42rem; }
+    .sc-workshop .beta-disclaimer-body{ gap: 15px; }
+    .sc-workshop .beta-disclaimer-actions{ margin-top: 22px; }
     .sc-workshop .download{ margin-bottom: 34px; padding: 19px 18px; }
     .sc-workshop .step-map{ display: none; }
     .sc-workshop .workbench{ padding: 12px 14px 20px; border-radius: 18px; }
-    .sc-workshop .workbench fieldset{ padding: 23px 0 24px 0; }
+    .sc-workshop .workbench fieldset{ padding: 23px 0 24px; }
     .sc-workshop .workbench .setup-grid fieldset{ padding: 18px 14px; }
-    .sc-workshop .workbench legend{ padding-left: 60px; min-height: 37px; display: flex; align-items: center; }
-    /* left:0 put the badge exactly on the card's border -- measured at a zero
-       gap, so it read as overlapping it. Inset far enough to sit inside the
-       box, with the heading moved to match. */
-    .sc-workshop .workbench legend::before, .sc-workshop .workbench .setup-grid legend::before{ left: 13px; top: 16px; }
     .sc-workshop .workbench .results{ padding: 21px 16px; }
     .sc-workshop .path-row{ flex-direction: column; }
     .sc-workshop .path-row button{ width: 100%; }
@@ -1776,8 +2123,8 @@
             <span>View source on GitHub</span>
           </a>
           <ul class="status">
-            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: 28/28 vectors pass</span></li>
-            <li id="adapter" class="warn" hidden>This machine reports a network connection</li>
+            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: 28/28 vectors pass</span><svg class="selftest-mark selftest-idle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/></svg><svg class="selftest-mark selftest-pass" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="M5.3 8.2 7.2 10.1 10.8 6.2"/></svg><svg class="selftest-mark selftest-fail" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="m5.9 5.9 4.2 4.2"/><path d="m10.1 5.9-4.2 4.2"/></svg></li>
+            <li id="adapter" class="warn" hidden>This machine reports a connection</li>
             <!-- Reserving the longer of the two things this badge can end up
                  saying. Without it the badge was laid out for "Checking..." and
                  then grew to nearly three times that the moment the script ran
@@ -1786,7 +2133,7 @@
                  The offline wording is the longer one, and either copy can show
                  either message, since the site build opened from disk reports
                  itself as a local file. -->
-            <li id="where"><span data-status-text>Checking&hellip;</span></li>
+            <li id="where"><span data-status-text>Checking&hellip;</span><span class="where-local" hidden><svg class="where-doc" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.4 1.8H4.3a1.5 1.5 0 0 0-1.5 1.5v9.4a1.5 1.5 0 0 0 1.5 1.5h7.4a1.5 1.5 0 0 0 1.5-1.5V5.6z"/><path d="M9.4 1.8v3.8h3.8"/></svg><span class="where-main">Local copy</span><span class="where-sep" aria-hidden="true"></span><span class="where-sub">No network required</span></span></li>
           </ul>
           <!-- The adapter badge is the one thing in the hero that appears
                after load rather than with it, and it costs a whole row: the
@@ -1822,10 +2169,20 @@
                  fallback, which is the only case that can still see it. */
               var where = document.getElementById('where');
               if (where) {
-                where.className = local ? '' : 'warn';
-                where.querySelector('[data-status-text]').textContent = local
-                  ? 'Opened from a local file — this tool requires no network requests'
-                  : 'Loaded over a network — this copy is online';
+                where.className = local ? 'local' : 'warn';
+                /* Both variants ship in the markup and one is revealed, rather
+                   than a string being written in. The local reading is a
+                   labelled row -- mark, label, rule, consequence -- which is
+                   structure, not text, and structure does not belong in a
+                   quoted string here. Same timing either way: this still
+                   settles before paint, so the row cannot jump. */
+                var plain = where.querySelector('[data-status-text]');
+                var labelled = where.querySelector('.where-local');
+                plain.hidden = local;
+                if (labelled) labelled.hidden = !local;
+                if (!local) {
+                  plain.textContent = 'Loaded over a network — this copy is online';
+                }
               }
 
               var badge = document.getElementById('adapter');
@@ -1855,11 +2212,18 @@
 
 <div class="beta-disclaimer" id="beta-disclaimer" role="alertdialog" aria-modal="true" aria-labelledby="beta-disclaimer-title" aria-describedby="beta-disclaimer-copy beta-disclaimer-critical" hidden>
   <div class="beta-disclaimer-card">
-    <svg class="security-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233C-.292 14.01.256 15 1.145 15h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+    <div class="beta-disclaimer-icon"><svg class="security-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233C-.292 14.01.256 15 1.145 15h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg></div>
     <h2 id="beta-disclaimer-title">Before you use the Workshop</h2>
-    <p id="beta-disclaimer-copy"><strong>Beta software.</strong> This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.</p>
-    <p class="critical-copy" id="beta-disclaimer-critical"><strong>Never enter an existing recovery phrase into any page</strong> &mdash; including this one, which is why there is nowhere here to do it.</p>
-    <button class="beta-disclaimer-accept" id="beta-disclaimer-accept" type="button">I understand</button>
+    <div class="beta-disclaimer-body">
+      <p id="beta-disclaimer-copy"><strong>Beta software.</strong> This tool is experimental and should be used only for testing. Do not rely on it to secure real bitcoin, and never test with funds you cannot afford to lose.</p>
+      <div class="beta-disclaimer-divider" aria-hidden="true"></div>
+      <p class="critical-copy" id="beta-disclaimer-critical"><strong>Never enter an existing recovery phrase into any page</strong> &mdash; including this one, which is why there is nowhere here to do it.</p>
+    </div>
+    <div class="beta-disclaimer-actions">
+      <div class="dl-frame">
+        <button class="dl beta-disclaimer-accept" id="beta-disclaimer-accept" type="button"><span>I understand</span></button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1886,7 +2250,7 @@
         <span data-dl-label>Download</span>
       </a>
     </div>
-    <small data-dl-note>~580 KB &middot; no installer</small>
+    <small data-dl-note>~600 KB &middot; no installer</small>
   </div>
     <details class="verify-details">
       <summary>Verify this file against the published checksum</summary>
@@ -2039,7 +2403,12 @@
   </details>
 </fieldset>
 
-<button type="button" class="go" id="go" disabled>Produce wallet</button>
+<div class="go-frame">
+  <button type="button" class="go" id="go" disabled>
+    <span id="go-label">Produce wallet</span>
+    <svg class="go-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 10h13"/><path d="m11 5 5 5-5 5"/></svg>
+  </button>
+</div>
 
 <div class="endings" id="endings" hidden>
   <strong>Now pick the last word.</strong>
@@ -2182,10 +2551,11 @@
   </div>
 
   <div class="address-match">
-    <label for="address-match">Check an address</label>
-    <input type="text" id="address-match" spellcheck="false" autocomplete="off" placeholder="Paste a bc1, 1, or 3 address">
+    <label for="address-match"><svg class="addr-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="6.9" cy="6.9" r="4.6"/><path d="m10.5 10.5 3.5 3.5"/></svg>Check an address</label>
     <p class="hint">Paste an address shown by another wallet. This page checks receive and change indices 0&ndash;999 for the account path and address type above, entirely offline.</p>
+    <input type="text" id="address-match" spellcheck="false" autocomplete="off" placeholder="Paste a bc1, 1, or 3 address">
     <p class="hint address-match-status" id="address-match-status" role="status" aria-live="polite"></p>
+    <p class="address-match-local"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3.4" y="6.9" width="9.2" height="6.4" rx="1.4"/><path d="M5.6 6.9V5.1a2.4 2.4 0 0 1 4.8 0v1.8"/></svg>Checked locally on this page</p>
   </div>
 
   <div class="xpub-box">
@@ -2215,21 +2585,31 @@
     </details>
   </div>
 
-  <h3>Export records</h3>
+  <h3>Export files</h3>
   <p class="hint export-intro">Two plain-text files for two different jobs. The private one restores and spends; the watch-only one cannot spend, but still reveals the wallet&rsquo;s addresses and history.</p>
   <div class="export-grid">
     <article class="export-card is-private">
-      <span class="export-tag">Keep secret</span>
-      <h4>Private recovery record</h4>
-      <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value.</p>
-      <button type="button" class="export-button" id="export-private-open">Review and download</button>
-      <button type="button" class="export-button" id="export-wallet-open">Download Bitcoin Core wallet.dat</button>
+      <div class="export-card-heading">
+        <span class="export-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v2"/></svg></span>
+        <div><span class="export-tag">Keep secret</span><h4>Private recovery</h4></div>
+      </div>
+      <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value. The <code>wallet.dat</code> holds the same account&rsquo;s private key and descriptors, in the file format Bitcoin Core opens.</p>
+      <p class="export-actions-label" id="export-download-label">Download:</p>
+      <div class="export-actions" role="group" aria-labelledby="export-download-label">
+        <button type="button" class="export-button" id="export-private-open">Recovery file</button>
+        <button type="button" class="export-button" id="export-wallet-open">wallet.dat</button>
+      </div>
     </article>
     <article class="export-card is-watch">
-      <span class="export-tag">No spending keys</span>
-      <h4>Watch-only record</h4>
+      <div class="export-card-heading">
+        <span class="export-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.5"/></svg></span>
+        <div><span class="export-tag">No spending keys</span><h4>Watch-only</h4></div>
+      </div>
       <p>Account public keys, checked descriptors and the first five addresses on each branch. Safe from spending, not private from balance and history.</p>
-      <button type="button" class="export-button" id="export-watch">Download watch-only record</button>
+      <p class="export-actions-label" id="export-watch-download-label">Download:</p>
+      <div class="export-actions" role="group" aria-labelledby="export-watch-download-label">
+        <button type="button" class="export-button" id="export-watch">Watch-only file</button>
+      </div>
     </article>
   </div>
   <p class="export-status" id="export-status" role="status" aria-live="polite"></p>
@@ -2238,20 +2618,23 @@
     <form method="dialog">
       <button class="export-dialog-close" value="cancel" aria-label="Close">&times;</button>
       <h2 id="export-private-title">These files can spend the wallet</h2>
-      <p>The private text record contains the recovery words, SeedQR digits and private keys shown above. The Bitcoin Core wallet.dat contains the selected account private key and its receiving and change descriptors. Anyone who gets either file can move the coins it controls.</p>
+      <p>The recovery file contains the recovery words, SeedQR digits and private keys shown above. The Bitcoin Core wallet.dat contains the selected account private key and its receiving and change descriptors. Anyone who gets either file can move the coins it controls.</p>
       <p><strong>The generated wallet.dat is not encrypted.</strong> Put it in a new, dedicated Bitcoin Core wallet directory. Never replace or overwrite an existing wallet.dat file.</p>
       <p><strong>Download it only on the offline computer</strong>, then move it directly to the protected backup storage you chose. Do not put it in cloud storage, email or chat.</p>
-      <p>The BIP39 passphrase value is deliberately left out of both files. The private text record says whether one was used; the wallet.dat already contains the account derived with it.</p>
+      <p>The BIP39 passphrase value is deliberately left out of both files. The recovery file says whether one was used; the wallet.dat already contains the account derived with it.</p>
       <p class="export-dialog-error" id="export-private-error" role="alert"></p>
+      <p class="export-actions-label" id="export-dialog-download-label">Download:</p>
+      <div class="export-actions" role="group" aria-labelledby="export-dialog-download-label">
+        <button type="button" class="export-button" id="export-private-confirm">Recovery file</button>
+        <button type="button" class="export-button" id="export-wallet-confirm">wallet.dat</button>
+      </div>
       <div class="export-dialog-actions">
-        <button type="button" class="export-button" id="export-private-confirm">Download private record</button>
-        <button type="button" class="export-button" id="export-wallet-confirm">Download Bitcoin Core wallet.dat</button>
         <button type="submit" class="key-tool" value="cancel">Cancel</button>
       </div>
     </form>
   </dialog>
 
-  <details>
+  <details class="raw-entropy">
     <summary>Show the raw entropy</summary>
     <div class="body">
       <p>The number your rolls became, before it was written out as words:</p>
@@ -2403,14 +2786,7 @@
       </ul>
     </div>
 
-    <p class="src-tail">The Bitcoin Core wallet.dat encoder is adapted from <a href="https://github.com/w-s-bitcoin/entropylab/pull/32" target="_blank" rel="noopener noreferrer">EntropyLab pull request #32</a>, whose generated descriptor wallets were checked against Bitcoin Core 28.3.0. Used under the MIT License.</p>
-    <p class="src-tail">Ian Coleman-compatible card hashing is adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/89" target="_blank" rel="noopener noreferrer">EntropyLab pull request #89</a>. It remains a separate conversion because its spaced suit-symbol transcript must not be confused with the Workshop's compact ASCII hash.</p>
-    <p class="src-tail">Visual fingerprints use <a href="https://lifehash.info/" target="_blank" rel="noopener noreferrer">LifeHash version2</a>, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/74" target="_blank" rel="noopener noreferrer">EntropyLab pull request #74</a> and the Blockchain Commons reference implementation. Used under the MIT License.</p>
-    <p class="src-tail">Local symbol-font fallbacks for card suits are adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/116" target="_blank" rel="noopener noreferrer">EntropyLab pull request #116</a>. They keep the four suit marks legible across operating systems without adding a network font.</p>
-    <p class="src-tail">The optional distribution inspector applies the <a href="https://www.itl.nist.gov/div898/handbook/prc/section2/prc211.htm" target="_blank" rel="noopener noreferrer">Pearson chi-square goodness-of-fit method documented by NIST</a> and adapts the compact presentation idea from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/36" target="_blank" rel="noopener noreferrer">EntropyLab pull request #36</a>. Its disclosure, histogram and wording are original to this Workshop.</p>
-    <p class="src-tail">Public-key and Taproot curve operations use Bitcoin Core&rsquo;s libsecp256k1 compiled to WebAssembly, adapted from merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/103" target="_blank" rel="noopener noreferrer">EntropyLab pull request #103</a>. The pinned source, build recipe and artifact checksum ship with this site.</p>
-    <p class="src-tail">The per-release beta acknowledgement adapts merged <a href="https://github.com/w-s-bitcoin/entropylab/pull/106" target="_blank" rel="noopener noreferrer">EntropyLab pull request #106</a>. The in-page warning and its wording are specific to this Workshop.</p>
-    <p class="src-tail">Inspired partly by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a> and <a href="https://miguelmedeiros.github.io/entropy/" target="_blank" rel="noopener noreferrer">Entropy Workbench</a>.</p>
+    <p class="src-tail">Inspired by <a href="https://entropylab.online/" target="_blank" rel="noopener noreferrer">EntropyLab</a>.</p>
 
     <p>The refusal you get when a sequence looks typed rather than rolled is Workshop-specific, not an implementation of the standards above. Its repetition and dominant-value checks address the same health concerns documented by NIST, and its distribution calculation is Pearson chi-square; the period, step-pattern, compression and card-order heuristics, their thresholds and the combined decision are ours. A reproducible seeded exercise refused 0 of 1,000,000 ideal-model simulations across the supported input profiles; run <code>npm run test:entropy -- --calibrate</code> in the source repository to repeat it. That measures false refusals under those models. It cannot validate a physical entropy source or prove that an entered sequence is unpredictable &mdash; this remains a spellcheck, not a randomness test.</p>
   </div>
@@ -7191,7 +7567,7 @@ var qrcodegen;
        than let the row jump around it. */
     const named = keys.some(([, label]) => label);
     pad.dataset.method = method();
-    pad.replaceChildren(...keys.map(([value, label, face]) => {
+    const buttons = keys.map(([value, label, face]) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'key';
@@ -7210,7 +7586,26 @@ var qrcodegen;
       }
       button.addEventListener('click', () => press(value));
       return button;
-    }));
+    });
+    /* The four suits get a row of their own, centred, instead of trailing the
+       thirteen ranks and breaking wherever the auto-fit grid happens to run
+       out -- which left clubs sitting on the end of the rank row.
+
+       Grouped in an element rather than placed by grid line, because the
+       column count varies with the width: there is no column number to start
+       them at that would be the middle at every size. The wrapper spans the
+       full grid row and centres its own four children, which is true at any
+       count. Only the card pads have suits; every other pad falls through
+       with its keys as direct children, exactly as before. */
+    const suits = buttons.filter(button => button.dataset.suit);
+    if (suits.length) {
+      const row = document.createElement('div');
+      row.className = 'pad-suits';
+      row.append(...suits);
+      pad.replaceChildren(...buttons.filter(button => !button.dataset.suit), row);
+    } else {
+      pad.replaceChildren(...buttons);
+    }
   }
 
   const limits = () => C.limits(method(), state.words);
@@ -7604,8 +7999,8 @@ var qrcodegen;
          reported into a region the backdrop is covering. */
       if (isPrivate && $('export-private-dialog').open) $('export-private-dialog').close();
       $('export-status').textContent = isPrivate
-        ? 'Private recovery record download requested. Treat the file like the wallet itself.'
-        : 'Watch-only record download requested. It cannot spend, but it reveals wallet activity.';
+        ? 'Recovery file download requested. Treat it like the wallet itself.'
+        : 'Watch-only file download requested. It cannot spend, but it reveals wallet activity.';
     } catch (error) {
       fail('Could not prepare that record: ' + error.message + '.');
     }
@@ -7772,7 +8167,7 @@ var qrcodegen;
         : 'Tap each roll in the order you made them. You can type the digits instead, or paste.';
 
     $('go').disabled = !at.ready;
-    $('go').textContent = info.lookup ? 'Produce words' : 'Produce wallet';
+    $('go-label').textContent = info.lookup ? 'Produce words' : 'Produce wallet';
     $('matches').textContent = info.matches;
 
     /* The keys are disabled at the ceiling, so a press cannot report it -- a
@@ -8050,7 +8445,7 @@ var qrcodegen;
 
     /* Repaint before the slow part so the button state is actually seen. */
     $('go').disabled = true;
-    $('go').textContent = 'Working\u2026';
+    $('go-label').textContent = 'Working\u2026';
 
     const mine = generation;
     deriveTimer = setTimeout(() => {
