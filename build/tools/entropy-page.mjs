@@ -542,18 +542,38 @@ ${FONTS.map(embedFont).join('\n')}
   .export-card h4 { margin: 0 0 7px; color: #fff; font-size: 0.98rem; }
   .export-card p { margin: 0 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
   .export-card .export-button { margin-top: auto; }
+  /* Says once what both buttons would otherwise each spend width saying, so
+     the labels can be the two things being downloaded rather than two
+     sentences about downloading. It carries the auto top margin that used to
+     sit on the row, so the pair stays pinned to the foot of the card and level
+     with the watch-only button beside it. Specificity beats .export-card p,
+     which would otherwise give it that block's 16px bottom margin.
+
+     role="group" and aria-labelledby rather than a bare heading: the caption
+     is part of each button's meaning, and this is what tells a screen reader
+     so without repeating the word inside both names. */
+  .export-card .export-actions-label {
+    margin: auto 0 8px; color: var(--muted);
+    font-size: 0.76rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  }
   /* Side by side. Stacked, the private card ran two full-width buttons deep
      and made the safe record look like the lesser of the two. */
-  .export-actions { display: flex; gap: 8px; margin-top: auto; }
+  .export-actions { display: flex; gap: 8px; }
   .export-actions .export-button {
     /* Shorter than a primary action, because neither of these is one: both
        open something rather than finish it.
 
-       Sized to their labels rather than split evenly: "Download Bitcoin Core
-       wallet.dat" is two-thirds longer than "Review and download", and equal
-       halves wrapped it onto a second line and took the pair to 51px. */
-    flex: 1 1 auto; width: auto; min-width: 0;
-    margin-top: 0; min-height: 40px; padding: 8px 12px;
+       Even halves. They were sized to their labels because the longer of the
+       two did not fit half the row and wrapped, taking the pair to 51px; with
+       the word "Download" lifted into the caption above, both fit and the
+       imbalance has nothing left to buy. flex-basis 0 rather than auto, or the
+       labels' own widths leak back in. */
+    flex: 1 1 0; width: auto; min-width: 0;
+    /* 10px sides, not the 13px .export-button sets. At even halves the longer
+       label clears its box by 10px; the narrower padding turns that into 24px,
+       which is the difference between fitting and wrapping the pair to 51px if
+       a fallback face ever renders it wider. */
+    margin-top: 0; min-height: 40px; padding: 8px 10px;
     display: inline-flex; align-items: center; justify-content: center;
     text-align: center; line-height: 1.25;
   }
@@ -4406,9 +4426,10 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <span class="export-tag">Keep secret</span>
       <h4>Private recovery record</h4>
       <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value.</p>
-      <div class="export-actions">
-        <button type="button" class="export-button" id="export-private-open">Review and download</button>
-        <button type="button" class="export-button" id="export-wallet-open">Download Bitcoin Core wallet.dat</button>
+      <p class="export-actions-label" id="export-download-label">Download:</p>
+      <div class="export-actions" role="group" aria-labelledby="export-download-label">
+        <button type="button" class="export-button" id="export-private-open">Recovery record</button>
+        <button type="button" class="export-button" id="export-wallet-open">Bitcoin Core wallet.dat</button>
       </div>
     </article>
     <article class="export-card is-watch">

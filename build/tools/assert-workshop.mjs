@@ -304,11 +304,20 @@ export function assertWorkshop() {
       /is-watch \.export-button\s*\{[^}]*color: #8be3c6/.test(html) &&
       !/is-watch[^{]*\{[^}]*rgba\(255, 138, 0/.test(html),
       `the ${name} build does not keep the export cards red for private and green for watch-only`);
-    check(/<div class="export-actions">/.test(html) &&
+    check(/<div class="export-actions" role="group" aria-labelledby="export-download-label">/.test(html) &&
+      /id="export-download-label">Download:</.test(html) &&
+      /export-actions \.export-button\s*\{[^}]*flex: 1 1 0/.test(html) &&
       /export-actions \.export-button\s*\{[^}]*min-height: 40px/.test(html) &&
       /export-actions \.export-button\s*\{[^}]*min-height: 44px/.test(html) &&
       /#export-wallet-open\s*\{[^}]*background: rgba\(255, 138, 0, 0\.20\)/.test(html),
-      `the ${name} build does not lay the private card's two actions out side by side`);
+      `the ${name} build does not lay the private card's two actions out as an even, captioned pair`);
+    /* Scoped to the captioned row, not the page. The confirmation dialog
+       behind these buttons has its own "Download ..." actions and should keep
+       them: that is where the file is actually written. What must not come
+       back is the word inside the two labels the caption now covers. */
+    const actionRow = html.match(/<div class="export-actions"[^>]*>[\s\S]*?<\/div>/);
+    check(!!actionRow && !/Download/.test(actionRow[0]),
+      `the ${name} build put "Download" back inside a button label the caption already covers`);
     check(/id="address-match"/.test(html) && /id="address-match-status"[^>]*role="status"/.test(html),
       `the ${name} build does not expose the derived-wallet address check`);
     check(/const ADDRESS_SEARCH_LIMIT\s*=\s*1000/.test(script) &&
