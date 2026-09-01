@@ -156,8 +156,73 @@ export function assertWorkshop() {
       !/const Gx\s*=|const Gy\s*=|const inv\s*=|const modPow\s*=/.test(html),
       `the ${name} build still contains a hand-written secp256k1 curve path`);
     check(/id="beta-disclaimer"[^>]*role="alertdialog"[^>]*aria-modal="true"[^>]*hidden/.test(html) &&
-      /id="beta-disclaimer-accept"[^>]*>I understand<\/button>/.test(html),
+      /id="beta-disclaimer-accept"[^>]*><span>I understand<\/span><\/button>/.test(html),
       `the ${name} build does not ship a hidden, accessible beta acknowledgement`);
+    // The label is wrapped so `.dl > *` can lift it above the shine sweep; an
+    // unwrapped text node would sit under it. The acknowledgement wears the
+    // download action's own classes rather than a copy of its rules, which is
+    // the only thing keeping the two buttons from drifting apart.
+    check(/<div class="dl-frame">\s*<button class="dl beta-disclaimer-accept"/.test(html) &&
+      !/\.beta-disclaimer-accept\s*\{/.test(html),
+      `the ${name} build does not give the acknowledgement the shared download-action skin`);
+    /* The local badge reports what the *file* is. It must not drift into
+       claiming anything about the machine, which is the same line the
+       navigator.onLine check below is drawn on: "no network required" is a
+       property of this file and stays true on a connected laptop. Both
+       variants ship in the markup so the row settles before paint. */
+    check(/<span class="where-local" hidden>/.test(html) &&
+      /class="where-doc"[^>]*aria-hidden="true"/.test(html) &&
+      /<span class="where-main">Local copy<\/span>/.test(html) &&
+      /<span class="where-sep" aria-hidden="true"><\/span>/.test(html) &&
+      /<span class="where-sub">No network required<\/span>/.test(html),
+      `the ${name} build does not label the local copy as a property of the file`);
+    check(/id="adapter"[^>]*>This machine reports a connection</.test(html),
+      `the ${name} build does not keep the machine-connection warning`);
+    /* Only .good and .warn ever coloured the status dot, so a self-test that
+       FAILED showed the same neutral grey as one still running -- the state
+       that most needs to be unmistakable was the one with no mark of its own.
+       Neither mark animates: a failure that moves reads as progress. */
+    check(/class="selftest-mark selftest-pass"[^>]*aria-hidden="true"/.test(html) &&
+      /class="selftest-mark selftest-fail"[^>]*aria-hidden="true"/.test(html) &&
+      !/\.selftest-mark[^{}]*\{[^{}]*animation/.test(html),
+      `the ${name} build does not give the self-test a static pass and fail mark`);
+    /* One resting edge for every workbench control, defined once and referenced
+       by each skin. The point of the token is the pads that are hidden until
+       the source changes: they inherit it without appearing on any list, so a
+       new method cannot ship with the old white edge.
+
+       Counted rather than named, because naming the three would have to be
+       revisited every time a control is added -- which is the failure this
+       replaces. State colours are asserted separately: they set their own
+       border-color and must keep winning over the resting one. */
+    check(/--edge-rest: rgba\(232, 214, 181, 0\.34\)/.test(html) &&
+      (html.match(/border: 1px solid var\(--edge-rest\)/g) || []).length >= 3,
+      `the ${name} build does not share one resting edge across the workbench controls`);
+    /* \s* before each brace: the site build scopes its selectors and closes
+       them up, the offline build leaves them unscoped with a space. Matching
+       one form silently passes on one build and fails on the other. */
+    check(/seg button\[aria-pressed="true"\]\s*\{[^}]*border-color: var\(--orange\)/.test(html) &&
+      /seg button:hover\s*\{[^}]*border-color: rgba\(255, 138, 0, 0\.45\)/.test(html) &&
+      /key:hover:not\(:disabled\)\s*\{[^}]*border-color: rgba\(255, 138, 0, 0\.6\)/.test(html),
+      `the ${name} build lost a control's hover or selected edge to the resting one`);
+
+    /* The step badge belongs on the heading's own line. It used to be
+       absolutely positioned at the fieldset's left edge, which meant every one
+       of the seven panels carried ~56px of empty left padding purely to clear
+       it -- a column of numbers standing apart from the headings they number,
+       paid for out of the content width.
+
+       Both halves are checked, because either one alone lets the old layout
+       back: the badge has to stay in flow, and the padding it used to need has
+       to stay gone. A guard on only the padding would pass with the badge
+       overlapping the controls. */
+    const badge = html.match(/workbench legend::before\s*\{[^}]*\}/);
+    check(!!badge && /display: inline-grid/.test(badge[0])
+      && !/position: absolute/.test(badge[0]),
+      `the ${name} build took the step badge out of the heading line`);
+    check(/workbench fieldset\s*\{[^}]*padding: 24px 0 25px;/.test(html)
+      && /setup-grid fieldset\s*\{[^}]*padding: 18px;/.test(html),
+      `the ${name} build still reserves a left gutter for the step badge`);
     check(/selfcustody-entropy-beta-accepted/.test(script) &&
       /localStorage\.getItem\(STORAGE_KEY\)\s*===\s*version/.test(script) &&
       /localStorage\.setItem\(STORAGE_KEY, version\)/.test(script) &&
@@ -210,6 +275,74 @@ export function assertWorkshop() {
       `the ${name} build does not create the wallet.dat as a revocable binary download`);
     check(/function invalidateDerivedState\(\)\s*\{[\s\S]*?clearExportState\(\);[\s\S]*?state\.seed\s*=\s*null/.test(script),
       `the ${name} build does not clear export state when its derived wallet is invalidated`);
+    /* The check runs on input, so the field is the whole control -- there is
+       no button, and the live status is what confirms a match. Both icons are
+       decoration; the label's `for` and the status's live region are what
+       carry it. */
+    check(/class="addr-icon"[^>]*aria-hidden="true"/.test(html) &&
+      /<\/svg>Check an address<\/label>/.test(html) &&
+      /class="address-match-local"><svg[^>]*aria-hidden="true"/.test(html) &&
+      /Checked locally on this page<\/p>/.test(html) &&
+      /input\[type="text"\]:focus[^{]*\{[^}]*outline: 2px solid var\(--orange\)/.test(html),
+      `the ${name} build does not keep the address panel's icons, local note and focus ring`);
+    /* The empty status collapses so it does not hold a blank line under the
+       field. It must collapse by height: display: none takes the live region
+       out of the accessibility tree, and a region that appears only as it
+       gains text is the classic way to lose the announcement. */
+    check(/address-match-status:empty\s*\{[^}]*min-height: 0/.test(html)
+      && !/address-match-status:empty\s*\{[^}]*display: none/.test(html),
+      `the ${name} build hides the empty address status instead of collapsing it`);
+    /* The two export cards say opposite things and must not be shades of one
+       colour. Red is the private record; green -- the checksum's green, not a
+       third one -- is the watch-only. It was orange, the page's caution
+       colour, which read as a milder warning rather than as the safe option.
+       The wallet.dat control is the one filled button in the pair and is
+       keyed by id so it wins over the private card's red. */
+    check(/export-card\.is-private\s*\{[^}]*rgba\(214, 94, 64/.test(html) &&
+      /export-card\.is-watch\s*\{[^}]*border-color: rgba\(65, 205, 158, 0\.84\)/.test(html) &&
+      /is-watch \.export-tag\s*\{[^}]*color: #9af0d3/.test(html) &&
+      /is-watch \.export-button\s*\{[^}]*color: #9af0d3/.test(html) &&
+      !/is-watch[^{]*\{[^}]*rgba\(255, 138, 0/.test(html),
+      `the ${name} build does not keep the export cards red for private and green for watch-only`);
+    check((html.match(/class="export-card-icon" aria-hidden="true"/g) || []).length === 2 &&
+      /export-card\s*\{[^}]*border: 2px solid/.test(html) &&
+      !/export-card(?:\.is-(?:private|watch))?::(?:before|after)/.test(html),
+      `the ${name} build loses the export cards' icons or even four-sided borders`);
+    check(/<div class="go-frame">\s*<button[^>]*class="go"[^>]*id="go"/.test(html) &&
+      /class="go-icon"[^>]*aria-hidden="true"/.test(html) &&
+      /id="go-label">Produce wallet/.test(html) &&
+      /\$\('go-label'\)\.textContent = info\.lookup/.test(script) &&
+      /\$\('go-label'\)\.textContent = 'Working\\u2026'/.test(script) &&
+      !/\$\('go'\)\.textContent/.test(script) &&
+      /workbench \.go-frame\s*\{[^}]*padding: 6px/.test(html) &&
+      /workbench \.go::after\s*\{[^}]*rgba\(255, 245, 224, 0\.42\)/.test(html),
+      `the ${name} build loses the framed primary action or its accessible label`);
+    check(/<div class="export-actions" role="group" aria-labelledby="export-download-label">/.test(html) &&
+      /<div class="export-actions" role="group" aria-labelledby="export-watch-download-label">/.test(html) &&
+      (html.match(/id="export-[a-z-]*download-label">Download:</g) || []).length === 3 &&
+      /export-actions \.export-button\s*\{[^}]*flex: 1 1 0/.test(html) &&
+      /export-actions \.export-button\s*\{[^}]*min-height: 40px/.test(html) &&
+      /export-actions \.export-button\s*\{[^}]*min-height: 44px/.test(html) &&
+      /#export-wallet-open\s*\{[^}]*background: rgba\(255, 138, 0, 0\.20\)/.test(html),
+      `the ${name} build does not lay the private card's two actions out as an even, captioned pair`);
+    /* Scoped to the captioned row, not the page. The confirmation dialog
+       behind these buttons has its own "Download ..." actions and should keep
+       them: that is where the file is actually written. What must not come
+       back is the word inside the two labels the caption now covers. */
+    const actionRows = [...html.matchAll(/<div class="export-actions"[^>]*>[\s\S]*?<\/div>/g)];
+    check(actionRows.length === 3 && actionRows.every(row => !/Download/.test(row[0])),
+      `the ${name} build put "Download" back inside a button label the caption already covers`);
+    /* Cancel is not a download and must not sit inside the group the caption
+       labels -- a screen reader reads that label onto everything in it. */
+    check(actionRows.every(row => !/value="cancel"/.test(row[0])),
+      `the ${name} build put Cancel inside the labelled download group`);
+    /* The button says only "wallet.dat" now, so the card has to say whose
+       format that is. Without this the only mention of Bitcoin Core on the way
+       to the file is inside the dialog you reach by pressing the button --
+       nothing to read beforehand. */
+    const privateCard = html.match(/<article class="export-card is-private">[\s\S]*?<\/article>/);
+    check(!!privateCard && /Bitcoin Core/.test(privateCard[0]),
+      `the ${name} build offers a bare wallet.dat without naming Bitcoin Core on the card`);
     check(/id="address-match"/.test(html) && /id="address-match-status"[^>]*role="status"/.test(html),
       `the ${name} build does not expose the derived-wallet address check`);
     check(/const ADDRESS_SEARCH_LIMIT\s*=\s*1000/.test(script) &&
