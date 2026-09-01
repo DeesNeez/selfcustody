@@ -1783,11 +1783,22 @@ ${FONTS.map(embedFont).join('\n')}
     border-radius: 22px; background: linear-gradient(155deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
     box-shadow: 0 26px 68px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.06), 0 -1px 32px rgba(255,138,0,.035);
   }
-  .workbench fieldset { position: relative; margin: 0; padding: 24px 0 25px 56px; border-bottom: 1px solid rgba(255,255,255,.085); }
+  .workbench fieldset { position: relative; margin: 0; padding: 24px 0 25px; border-bottom: 1px solid rgba(255,255,255,.085); }
   .workbench legend { float: left; width: 100%; margin: 0 0 13px; font-family: "Jost", sans-serif; font-size: 1.07rem; }
   .workbench legend .step-num { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  /* The badge sits on the heading's own line, not in a gutter running down
+     the left of every fieldset. Absolutely positioning it meant all seven
+     panels carried ~56px of empty left padding purely to clear it, and the
+     numbers read as a column of their own rather than as part of the headings
+     they belong to. That padding is now content width.
+
+     inline-grid rather than making the legend a flex row: the legend's other
+     children are bare text runs and the "optional" pill, which set their own
+     spacing (.opt has its own margin-left) and would each pick up a flex gap
+     as separate items. */
   .workbench legend::before {
-    content: attr(data-step); position: absolute; left: 0; top: 21px; display: grid; place-items: center;
+    content: attr(data-step); display: inline-grid; place-items: center; vertical-align: middle;
+    margin-right: 13px;
     width: 37px; height: 37px; color: #ffad4c; border: 1px solid rgba(255,138,0,.4); border-radius: 11px;
     background: rgba(255,138,0,.075); font: 800 0.82rem/1 "Open Sans", sans-serif;
   }
@@ -1825,11 +1836,11 @@ ${FONTS.map(embedFont).join('\n')}
     padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,.085);
   }
   .workbench .setup-grid fieldset {
-    padding: 18px 18px 18px 58px; border: 1px solid rgba(255,255,255,.09); border-radius: 15px;
+    padding: 18px; border: 1px solid rgba(255,255,255,.09); border-radius: 15px;
     background: rgba(255,255,255,.018);
   }
   .workbench .setup-grid legend { font-size: 1rem; }
-  .workbench .setup-grid legend::before { left: 14px; top: 15px; width: 34px; height: 34px; border-radius: 10px; }
+  .workbench .setup-grid legend::before { width: 34px; height: 34px; margin-right: 11px; border-radius: 10px; }
   .workbench .setup-grid .setup-wide { grid-column: 1 / -1; }
   .workbench .setup-grid .seg button { min-height: 52px; }
   /* Taller than the rest of the row above, because these three carry a drawing
@@ -1905,13 +1916,8 @@ ${FONTS.map(embedFont).join('\n')}
     .download { margin-bottom: 34px; padding: 19px 18px; }
     .step-map { display: none; }
     .workbench { padding: 12px 14px 20px; border-radius: 18px; }
-    .workbench fieldset { padding: 23px 0 24px 0; }
+    .workbench fieldset { padding: 23px 0 24px; }
     .workbench .setup-grid fieldset { padding: 18px 14px; }
-    .workbench legend { padding-left: 60px; min-height: 37px; display: flex; align-items: center; }
-    /* left:0 put the badge exactly on the card's border -- measured at a zero
-       gap, so it read as overlapping it. Inset far enough to sit inside the
-       box, with the heading moved to match. */
-    .workbench legend::before, .workbench .setup-grid legend::before { left: 13px; top: 16px; }
     .workbench .results { padding: 21px 16px; }
     .path-row { flex-direction: column; }
     .path-row button { width: 100%; }

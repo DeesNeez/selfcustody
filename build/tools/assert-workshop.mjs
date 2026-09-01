@@ -205,6 +205,24 @@ export function assertWorkshop() {
       /seg button:hover\s*\{[^}]*border-color: rgba\(255, 138, 0, 0\.45\)/.test(html) &&
       /key:hover:not\(:disabled\)\s*\{[^}]*border-color: rgba\(255, 138, 0, 0\.6\)/.test(html),
       `the ${name} build lost a control's hover or selected edge to the resting one`);
+
+    /* The step badge belongs on the heading's own line. It used to be
+       absolutely positioned at the fieldset's left edge, which meant every one
+       of the seven panels carried ~56px of empty left padding purely to clear
+       it -- a column of numbers standing apart from the headings they number,
+       paid for out of the content width.
+
+       Both halves are checked, because either one alone lets the old layout
+       back: the badge has to stay in flow, and the padding it used to need has
+       to stay gone. A guard on only the padding would pass with the badge
+       overlapping the controls. */
+    const badge = html.match(/workbench legend::before\s*\{[^}]*\}/);
+    check(!!badge && /display: inline-grid/.test(badge[0])
+      && !/position: absolute/.test(badge[0]),
+      `the ${name} build took the step badge out of the heading line`);
+    check(/workbench fieldset\s*\{[^}]*padding: 24px 0 25px;/.test(html)
+      && /setup-grid fieldset\s*\{[^}]*padding: 18px;/.test(html),
+      `the ${name} build still reserves a left gutter for the step badge`);
     check(/selfcustody-entropy-beta-accepted/.test(script) &&
       /localStorage\.getItem\(STORAGE_KEY\)\s*===\s*version/.test(script) &&
       /localStorage\.setItem\(STORAGE_KEY, version\)/.test(script) &&
