@@ -21,10 +21,11 @@ and must be answered by the person who put the material here.
    source lines and 83 images, none originated with anyone but the maintainer.
    That commit has since been removed from this repository's history. See
    [Contributor audit](#contributor-audit).
-2. **Four third-party notices are missing and one is contradictory.** The most
-   serious is that `docs/entropy-offline.html` embeds two SIL Open Font License
-   fonts and carries no OFL notice — and that file is distributed on its own.
-   See [Notice gaps](#notice-gaps).
+2. **Two third-party notices are missing and one is contradictory.** The font
+   notices, which were the most serious because the standalone offline artifact
+   carried none, are now resolved. Bootstrap and Bootstrap Icons still ship
+   without theirs, and `secp256k1-wasm` still contradicts itself. See
+   [Notice gaps](#notice-gaps).
 3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
    images are manufacturer logos, product shots or exchange marks. They cannot
    go under a project content licence. The remaining 44 need the maintainer to
@@ -81,15 +82,15 @@ branches.
 ## Notice gaps
 
 These must be fixed before licensing files are published. Each is a licence
-condition the project currently does not meet.
+condition the project does not meet, or did not until the row says otherwise.
 
 | # | Component | Licence | Gap | Required action |
 | --- | --- | --- | --- | --- |
-| 1 | Jost and Open Sans, embedded as base64 in `docs/entropy-offline.html` | SIL OFL 1.1 | The artifact is distributed as a standalone file and contains no OFL notice. `grep` finds the Nayuki and EntropyLab MIT notices in it, and nothing for the fonts. | Vendor `OFL.txt` for both families into `build/vendor/fonts/`, and include the copyright line and licence reference in the offline build. |
-| 2 | `build/vendor/fonts/` | SIL OFL 1.1 | `README.md` states both families are OFL, but no licence text is vendored. | Add the upstream `OFL.txt` for each family with its copyright line. |
+| 1 | Jost and Open Sans, embedded as base64 in `docs/entropy-offline.html` | SIL OFL 1.1 | **Resolved.** Both licences are now inlined in full in both Workshop builds, beside the bytes they cover. The full text travels rather than a reference, because the offline build is a single file people pass around. | — |
+| 2 | `build/vendor/fonts/` | SIL OFL 1.1 | **Resolved.** `OFL-Jost.txt` and `OFL-OpenSans.txt` are vendored from the Google Fonts directories the subsets were cut from, and `build/render.mjs` copies them into `docs/assets/fonts/` so the served copies carry them too. | — |
 | 3 | `docs/assets/vendor/bootstrap/css/bootstrap.min.css` | MIT | Shipped, minified, and the `/*! … */` banner Bootstrap's dist preserves has been stripped. No notice anywhere. Also has no source under `build/` — it is a hand-placed file inside otherwise-generated output. | Restore the banner or record the notice in `THIRD_PARTY_NOTICES.md`; record the exact upstream version, which is not stated anywhere. |
 | 4 | `build/vendor/bootstrap-icons/` and the generated subset in `docs/assets/vendor/bootstrap-icons/` | MIT | No licence text vendored; the generated stylesheet carries no banner. `README.md` records only "as vendored in commit a565235", not an upstream version. | Vendor the upstream `LICENSE`, record the upstream version, and carry the notice into the subset output. |
-| 5 | `build/tools/lifehash.js` | **Unclear** | Header says "adapted from the merged EntropyLab implementation in PR #74". No licence notice, and no reference to LifeHash's own upstream origin. Unlike `sqlite-writer.js` and `wallet-dat.js` — adapted from the same project and both carrying the full MIT notice inline — this file carries nothing. | Establish the licence of the EntropyLab implementation *and* of the LifeHash algorithm's upstream reference implementation, then add the notice. This one blocks calling the Workshop's licensing complete. |
+| 5 | `build/tools/lifehash.js` | **Unclear** | Header says "adapted from the merged EntropyLab implementation in PR #74", meaning [w-s-bitcoin/entropylab#74](https://github.com/w-s-bitcoin/entropylab/pull/74) rather than this repository's own PR of that number. No licence notice, and no reference to LifeHash's own upstream origin. Unlike `sqlite-writer.js` and `wallet-dat.js` — adapted from the same project and both carrying the full MIT notice inline — this file carries nothing. | Establish the licence of the EntropyLab implementation *and* of the LifeHash algorithm's upstream reference implementation, then add the notice. This one blocks calling the Workshop's licensing complete. |
 | 6 | `secp256k1-wasm/` | **Contradictory** | `README.md` says "The Rust wrapper is Unlicensed"; `Cargo.toml` declares `license = "Unlicense"`. Those mean opposite things — no licence at all, versus a public-domain dedication. | Decide which is intended and make both files say it. |
 
 A seventh, non-licensing note: `secp256k1-wasm/Cargo.toml` cites
@@ -105,7 +106,7 @@ project plan creates it; the reference should be checked against it then.
 | `build/render.mjs` | Static-site renderer | Project | Maintainer | MIT | Sole authorship in history. |
 | `build/tools/` | Workshop implementation, crypto, guards, tests | Project, except as noted | Maintainer, except as noted | MIT | 124 commits, all from the maintainer account. Three files are adapted from elsewhere — see the third-party table. |
 | `build/tools/bip39-english.txt` | BIP39 English wordlist | Upstream BIP39 | Not the project | Follows upstream | **Needs confirmation** of which source copy was used and under what terms. The wordlist is universally redistributed, but the project should still name its source. |
-| `secp256k1-wasm/src/lib.rs`, `builder/` | Rust wrapper and pinned builder image | Adapted from merged EntropyLab PR #103 | Unresolved | Unresolved | Gap 6 above. |
+| `secp256k1-wasm/src/lib.rs`, `builder/` | Rust wrapper and pinned builder image | Adapted from merged [w-s-bitcoin/entropylab#103](https://github.com/w-s-bitcoin/entropylab/pull/103) | Unresolved | Unresolved | Gap 6 above. |
 | `fuzzing/lifehash/fuzz.mjs` | Differential test harness | Project | Maintainer | MIT | Test tooling, never shipped. |
 | `.github/workflows/` | CI configuration | Project | Maintainer | MIT | Sole authorship. |
 | `docs/` | Generated composite output | Mixed | Mixed | **No single licence** | Each component keeps the licence of its source. Must not be blanket-licensed. |
@@ -216,7 +217,8 @@ Commit 3 cannot proceed until these are recorded.
 3. For each of the 40 unresolved images: which of the seven classes above?
    Stock licences and generation tools need naming, not just approving.
 4. Is the `secp256k1-wasm` wrapper meant to be Unlicense, or unlicensed?
-5. What licence covers the EntropyLab LifeHash implementation in PR #74, and
+5. What licence covers the EntropyLab LifeHash implementation in
+   [w-s-bitcoin/entropylab#74](https://github.com/w-s-bitcoin/entropylab/pull/74), and
    what is the upstream origin of the LifeHash algorithm it implements?
 
 ## What happens next

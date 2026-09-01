@@ -92,4 +92,35 @@ artifact embeds these bytes, so its SHA-256 changes whenever they do.
 Do not pass `--instance` for `wght`: that would flatten the weight axis and
 cost a second file per family.
 
-Both families are under the SIL Open Font License, which permits this.
+## Licensing
+
+Both families are under the SIL Open Font License 1.1, which permits the
+subsetting above. The licence is a bundling licence: it allows the fonts to
+travel inside other software only if each copy carries the copyright notice
+and the licence text.
+
+The upstream licence files are vendored here, one per family, taken from the
+same Google Fonts directories the regeneration commands above pull the TTFs
+from. They are not interchangeable -- the two texts differ in their copyright
+line and in small details of wording and URL scheme, so each family keeps its
+own.
+
+| Family | Version | Copyright | Licence |
+| --- | --- | --- | --- |
+| Jost | 3.710 | Copyright 2020 The Jost Project Authors (https://github.com/indestructible-type) | `OFL-Jost.txt` |
+| Open Sans | 3.003 | Copyright 2020 The Open Sans Project Authors (https://github.com/googlefonts/opensans) | `OFL-OpenSans.txt` |
+
+The versions come from each font's own `name` table rather than from a
+release page, so they describe the bytes in this directory. Read them back
+with `fontTools.ttLib.TTFont(path)["name"]` after any regeneration, and update
+the table above if they move.
+
+Both copies of the fonts carry the licence with them. `build/render.mjs` copies
+these two text files into `docs/assets/fonts/` beside the woff2 files it serves,
+and `build/tools/entropy-page.mjs` inlines both texts in full into the Workshop
+builds -- `entropy-offline.html` is a single file people download and pass
+around, so a licence that stayed in the repository would not travel with it.
+
+Subsetting drops name IDs 13 and 14, the licence description and URL the
+upstream fonts carry internally, which is why the notice has to be reattached
+outside the font binary rather than left to it.
