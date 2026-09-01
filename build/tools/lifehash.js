@@ -1,7 +1,11 @@
 /* LifeHash version2, adapted from the merged
    EntropyLab implementation in PR #74. The reference algorithm is preserved,
    but SHA-256 comes from EntropyCore so the offline page adds no browser API
-   or network dependency. */
+   or network dependency.
+
+   Fingerprints are hashed as raw bytes, which is what Sparrow shows. See
+   fromFingerprint for why, and for what it means for icons from earlier
+   Workshop releases. */
 const WorkshopLifeHash = (() => {
   const C = EntropyCore;
   const SIZE = 16;
@@ -227,7 +231,33 @@ const WorkshopLifeHash = (() => {
     const image = scaleUp(renderColors(buildFracGrid(runGameOfLife(digest)), gradient, snowflake), moduleSize);
     return 'data:image/png;base64,' + base64(encodePng(image.width, image.height, image.data));
   };
-  const fromFingerprint = (fingerprint, moduleSize) => fromDigest(sha256(C.utf8(String(fingerprint).toLowerCase())), moduleSize);
+  /* Sparrow's convention, not lifehash.info's.
+
+     A master fingerprint is four bytes that happen to be written as eight hex
+     characters. lifehash.info hashes the characters; Sparrow -- through
+     toucan's LifeHashIcon.setHex, which decodes with Utils.hexToBytes before
+     calling makeFromData -- hashes the four bytes those characters spell. Both
+     are valid LifeHash; they simply produce different icons for the same
+     wallet.
+
+     An icon is only useful if it agrees with what the user is comparing it
+     against, and on the desktop that is usually Sparrow. So this hashes the
+     decoded bytes. Icons produced by earlier Workshop releases used the
+     string convention and will not match these.
+
+     The input is validated rather than coerced: eight hex characters exactly,
+     because four bytes is what a fingerprint is, and anything else is a
+     caller's mistake worth surfacing rather than an icon worth drawing.
+     Case is irrelevant once decoded, so mixed case still gives one icon. */
+  const fromFingerprint = (fingerprint, moduleSize) => {
+    const text = String(fingerprint).trim();
+    if (!/^[0-9a-fA-F]{8}$/.test(text)) {
+      throw new Error('LifeHash fingerprint must be eight hexadecimal characters.');
+    }
+    const bytes = new Uint8Array(4);
+    for (let i = 0; i < 4; i++) bytes[i] = parseInt(text.slice(i * 2, i * 2 + 2), 16);
+    return fromDigest(sha256(bytes), moduleSize);
+  };
 
   return { fromDigest, fromFingerprint, _internals: { runGameOfLife, buildFracGrid, selectGradient, renderColors, encodePng, makeBitEnumerator } };
 })();

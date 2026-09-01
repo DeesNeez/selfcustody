@@ -1,0 +1,12 @@
+{
+  "name": "selfcustody-lifehash-fuzz",
+  "private": true,
+  "type": "module",
+  "description": "Differential test only. Never bundled, never loaded by the site, never installed by the site's own build -- the Workshop still ships with no runtime dependencies.",
+  "scripts": {
+    "fuzz": "node fuzz.mjs"
+  },
+  "dependencies": {
+    "lifehash": "1.0.0"
+  }
+}
