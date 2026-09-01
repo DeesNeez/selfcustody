@@ -15,6 +15,7 @@ passed the functional vectors. `builder/` holds the Dockerfile and the exact
 package versions; `builder/fetch-inputs.sh` fetches the inputs it cannot get
 from signed apt metadata, each against a recorded SHA-256.
 
-The integration is adapted from merged EntropyLab pull request #103. The Rust
+The integration is adapted from merged EntropyLab pull request
+[w-s-bitcoin/entropylab#103](https://github.com/w-s-bitcoin/entropylab/pull/103). The Rust
 wrapper is Unlicensed; libsecp256k1 and secp256k1-sys retain their upstream
 licenses in the downloaded crate source used at build time.

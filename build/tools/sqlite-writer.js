@@ -1,4 +1,4 @@
-/* Adapted from EntropyLab pull request #32.
+/* Adapted from EntropyLab, w-s-bitcoin/entropylab#32.
 
    MIT License
    Copyright (c) 2026 Mr.Hodl and Wicked
