@@ -555,7 +555,8 @@ ${FONTS.map(embedFont).join('\n')}
      one button rather than two and still gets the group, so both cards say
      the word once, in the same place, and the two rows stay identical in
      markup and in height. */
-  .export-card .export-actions-label {
+  .export-card .export-actions-label,
+  .export-dialog .export-actions-label {
     margin: auto 0 8px; color: var(--muted);
     font-size: 0.76rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
   }
@@ -622,7 +623,20 @@ ${FONTS.map(embedFont).join('\n')}
     border: 1px solid rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.12);
     color: #ff9d8a; font-size: 0.84rem; line-height: 1.55;
   }
-  .export-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 19px; }
+  /* The dialog wears the same captioned pair as the card that opened it, so
+     the two buttons are named the same in both places and neither has to
+     repeat the caption's word. Cancel drops to its own row rather than sitting
+     third in the group: it is not a download, and the group is labelled as if
+     everything in it were.
+
+     Both contexts are named on the caption rule above rather than leaving it
+     scoped to the card: each of .export-card p and .export-dialog p sets its
+     own margin at the same specificity, so a single-class selector loses to
+     whichever applies and the caption renders as body text. The auto top
+     margin is for the card's flex column and computes to zero in the dialog,
+     so the spacing there is stated. */
+  .export-dialog .export-actions-label { margin: 19px 0 8px; }
+  .export-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
   .export-dialog-actions .export-button { width: auto; }
   .export-dialog .export-button { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
   .export-dialog .export-button:hover:not(:disabled) { border-color: rgba(255, 157, 138, 0.72); }
@@ -4452,9 +4466,12 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <p><strong>Download it only on the offline computer</strong>, then move it directly to the protected backup storage you chose. Do not put it in cloud storage, email or chat.</p>
       <p>The BIP39 passphrase value is deliberately left out of both files. The recovery file says whether one was used; the wallet.dat already contains the account derived with it.</p>
       <p class="export-dialog-error" id="export-private-error" role="alert"></p>
+      <p class="export-actions-label" id="export-dialog-download-label">Download:</p>
+      <div class="export-actions" role="group" aria-labelledby="export-dialog-download-label">
+        <button type="button" class="export-button" id="export-private-confirm">Recovery file</button>
+        <button type="button" class="export-button" id="export-wallet-confirm">wallet.dat</button>
+      </div>
       <div class="export-dialog-actions">
-        <button type="button" class="export-button" id="export-private-confirm">Download recovery file</button>
-        <button type="button" class="export-button" id="export-wallet-confirm">Download Bitcoin Core wallet.dat</button>
         <button type="submit" class="key-tool" value="cancel">Cancel</button>
       </div>
     </form>

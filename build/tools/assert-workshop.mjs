@@ -306,7 +306,7 @@ export function assertWorkshop() {
       `the ${name} build does not keep the export cards red for private and green for watch-only`);
     check(/<div class="export-actions" role="group" aria-labelledby="export-download-label">/.test(html) &&
       /<div class="export-actions" role="group" aria-labelledby="export-watch-download-label">/.test(html) &&
-      (html.match(/id="export-[a-z-]*download-label">Download:</g) || []).length === 2 &&
+      (html.match(/id="export-[a-z-]*download-label">Download:</g) || []).length === 3 &&
       /export-actions \.export-button\s*\{[^}]*flex: 1 1 0/.test(html) &&
       /export-actions \.export-button\s*\{[^}]*min-height: 40px/.test(html) &&
       /export-actions \.export-button\s*\{[^}]*min-height: 44px/.test(html) &&
@@ -317,8 +317,12 @@ export function assertWorkshop() {
        them: that is where the file is actually written. What must not come
        back is the word inside the two labels the caption now covers. */
     const actionRows = [...html.matchAll(/<div class="export-actions"[^>]*>[\s\S]*?<\/div>/g)];
-    check(actionRows.length === 2 && actionRows.every(row => !/Download/.test(row[0])),
+    check(actionRows.length === 3 && actionRows.every(row => !/Download/.test(row[0])),
       `the ${name} build put "Download" back inside a button label the caption already covers`);
+    /* Cancel is not a download and must not sit inside the group the caption
+       labels -- a screen reader reads that label onto everything in it. */
+    check(actionRows.every(row => !/value="cancel"/.test(row[0])),
+      `the ${name} build put Cancel inside the labelled download group`);
     /* The button says only "wallet.dat" now, so the card has to say whose
        format that is. Without this the only mention of Bitcoin Core on the way
        to the file is inside the dialog you reach by pressing the button --
