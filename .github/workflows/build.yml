@@ -169,7 +169,8 @@ jobs:
         env:
           MIRI_TOOLCHAIN: nightly-2026-06-01
         run: |
-          rustup toolchain install "$MIRI_TOOLCHAIN" --profile minimal --component miri rust-src
+          rustup toolchain install "$MIRI_TOOLCHAIN" --profile minimal \
+            --component miri --component rust-src
           cargo "+$MIRI_TOOLCHAIN" miri setup
           cargo "+$MIRI_TOOLCHAIN" miri test tests::
 
