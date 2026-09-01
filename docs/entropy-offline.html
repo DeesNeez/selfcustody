@@ -2411,21 +2411,21 @@
   <div class="export-grid">
     <article class="export-card is-private">
       <span class="export-tag">Keep secret</span>
-      <h4>Private recovery record</h4>
+      <h4>Primary recovery</h4>
       <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value. The <code>wallet.dat</code> holds the same account&rsquo;s private key and descriptors, in the file format Bitcoin Core opens.</p>
       <p class="export-actions-label" id="export-download-label">Download:</p>
       <div class="export-actions" role="group" aria-labelledby="export-download-label">
-        <button type="button" class="export-button" id="export-private-open">Recovery record</button>
+        <button type="button" class="export-button" id="export-private-open">Recovery file</button>
         <button type="button" class="export-button" id="export-wallet-open">wallet.dat</button>
       </div>
     </article>
     <article class="export-card is-watch">
       <span class="export-tag">No spending keys</span>
-      <h4>Watch-only record</h4>
+      <h4>Watch-only</h4>
       <p>Account public keys, checked descriptors and the first five addresses on each branch. Safe from spending, not private from balance and history.</p>
       <p class="export-actions-label" id="export-watch-download-label">Download:</p>
       <div class="export-actions" role="group" aria-labelledby="export-watch-download-label">
-        <button type="button" class="export-button" id="export-watch">Watch-only record</button>
+        <button type="button" class="export-button" id="export-watch">Watch-only file</button>
       </div>
     </article>
   </div>
@@ -2435,13 +2435,13 @@
     <form method="dialog">
       <button class="export-dialog-close" value="cancel" aria-label="Close">&times;</button>
       <h2 id="export-private-title">These files can spend the wallet</h2>
-      <p>The private text record contains the recovery words, SeedQR digits and private keys shown above. The Bitcoin Core wallet.dat contains the selected account private key and its receiving and change descriptors. Anyone who gets either file can move the coins it controls.</p>
+      <p>The recovery file contains the recovery words, SeedQR digits and private keys shown above. The Bitcoin Core wallet.dat contains the selected account private key and its receiving and change descriptors. Anyone who gets either file can move the coins it controls.</p>
       <p><strong>The generated wallet.dat is not encrypted.</strong> Put it in a new, dedicated Bitcoin Core wallet directory. Never replace or overwrite an existing wallet.dat file.</p>
       <p><strong>Download it only on the offline computer</strong>, then move it directly to the protected backup storage you chose. Do not put it in cloud storage, email or chat.</p>
-      <p>The BIP39 passphrase value is deliberately left out of both files. The private text record says whether one was used; the wallet.dat already contains the account derived with it.</p>
+      <p>The BIP39 passphrase value is deliberately left out of both files. The recovery file says whether one was used; the wallet.dat already contains the account derived with it.</p>
       <p class="export-dialog-error" id="export-private-error" role="alert"></p>
       <div class="export-dialog-actions">
-        <button type="button" class="export-button" id="export-private-confirm">Download private record</button>
+        <button type="button" class="export-button" id="export-private-confirm">Download recovery file</button>
         <button type="button" class="export-button" id="export-wallet-confirm">Download Bitcoin Core wallet.dat</button>
         <button type="submit" class="key-tool" value="cancel">Cancel</button>
       </div>
@@ -7761,8 +7761,8 @@ var qrcodegen;
          reported into a region the backdrop is covering. */
       if (isPrivate && $('export-private-dialog').open) $('export-private-dialog').close();
       $('export-status').textContent = isPrivate
-        ? 'Private recovery record download requested. Treat the file like the wallet itself.'
-        : 'Watch-only record download requested. It cannot spend, but it reveals wallet activity.';
+        ? 'Recovery file download requested. Treat it like the wallet itself.'
+        : 'Watch-only file download requested. It cannot spend, but it reveals wallet activity.';
     } catch (error) {
       fail('Could not prepare that record: ' + error.message + '.');
     }
