@@ -262,10 +262,41 @@ jobs:
   # ordinary branch pushes keep a read-only token; only an already-verified
   # commit on the default branch receives the short-lived OIDC permission
   # needed to publish provenance for the exact downloadable HTML bytes.
+  # The LifeHash port against the library it was ported from. Its own job
+  # because it is the only thing in this repository that installs a dependency:
+  # fuzzing/lifehash/ has its own lockfile, nothing it pulls in is reachable
+  # from the site, and the artifact still ships with no runtime dependencies.
+  #
+  # Kept out of `verify` so that a registry outage cannot fail the job that
+  # gates ordinary correctness -- but named in attest-offline's needs, because
+  # an artifact should not be attested while a behavioural test is red.
+  fuzz-lifehash:
+    name: LifeHash matches the canonical implementation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
+
+      # npm ci, not npm install: the lockfile decides, and a dependency that
+      # resolved to something else would fail here rather than quietly become
+      # the thing this test trusts as the reference.
+      - name: Install the reference implementation
+        working-directory: fuzzing/lifehash
+        run: npm ci --no-audit --no-fund
+
+      - name: Compare both implementations
+        working-directory: fuzzing/lifehash
+        run: node fuzz.mjs
+
   attest-offline:
     name: Attest · offline Entropy Workshop
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [verify, build-wasm]
+    needs: [verify, build-wasm, fuzz-lifehash]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

@@ -46,7 +46,7 @@ const QRLIB = 'build/vendor/qr/qrcodegen.js';
 const WORDS = 'build/tools/bip39-english.txt';
 /* Bump only when the Entropy Workshop itself is released. Acceptance stores
    this public label and nothing derived from the reader's input. */
-const ENTROPY_RELEASE = '2026-09-01-beta-2';
+const ENTROPY_RELEASE = '2026-09-01-beta-3';
 
 /* The page wears the site's chrome, which means it needs the site's two
    typefaces and its logo -- and it cannot fetch any of them, because the whole
@@ -3332,7 +3332,7 @@ const ui = () => `
   function paintLifeHash(id, fingerprint) {
     const image = $(id);
     image.src = WorkshopLifeHash.fromFingerprint(fingerprint, 2);
-    image.alt = 'LifeHash visual fingerprint for ' + fingerprint;
+    image.alt = 'Sparrow-compatible LifeHash visual fingerprint for ' + fingerprint;
     image.hidden = false;
   }
 
@@ -4491,6 +4491,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
       <span class="fp-cell" id="fp-arrow-wrap" hidden><i class="fp-arrow" aria-hidden="true">&rarr;</i><span class="fp-identity"><img class="fp-lifehash" id="lifehash-pass" alt="" hidden><span class="fp-copy"><b id="fp-pass"></b><em>with passphrase</em></span></span></span></span>
     </span>
     <p class="hint" id="fp-note"></p>
+    <p class="hint" id="lifehash-note">The picture is a LifeHash of the fingerprint&rsquo;s four bytes &mdash; the same icon Sparrow draws for this wallet, so the two can be compared at a glance. Workshop releases before 2026-09-01 hashed the eight characters instead, the lifehash.info convention, and their icons look nothing like these.</p>
   </div>
 
   <h3>Recovery words</h3>
