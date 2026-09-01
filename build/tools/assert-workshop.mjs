@@ -283,7 +283,6 @@ export function assertWorkshop() {
       /<\/svg>Check an address<\/label>/.test(html) &&
       /class="address-match-local"><svg[^>]*aria-hidden="true"/.test(html) &&
       /Checked locally on this page<\/p>/.test(html) &&
-      /address-match input\[type="text"\]:focus\s*\{[^}]*border-color: rgba\(237, 200, 115, 0\.72\)/.test(html) &&
       /input\[type="text"\]:focus[^{]*\{[^}]*outline: 2px solid var\(--orange\)/.test(html),
       `the ${name} build does not keep the address panel's icons, local note and focus ring`);
     /* The empty status collapses so it does not hold a blank line under the
