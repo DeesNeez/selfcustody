@@ -305,7 +305,8 @@ export function assertWorkshop() {
       !/is-watch[^{]*\{[^}]*rgba\(255, 138, 0/.test(html),
       `the ${name} build does not keep the export cards red for private and green for watch-only`);
     check(/<div class="export-actions" role="group" aria-labelledby="export-download-label">/.test(html) &&
-      /id="export-download-label">Download:</.test(html) &&
+      /<div class="export-actions" role="group" aria-labelledby="export-watch-download-label">/.test(html) &&
+      (html.match(/id="export-[a-z-]*download-label">Download:</g) || []).length === 2 &&
       /export-actions \.export-button\s*\{[^}]*flex: 1 1 0/.test(html) &&
       /export-actions \.export-button\s*\{[^}]*min-height: 40px/.test(html) &&
       /export-actions \.export-button\s*\{[^}]*min-height: 44px/.test(html) &&
@@ -315,9 +316,16 @@ export function assertWorkshop() {
        behind these buttons has its own "Download ..." actions and should keep
        them: that is where the file is actually written. What must not come
        back is the word inside the two labels the caption now covers. */
-    const actionRow = html.match(/<div class="export-actions"[^>]*>[\s\S]*?<\/div>/);
-    check(!!actionRow && !/Download/.test(actionRow[0]),
+    const actionRows = [...html.matchAll(/<div class="export-actions"[^>]*>[\s\S]*?<\/div>/g)];
+    check(actionRows.length === 2 && actionRows.every(row => !/Download/.test(row[0])),
       `the ${name} build put "Download" back inside a button label the caption already covers`);
+    /* The button says only "wallet.dat" now, so the card has to say whose
+       format that is. Without this the only mention of Bitcoin Core on the way
+       to the file is inside the dialog you reach by pressing the button --
+       nothing to read beforehand. */
+    const privateCard = html.match(/<article class="export-card is-private">[\s\S]*?<\/article>/);
+    check(!!privateCard && /Bitcoin Core/.test(privateCard[0]),
+      `the ${name} build offers a bare wallet.dat without naming Bitcoin Core on the card`);
     check(/id="address-match"/.test(html) && /id="address-match-status"[^>]*role="status"/.test(html),
       `the ${name} build does not expose the derived-wallet address check`);
     check(/const ADDRESS_SEARCH_LIMIT\s*=\s*1000/.test(script) &&
