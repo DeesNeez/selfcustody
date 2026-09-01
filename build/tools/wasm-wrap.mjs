@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 
 const root = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 const wasmPath = join(
@@ -16,6 +17,10 @@ const outPath = join(root, 'build/tools/secp256k1-wasm-b64.js');
 
 const wasm = readFileSync(wasmPath);
 const sha256 = createHash('sha256').update(wasm).digest('hex');
+/* Compression is part of the generated artifact, so it runs here inside the
+   pinned builder image instead of in the ordinary site build. The builder's
+   two-pass byte comparison covers both the raw and gzip representations. */
+const gzip = gzipSync(wasm, { level: 9, mtime: 0 });
 const output = `// GENERATED FILE - do not edit. Rebuild with \`npm run build:wasm:container\`.
 // libsecp256k1 0.8.0 (vendored by secp256k1-sys 0.14.0, see
 // secp256k1-wasm/Cargo.lock) compiled to WebAssembly from secp256k1-wasm/
@@ -23,6 +28,8 @@ const output = `// GENERATED FILE - do not edit. Rebuild with \`npm run build:wa
 // Rust 1.95.0, Ubuntu clang 18.1.3 and GNU ar 2.42. wasm sha256: ${sha256}
 export const SECP256K1_WASM_B64 =
   "${wasm.toString('base64')}";
+export const SECP256K1_WASM_GZIP_B64 =
+  "${gzip.toString('base64')}";
 `;
 writeFileSync(outPath, output);
-console.log(`wrapped ${wasm.length} bytes into ${outPath} (${sha256})`);
+console.log(`wrapped ${wasm.length} raw / ${gzip.length} gzip bytes into ${outPath} (${sha256})`);

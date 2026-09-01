@@ -16,12 +16,22 @@ const EntropySecp256k1 = (() => {
     return bytes;
   };
 
+  const decompressBase64Gzip = text => new Response(
+    new Blob([decodeBase64(text)])
+      .stream()
+      .pipeThrough(new DecompressionStream('gzip'))
+  ).arrayBuffer().then(buffer => new Uint8Array(buffer));
+
   let wasm = null;
   const isNode = typeof process !== 'undefined'
     && Boolean(process.versions && process.versions.node);
   const preflightFailed = typeof window !== 'undefined'
     && window.__entropyWorkshopPreflightPassed !== true;
-  const wasmBytes = preflightFailed ? null : decodeBase64(SECP256K1_WASM_B64);
+  const compressedWasm = preflightFailed ? null
+    : typeof SECP256K1_WASM_GZIP_B64 === 'string' ? SECP256K1_WASM_GZIP_B64 : null;
+  const rawWasm = preflightFailed || compressedWasm ? null
+    : typeof SECP256K1_WASM_B64 === 'string' ? SECP256K1_WASM_B64 : null;
+  const wasmBytes = rawWasm ? decodeBase64(rawWasm) : null;
 
   if (isNode) {
     wasm = new WebAssembly.Instance(new WebAssembly.Module(wasmBytes), {}).exports;
@@ -29,7 +39,8 @@ const EntropySecp256k1 = (() => {
 
   const ready = preflightFailed || isNode
     ? Promise.resolve()
-    : WebAssembly.instantiate(wasmBytes, {}).then(result => {
+    : (compressedWasm ? decompressBase64Gzip(compressedWasm) : Promise.resolve(wasmBytes))
+      .then(bytes => WebAssembly.instantiate(bytes, {})).then(result => {
         wasm = result.instance.exports;
       });
 

@@ -93,6 +93,20 @@ const embedSvg = path => 'data:image/svg+xml,' + encodeURIComponent(
     .trim()
 ).replace(/'/g, '%27').replace(/"/g, '%22');
 
+/* The WebAssembly module is already an opaque binary payload, unlike the
+   readable HTML, CSS and JavaScript around it. Its pinned builder emits both
+   raw and compressed forms; the page carries only the compressed one. Keeping
+   compression in that immutable toolchain means an ordinary site build never
+   depends on the host Node/zlib version. */
+const compressedWasmPayload = source => {
+  const match = source.match(
+    /export const SECP256K1_WASM_GZIP_B64\s*=\s*"([A-Za-z0-9+/=]+)";/
+  );
+  if (!match) throw new Error('compressed libsecp256k1 WebAssembly payload is malformed');
+  const notice = source.slice(0, source.indexOf('export const SECP256K1_WASM_B64'));
+  return `${notice}const SECP256K1_WASM_GZIP_B64 =\n  "${match[1]}";`;
+};
+
 const styles = () => `
 ${FONTS.map(embedFont).join('\n')}
 
@@ -4816,11 +4830,11 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
 
 </main>`;
 
-const toolScripts = ({ preflight, secpWasmB64, secpWasm, betaWarning, core, lifehash, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
+const toolScripts = ({ preflight, secpWasmGzipB64, secpWasm, betaWarning, core, lifehash, sqliteWriter, walletDat, qrlib, wordlist, offline }) => `<script>
 ${preflight}
 </script>
 <script>
-${secpWasmB64.replace('export const SECP256K1_WASM_B64', 'const SECP256K1_WASM_B64')}
+${secpWasmGzipB64}
 </script>
 <script>
 ${secpWasm}
@@ -4888,7 +4902,7 @@ const withFileSize = html => {
 
 const payload = () => ({
   preflight: readFileSync(PREFLIGHT, 'utf8'),
-  secpWasmB64: readFileSync(SECP_WASM_B64, 'utf8'),
+  secpWasmGzipB64: compressedWasmPayload(readFileSync(SECP_WASM_B64, 'utf8')),
   secpWasm: readFileSync(SECP_WASM, 'utf8'),
   betaWarning: readFileSync(BETA_WARNING, 'utf8'),
   core: readFileSync(CORE, 'utf8'),
