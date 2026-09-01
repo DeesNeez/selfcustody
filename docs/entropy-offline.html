@@ -1322,20 +1322,19 @@
      cream to look chosen rather than like a near-miss of it. */
   .address-match {
     margin-top: 18px; padding: 16px;
-    border: 1px solid rgba(205, 173, 98, 0.40); border-radius: 10px;
-    background:
-      radial-gradient(
-        circle at 100% 0%,
-        rgba(212, 175, 84, 0.12),
-        transparent 260px
-      ),
-      linear-gradient(145deg, #262015, #16140e 72%);
+    border: 1px solid rgba(222, 201, 60, 0.58); border-radius: 10px;
+    /* A flat tint of #DEC93C, like the export cards, rather than the gradient
+       that was here -- which at low alpha read as warm brown rather than as a
+       colour anyone would name. 0.20 is where it starts reading yellow against
+       this ground; it is also what the wallet.dat button uses for orange, so
+       the two coloured boxes are the same strength in different hues. */
+    background: rgba(222, 201, 60, 0.20);
   }
   .address-match label {
     display: flex; align-items: center; gap: 8px;
     margin-bottom: 8px; color: var(--ink-soft); font-weight: 800;
   }
-  .address-match .addr-icon { flex: 0 0 auto; width: 15px; height: 15px; color: #dcc68a; }
+  .address-match .addr-icon { flex: 0 0 auto; width: 15px; height: 15px; color: #dec93c; }
   /* The description only. The status line below shares .hint but carries its
      own colours for the ok and bad states, and must keep them. */
   .address-match .hint:not(.address-match-status) { color: #bfb49b; }
@@ -1347,19 +1346,28 @@
      description and floated away from its own result. */
   .address-match input[type="text"] {
     margin-top: 10px;
-    border-color: rgba(205, 176, 110, 0.30);
+    border-color: rgba(222, 201, 60, 0.38);
   }
   .address-match .address-match-status { margin-top: 10px; }
   /* Border only. The orange focus ring is the accessible affordance and is
      left exactly as it is. */
-  .address-match input[type="text"]:focus { border-color: rgba(220, 198, 138, 0.72); }
+  .address-match input[type="text"]:focus { border-color: rgba(222, 201, 60, 0.72); }
   /* Reassurance rather than instruction, so it is quiet and sits at the foot
      of the panel as a standing property of it. */
   .address-match-local {
     display: flex; align-items: center; gap: 6px;
-    margin: 10px 0 0; color: #968d74; font-size: 0.8rem;
+    /* 4px, not the 10px the field and status use. The status line above keeps
+       a reserved height whether or not it has said anything yet, so before a
+       check runs this note sat under a blank line plus two 10px margins --
+       38px of mostly empty panel. The reserve stays: it is what stops the
+       panel jumping as you type. */
+    /* Lifted from #968d74: the stronger tint below it took this line to 3.60
+       against its ground, under the 4.5 small text needs. #ada38a measures
+       4.78 and still sits a step quieter than the description above it, which
+       is at 5.83. */
+    margin: 4px 0 0; color: #ada38a; font-size: 0.8rem;
   }
-  .address-match-local svg { flex: 0 0 auto; width: 12px; height: 12px; color: #c6b68a; }
+  .address-match-local svg { flex: 0 0 auto; width: 12px; height: 12px; color: #cbbb5e; }
   .address-match-status { min-height: 1.35em; }
   .address-match-status.is-ok { color: #8be3c6; }
   .address-match-status.is-bad { color: #ff9d8a; }
@@ -1734,6 +1742,19 @@
      as separate items. */
   .workbench legend::before {
     content: attr(data-step); display: inline-grid; place-items: center; vertical-align: middle;
+    /* vertical-align: middle aligns the badge's centre to the baseline plus half
+       the x-height,
+       which leaves it sitting (cap - x)/2 below the centre of the heading's cap
+       band -- measured at 2.32px for Jost at 16px.
+
+       rem, not em: em on a pseudo-element resolves against its own font-size,
+       and the shorthand below sets that to 0.82rem, which gave 1.90px instead.
+       rem tracks the root, so the correction scales with the legend's font
+       under browser zoom rather than being frozen in pixels. The entry step's
+       legend is 1.07rem and strictly wants 0.155rem; the 0.16px difference is
+       not worth a second rule. Paint only -- the line box is unchanged, so
+       nothing reflows. */
+    position: relative; top: -0.145rem;
     margin-right: 13px;
     width: 37px; height: 37px; color: #ffad4c; border: 1px solid rgba(255,138,0,.4); border-radius: 11px;
     background: rgba(255,138,0,.075); font: 800 0.82rem/1 "Open Sans", sans-serif;
