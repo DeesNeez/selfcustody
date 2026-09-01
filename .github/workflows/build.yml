@@ -32,6 +32,13 @@ jobs:
         with:
           node-version: '22'
 
+      # First, and cheap. Every step below is one someone remembered to add,
+      # and two tests had already been committed without one. This fails the
+      # job before the real work starts rather than after it passes on a
+      # suite that is quietly smaller than the repository's.
+      - name: Every committed test runs here
+        run: node build/tools/ci-completeness-test.mjs
+
       # The published test vectors. Every expected value comes from a
       # specification rather than from running this code.
       - name: Crypto vectors
@@ -57,6 +64,12 @@ jobs:
 
       - name: Card-suit font fallbacks
         run: node build/tools/card-suit-font-test.mjs
+
+      - name: Fingerprint LifeHash
+        run: node build/tools/lifehash-test.mjs
+
+      - name: Die and coin distribution charts
+        run: node build/tools/die-distribution-test.mjs
 
       - name: Offline artifact attestation policy
         run: node build/tools/attestation-workflow-test.mjs
