@@ -488,14 +488,29 @@
   .export-card-icon svg { width: 19px; height: 19px; }
   .is-private .export-card-icon { color: #ffad9c; background: rgba(214, 94, 64, 0.18); border-color: rgba(255, 157, 138, 0.52); }
   .is-watch .export-card-icon { color: #9af0d3; background: rgba(53, 180, 138, 0.18); border-color: rgba(139, 227, 198, 0.56); }
+  /* An eyebrow, not a pill. As a pill its 8px of side padding put its letters
+     8px right of the heading directly beneath it: the box lined up, the text
+     did not, and the eye reads the text -- so the two lines stepped. Without
+     the padding they share one left edge and read as one block. The colour is
+     unchanged and still on the text, alongside the icon and the card's own
+     border, so nothing that told the two cards apart is lost. */
   .export-tag {
-    display: block; width: fit-content; margin-bottom: 4px; padding: 3px 8px; border-radius: 999px;
-    color: var(--muted); background: rgba(255, 255, 255, 0.06);
-    font-size: 0.7rem; font-weight: 800; line-height: 1.25; letter-spacing: 0.075em; text-transform: uppercase;
+    display: block; width: fit-content; margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 0.78rem; font-weight: 800; line-height: 1.25; letter-spacing: 0.075em; text-transform: uppercase;
   }
-  .is-private .export-tag { color: #ffad9c; background: rgba(214, 94, 64, 0.21); }
-  .is-watch .export-tag { color: #9af0d3; background: rgba(53, 180, 138, 0.21); }
-  .export-card h4 { margin: 0; color: #fff; font-size: 1rem; }
+  .is-private .export-tag { color: #ffad9c; }
+  .is-watch .export-tag { color: #9af0d3; }
+  /* 700, not 800. The section headings around these -- "Recovery words",
+     "Addresses", "Export files" -- are Jost 500 at 16px, so the page uses Jost
+     as a light geometric face; at 800 its bowls thicken and it stops looking
+     like the same typeface. The emphasis comes from the size instead, which
+     still puts the card title above the heading that contains it.
+
+     Jost rather than the eyebrow's Open Sans: every heading on the page is
+     Jost, and the eyebrow is a label like the Download: caption below it, not
+     a heading. The two faces here are the system, not a mismatch. */
+  .export-card h4 { margin: 0; color: #fff; font-size: 1.12rem; font-weight: 700; }
   .export-card p { margin: 0 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
   .export-card .export-button { margin-top: auto; }
   /* Says once what both buttons would otherwise each spend width saying, so
