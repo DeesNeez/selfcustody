@@ -4432,7 +4432,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
     </details>
   </div>
 
-  <h3>Export records</h3>
+  <h3>Export files</h3>
   <p class="hint export-intro">Two plain-text files for two different jobs. The private one restores and spends; the watch-only one cannot spend, but still reveals the wallet&rsquo;s addresses and history.</p>
   <div class="export-grid">
     <article class="export-card is-private">
