@@ -1793,10 +1793,14 @@
   .step-map b { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid rgba(255, 138, 0, .32); border-radius: 50%; color: #ffad4c; }
   .step-map i { width: 11px; height: 1px; background: rgba(255,255,255,.12); }
 
+  /* Same treatment as .results, which sits inside it and was built the same
+     way -- fixing one and not the other would have left the two frames lit
+     differently. The drop shadow and the orange glow stay; they are cast
+     outside the box and do nothing to the border. */
   .workbench {
     position: relative; padding: 16px 24px 24px; border: 1px solid rgba(255,255,255,.12);
-    border-radius: 22px; background: linear-gradient(155deg, rgba(255,255,255,.045), rgba(255,255,255,.018));
-    box-shadow: 0 26px 68px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.06), 0 -1px 32px rgba(255,138,0,.035);
+    border-radius: 22px; background: rgba(255,255,255,.032);
+    box-shadow: 0 26px 68px rgba(0,0,0,.26), 0 -1px 32px rgba(255,138,0,.035);
   }
   .workbench fieldset { position: relative; margin: 0; padding: 24px 0 25px; border-bottom: 1px solid rgba(255,255,255,.085); }
   .workbench legend { float: left; width: 100%; margin: 0 0 13px; font-family: "Jost", sans-serif; font-size: 1.07rem; }
@@ -1856,7 +1860,13 @@
   }
   .workbench .go:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 20px 42px rgba(255, 138, 0, .23); }
   .workbench .go:disabled { box-shadow: none; }
-  .workbench .results { margin-top: 32px; padding: 28px; border: 1px solid rgba(243,234,220,.26); border-radius: 16px; background: linear-gradient(150deg, rgba(243,234,220,.075), rgba(243,234,220,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.07); }
+  /* Flat fill, no inset highlight. Both were doing the same thing to the same
+     two edges: the inset 0 1px 0 laid a second bright line immediately inside
+     the top border, and the gradient put its light end in the top-left corner,
+     so top and left read heavier than right and bottom. The border is 1px on
+     all four sides and now looks it. The flat value is the midpoint of the
+     gradient it replaces, so the panel keeps the weight it had. */
+  .workbench .results { margin-top: 32px; padding: 28px; border: 1px solid rgba(243,234,220,.26); border-radius: 16px; background: rgba(243,234,220,.05); }
   .workbench .error { margin-bottom: 0; }
 
   .setup-grid {
