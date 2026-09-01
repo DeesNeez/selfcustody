@@ -1386,19 +1386,23 @@ ${FONTS.map(embedFont).join('\n')}
      cream to look chosen rather than like a near-miss of it. */
   .address-match {
     margin-top: 18px; padding: 16px;
-    border: 1px solid rgba(222, 201, 60, 0.58); border-radius: 10px;
+    border: 1px solid rgba(237, 200, 115, 0.46); border-radius: 10px;
     /* A flat tint of #DEC93C, like the export cards, rather than the gradient
-       that was here -- which at low alpha read as warm brown rather than as a
-       colour anyone would name. 0.20 is where it starts reading yellow against
-       this ground; it is also what the wallet.dat button uses for orange, so
-       the two coloured boxes are the same strength in different hues. */
-    background: rgba(222, 201, 60, 0.20);
+       that was here, which read as warm brown rather than as a colour anyone
+       would name.
+
+       #EDC873 rather than a purer yellow. Yellow near 52deg desaturates toward
+       olive as it thins over this near-black ground -- the green cast is the
+       ground showing through, not the swatch. Around 42deg it thins to a warm
+       tan instead, so the panel still reads yellow at an alpha low enough to
+       sit under body text. */
+    background: rgba(237, 200, 115, 0.13);
   }
   .address-match label {
     display: flex; align-items: center; gap: 8px;
     margin-bottom: 8px; color: var(--ink-soft); font-weight: 800;
   }
-  .address-match .addr-icon { flex: 0 0 auto; width: 15px; height: 15px; color: #dec93c; }
+  .address-match .addr-icon { flex: 0 0 auto; width: 15px; height: 15px; color: #edc873; }
   /* The description only. The status line below shares .hint but carries its
      own colours for the ok and bad states, and must keep them. */
   .address-match .hint:not(.address-match-status) { color: #bfb49b; }
@@ -1410,29 +1414,36 @@ ${FONTS.map(embedFont).join('\n')}
      description and floated away from its own result. */
   .address-match input[type="text"] {
     margin-top: 10px;
-    border-color: rgba(222, 201, 60, 0.38);
+    border-color: rgba(237, 200, 115, 0.34);
   }
   .address-match .address-match-status { margin-top: 10px; }
   /* Border only. The orange focus ring is the accessible affordance and is
      left exactly as it is. */
-  .address-match input[type="text"]:focus { border-color: rgba(222, 201, 60, 0.72); }
+  .address-match input[type="text"]:focus { border-color: rgba(237, 200, 115, 0.72); }
   /* Reassurance rather than instruction, so it is quiet and sits at the foot
      of the panel as a standing property of it. */
   .address-match-local {
     display: flex; align-items: center; gap: 6px;
-    /* 4px, not the 10px the field and status use. The status line above keeps
-       a reserved height whether or not it has said anything yet, so before a
-       check runs this note sat under a blank line plus two 10px margins --
-       38px of mostly empty panel. The reserve stays: it is what stops the
-       panel jumping as you type. */
-    /* Lifted from #968d74: the stronger tint below it took this line to 3.60
-       against its ground, under the 4.5 small text needs. #ada38a measures
-       4.78 and still sits a step quieter than the description above it, which
-       is at 5.83. */
-    margin: 4px 0 0; color: #ada38a; font-size: 0.8rem;
+    /* Lifted from #968d74, which measures 4.28 against the tint behind it --
+       under the 4.5 small text needs. #ada38a is 5.65 and still sits a step
+       quieter than the description above it, at 6.88. */
+    margin: 10px 0 0; color: #ada38a; font-size: 0.8rem;
   }
-  .address-match-local svg { flex: 0 0 auto; width: 12px; height: 12px; color: #cbbb5e; }
+  .address-match-local svg { flex: 0 0 auto; width: 12px; height: 12px; color: #d6bd85; }
   .address-match-status { min-height: 1.35em; }
+  /* Collapsed while it has nothing to say. The reserved line was meant to stop
+     the panel resizing as you type, but the status is only ever empty in two
+     states -- before a wallet has been derived, and when the field is cleared
+     -- and it is populated from the first character onward. So it bought
+     nothing during typing, and charged a permanent blank line under the field
+     in the state everyone sees first: 32px between field and note, almost all
+     of it empty.
+
+     Collapsed by height, not display: none. The element stays rendered and in
+     the accessibility tree, so the live region is still there to announce the
+     result when it arrives -- a region that first appears at the moment it
+     gains text is the classic way to lose that announcement. */
+  .address-match .address-match-status:empty { min-height: 0; margin-top: 0; }
   .address-match-status.is-ok { color: #8be3c6; }
   .address-match-status.is-bad { color: #ff9d8a; }
 
