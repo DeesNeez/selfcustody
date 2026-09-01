@@ -283,9 +283,16 @@ export function assertWorkshop() {
       /<\/svg>Check an address<\/label>/.test(html) &&
       /class="address-match-local"><svg[^>]*aria-hidden="true"/.test(html) &&
       /Checked locally on this page<\/p>/.test(html) &&
-      /address-match input\[type="text"\]:focus\s*\{[^}]*border-color: rgba\(222, 201, 60, 0\.72\)/.test(html) &&
+      /address-match input\[type="text"\]:focus\s*\{[^}]*border-color: rgba\(237, 200, 115, 0\.72\)/.test(html) &&
       /input\[type="text"\]:focus[^{]*\{[^}]*outline: 2px solid var\(--orange\)/.test(html),
       `the ${name} build does not keep the address panel's icons, local note and focus ring`);
+    /* The empty status collapses so it does not hold a blank line under the
+       field. It must collapse by height: display: none takes the live region
+       out of the accessibility tree, and a region that appears only as it
+       gains text is the classic way to lose the announcement. */
+    check(/address-match-status:empty\s*\{[^}]*min-height: 0/.test(html)
+      && !/address-match-status:empty\s*\{[^}]*display: none/.test(html),
+      `the ${name} build hides the empty address status instead of collapsing it`);
     /* The two export cards say opposite things and must not be shades of one
        colour. Red is the private record; green -- the checksum's green, not a
        third one -- is the watch-only. It was orange, the page's caution
