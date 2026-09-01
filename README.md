@@ -296,3 +296,7 @@ Commons Attribution 4.0 International for project-authored educational writing
 and diagrams, subject to the current authorship and provenance audit.
 Third-party images, logos and trademarks are not included in that intended
 content licence.
+
+[LICENSING-AUDIT.md](LICENSING-AUDIT.md) records that audit in progress: what
+has been verified, which third-party notices are still missing, and what is
+still unresolved.
