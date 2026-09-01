@@ -17,6 +17,7 @@
     "test:lifehash": "node build/tools/lifehash-test.mjs",
     "test:die-distribution": "node build/tools/die-distribution-test.mjs",
     "test:ci-completeness": "node build/tools/ci-completeness-test.mjs",
+    "test:wasm-wipe": "node build/tools/wasm-wipe-test.mjs",
     "build:wasm:container": "node build/tools/build-wasm-container.mjs"
   }
 }
