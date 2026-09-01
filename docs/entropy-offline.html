@@ -456,26 +456,61 @@
      and the private one gets the warning colour and a second confirmation. */
   .export-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .export-card {
-    display: flex; flex-direction: column; min-width: 0; padding: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.11); border-radius: 12px;
+    position: relative; display: flex; flex-direction: column; min-width: 0;
+    overflow: hidden; padding: 19px;
+    border: 1px solid rgba(255, 255, 255, 0.11); border-radius: 14px;
     background: rgba(0, 0, 0, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 14px 30px rgba(0, 0, 0, 0.15);
+  }
+  /* A quiet file-edge highlight gives the cards a little identity without
+     turning them into two more primary actions. The icon carries the first
+     distinction; the colour is a second cue, not the only one. */
+  .export-card::before {
+    content: ''; position: absolute; inset: 0 15px auto; height: 3px;
+    border-radius: 0 0 3px 3px;
+  }
+  .export-card::after {
+    content: ''; position: absolute; inset: 15px auto 15px 0; width: 3px;
+    border-radius: 0 3px 3px 0;
   }
   .export-intro { margin-bottom: 15px; }
-  .export-card.is-private { border-color: rgba(214, 94, 64, 0.5); background: rgba(214, 94, 64, 0.085); }
+  .export-card.is-private {
+    border-color: rgba(229, 105, 77, 0.74);
+    background: radial-gradient(circle at 18% 0, rgba(214, 94, 64, 0.24), transparent 56%), rgba(214, 94, 64, 0.075);
+    box-shadow: inset 0 1px 0 rgba(255, 157, 138, 0.08), 0 0 0 1px rgba(214, 94, 64, 0.07), 0 14px 30px rgba(0, 0, 0, 0.18);
+  }
+  .export-card.is-private::before { background: linear-gradient(90deg, transparent, #e5694d 18%, #ffad9c 82%, transparent); box-shadow: 0 0 13px rgba(214, 94, 64, 0.4); }
+  .export-card.is-private::after { background: linear-gradient(180deg, transparent, #e5694d 18%, #ff9d8a 82%, transparent); box-shadow: 0 0 11px rgba(214, 94, 64, 0.34); }
   /* Green rather than orange. Orange is the page's caution colour -- it is
      what the connection warning and the beta notice are set in -- and the
      watch-only record is the safe one of the pair. Reading as a milder
      version of the private card's warning had it exactly backwards. This is
      the green the checksum and the self-test already use. */
-  .export-card.is-watch { border-color: rgba(53, 180, 138, 0.34); background: rgba(53, 180, 138, 0.055); }
-  .export-tag {
-    width: fit-content; margin-bottom: 9px; padding: 4px 9px; border-radius: 5px;
-    color: var(--muted); background: rgba(255, 255, 255, 0.06);
-    font-size: 0.76rem; font-weight: 800; line-height: 1.25; letter-spacing: 0.07em; text-transform: uppercase;
+  .export-card.is-watch {
+    border-color: rgba(65, 205, 158, 0.84);
+    background: radial-gradient(circle at 18% 0, rgba(53, 180, 138, 0.24), transparent 56%), rgba(53, 180, 138, 0.075);
+    box-shadow: inset 0 1px 0 rgba(139, 227, 198, 0.1), 0 0 0 1px rgba(53, 180, 138, 0.09), 0 14px 30px rgba(0, 0, 0, 0.18);
   }
-  .is-private .export-tag { color: #ff9d8a; background: rgba(214, 94, 64, 0.14); }
-  .is-watch .export-tag { color: #8be3c6; background: rgba(53, 180, 138, 0.14); }
-  .export-card h4 { margin: 0 0 7px; color: #fff; font-size: 0.98rem; }
+  .export-card.is-watch::before { background: linear-gradient(90deg, transparent, #41cd9e 18%, #9af0d3 82%, transparent); box-shadow: 0 0 13px rgba(53, 180, 138, 0.42); }
+  .export-card.is-watch::after { background: linear-gradient(180deg, transparent, #41cd9e 18%, #8be3c6 82%, transparent); box-shadow: 0 0 11px rgba(53, 180, 138, 0.36); }
+  .export-card-heading { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+  .export-card-heading > div { min-width: 0; }
+  .export-card-icon {
+    display: grid; flex: 0 0 36px; width: 36px; height: 36px; place-items: center;
+    border: 1px solid currentColor; border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  .export-card-icon svg { width: 19px; height: 19px; }
+  .is-private .export-card-icon { color: #ffad9c; background: rgba(214, 94, 64, 0.18); border-color: rgba(255, 157, 138, 0.52); }
+  .is-watch .export-card-icon { color: #9af0d3; background: rgba(53, 180, 138, 0.18); border-color: rgba(139, 227, 198, 0.56); }
+  .export-tag {
+    display: block; width: fit-content; margin-bottom: 4px; padding: 3px 8px; border-radius: 999px;
+    color: var(--muted); background: rgba(255, 255, 255, 0.06);
+    font-size: 0.7rem; font-weight: 800; line-height: 1.25; letter-spacing: 0.075em; text-transform: uppercase;
+  }
+  .is-private .export-tag { color: #ffad9c; background: rgba(214, 94, 64, 0.21); }
+  .is-watch .export-tag { color: #9af0d3; background: rgba(53, 180, 138, 0.21); }
+  .export-card h4 { margin: 0; color: #fff; font-size: 1rem; }
   .export-card p { margin: 0 0 16px; color: var(--muted); font-size: 0.83rem; line-height: 1.6; }
   .export-card .export-button { margin-top: auto; }
   /* Says once what both buttons would otherwise each spend width saying, so
@@ -516,13 +551,16 @@
   .export-button {
     width: 100%; padding: 10px 13px; border: 1px solid rgba(255, 255, 255, 0.17);
     border-radius: 8px; color: var(--ink); background: rgba(255, 255, 255, 0.055);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
     font: inherit; font-size: 0.83rem; font-weight: 800; cursor: pointer;
+    transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
   }
-  .export-button:hover:not(:disabled) { color: #fff; border-color: rgba(255, 138, 0, 0.56); }
+  .export-button:hover:not(:disabled) { transform: translateY(-1px); color: #fff; border-color: rgba(255, 138, 0, 0.56); }
   .export-button:disabled { opacity: 0.55; cursor: wait; }
-  .is-private .export-button { color: #ff9d8a; border-color: rgba(214, 94, 64, 0.48); }
+  .is-private .export-button { color: #ffad9c; border-color: rgba(229, 105, 77, 0.62); background: rgba(214, 94, 64, 0.1); }
   .is-private .export-button:hover:not(:disabled) { border-color: rgba(255, 157, 138, 0.72); }
-  .is-watch .export-button { color: #8be3c6; border-color: rgba(53, 180, 138, 0.36); }
+  .is-watch .export-button { color: #9af0d3; border-color: rgba(65, 205, 158, 0.68); background: rgba(53, 180, 138, 0.13); }
+  .is-watch .export-button:hover:not(:disabled) { border-color: rgba(154, 240, 211, 0.9); background: rgba(53, 180, 138, 0.19); }
   /* The one filled control in the pair. It writes a wallet file a node will
      open, which is a heavier act than reviewing text on screen, so it carries
      more weight than the button beside it without becoming a primary action.
@@ -2424,8 +2462,10 @@
   <p class="hint export-intro">Two plain-text files for two different jobs. The private one restores and spends; the watch-only one cannot spend, but still reveals the wallet&rsquo;s addresses and history.</p>
   <div class="export-grid">
     <article class="export-card is-private">
-      <span class="export-tag">Keep secret</span>
-      <h4>Private recovery</h4>
+      <div class="export-card-heading">
+        <span class="export-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v2"/></svg></span>
+        <div><span class="export-tag">Keep secret</span><h4>Private recovery</h4></div>
+      </div>
       <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value. The <code>wallet.dat</code> holds the same account&rsquo;s private key and descriptors, in the file format Bitcoin Core opens.</p>
       <p class="export-actions-label" id="export-download-label">Download:</p>
       <div class="export-actions" role="group" aria-labelledby="export-download-label">
@@ -2434,8 +2474,10 @@
       </div>
     </article>
     <article class="export-card is-watch">
-      <span class="export-tag">No spending keys</span>
-      <h4>Watch-only</h4>
+      <div class="export-card-heading">
+        <span class="export-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.5"/></svg></span>
+        <div><span class="export-tag">No spending keys</span><h4>Watch-only</h4></div>
+      </div>
       <p>Account public keys, checked descriptors and the first five addresses on each branch. Safe from spending, not private from balance and history.</p>
       <p class="export-actions-label" id="export-watch-download-label">Download:</p>
       <div class="export-actions" role="group" aria-labelledby="export-watch-download-label">

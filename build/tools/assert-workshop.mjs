@@ -299,11 +299,17 @@ export function assertWorkshop() {
        The wallet.dat control is the one filled button in the pair and is
        keyed by id so it wins over the private card's red. */
     check(/export-card\.is-private\s*\{[^}]*rgba\(214, 94, 64/.test(html) &&
-      /export-card\.is-watch\s*\{[^}]*rgba\(53, 180, 138/.test(html) &&
-      /is-watch \.export-tag\s*\{[^}]*color: #8be3c6/.test(html) &&
-      /is-watch \.export-button\s*\{[^}]*color: #8be3c6/.test(html) &&
+      /export-card\.is-watch\s*\{[^}]*border-color: rgba\(65, 205, 158, 0\.84\)/.test(html) &&
+      /is-watch \.export-tag\s*\{[^}]*color: #9af0d3/.test(html) &&
+      /is-watch \.export-button\s*\{[^}]*color: #9af0d3/.test(html) &&
       !/is-watch[^{]*\{[^}]*rgba\(255, 138, 0/.test(html),
       `the ${name} build does not keep the export cards red for private and green for watch-only`);
+    check((html.match(/class="export-card-icon" aria-hidden="true"/g) || []).length === 2 &&
+      /export-card::before\s*\{[^}]*height: 3px/.test(html) &&
+      /export-card::after\s*\{[^}]*width: 3px/.test(html) &&
+      /is-watch::before\s*\{[^}]*#41cd9e[^}]*#9af0d3/.test(html) &&
+      /is-watch::after\s*\{[^}]*#41cd9e[^}]*#8be3c6/.test(html),
+      `the ${name} build loses the export cards' icon and file-edge treatment`);
     check(/<div class="export-actions" role="group" aria-labelledby="export-download-label">/.test(html) &&
       /<div class="export-actions" role="group" aria-labelledby="export-watch-download-label">/.test(html) &&
       (html.match(/id="export-[a-z-]*download-label">Download:</g) || []).length === 3 &&
