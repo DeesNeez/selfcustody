@@ -13,6 +13,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { Script } from 'node:vm';
+import { gunzipSync } from 'node:zlib';
 
 const SITE = 'docs/entropy.html';
 const OFFLINE = 'docs/entropy-offline.html';
@@ -80,6 +81,34 @@ export function assertWorkshop() {
     'the offline artifact contains carriage returns; git will rewrite it and the published checksum will not match what is served');
   check(!site.includes(CR), 'the site build contains carriage returns');
 
+  /* The only compressed part is the opaque WebAssembly module. Prove that
+     both pages restore byte-for-byte the same module the source tests use,
+     rather than merely checking that the gzip stream is well formed. */
+  const wasmSource = readFileSync('build/tools/secp256k1-wasm-b64.js', 'utf8');
+  const rawWasm = wasmSource.match(
+    /export const SECP256K1_WASM_B64\s*=\s*"([A-Za-z0-9+/=]+)";/
+  );
+  check(Boolean(rawWasm), 'the source libsecp256k1 WebAssembly payload is malformed');
+  if (rawWasm) {
+    const expected = Buffer.from(rawWasm[1], 'base64');
+    for (const [name, html] of [['site', site], ['offline', offline]]) {
+      const packed = html.match(
+        /const SECP256K1_WASM_GZIP_B64\s*=\s*"([A-Za-z0-9+/=]+)";/
+      );
+      check(Boolean(packed), `the ${name} build does not embed the compressed WebAssembly payload`);
+      if (packed) {
+        try {
+          check(gunzipSync(Buffer.from(packed[1], 'base64')).equals(expected),
+            `the ${name} build's compressed WebAssembly does not restore the tested module`);
+        } catch (error) {
+          check(false, `the ${name} build's compressed WebAssembly is invalid: ${error.message}`);
+        }
+      }
+      check(!/const SECP256K1_WASM_B64\s*=/.test(html),
+        `the ${name} build still embeds the uncompressed WebAssembly payload`);
+    }
+  }
+
   /* ---- the build flag ---------------------------------------------------
      One constant decides whether a page offers the download or the checksum
      panel, and whether it claims to be the self-contained file. Getting it
@@ -141,6 +170,8 @@ export function assertWorkshop() {
     check(/WebAssembly \(libsecp256k1 engine\)/.test(html) &&
       /new WebAssembly\.Module\(/.test(html),
       `the ${name} build does not preflight its libsecp256k1 WebAssembly engine`);
+    check(/Gzip decompression/.test(html) && /new DecompressionStream\('gzip'\)/.test(html),
+      `the ${name} build does not preflight its compressed WebAssembly transport`);
     check(/if \(window\.__entropyWorkshopPreflightPassed !== true\) return;/.test(html),
       `the ${name} build starts the Workshop application after a failed browser preflight`);
     const preflight = html.indexOf('Browser preflight for the Entropy Workshop');
