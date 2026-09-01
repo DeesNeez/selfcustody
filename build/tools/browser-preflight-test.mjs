@@ -10,7 +10,7 @@ class WorkingUrl {
   static createObjectURL() { return 'blob:test'; }
   static revokeObjectURL() {}
 }
-class WorkingBlob {}
+class WorkingBlob { stream() {} }
 class MissingBigUint64View {
   constructor(buffer) { this.view = new DataView(buffer); }
   setUint32(...args) { this.view.setUint32(...args); }
@@ -33,6 +33,7 @@ function run(overrides = {}) {
   const values = {
     window, document, BigInt,
     TextEncoder, TextDecoder, Uint8Array, DataView, WebAssembly,
+    DecompressionStream, Response,
     Blob: WorkingBlob, URL: WorkingUrl,
     ...overrides
   };
@@ -57,7 +58,7 @@ assert.doesNotMatch(source, /\b\d+n\b/, 'preflight must parse in a browser witho
 
 const healthy = run();
 assert.equal(healthy.workspace.innerHTML, PAGE);
-assert.equal(healthy.documentElement.dataset.browserChecks, '8');
+assert.equal(healthy.documentElement.dataset.browserChecks, '9');
 assert.equal(healthy.documentElement.dataset.browserFailed, '0');
 assert.equal(healthy.window.__entropyWorkshopPreflightPassed, true);
 
@@ -68,17 +69,18 @@ for (const [name, overrides] of [
   ['Typed arrays and DataView', { DataView: undefined }],
   ['Typed arrays and DataView', { DataView: MissingBigUint64View }],
   ['WebAssembly (libsecp256k1 engine)', { WebAssembly: undefined }],
+  ['Gzip decompression', { DecompressionStream: undefined }],
   ['SVG document support', { createElementNS: false }],
   ['Modern DOM controls', { createElement: false }],
-  ['Local Blob downloads', { Blob: undefined }]
+  ['Local Blob downloads', { URL: undefined }]
 ]) {
   const result = run(overrides);
   assert.deepEqual(failedNames(result.workspace), [name]);
   assert.equal(result.window.__entropyWorkshopPreflightPassed, false);
 }
 
-const multiple = run({ BigInt: undefined, Blob: undefined });
+const multiple = run({ BigInt: undefined, URL: undefined });
 assert.deepEqual(failedNames(multiple.workspace), ['BigInt arithmetic', 'Local Blob downloads']);
 assert.match(multiple.workspace.innerHTML, /No wallet was produced/);
 
-console.log('browser preflight: healthy host passes; 8 failure paths and combined reporting verified');
+console.log('browser preflight: healthy host passes; 9 failure paths and combined reporting verified');

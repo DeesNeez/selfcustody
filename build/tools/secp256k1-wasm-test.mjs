@@ -6,8 +6,10 @@ const artifactSource = readFileSync('build/tools/secp256k1-wasm-b64.js', 'utf8')
 const wrapperSource = readFileSync('build/tools/secp256k1-wasm.js', 'utf8');
 const declared = artifactSource.match(/wasm sha256: ([0-9a-f]{64})/);
 const payload = artifactSource.match(/export const SECP256K1_WASM_B64\s*=\s*"([A-Za-z0-9+/=]+)";/);
+const packed = artifactSource.match(/export const SECP256K1_WASM_GZIP_B64\s*=\s*"([A-Za-z0-9+/=]+)";/);
 assert.ok(declared, 'generated artifact declares its SHA-256');
 assert.ok(payload, 'generated artifact contains a base64 WebAssembly payload');
+assert.ok(packed, 'generated artifact contains the builder-produced gzip payload');
 assert.equal(
   createHash('sha256').update(Buffer.from(payload[1], 'base64')).digest('hex'),
   declared[1],
@@ -37,9 +39,22 @@ assert.equal(S.pointValidate(bytes(G), false).length, 65, 'uncompressed serializ
 assert.throws(() => S.publicKeyCreate(new Uint8Array(32)), /outside/);
 assert.throws(() => S.pointValidate(new Uint8Array(33)), /invalid/);
 
+/* Exercise the branch the shipped page takes. Passing process as undefined
+   makes the classic wrapper use its browser path; these are the same Web APIs
+   current browsers expose, including the asynchronous DecompressionStream. */
+const compressedEngine = new Function(
+  'SECP256K1_WASM_GZIP_B64', 'process', 'window',
+  `${wrapperSource}\nreturn EntropySecp256k1;`
+)(packed[1], undefined, { __entropyWorkshopPreflightPassed: true });
+await compressedEngine.ready;
+assert.equal(hex(compressedEngine.publicKeyCreate(key(1n))), G,
+  'the shipped gzip path restores and instantiates the tested engine');
+assert.equal(hex(compressedEngine.pointAdd(bytes(G), bytes(G))), TWO_G,
+  'the shipped gzip path performs curve operations');
+
 for (const banned of ['/home/', '/Users/', '.cargo/', '.rustup/']) {
   assert.equal(Buffer.from(payload[1], 'base64').toString('latin1').includes(banned), false,
     `artifact must not expose a build-host path: ${banned}`);
 }
 
-console.log('libsecp256k1 WASM: checksum, published points, invalid inputs and host-path guard passed');
+console.log('libsecp256k1 WASM: raw and shipped gzip paths, checksum, published points, invalid inputs and host-path guard passed');

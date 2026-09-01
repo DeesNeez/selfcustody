@@ -2,8 +2,8 @@
 
    This runs before the crypto core and UI. It tests only host features the
    Workshop actually uses: BigInt key arithmetic, UTF-8, BIP39 NFKD
-   normalization, typed binary views, WebAssembly, SVG creation and local Blob
-   downloads.
+   normalization, typed binary views, WebAssembly, native gzip decompression,
+   SVG creation and local Blob downloads.
    It deliberately does not test or call a random-number generator: this tool
    converts entropy supplied by the reader and must never generate any.
 
@@ -64,6 +64,16 @@
         new WebAssembly.Module(new Uint8Array([
           0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00
         ]));
+        return true;
+      }
+    },
+    {
+      name: 'Gzip decompression',
+      run: function () {
+        if (typeof DecompressionStream !== 'function'
+            || typeof Response !== 'function' || typeof Blob !== 'function'
+            || typeof Blob.prototype.stream !== 'function') return false;
+        new DecompressionStream('gzip');
         return true;
       }
     },
