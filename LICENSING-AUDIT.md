@@ -6,17 +6,20 @@ nothing.** It records what was verified, what still needs an answer, and what
 must be fixed before `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md` and
 `THIRD_PARTY_NOTICES.md` can be written honestly.
 
-Verified against the tree at the commit that adds this file. Anything marked
+Verified against `refs/heads/readme-foundation`, as of the commit that adds
+this file. Commit counts and blame figures below were measured on the
+pre-rewrite history and are labelled where that matters. Anything marked
 **needs maintainer confirmation** could not be determined from the repository
 and must be answered by the person who put the material here.
 
 ## What the audit found
 
-1. **The outside-contributor blocker is resolved.** One commit in the history
-   comes from someone other than the maintainer. It changed two CSS `padding`
-   values, and the file it changed was deleted in `2bc242d`. A line-by-line
-   blame of the whole tree confirms it: of 31,028 source lines and 83 images,
-   none originate with anyone but the maintainer. See
+1. **The outside-contributor blocker is resolved.** The history once carried a
+   single commit from someone other than the maintainer, changing two CSS
+   `padding` values in a file the redesign later deleted. A line-by-line blame
+   taken before the history rewrite confirmed none of it survived: of 31,028
+   source lines and 83 images, none originated with anyone but the maintainer.
+   That commit has since been removed from this repository's history. See
    [Contributor audit](#contributor-audit).
 2. **Four third-party notices are missing and one is contradictory.** The most
    serious is that `docs/entropy-offline.html` embeds two SIL Open Font License
@@ -26,70 +29,54 @@ and must be answered by the person who put the material here.
    images are manufacturer logos, product shots or exchange marks. They cannot
    go under a project content licence. The remaining 44 need the maintainer to
    state their origin. See [Image audit](#image-audit).
-4. **Project-authored prose and diagrams are cleanly owned**, subject to the
-   identity confirmation in the contributor audit. This is the material CC BY
-   4.0 is actually for.
+4. **Project-authored prose and diagrams are cleanly owned.** This is the
+   material CC BY 4.0 is actually for.
 
 ## Contributor audit
 
-Commit counts by author identity across the whole history:
-
-| Identity | Commits | Status |
-| --- | --- | --- |
-| `DeesNeez <130502840+DeesNeez@users.noreply.github.com>` | 202 | Maintainer |
-| `Dee <dee@coinkite.com>` | 75 | **Needs maintainer confirmation** — same person? |
-| `Dee <130502840+DeesNeez@users.noreply.github.com>` | 67 | Same GitHub account as row 1 |
-| `Dee <100603318+EhDee22@users.noreply.github.com>` | 27 | Confirmed by the maintainer as their own earlier account |
-| `Dee <book052@hotmail.com>` | 6 | **Needs maintainer confirmation** — same person? |
-| `Siim <46551195+siim-m@users.noreply.github.com>` | 1 | Resolved — see below |
-
-Rows 1 and 3 share one GitHub account. Row 4 is the maintainer's earlier
-GitHub account, confirmed by the maintainer. Rows 2 and 5 are presumed to be
-the same person under a work address and a personal one; presumption is not
-evidence, so the maintainer should state it in writing and this file should
-record it.
+The history was authored under five maintainer aliases, across different
+machines, work and personal addresses, and an earlier account. All five are
+the same person. The history has since been normalized to record them under
+one canonical identity, so `main` now carries a single author name and
+address across 376 commits.
 
 ### What survives, by author
 
 The question that matters is not who committed but whose expression is still
 in the distributed tree. Measured with `git blame -w` across every tracked
-text file:
+text file, before normalization:
 
-| Scope | Lines | EhDee22 | Siim |
-| --- | --- | --- | --- |
-| Source tree (`build/`, `.github/`, `secp256k1-wasm/`, `fuzzing/`, root files) | 31,028 | 0 | 0 |
-| Generated `docs/` | 59,512 | 12 | 0 |
-| Images (83 files, by adding commit) | — | 0 | 0 |
+| Scope | Lines measured | Outside-authored |
+| --- | --- | --- |
+| Source tree (`build/`, `.github/`, `secp256k1-wasm/`, `fuzzing/`, root files) | 31,028 | 0 |
+| Generated `docs/` | 59,512 | 0 |
+| Images (83 files, by adding commit) | — | 0 |
 
-The 12 lines are `<!DOCTYPE html>`, `<html lang="en">`, `<head>`, `</head>`,
-`</body>` and `</html>` in the two hand-maintained page shells,
-`docs/index.html` and `docs/guides.html`. They are boilerplate, not
-copyrightable expression.
+Every line of the current tree, and every tracked image, originates with the
+maintainer. Nothing in what the project distributes depends on permission
+from anyone else.
 
-Every other line of the current tree, and every tracked image, comes from the
-maintainer's own identities. Nothing in what the project distributes depends
-on permission from anyone else.
+### The one outside-authored commit
 
-### The one outside contribution
-
-Commit `aeea1d4`, *"fix mobile padding"*, by `Siim <46551195+siim-m@…>`. It
-changed exactly two declarations in `docs/styles.css`:
+Before normalization, one outside-authored commit changed exactly two CSS
+declarations in `docs/styles.css`:
 
 ```
 -  padding: 0 1rem;              →  +  padding: 0 0 1rem 0;
 -  padding: 1rem;                →  +  padding: 1rem 0;
 ```
 
-`docs/styles.css` was deleted in commit `2bc242d` (*"Replace site with complete
-self custody redesign"*). The file does not exist in the current tree and no
-line of that change survives in anything the project distributes.
+That stylesheet was deleted by the site redesign, so no line of the change
+survived in anything the project distributes. Two CSS shorthand values are
+also very unlikely to be a copyrightable contribution in the first place. No
+permission was needed to license the current tree.
 
-Two CSS shorthand values are also very unlikely to be a copyrightable
-contribution in the first place. Both facts point the same way, so no
-permission is needed to license the current tree.
-
-Recording it here rather than treating it as nothing: the history is public,
-the commit is real, and an auditor who finds it should find this note too.
+The rewrite restored the preceding stylesheet blob, which left that commit and
+the merge carrying it empty and allowed both to be pruned. The mechanism
+matters: dropping the commit on its own would have left the merge introducing
+those two lines under the maintainer's name, transferring authorship rather
+than removing it. No outside-authored content survives in the rewritten
+branches.
 
 ## Notice gaps
 
@@ -101,7 +88,7 @@ condition the project currently does not meet.
 | 1 | Jost and Open Sans, embedded as base64 in `docs/entropy-offline.html` | SIL OFL 1.1 | The artifact is distributed as a standalone file and contains no OFL notice. `grep` finds the Nayuki and EntropyLab MIT notices in it, and nothing for the fonts. | Vendor `OFL.txt` for both families into `build/vendor/fonts/`, and include the copyright line and licence reference in the offline build. |
 | 2 | `build/vendor/fonts/` | SIL OFL 1.1 | `README.md` states both families are OFL, but no licence text is vendored. | Add the upstream `OFL.txt` for each family with its copyright line. |
 | 3 | `docs/assets/vendor/bootstrap/css/bootstrap.min.css` | MIT | Shipped, minified, and the `/*! … */` banner Bootstrap's dist preserves has been stripped. No notice anywhere. Also has no source under `build/` — it is a hand-placed file inside otherwise-generated output. | Restore the banner or record the notice in `THIRD_PARTY_NOTICES.md`; record the exact upstream version, which is not stated anywhere. |
-| 4 | `build/vendor/bootstrap-icons/` and the generated subset in `docs/assets/vendor/bootstrap-icons/` | MIT | No licence text vendored; the generated stylesheet carries no banner. `README.md` records only "as vendored in commit 2bc242d", not an upstream version. | Vendor the upstream `LICENSE`, record the upstream version, and carry the notice into the subset output. |
+| 4 | `build/vendor/bootstrap-icons/` and the generated subset in `docs/assets/vendor/bootstrap-icons/` | MIT | No licence text vendored; the generated stylesheet carries no banner. `README.md` records only "as vendored in commit a565235", not an upstream version. | Vendor the upstream `LICENSE`, record the upstream version, and carry the notice into the subset output. |
 | 5 | `build/tools/lifehash.js` | **Unclear** | Header says "adapted from the merged EntropyLab implementation in PR #74". No licence notice, and no reference to LifeHash's own upstream origin. Unlike `sqlite-writer.js` and `wallet-dat.js` — adapted from the same project and both carrying the full MIT notice inline — this file carries nothing. | Establish the licence of the EntropyLab implementation *and* of the LifeHash algorithm's upstream reference implementation, then add the notice. This one blocks calling the Workshop's licensing complete. |
 | 6 | `secp256k1-wasm/` | **Contradictory** | `README.md` says "The Rust wrapper is Unlicensed"; `Cargo.toml` declares `license = "Unlicense"`. Those mean opposite things — no licence at all, versus a public-domain dedication. | Decide which is intended and make both files say it. |
 
@@ -174,9 +161,8 @@ imply endorsement.
 line, EXIF policy, source note or licence record for any of them, and nothing
 in `build/content.mjs` or `build/guides.mjs` attributes an image to anyone.
 
-Coinkite-related, and possibly manufacturer-supplied — note that
-`dee@coinkite.com` is a contributing identity and the site has a dedicated
-Coinkite page:
+Coinkite-related, and possibly manufacturer-supplied — note the maintainer's
+past association with Coinkite and the site's dedicated Coinkite page:
 
     coinkite-metal-security.jpeg   coldcard-q-mk5-devices.jpg
     coldcard-seed-word-writing.jpg  coldcard-advanced-features-seed-plate.jpg
@@ -223,23 +209,20 @@ that stays **unknown** must be excluded by name.
 
 Commit 3 cannot proceed until these are recorded.
 
-1. `100603318+EhDee22` is confirmed as the maintainer's earlier account. Are
-   `dee@coinkite.com` and `book052@hotmail.com` also you? A written statement
-   covering both is enough.
-2. What is the correct copyright holder line for `LICENSE` — a personal name,
+1. What is the correct copyright holder line for `LICENSE` — a personal name,
    or an entity?
-3. On what basis is each manufacturer logo and product image used, and does any
+2. On what basis is each manufacturer logo and product image used, and does any
    of it come with terms the project should reproduce?
-4. For each of the 40 unresolved images: which of the seven classes above?
+3. For each of the 40 unresolved images: which of the seven classes above?
    Stock licences and generation tools need naming, not just approving.
-5. Is the `secp256k1-wasm` wrapper meant to be Unlicense, or unlicensed?
-6. What licence covers the EntropyLab LifeHash implementation in PR #74, and
+4. Is the `secp256k1-wasm` wrapper meant to be Unlicense, or unlicensed?
+5. What licence covers the EntropyLab LifeHash implementation in PR #74, and
    what is the upstream origin of the LifeHash algorithm it implements?
 
 ## What happens next
 
 - Fix the six notice gaps. They are licence conditions, independent of any
   decision about the project's own licensing.
-- Record answers to the six questions above in this file.
+- Record answers to the five questions above in this file.
 - Then, and only then, write `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md`
   and `THIRD_PARTY_NOTICES.md`, and update the README's licensing section.
