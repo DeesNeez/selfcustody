@@ -46,7 +46,7 @@ const QRLIB = 'build/vendor/qr/qrcodegen.js';
 const WORDS = 'build/tools/bip39-english.txt';
 /* Bump only when the Entropy Workshop itself is released. Acceptance stores
    this public label and nothing derived from the reader's input. */
-const ENTROPY_RELEASE = '2026-08-29-beta-1';
+const ENTROPY_RELEASE = '2026-09-01-beta-2';
 
 /* The page wears the site's chrome, which means it needs the site's two
    typefaces and its logo -- and it cannot fetch any of them, because the whole
@@ -2766,6 +2766,24 @@ const ui = () => `
     }
   }
 
+  /* Overwrite a secret buffer before letting go of it, rather than dropping
+     the reference and leaving the bytes for whenever the collector gets to
+     them. Typed arrays are the only secrets on this page that can actually be
+     erased: a JavaScript string is immutable, so the mnemonic and the encoded
+     xprv can be dereferenced and nothing more, which is what the page already
+     calls best effort. Nothing here claims otherwise. */
+  function wipeBytes(...buffers) {
+    for (const buffer of buffers) {
+      if (buffer instanceof Uint8Array) buffer.fill(0);
+    }
+  }
+
+  /* A BIP32 node's secret half is its private key and its chain code: the
+     chain code is not a key, but with the key it derives the whole subtree. */
+  function wipeNode(node) {
+    if (node) wipeBytes(node.key, node.chainCode);
+  }
+
   function downloadTextRecord(text, filename) {
     const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
     exportUrls.add(url);
@@ -2837,6 +2855,9 @@ const ui = () => `
         view.setUint32(5, node.index >>> 0, false);
         body.set(node.chainCode, 9);
         body.set(C.publicKeyOf(node), 41);
+        /* The branch node has served its purpose the moment body is filled.
+           Wiped here rather than by the caller, which never sees it. */
+        wipeNode(node);
         return body;
       },
       publicKeyForPrivate: secret => C.publicKeyOf({ key: secret })
@@ -2845,12 +2866,15 @@ const ui = () => `
 
   function prepareWalletDat() {
     if (!state.seed || $('results').hidden) return;
+    let accountNode = null;
+    let bytes = null;
     try {
       if (state.seedKey !== seedKeyFor(clean())) {
         throw new Error('the wallet changed before the file was ready');
       }
-      const { wallet, accountNode } = walletDatInput($('path').value.trim());
-      const bytes = hodlWalletExport.buildWalletDat(wallet, true, walletDatDeps(accountNode));
+      const { wallet, accountNode: derived } = walletDatInput($('path').value.trim());
+      accountNode = derived;
+      bytes = hodlWalletExport.buildWalletDat(wallet, true, walletDatDeps(accountNode));
       downloadBinaryRecord(bytes, hodlWalletExport.walletDatFilename(true));
       if ($('export-private-dialog').open) $('export-private-dialog').close();
       $('export-status').textContent = 'Private Bitcoin Core wallet.dat download requested. It can spend this account; treat it like the wallet itself.';
@@ -2858,6 +2882,14 @@ const ui = () => `
       const line = $('export-private-dialog').open
         ? $('export-private-error') : $('export-status');
       line.textContent = 'Could not prepare wallet.dat: ' + error.message + '.';
+    } finally {
+      /* The file's bytes hold the account xprv, and the account node is the
+         key that produced them. The Blob constructor copies its input
+         synchronously, so by this point the download owns its own copy and
+         this one is only a second place the account can be read from.
+         In finally, because the throwing path allocates the same secrets. */
+      wipeBytes(bytes);
+      wipeNode(accountNode);
     }
   }
 
@@ -3142,6 +3174,12 @@ const ui = () => `
     generation += 1;
     if (deriveTimer) { clearTimeout(deriveTimer); deriveTimer = 0; }
     clearExportState();
+    /* The cached BIP39 seed is the slow half, kept so that changing the
+       address type does not re-derive it. Dropping the reference left the 64
+       bytes in the heap until the collector happened to reach them; every
+       invalidation now overwrites them first. The mnemonic beside it is a
+       string and cannot be erased, only released. */
+    if (state.seed) wipeBytes(state.seed.seed);
     state.seed = null;
     state.seedKey = null;
     renderedAddressRows = null;
