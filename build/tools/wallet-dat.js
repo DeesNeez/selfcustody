@@ -32,7 +32,8 @@
 // key, DER-encoded) so the wallet can sign. The button label and filename
 // always say which variant is being downloaded.
 //
-// Record format verified against Bitcoin Core v28.3.0 on regtest:
+// Record layout derived from Bitcoin Core v28.3.0 reference files; private
+// wallet loading verified against Bitcoin Core v31.1.0 on mainnet:
 //   version / minversion / flags / bestblock / bestblock_nomerkle
 //   walletdescriptor      <id>  -> public descriptor string, creation time,
 //                                  next_index, range_start, range_end

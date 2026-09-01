@@ -2072,7 +2072,7 @@
             <span>View source on GitHub</span>
           </a>
           <ul class="status">
-            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: 28/28 vectors pass</span><svg class="selftest-mark selftest-idle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/></svg><svg class="selftest-mark selftest-pass" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="M5.3 8.2 7.2 10.1 10.8 6.2"/></svg><svg class="selftest-mark selftest-fail" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="m5.9 5.9 4.2 4.2"/><path d="m10.1 5.9-4.2 4.2"/></svg></li>
+            <li id="selftest"><span data-status-text>Running self-test&hellip;</span><span class="status-reserve" aria-hidden="true">Self-test: 29/29 vectors pass</span><svg class="selftest-mark selftest-idle" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/></svg><svg class="selftest-mark selftest-pass" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="M5.3 8.2 7.2 10.1 10.8 6.2"/></svg><svg class="selftest-mark selftest-fail" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.4"/><path d="m5.9 5.9 4.2 4.2"/><path d="m10.1 5.9-4.2 4.2"/></svg></li>
             <li id="adapter" class="warn" hidden>This machine reports a connection</li>
             <!-- Reserving the longer of the two things this badge can end up
                  saying. Without it the badge was laid out for "Checking..." and
@@ -3162,7 +3162,11 @@ const EntropyCore = (() => {
   function sha256(msg) {
     const H = H256.slice();
     const len = msg.length;
-    const withPad = new Uint8Array((((len + 9) >> 6) + 1) << 6);
+    // One 0x80 byte and the 8-byte length must fit after the message. Round
+    // that total up to a complete 64-byte block. Writing this as
+    // `floor((len + 9) / 64) + 1` adds a spurious block whenever len is 55
+    // modulo 64 (including the 247-byte wallet key checksum preimage).
+    const withPad = new Uint8Array(Math.ceil((len + 9) / 64) * 64);
     withPad.set(msg);
     withPad[len] = 0x80;
     new DataView(withPad.buffer).setUint32(withPad.length - 4, len << 3, false);
@@ -6069,7 +6073,8 @@ var hodlSqliteWriter = (() => {
 // key, DER-encoded) so the wallet can sign. The button label and filename
 // always say which variant is being downloaded.
 //
-// Record format verified against Bitcoin Core v28.3.0 on regtest:
+// Record layout derived from Bitcoin Core v28.3.0 reference files; private
+// wallet loading verified against Bitcoin Core v31.1.0 on mainnet:
 //   version / minversion / flags / bestblock / bestblock_nomerkle
 //   walletdescriptor      <id>  -> public descriptor string, creation time,
 //                                  next_index, range_start, range_end
@@ -7180,6 +7185,8 @@ var qrcodegen;
   const VECTORS = [
     ['SHA-256, FIPS 180-4', () => C.hex(C.sha256(C.utf8('abc'))),
       'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'],
+    ['SHA-256, 55-byte padding boundary', () => C.hex(C.sha256(new Uint8Array(55))),
+      '02779466cdec163811d078815c633f21901413081449002f24aa3e80f0b88ef7'],
     ['SHA-512, FIPS 180-4', () => C.hex(C.sha512(C.utf8('abc'))),
       'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f'],
     ['RIPEMD-160', () => C.hex(C.ripemd160(C.utf8('abc'))),
