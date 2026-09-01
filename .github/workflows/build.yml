@@ -136,6 +136,44 @@ jobs:
           bash -n secp256k1-wasm/builder/fetch-inputs.sh
           echo "all builder scripts parse"
 
+      # The allocator's own tests, on the host, before anything is compiled for
+      # the browser: no artifact should exist if secp_alloc/secp_free are
+      # wrong. A layout mismatch there is not something the curve vectors would
+      # notice -- they would keep passing over a corrupted heap.
+      #
+      # No toolchain is named here. secp256k1-wasm/rust-toolchain.toml pins
+      # 1.95.0, the same version the builder image installs, and rustup honours
+      # it from this working directory -- so the test version cannot drift from
+      # the shipping version without the pin moving too.
+      - name: Allocator unit tests, on the builder's pinned Rust
+        working-directory: secp256k1-wasm
+        run: |
+          rustup show active-toolchain
+          cargo --version
+          cargo test
+
+      # The same tests, interpreted for undefined behaviour: a deallocation
+      # layout that does not match the allocation, an out-of-bounds write, a
+      # read of freed memory. `cargo test` cannot see any of those -- it
+      # observes whatever the allocator happens to do that run.
+      #
+      # A dated nightly rather than `+nightly`, which means whatever was
+      # published that morning: a floating toolchain turns an unrelated
+      # compiler change into a red build on an untouched pull request.
+      #
+      # Filtered to the allocator module. Miri interprets Rust and cannot
+      # execute the vendored libsecp256k1 C, so a test that crosses the FFI
+      # boundary would fail on the boundary rather than on its subject.
+      - name: Allocator under Miri
+        working-directory: secp256k1-wasm
+        env:
+          MIRI_TOOLCHAIN: nightly-2026-06-01
+        run: |
+          rustup toolchain install "$MIRI_TOOLCHAIN" --profile minimal \
+            --component miri --component rust-src
+          cargo "+$MIRI_TOOLCHAIN" miri setup
+          cargo "+$MIRI_TOOLCHAIN" miri test tests::
+
       # Both passes go through the public entry point rather than a separate
       # CI-only invocation, so what is verified here and what a reader runs
       # locally cannot drift apart. build:wasm:container pulls the digest,
@@ -178,8 +216,15 @@ jobs:
           echo "wrapper stable:  $(sha256sum build/tools/secp256k1-wasm-b64.js | awk '{print $1}')"
           rm -f "$RUNNER_TEMP/candidate/secp256k1-wasm-b64.pass-two.js"
 
+      # Against the bytes this run just produced, not the committed ones. The
+      # wipe test asserts what the browser can observe -- freed blocks come
+      # back clear, and no private key survives either the success or the
+      # rejection path -- which is a property of the compiled module, so
+      # testing anything other than the fresh artifact would prove nothing.
       - name: Test the freshly built engine
-        run: node build/tools/secp256k1-wasm-test.mjs
+        run: |
+          node build/tools/secp256k1-wasm-test.mjs
+          node build/tools/wasm-wipe-test.mjs
 
       # Gated on pass one having actually run, and uploading pass one's own
       # copy rather than the workspace file. hashFiles() was worse than no

@@ -52,21 +52,44 @@ fn ctx() -> *const ffi::Context {
         .0
 }
 
-/// Allocates `len` bytes of linear memory for JS to fill. Pair with
-/// `secp_free`.
+/// Allocates `len` zero-filled bytes of linear memory for JS to fill. Pair
+/// with `secp_free`. The box owns exactly `len` bytes, so the deallocation
+/// layout is reproducible from `len` alone.
 #[no_mangle]
 pub extern "C" fn secp_alloc(len: usize) -> *mut u8 {
-    let mut buf = Vec::<u8>::with_capacity(len);
-    let ptr = buf.as_mut_ptr();
-    std::mem::forget(buf);
-    ptr
+    Box::into_raw(vec![0u8; len].into_boxed_slice()) as *mut u8
 }
 
 /// # Safety
-/// `ptr`/`len` must come from `secp_alloc`.
+/// `ptr` must come from `secp_alloc` and `len` must be exactly the length
+/// passed there: the box is reconstructed from `len` alone, so any other
+/// length deallocates with the wrong layout.
 #[no_mangle]
 pub unsafe extern "C" fn secp_free(ptr: *mut u8, len: usize) {
-    drop(Vec::from_raw_parts(ptr, 0, len));
+    // Zero the buffer before deallocation: inputs can carry private keys and
+    // seeds, and freed linear memory must not retain them for a later
+    // allocation to expose. Previously this dropped the allocation as it
+    // stood, so every scalar the page derived stayed in the heap until some
+    // later allocation happened to land on it.
+    wipe(ptr, len);
+    let slice = ptr::slice_from_raw_parts_mut(ptr, len);
+    drop(Box::from_raw(slice));
+}
+
+/// Overwrites `len` bytes at `ptr` with zeroes. Volatile stores plus a
+/// compiler fence, so the writes survive an optimizer that can see the memory
+/// is never read again. The `zeroize` crate does the same thing; the project's
+/// dependency policy forbids adding it for this.
+///
+/// # Safety
+/// `ptr` must be null or point to `len` writable bytes.
+unsafe fn wipe(ptr: *mut u8, len: usize) {
+    if !ptr.is_null() {
+        for i in 0..len {
+            ptr::write_volatile(ptr.add(i), 0u8);
+        }
+    }
+    std::sync::atomic::compiler_fence(std::sync::atomic::Ordering::SeqCst);
 }
 
 /// Serializes `pk` into `out` (which must hold 65 bytes). Returns the byte
@@ -237,4 +260,64 @@ pub unsafe extern "C" fn secp_sig_normalize(sig64: *mut u8) -> i32 {
         return -1;
     }
     flipped
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // The allocator pair must round-trip exact sizes, including zero length:
+    // secp_free reconstructs a Box<[u8]> whose layout comes from `len` alone,
+    // so a capacity mismatch corrupts the host allocator. The old pair asked
+    // Vec for a capacity and returned the pointer, then freed it as a Vec of
+    // length zero -- sound only because the allocator was asked for the same
+    // layout by luck of `len` matching capacity.
+    //
+    // Host-side and free of FFI on purpose, so `cargo test` covers it and
+    // `cargo +nightly miri test` can interpret it for undefined behaviour.
+    // Nothing here calls libsecp256k1: Miri cannot execute the vendored C.
+    #[test]
+    fn alloc_free_round_trips_exact_sizes() {
+        for len in [0usize, 1, 2, 15, 16, 31, 32, 33, 255, 256, 4096] {
+            for cycle in 0..8u8 {
+                let ptr = secp_alloc(len);
+                assert!(!ptr.is_null(), "allocation of {len} bytes returned null");
+                unsafe {
+                    for i in 0..len {
+                        // A recycled block must never expose stale bytes.
+                        assert_eq!(ptr.add(i).read(), 0, "len {len} cycle {cycle} byte {i}");
+                        ptr.add(i).write_volatile(cycle ^ i as u8);
+                    }
+                    secp_free(ptr, len);
+                }
+            }
+        }
+    }
+
+    // The wipe itself, observed while the allocation is still live. Checking
+    // it after secp_free would be reading freed memory -- undefined behaviour,
+    // and the first thing Miri would reject.
+    #[test]
+    fn wipe_clears_every_byte() {
+        for len in [0usize, 1, 32, 33, 4096] {
+            let ptr = secp_alloc(len);
+            unsafe {
+                for i in 0..len {
+                    ptr.add(i).write_volatile(0xa5);
+                }
+                wipe(ptr, len);
+                for i in 0..len {
+                    assert_eq!(ptr.add(i).read(), 0, "len {len} byte {i} survived the wipe");
+                }
+                secp_free(ptr, len);
+            }
+        }
+    }
+
+    // A null pointer reaches wipe only through a corrupted call, but it must
+    // not be a segfault when it does.
+    #[test]
+    fn wipe_tolerates_null() {
+        unsafe { wipe(ptr::null_mut(), 32) };
+    }
 }

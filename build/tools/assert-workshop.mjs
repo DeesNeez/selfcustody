@@ -226,7 +226,7 @@ export function assertWorkshop() {
     check(/selfcustody-entropy-beta-accepted/.test(script) &&
       /localStorage\.getItem\(STORAGE_KEY\)\s*===\s*version/.test(script) &&
       /localStorage\.setItem\(STORAGE_KEY, version\)/.test(script) &&
-      /EntropyBetaWarning\.init\(\{ version: '2026-08-29-beta-1' \}\)/.test(script),
+      /EntropyBetaWarning\.init\(\{ version: '2026-09-01-beta-2' \}\)/.test(script),
       `the ${name} build does not remember acknowledgement by Workshop release`);
     const wasmReady = script.indexOf('EntropySecp256k1Ready.then');
     const betaInit = script.indexOf('EntropyBetaWarning.init');
