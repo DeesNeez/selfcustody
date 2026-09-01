@@ -305,11 +305,9 @@ export function assertWorkshop() {
       !/is-watch[^{]*\{[^}]*rgba\(255, 138, 0/.test(html),
       `the ${name} build does not keep the export cards red for private and green for watch-only`);
     check((html.match(/class="export-card-icon" aria-hidden="true"/g) || []).length === 2 &&
-      /export-card::before\s*\{[^}]*height: 3px/.test(html) &&
-      /export-card::after\s*\{[^}]*width: 3px/.test(html) &&
-      /is-watch::before\s*\{[^}]*#41cd9e[^}]*#9af0d3/.test(html) &&
-      /is-watch::after\s*\{[^}]*#41cd9e[^}]*#8be3c6/.test(html),
-      `the ${name} build loses the export cards' icon and file-edge treatment`);
+      /export-card\s*\{[^}]*border: 2px solid/.test(html) &&
+      !/export-card(?:\.is-(?:private|watch))?::(?:before|after)/.test(html),
+      `the ${name} build loses the export cards' icons or even four-sided borders`);
     check(/<div class="export-actions" role="group" aria-labelledby="export-download-label">/.test(html) &&
       /<div class="export-actions" role="group" aria-labelledby="export-watch-download-label">/.test(html) &&
       (html.match(/id="export-[a-z-]*download-label">Download:</g) || []).length === 3 &&

@@ -521,21 +521,10 @@ ${FONTS.map(embedFont).join('\n')}
   .export-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .export-card {
     position: relative; display: flex; flex-direction: column; min-width: 0;
-    overflow: hidden; padding: 19px;
-    border: 1px solid rgba(255, 255, 255, 0.11); border-radius: 14px;
+    overflow: hidden; padding: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.11); border-radius: 14px;
     background: rgba(0, 0, 0, 0.18);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 14px 30px rgba(0, 0, 0, 0.15);
-  }
-  /* A quiet file-edge highlight gives the cards a little identity without
-     turning them into two more primary actions. The icon carries the first
-     distinction; the colour is a second cue, not the only one. */
-  .export-card::before {
-    content: ''; position: absolute; inset: 0 15px auto; height: 3px;
-    border-radius: 0 0 3px 3px;
-  }
-  .export-card::after {
-    content: ''; position: absolute; inset: 15px auto 15px 0; width: 3px;
-    border-radius: 0 3px 3px 0;
   }
   .export-intro { margin-bottom: 15px; }
   .export-card.is-private {
@@ -543,8 +532,6 @@ ${FONTS.map(embedFont).join('\n')}
     background: radial-gradient(circle at 18% 0, rgba(214, 94, 64, 0.24), transparent 56%), rgba(214, 94, 64, 0.075);
     box-shadow: inset 0 1px 0 rgba(255, 157, 138, 0.08), 0 0 0 1px rgba(214, 94, 64, 0.07), 0 14px 30px rgba(0, 0, 0, 0.18);
   }
-  .export-card.is-private::before { background: linear-gradient(90deg, transparent, #e5694d 18%, #ffad9c 82%, transparent); box-shadow: 0 0 13px rgba(214, 94, 64, 0.4); }
-  .export-card.is-private::after { background: linear-gradient(180deg, transparent, #e5694d 18%, #ff9d8a 82%, transparent); box-shadow: 0 0 11px rgba(214, 94, 64, 0.34); }
   /* Green rather than orange. Orange is the page's caution colour -- it is
      what the connection warning and the beta notice are set in -- and the
      watch-only record is the safe one of the pair. Reading as a milder
@@ -555,8 +542,6 @@ ${FONTS.map(embedFont).join('\n')}
     background: radial-gradient(circle at 18% 0, rgba(53, 180, 138, 0.24), transparent 56%), rgba(53, 180, 138, 0.075);
     box-shadow: inset 0 1px 0 rgba(139, 227, 198, 0.1), 0 0 0 1px rgba(53, 180, 138, 0.09), 0 14px 30px rgba(0, 0, 0, 0.18);
   }
-  .export-card.is-watch::before { background: linear-gradient(90deg, transparent, #41cd9e 18%, #9af0d3 82%, transparent); box-shadow: 0 0 13px rgba(53, 180, 138, 0.42); }
-  .export-card.is-watch::after { background: linear-gradient(180deg, transparent, #41cd9e 18%, #8be3c6 82%, transparent); box-shadow: 0 0 11px rgba(53, 180, 138, 0.36); }
   .export-card-heading { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
   .export-card-heading > div { min-width: 0; }
   .export-card-icon {
