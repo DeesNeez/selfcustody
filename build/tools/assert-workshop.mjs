@@ -308,6 +308,15 @@ export function assertWorkshop() {
       /export-card\s*\{[^}]*border: 2px solid/.test(html) &&
       !/export-card(?:\.is-(?:private|watch))?::(?:before|after)/.test(html),
       `the ${name} build loses the export cards' icons or even four-sided borders`);
+    check(/<div class="go-frame">\s*<button[^>]*class="go"[^>]*id="go"/.test(html) &&
+      /class="go-icon"[^>]*aria-hidden="true"/.test(html) &&
+      /id="go-label">Produce wallet/.test(html) &&
+      /\$\('go-label'\)\.textContent = info\.lookup/.test(script) &&
+      /\$\('go-label'\)\.textContent = 'Working\\u2026'/.test(script) &&
+      !/\$\('go'\)\.textContent/.test(script) &&
+      /workbench \.go-frame\s*\{[^}]*padding: 6px/.test(html) &&
+      /workbench \.go::after\s*\{[^}]*rgba\(255, 245, 224, 0\.42\)/.test(html),
+      `the ${name} build loses the framed primary action or its accessible label`);
     check(/<div class="export-actions" role="group" aria-labelledby="export-download-label">/.test(html) &&
       /<div class="export-actions" role="group" aria-labelledby="export-watch-download-label">/.test(html) &&
       (html.match(/id="export-[a-z-]*download-label">Download:</g) || []).length === 3 &&

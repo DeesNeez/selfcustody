@@ -1915,15 +1915,51 @@ ${FONTS.map(embedFont).join('\n')}
   }
   .workbench .hint strong { color: var(--ink-soft); }
   .workbench textarea { min-height: 132px; }
-  .workbench .go {
-    margin-top: 27px; min-height: 56px; border-radius: 13px;
-    border: 1px solid #ffb14f;
-    background: linear-gradient(135deg, #ff9b1a, #e57700);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 16px 34px rgba(255, 138, 0, .18);
-    transition: background-color .15s ease, transform .15s ease, box-shadow .15s ease;
+  /* The one action that turns the recorded events into a result gets the same
+     two-layer construction as the offline Download control. It stays a
+     distinct primary action: the arrow means continue, while Download keeps
+     its downward file icon. */
+  .workbench .go-frame {
+    display: flex; width: 100%; margin-top: 27px; padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 16px;
+    background: rgba(8, 9, 11, 0.62);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 46px rgba(0, 0, 0, 0.3);
   }
-  .workbench .go:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 20px 42px rgba(255, 138, 0, .23); }
+  .workbench .go {
+    position: relative; isolation: isolate; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 0; min-height: 56px; border: 1px solid transparent; border-radius: 10px;
+    color: #fff;
+    background:
+      linear-gradient(135deg, #ff940f, #d56200) padding-box,
+      linear-gradient(135deg, #ffc36f, #7f3200) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.24), 0 10px 28px rgba(255, 122, 0, .24);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .workbench .go:hover:not(:disabled) {
+    color: #fff;
+    background:
+      linear-gradient(135deg, #ffab38, #df6900) padding-box,
+      linear-gradient(135deg, #ffe0b5, #9b4000) border-box;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 14px 34px rgba(255, 122, 0, .32);
+    transform: translateY(-2px);
+  }
+  .workbench .go::after {
+    content: ''; position: absolute; z-index: 1; top: -45%; bottom: -45%; left: -32%; width: 22%;
+    pointer-events: none; opacity: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 245, 224, 0.42), transparent);
+    transform: skewX(-18deg) translateX(-180%);
+    transition: transform .72s cubic-bezier(.2,.72,.22,1), opacity .18s ease;
+  }
+  .workbench .go:hover:not(:disabled)::after { opacity: 1; transform: skewX(-18deg) translateX(700%); }
+  .workbench .go > * { position: relative; z-index: 2; }
+  .workbench .go-icon { flex: 0 0 auto; width: 18px; height: 18px; }
   .workbench .go:disabled { box-shadow: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .workbench .go { transition: none; }
+    .workbench .go:hover:not(:disabled) { transform: none; }
+    .workbench .go::after { display: none; }
+  }
   /* Flat fill, no inset highlight. Both were doing the same thing to the same
      two edges: the inset 0 1px 0 laid a second bright line immediately inside
      the top border, and the gradient put its light end in the top-left corner,
@@ -2997,7 +3033,7 @@ const ui = () => `
         : 'Tap each roll in the order you made them. You can type the digits instead, or paste.';
 
     $('go').disabled = !at.ready;
-    $('go').textContent = info.lookup ? 'Produce words' : 'Produce wallet';
+    $('go-label').textContent = info.lookup ? 'Produce words' : 'Produce wallet';
     $('matches').textContent = info.matches;
 
     /* The keys are disabled at the ceiling, so a press cannot report it -- a
@@ -3275,7 +3311,7 @@ const ui = () => `
 
     /* Repaint before the slow part so the button state is actually seen. */
     $('go').disabled = true;
-    $('go').textContent = 'Working\\u2026';
+    $('go-label').textContent = 'Working\\u2026';
 
     const mine = generation;
     deriveTimer = setTimeout(() => {
@@ -4303,7 +4339,12 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   </details>
 </fieldset>
 
-<button type="button" class="go" id="go" disabled>Produce wallet</button>
+<div class="go-frame">
+  <button type="button" class="go" id="go" disabled>
+    <span id="go-label">Produce wallet</span>
+    <svg class="go-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 10h13"/><path d="m11 5 5 5-5 5"/></svg>
+  </button>
+</div>
 
 <div class="endings" id="endings" hidden>
   <strong>Now pick the last word.</strong>
