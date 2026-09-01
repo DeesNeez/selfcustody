@@ -90,6 +90,15 @@ const embedFontLicences = () => {
   if (text.includes('*/')) {
     throw new Error('a vendored font licence contains */, which would close the CSS comment early');
   }
+  /* A CSS comment does not protect this. The HTML tokenizer leaves the style
+     element on "</style", whatever the CSS parser would have made of the
+     surrounding characters, so the rest of the licence would be reparsed as
+     markup. Case-insensitive, because the tokenizer is. Neither current
+     licence contains it; the check exists so that a future upstream text
+     cannot introduce it silently. */
+  if (/<\/style/i.test(text)) {
+    throw new Error('a vendored font licence contains </style, which would end the style element early');
+  }
   return `\n/* ${'-'.repeat(72)}\n   Embedded webfonts. Both families are used under the SIL Open Font\n   License 1.1; the full text of each licence follows the family it covers.\n   The font files themselves are subsets, unmodified in outline, of the\n   upstream releases named below.\n   ${'-'.repeat(72)}\n\n${text}\n*/\n`;
 };
 
