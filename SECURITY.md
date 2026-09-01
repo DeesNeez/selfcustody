@@ -167,10 +167,13 @@ Node:
 npm run build
 ```
 
-That is deterministic on any machine and any Node version. The build only
-assembles committed inputs; it never compresses anything itself. A file that
-matches the published hash confirms the artifact is what these sources
-produce.
+The build compiles nothing and compresses nothing — it assembles committed
+inputs — so its output does not depend on a host compiler or compression
+library, which are the parts that differ between machines. It has reproduced
+byte-identically across the Node versions used to develop it and the one CI
+runs; that is evidence, not a guarantee about every future release. A file
+that matches the published hash confirms the artifact is what these sources
+assemble to.
 
 One of the inputs it assembles cannot be re-derived that way. The libsecp256k1
 engine is committed as `build/tools/secp256k1-wasm-b64.js`, and both of its
@@ -178,15 +181,19 @@ forms — the raw WebAssembly, and the gzip stream the page actually ships — a
 produced inside the pinned builder image, by `npm run build:wasm:container`,
 which needs Docker.
 
-Compiling the Rust reproducibly already required that image: the compiler, the
-C toolchain and the linker all have to match, which is why they are pinned by
-digest rather than by version. Compression now requires it too. Deflate output
+Compiling the Rust reproducibly already required that image. The Rust
+compiler, the C compiler that builds the vendored libsecp256k1 sources, the
+archiver and the host linker all affect the emitted module, so the image
+installs each at an exact version from one immutable Ubuntu snapshot, with the
+Rust and Node tarballs verified by SHA-256 before they enter the build. The
+workflow then names the image itself by digest rather than by tag, because a
+tag can be repointed. Compression now requires it too. Deflate output
 differs between zlib builds, and the builder's zlib and an ordinary host Node's
 have been observed producing different bytes — of identical length — for the
 same module. A gzip payload made anywhere else is a valid stream that restores
 the same engine, and it is not the published bytes.
 
-So the engine's provenance is **verified rather than rebuilt**, and that check
+So the engine is **checked for identity rather than rebuilt**, and that check
 needs no Docker:
 
 - The generated file declares the module's SHA-256 on its `wasm sha256:` line.
@@ -194,15 +201,28 @@ needs no Docker:
   hash the result. It must equal that line, and it must equal the SHA-256 of
   the committed raw payload.
 
+Read those two comparisons differently. The `wasm sha256:` line travels inside
+the file it describes, so agreeing with it proves only that the copy is
+self-consistent — the same limitation the published checksum has, for the same
+reason. The comparison that carries weight is against
+`build/tools/secp256k1-wasm-b64.js` obtained separately from the repository.
+
+And even that establishes identity, not provenance: it shows your copy carries
+the engine this repository committed. Whether that engine is what the pinned
+toolchain actually produces from the Rust sources is a different question,
+answered by rebuilding it or by the attestation above — not by any hash in the
+file.
+
 The build asserts exactly that on every run, for both pages, and the
 `build-wasm` CI job separately rebuilds the engine in the pinned image twice
 and refuses any wrapper that differs from the committed one — the check that
 caught a locally-compressed payload before it shipped.
 
-The practical consequence: reproducing the page is open to anyone, while
-reproducing the engine inside it is open to anyone with Docker. Everyone else
-can still confirm that the engine in their copy is the module this repository
-committed and audited, which is the property the download's promise rests on.
+The practical consequence: assembling the page is open to anyone, rebuilding
+the engine inside it is open to anyone with Docker, and everyone else can
+still establish that their copy carries the same engine this repository
+committed. That last claim is narrower than "the engine is sound" — it is the
+one a hash can actually support.
 
 ## Using the tool safely
 
