@@ -95,6 +95,26 @@ try {
     if (count('walletdescriptorkey') !== 2) {
       throw new Error(`${addressType} wallet.dat needs two private descriptor keys`);
     }
+    /* Core stores Hash(pubkey, privkey), which is double-SHA256 over the raw
+       CPubKey and DER CPrivKey bytes. Their combined length is 247 bytes -- a
+       SHA-256 padding boundary (55 modulo 64) that once exposed a bug in the
+       shared hash implementation while leaving the SQLite structure valid. */
+    const privateRows = report.rows.filter(([key]) => asciiKey(key).includes('walletdescriptorkey'));
+    for (const [keyHex, valueHex] of privateRows) {
+      const key = Buffer.from(keyHex, 'hex');
+      const value = Buffer.from(valueHex, 'hex');
+      const pubkey = key.subarray(-33);
+      if (value[0] !== 214 || value.length !== 1 + 214 + 32) {
+        throw new Error(`${addressType} wallet.dat has an unexpected private-key encoding`);
+      }
+      const der = value.subarray(1, 215);
+      const expectedHash = createHash('sha256')
+        .update(createHash('sha256').update(Buffer.concat([pubkey, der])).digest())
+        .digest();
+      if (!value.subarray(215).equals(expectedHash)) {
+        throw new Error(`${addressType} wallet.dat private-key hash does not match Bitcoin Core`);
+      }
+    }
     if (count('activeexternalspk') !== 1 || count('activeinternalspk') !== 1) {
       throw new Error(`${addressType} wallet.dat receiving/change descriptors are not active`);
     }
