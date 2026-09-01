@@ -75,7 +75,11 @@ const EntropyCore = (() => {
   function sha256(msg) {
     const H = H256.slice();
     const len = msg.length;
-    const withPad = new Uint8Array((((len + 9) >> 6) + 1) << 6);
+    // One 0x80 byte and the 8-byte length must fit after the message. Round
+    // that total up to a complete 64-byte block. Writing this as
+    // `floor((len + 9) / 64) + 1` adds a spurious block whenever len is 55
+    // modulo 64 (including the 247-byte wallet key checksum preimage).
+    const withPad = new Uint8Array(Math.ceil((len + 9) / 64) * 64);
     withPad.set(msg);
     withPad[len] = 0x80;
     new DataView(withPad.buffer).setUint32(withPad.length - 4, len << 3, false);

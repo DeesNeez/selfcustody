@@ -2136,6 +2136,8 @@ const selfTest = () => `
   const VECTORS = [
     ['SHA-256, FIPS 180-4', () => C.hex(C.sha256(C.utf8('abc'))),
       'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'],
+    ['SHA-256, 55-byte padding boundary', () => C.hex(C.sha256(new Uint8Array(55))),
+      '02779466cdec163811d078815c633f21901413081449002f24aa3e80f0b88ef7'],
     ['SHA-512, FIPS 180-4', () => C.hex(C.sha512(C.utf8('abc'))),
       'ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f'],
     ['RIPEMD-160', () => C.hex(C.ripemd160(C.utf8('abc'))),
