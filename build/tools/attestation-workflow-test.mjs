@@ -9,8 +9,9 @@ const job = workflow.match(/^  attest-offline:\n[\s\S]*$/m)?.[0] ?? '';
 assert.ok(job, 'the workflow must define an offline-artifact attestation job');
 assert.match(job, /if: github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/,
   'attestations must be limited to pushes on the default branch');
-assert.match(job, /needs: \[verify, build-wasm\]/,
-  'the attestation must wait for ordinary verification and a pinned-source WASM rebuild');
+assert.match(job, /needs: \[verify, build-wasm, fuzz-lifehash\]/,
+  'the attestation must wait for ordinary verification, a pinned-source WASM rebuild ' +
+  'and the LifeHash differential test');
 assert.match(job, /permissions:\n\s+contents: read\n\s+id-token: write\n\s+attestations: write/,
   'the attestation job must have only its required GitHub permissions');
 assert.match(job, /actions\/attest-build-provenance@[0-9a-f]{40} # v4\.2\.2/,
