@@ -4423,7 +4423,7 @@ const toolMarkup = ({ offline = false } = {}) => `<section class="hero">
   <div class="export-grid">
     <article class="export-card is-private">
       <span class="export-tag">Keep secret</span>
-      <h4>Primary recovery</h4>
+      <h4>Private recovery</h4>
       <p>Recovery words, SeedQR digits, fingerprints, paths and private keys. It records whether a BIP39 passphrase was used, but never includes the passphrase value. The <code>wallet.dat</code> holds the same account&rsquo;s private key and descriptors, in the file format Bitcoin Core opens.</p>
       <p class="export-actions-label" id="export-download-label">Download:</p>
       <div class="export-actions" role="group" aria-labelledby="export-download-label">
