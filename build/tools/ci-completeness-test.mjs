@@ -34,17 +34,45 @@ assert.ok(workflowFiles.length > 0, `no workflows were found in ${dir}`);
 /* What a workflow fires on, read from its `on:` key. Every form GitHub accepts
    is read, because the guard below turns "this workflow is manual" into a
    licence to ignore what it runs -- and a detector that understands one
-   spelling would grant that licence to a workflow written in another. The
-   forms are: a block mapping (with per-trigger detail beneath it), a block
-   sequence, a bare scalar, and a flow sequence.
+   spelling would grant that licence to a workflow written in another.
 
-   Returns null when there is no `on:` key at all, which is a broken workflow
-   rather than a manual one, and is asserted on separately. */
+   Supported: a block mapping (with per-trigger detail beneath it), a block
+   sequence, a plain scalar, and a flow sequence of plain names.
+
+   Anything else throws. That is the point rather than a limitation: the two
+   errors here are not symmetrical. Reading an automatic workflow as manual
+   costs nothing visible and quietly stops its tests counting for anyone,
+   which is the failure this guard exists to prevent. So syntax this parser
+   does not read -- a flow mapping, an alias, an anchor, a token that is not a
+   plain name -- fails the build with an instruction, rather than falling
+   through to an empty list that looks exactly like a manual workflow. The
+   alternative is growing a YAML parser inside a test, to serve forms this
+   repository does not use.
+
+   Returns null only when there is no `on:` key at all, which is asserted on
+   separately as a broken workflow rather than a manual one. */
 const TRIGGER_KEY = /^(?:on|"on"|'on'):/;
+const PLAIN_NAME = /^[a-z][a-z0-9_]*$/;
 const uncomment = line => line.replace(/(^|\s)#.*$/, '').trim();
-const unquote = name => name.trim().replace(/^['"]|['"]$/g, '').replace(/:$/, '');
+const unquote = token => token.trim().replace(/^['"]|['"]$/g, '').replace(/:$/, '');
 
-function triggersIn(source) {
+function reject(label, detail) {
+  throw new Error(
+    `${label}: unsupported \`on:\` syntax -- ${detail}. This guard decides which ` +
+    'workflows count as CI, so it refuses to guess: write the trigger as a block ' +
+    'mapping, a block sequence, a plain scalar, or a flow sequence of plain names.');
+}
+
+function triggerName(token, label) {
+  const cleaned = unquote(token);
+  if (!PLAIN_NAME.test(cleaned)) {
+    reject(label, `\`${token.trim()}\` is not a plain trigger name ` +
+      '(an alias, an anchor, a merge key or a typo)');
+  }
+  return cleaned;
+}
+
+function triggersIn(source, label = 'workflow') {
   const lines = source.split('\n');
   // YAML 1.1 reads a bare `on` as the boolean true, so some workflows quote
   // the key. GitHub accepts either and they mean the same thing.
@@ -52,49 +80,60 @@ function triggersIn(source) {
   if (start === -1) return null;
 
   const inline = uncomment(lines[start].replace(TRIGGER_KEY, ''));
-
-  // on: [push, pull_request]
-  if (inline.startsWith('[')) {
-    return inline.replace(/^\[/, '').replace(/\]$/, '')
-      .split(',').map(unquote).filter(Boolean);
-  }
-  // on: push
-  if (inline) return [unquote(inline)];
-
-  // The block beneath `on:`. It ends at the next line in column zero -- which
-  // is what keeps a job named `push` under `jobs:` from reading as a trigger.
-  // Only entries at the block's own depth count, so the `inputs:` of a
-  // workflow_dispatch cannot contribute a name either.
   const names = [];
-  let depth = null;
-  for (let i = start + 1; i < lines.length; i += 1) {
-    const line = lines[i];
-    if (line.trim() === '' || line.trimStart().startsWith('#')) continue;
-    const indent = line.length - line.trimStart().length;
-    if (indent === 0) break;
-    if (depth === null) depth = indent;
-    if (indent > depth) continue;
-    if (indent < depth) break;
 
-    const body = uncomment(line);
-    const sequence = body.match(/^-\s*(.+)$/);          // - push
-    if (sequence) { names.push(unquote(sequence[1])); continue; }
-    const mapping = body.match(/^([^:\s]+):/);          // push:
-    if (mapping) names.push(unquote(mapping[1]));
+  if (inline.startsWith('{')) {
+    // on: {push: null, pull_request: null}
+    reject(label, 'a flow mapping is not read here -- rewrite it as a block mapping');
+  } else if (inline.startsWith('[')) {
+    // on: [push, pull_request]
+    if (!inline.endsWith(']')) reject(label, 'an unterminated flow sequence');
+    for (const token of inline.slice(1, -1).split(',')) {
+      if (token.trim() === '') continue;
+      names.push(triggerName(token, label));
+    }
+  } else if (inline) {
+    // on: push
+    names.push(triggerName(inline, label));
+  } else {
+    // The block beneath `on:`. It ends at the next line in column zero --
+    // which is what keeps a job named `push` under `jobs:` from reading as a
+    // trigger. Only entries at the block's own depth count, so the `inputs:`
+    // of a workflow_dispatch cannot contribute a name either.
+    let depth = null;
+    for (let i = start + 1; i < lines.length; i += 1) {
+      const line = lines[i];
+      if (line.trim() === '' || line.trimStart().startsWith('#')) continue;
+      const indent = line.length - line.trimStart().length;
+      if (indent === 0) break;
+      if (depth === null) depth = indent;
+      if (indent > depth) continue;
+      if (indent < depth) break;
+
+      const body = uncomment(line);
+      const sequence = body.match(/^-\s*(.*)$/);            // - push
+      if (sequence) { names.push(triggerName(sequence[1], label)); continue; }
+      const mapping = body.match(/^([^:\s]+):(?:\s|$)/);    // push:
+      if (mapping) { names.push(triggerName(mapping[1], label)); continue; }
+      reject(label, `\`${body}\` is neither a mapping key nor a sequence entry`);
+    }
   }
+
+  // A workflow that fires on nothing is broken, not manual, and saying so here
+  // is the difference between a parser that came up empty and one that was
+  // told nothing.
+  if (names.length === 0) reject(label, 'the trigger list is empty');
   return names;
 }
 
 const AUTOMATIC_TRIGGERS = ['push', 'pull_request', 'pull_request_target', 'schedule'];
-const automaticTriggersIn = source => {
-  const triggers = triggersIn(source);
+const automaticTriggersIn = (source, label) => {
+  const triggers = triggersIn(source, label);
   return triggers === null ? null : triggers.filter(t => AUTOMATIC_TRIGGERS.includes(t));
 };
 
 /* The detector decides whether a workflow's steps count as CI, so it is worth
-   more than the one shape this repository happens to use today. Each case
-   below is a form GitHub accepts; the last two are the ways a looser reading
-   would go wrong. */
+   more than the one shape this repository happens to use today. */
 const detectorCases = [
   ['block mapping', "on:\n  push:\n    branches: ['**']\n  pull_request:\n", ['push', 'pull_request']],
   ['block sequence', 'on:\n  - push\n  - schedule\n', ['push', 'schedule']],
@@ -116,10 +155,39 @@ const detectorCases = [
 ];
 
 for (const [label, source, expected] of detectorCases) {
-  assert.deepEqual(automaticTriggersIn(source), expected,
-    `trigger detection, ${label}: expected [${expected}], got [${automaticTriggersIn(source)}]`);
+  assert.deepEqual(automaticTriggersIn(source, label), expected,
+    `trigger detection, ${label}: expected [${expected}], got [${automaticTriggersIn(source, label)}]`);
 }
-assert.equal(triggersIn('name: nothing\njobs:\n  x:\n    runs-on: ubuntu-latest\n'), null,
+
+/* Syntax the parser does not read has to say so. Each of these is valid YAML
+   that GitHub would honour, and each would otherwise have produced an empty
+   list -- indistinguishable from a workflow that really is manual. */
+const rejectionCases = [
+  ['flow mapping', 'on: {push: null, pull_request: null}\n', /flow mapping is not read here/],
+  ['flow mapping, single trigger', 'on: {push: null}\n', /flow mapping is not read here/],
+  ['alias as the whole trigger', 'on: *triggers\n', /not a plain trigger name/],
+  ['alias inside a flow sequence', 'on: [push, *extra]\n', /not a plain trigger name/],
+  ['alias as a block sequence entry', 'on:\n  - push\n  - *extra\n', /not a plain trigger name/],
+  ['anchor on the trigger key', 'on: &triggers\n  push:\n', /not a plain trigger name/],
+  ['a merge key in the block', 'on:\n  <<: *defaults\n  push:\n', /not a plain trigger name/],
+  ['a malformed token', 'on: [push, pull request]\n', /not a plain trigger name/],
+  ['an unterminated flow sequence', 'on: [push, pull_request\n', /unterminated flow sequence/],
+  ['an empty flow sequence', 'on: []\n', /trigger list is empty/],
+  ['an empty block', 'on:\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n', /trigger list is empty/],
+];
+
+for (const [label, source, expected] of rejectionCases) {
+  assert.throws(() => automaticTriggersIn(source, label), expected,
+    `unsupported syntax must be rejected, not read as manual: ${label}`);
+  // Every rejection must also name the file it came from and say what to do.
+  assert.throws(() => automaticTriggersIn(source, label),
+    new RegExp(`^Error: ${label}: unsupported \`on:\` syntax`),
+    `the rejection for ${label} must name the workflow`);
+  assert.throws(() => automaticTriggersIn(source, label), /write the trigger as a block mapping/,
+    `the rejection for ${label} must say what to write instead`);
+}
+
+assert.equal(triggersIn('name: nothing\njobs:\n  x:\n    runs-on: ubuntu-latest\n', 'no key'), null,
   'a workflow with no on: key must be reported as broken, not as manual');
 
 /* -------------------------------------------------------- the corpus rule */
@@ -136,14 +204,14 @@ const AUTOMATIC = ['build.yml'];
 for (const name of AUTOMATIC) {
   assert.ok(workflowFiles.includes(name),
     `${dir}/${name} is listed as an automatic workflow but does not exist`);
-  const automatic = automaticTriggersIn(read(name));
+  const automatic = automaticTriggersIn(read(name), `${dir}/${name}`);
   assert.ok(automatic !== null, `${dir}/${name} has no on: key`);
   assert.notDeepEqual(automatic, [],
     `${dir}/${name} is listed as automatic but fires on nothing automatic`);
 }
 
 for (const name of workflowFiles.filter(f => !AUTOMATIC.includes(f))) {
-  const automatic = automaticTriggersIn(read(name));
+  const automatic = automaticTriggersIn(read(name), `${dir}/${name}`);
   assert.ok(automatic !== null, `${dir}/${name} has no on: key`);
   assert.deepEqual(automatic, [],
     `${dir}/${name} fires automatically on ${automatic.join(', ')} but is not in ` +
@@ -222,6 +290,6 @@ assert.deepEqual(unjudged, [],
   'without it a job skipped by a broken condition reads as correctly scoped out');
 
 console.log(
-  `ci completeness: ${detectorCases.length} trigger forms read correctly, all ` +
+  `ci completeness: ${detectorCases.length} trigger forms read and ${rejectionCases.length} unsupported ones rejected, all ` +
   `${tracked.length} tracked tests run in ${AUTOMATIC.join(', ')}, and all ` +
   `${scoped.length} path-scoped jobs are judged by the gate`);
