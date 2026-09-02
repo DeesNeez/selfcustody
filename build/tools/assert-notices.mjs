@@ -67,13 +67,21 @@ export function assertNotices() {
 
     /* The served copy is checked against the vendored licence, not just for a
        few strings, so that a notice cannot be quietly paraphrased into
-       something shorter than the licence requires. */
-    if (existsSync(source)) {
-      const licence = readFileSync(source, 'utf8').replace(/\r\n/g, '\n').trim();
-      const flat = s => s.replace(/^[\s*]+/gm, '').replace(/\s+/g, ' ').trim();
-      if (!flat(text).includes(flat(licence))) {
-        problems.push(`${file} carries a notice for ${what} that does not match ${source}`);
-      }
+       something shorter than the licence requires.
+
+       A missing vendored licence is a failure, not a reason to skip the
+       comparison. Skipping would mean deleting the source file silently
+       disabled the strongest half of this check, which is the failure mode a
+       guard is least allowed to have: the more of the evidence goes missing,
+       the quieter it would get. */
+    if (!existsSync(source)) {
+      problems.push(`${source} is missing, so ${what}'s notice in ${file} cannot be checked against it`);
+      continue;
+    }
+    const licence = readFileSync(source, 'utf8').replace(/\r\n/g, '\n').trim();
+    const flat = s => s.replace(/^[\s*]+/gm, '').replace(/\s+/g, ' ').trim();
+    if (!flat(text).includes(flat(licence))) {
+      problems.push(`${file} carries a notice for ${what} that does not match ${source}`);
     }
   }
 
