@@ -18,7 +18,8 @@ and must be answered by the person who put the material here.
    single commit from someone other than the maintainer, changing two CSS
    `padding` values in a file the redesign later deleted. A line-by-line blame
    taken before the history rewrite confirmed none of it survived: of 31,028
-   source lines and 83 images, none originated with anyone but the maintainer.
+   source lines and the 83 images tracked at that time, none was added by
+   anyone but the maintainer.
    That commit has since been removed from this repository's history. See
    [Contributor audit](#contributor-audit).
 2. **Every third-party notice gap is closed.** The fonts, LifeHash,
@@ -28,11 +29,12 @@ and must be answered by the person who put the material here.
    contradicts itself about its own terms. `build/tools/assert-notices.mjs`
    fails the build if a served stylesheet loses its notice, because two of them
    already had. See [Notice gaps](#notice-gaps).
-3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
-   images are manufacturer logos, product shots or exchange marks, and cannot
-   go under a project content licence. Of the other 44, the maintainer has now
-   classified 34, one has had its provenance rejected, and 5 remain
-   unclassified. See [Image audit](#image-audit).
+3. **Roughly half the images are third-party brand assets.** 39 of the 82
+   tracked images are manufacturer logos, product shots or exchange marks, and
+   cannot go under a project content licence. Of the other 43, the maintainer
+   has classified 34, four are the project's own marks, and 5 remain
+   unclassified. A further image was removed from the repository rather than
+   classified. See [Image audit](#image-audit).
 4. **Project-authored prose and diagrams are cleanly owned.** This is the
    material CC BY 4.0 is actually for.
 
@@ -54,11 +56,21 @@ text file, before normalization:
 | --- | --- | --- |
 | Source tree (`build/`, `.github/`, `secp256k1-wasm/`, `fuzzing/`, root files) | 31,028 | 0 |
 | Generated `docs/` | 59,512 | 0 |
-| Images (83 files, by adding commit) | — | 0 |
+| Images (83 files tracked at that time, by adding commit) | — | 0 |
 
-Every line of the current tree, and every tracked image, originates with the
-maintainer. Nothing in what the project distributes depends on permission
-from anyone else.
+Every tracked image was added to the repository by the maintainer. This does
+not establish creative ownership; image provenance is documented separately
+below, and in several cases the picture is somebody else's work.
+
+The same distinction applies to the table above. Blame attributes lines to
+whoever committed them, which is a fact about this repository's history and not
+about who authored the material. What the table does establish is narrow and
+worth stating exactly: **no part of the tree depends on permission from the one
+outside Git contributor whose commit was removed.** It says nothing about the
+project's third-party components, which plainly do carry other people's terms —
+fonts under the OFL, libsecp256k1 and several JavaScript libraries under MIT,
+the FFI crate under CC0, LifeHash under two licences at once, and photographs
+under the Unsplash Licence.
 
 ### The one outside-authored commit
 
@@ -162,8 +174,9 @@ project plan creates it; the reference should be checked against it then.
 
 ## Image audit
 
-83 tracked files under `docs/assets/img/`. Do not place this directory under a
-content licence as a whole.
+82 tracked files under `docs/assets/img/`, one fewer than when this audit
+began: `education-library.jpeg` was removed rather than classified. Do not
+place this directory under a content licence as a whole.
 
 ### Third-party marks and product images — 39 files, exclude
 
@@ -192,7 +205,7 @@ imply endorsement.
 
 ### Confirmed by the maintainer - 34 files
 
-**Generated with Google Gemini - 26 files.** The maintainer keeps the originals
+**AI-generated images, and the project-edited or compressed versions of them - 26 files.** The maintainer keeps the originals
 in a `Gen photos` folder outside the repository and states that everything in
 it was generated with Google Gemini. The tracked files are compressed copies of
 those originals.
@@ -234,11 +247,18 @@ sources, which the gradient hash alone ties.
 | `what-is-money-trade-beads.jpg` | `beads.jfif` |
 | `what-not-to-normalize-phone-gallery.jpg` | `photo seed.jfif` |
 
-Recorded as generated derivatives, naming Google Gemini as the tool used. That
-is a statement about how each file was made. It asserts nothing about Gemini
-itself, and nothing here settles the terms on which model output may be
-licensed onward. That question is separate, applies to all 26 together, and is
-still open.
+Recorded as AI-generated images, together with the project-edited or
+compressed versions of them that the site actually serves, naming Google Gemini
+as the tool used. They are deliberately **not** called generated derivatives:
+that term implies a particular identified source the work derives from, and for
+these there is none beyond the model itself. Where a derivative source *is*
+identified — the Motionleap animation below, or the recoloured Unsplash
+photograph — the audit says so and names it.
+
+Naming Gemini is a statement about how each file was made. It asserts nothing
+about Gemini itself, and nothing here settles whether the output is
+copyrightable or on what terms it may be licensed onward. That question is
+separate, applies to all 26 together, and is still open.
 
 `dashboard-network-preview-v3.jpg` and `glossary-hero.jpg` are in this table on
 the maintainer's confirmation rather than on the fingerprint evidence, which
@@ -251,9 +271,10 @@ but this repository's own history shows later project compositing on it: a
 masked lockup, a reconstructed gradient and an added credit line. Generated
 base, project-authored composition above it.
 
-**Created for this project - 5 files.** Project-owned original work, and
-candidates for CC BY 4.0 alongside the written material. The five split into
-artwork and an animation derived from it, and the tools differ:
+**Created for this project - 5 files.** Created for this project using
+ChatGPT; ownership, copyrightability, and onward-licensing treatment are
+addressed separately. The five split into artwork and an animation made from
+it, and the tools differ:
 
 | File | How it was made |
 | --- | --- |
@@ -263,11 +284,15 @@ artwork and an animation derived from it, and the tools differ:
 | `cash-vortex/exchanges-cash-vortex.png` | Created for this project using ChatGPT |
 | `cash-vortex/exchanges-cash-vortex-final3.mp4` | Animated in Motionleap from the Cash Vortex artwork above |
 
-The mp4 is a derivative of the project's own artwork rather than an independent
-asset: Motionleap is the animation and editing tool, and the four stills are
-its source. Naming a tool describes how a file was made and asserts nothing
-about the tool itself; as with the Gemini set, the terms on which model output
-may be licensed onward are a separate question and still open.
+The mp4 is an animation derived from those four stills: Motionleap is the
+animation and editing tool, and the stills are its source. That describes how
+it was made and how it relates to them, and claims nothing further about who
+owns either.
+
+Naming a tool describes how a file was made and asserts nothing about the tool
+itself. As with the AI-generated set above, whether this material is
+copyrightable at all, and on what terms it may be licensed onward, are separate
+questions that this audit records rather than answers.
 
 **Unsplash photographs - 3 files.** Each is now identified to a specific
 photograph rather than to the platform, which is the difference between a
@@ -296,17 +321,30 @@ deliberately not classified alongside `hero-lock.webp` earlier: the two have
 neighbouring filenames and turned out to have different photographers, which is
 exactly why a filename is not evidence of a shared source.
 
-### Provenance rejected - 1 file
+### Removed from the repository - 1 file
 
     education-library.jpeg
 
-The maintainer has rejected this image's provenance. It is to be replaced by a
-newly generated original, with the tool, date and prompt recorded. Two facts
-bear on how that is done: it matches nothing in `Gen photos`, and it is
-**referenced nowhere** - not in `build/content.mjs`, not in `build/guides.mjs`,
-not in any generated page. Nothing currently displays it, so removing it is as
-available as replacing it. Until one or the other happens it stays excluded
-from any content licence.
+**Removed; no longer distributed.** The maintainer rejected this image's
+provenance and chose removal over replacement.
+
+An earlier revision of this audit said the file was referenced nowhere. That
+was wrong: the check behind it looked at `build/content.mjs`,
+`build/guides.mjs` and the generated pages, and not at the stylesheets. It was
+in fact live, as the third background layer of the homepage trust section in
+`docs/assets/css/site-refresh.css`, beneath two gradients that covered between
+76 and 97 per cent of it. Compositing those layers put its visible contribution
+at a mean of 7/255 and a maximum of 51/255, confined to the right-hand edge.
+
+Deleting the file alone would have left the stylesheet requesting an asset that
+no longer existed, so both went together: the `url()` layer was removed along
+with the third entry in `background-position` and `background-size`, leaving
+the two gradients over the section's own ground. The homepage was then loaded
+and scrolled in full, and its network log shows no request for the file and no
+404 of any kind.
+
+The image is no longer in the repository and no longer distributed, so no
+licence needs to cover it.
 
 ### Unresolved provenance - 5 files, cannot be classified from the repository
 

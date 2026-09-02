@@ -13372,10 +13372,9 @@ body[data-page="home"] .sc-home-trust-section {
   padding-bottom: 76px;
   background-image:
     linear-gradient(90deg, rgba(8, 9, 11, 0.97) 0%, rgba(8, 9, 11, 0.92) 48%, rgba(8, 9, 11, 0.76) 100%),
-    linear-gradient(180deg, #08090b 0%, transparent 18%, transparent 82%, #08090b 100%),
-    url("../img/education-library.jpeg");
-  background-position: center, center, right center;
-  background-size: cover, cover, cover;
+    linear-gradient(180deg, #08090b 0%, transparent 18%, transparent 82%, #08090b 100%);
+  background-position: center, center;
+  background-size: cover, cover;
 }
 
 body[data-page="home"] .sc-home-trust-section::before {
