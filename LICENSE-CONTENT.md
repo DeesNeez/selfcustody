@@ -67,7 +67,8 @@ That is a statement about what reuse requires, and not a claim that publishing
 under a pseudonym costs nothing. Copyright arises on authorship whatever name an
 author uses, but establishing or enforcing ownership can call for evidence
 linking the author to the name, which a pseudonym does not supply on its own.
-That burden falls on the licensor, not on you.
+How that would play out in any particular dispute is not something this file
+decides.
 
 Preferred form:
 
@@ -93,25 +94,33 @@ site root is a courtesy on top: it lets a reader check what you started with.
 Attribution is the condition people remember, and it is not the only one. If you
 share this material, CC BY 4.0 asks all of the following (section 3(a)):
 
+The first four apply **to the extent they are supplied** with the material you
+took, which here they are:
+
 - **Credit the creator** — HodlDee, the name designated for attribution.
 - **Retain the copyright notice** — `© 2023–2026 HodlDee`.
 - **Retain a notice referring to this licence**, and a **notice referring to the
   disclaimer of warranties** below.
-- **Link to the licence itself**, not merely name it:
-  <https://creativecommons.org/licenses/by/4.0/>.
-- **Link to the material** you used, where reasonably practicable.
+- **Retain a link to the material**, where reasonably practicable.
+
+Then, in every case:
+
 - **Indicate if you modified it**, and keep any indication of earlier
   modifications.
+- **Say that the material is under CC BY 4.0, and include either the licence
+  text or a link to it** — <https://creativecommons.org/licenses/by/4.0/>. The
+  licence accepts either; a link is the usual choice.
 
-Two further limits come from section 2:
+Section 2 adds two limits, and both are conditioned on effect rather than
+absolute. You may not offer additional or different terms, and you may not apply
+effective technological measures, **where doing so would restrict anyone
+downstream from exercising the rights this licence grants**. Terms that leave
+those rights intact — your own licence over your own additions, for instance —
+are not what that provision reaches.
 
-- **You may not impose additional or different terms** on what you pass on, and
-- **you may not apply effective technological measures** that stop others doing
-  what this licence permits.
-
-You may satisfy the notice requirements in any reasonable manner for your medium
-— a footnote, a credits page, a link — and if the licensor asks, you must remove
-the attribution to the extent reasonably practicable.
+You may satisfy all of this in any reasonable manner for your medium — a
+footnote, a credits page, a link — and if the licensor asks, you must remove the
+attribution information to the extent reasonably practicable.
 
 ### Saying what you changed
 

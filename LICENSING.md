@@ -24,13 +24,20 @@ put one badge on it. Four regimes apply to different bodies of material.
 | --- | --- | --- |
 | Project-authored **software** | MIT | [LICENSE](LICENSE) |
 | Project-authored **educational writing** and original diagrams | CC BY 4.0 | [LICENSE-CONTENT.md](LICENSE-CONTENT.md) |
-| The **`secp256k1-wasm` wrapper** and its builder | The Unlicense | [`secp256k1-wasm/LICENSE`](secp256k1-wasm/LICENSE) |
+| The **project-authored files under `secp256k1-wasm/`** | The Unlicense | [`secp256k1-wasm/LICENSE`](secp256k1-wasm/LICENSE) |
 | **Third-party** components | each keeps its own | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
 
 The third is project-authored too, and is separate rather than an oversight: it
 was released into the public domain upstream, and `secp256k1-wasm/Cargo.toml`
 and its `README.md` both state The Unlicense. Re-licensing it as MIT here would
 narrow terms already given away.
+
+Its scope is the **files in that directory** — `src/lib.rs`, `Cargo.toml`,
+`rust-toolchain.toml` and `builder/`. It is **not** a licence over the builder
+image those files produce. That image is assembled from a pinned Ubuntu base
+plus clang, GNU binutils, Rust and Node, each under its own upstream terms, and
+no dedication this project makes can reach software it did not write. What is
+dedicated is the recipe; what the recipe fetches keeps its own licences.
 
 ## The split is by nature, not by path
 
@@ -55,7 +62,7 @@ HTML under `docs/`, or in a PDF someone printed from it. CC BY 4.0 grants use
 | `build/render.mjs`, `build/tools/` | Renderer, Entropy Workshop, guards, tests | MIT, except the third-party files listed in the notices |
 | `build/content.mjs` | Site software **and** the prose it contains | MIT for the code, CC BY 4.0 for the prose |
 | `build/guides.mjs` | Module code **and** the 56 guides plus original SVG diagrams it contains | MIT for the code, CC BY 4.0 for the writing and diagrams |
-| `secp256k1-wasm/` | Rust wrapper and pinned builder image | The Unlicense — see `secp256k1-wasm/LICENSE` |
+| `secp256k1-wasm/` | Rust wrapper, toolchain pin and the builder definition — **not** the third-party software the builder image installs | The Unlicense — see [`secp256k1-wasm/LICENSE`](secp256k1-wasm/LICENSE) |
 | `fuzzing/` | Differential test harness, never shipped | MIT |
 | `.github/workflows/` | CI configuration | MIT |
 | `build/vendor/`, `docs/assets/vendor/` | Third-party code, fonts and licence texts | Upstream licences — see the notices |

@@ -1,16 +1,28 @@
 # Licensing inventory
 
-A working audit of who owns what in this repository, carried out before any
-project-wide licence is published. **This file grants no rights and licenses
-nothing.** It records what was verified, what still needs an answer, and what
-must be fixed before `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md` and
-`THIRD_PARTY_NOTICES.md` can be written honestly.
+The record of who owns what in this repository, and the evidence the licensing
+files rest on. **This file grants no rights and licenses nothing** — that is
+`LICENSE`, `LICENSE-CONTENT.md` and `secp256k1-wasm/LICENSE`, mapped in
+`LICENSING.md`, with third-party terms indexed in `THIRD_PARTY_NOTICES.md`.
 
-Verified against `refs/heads/readme-foundation`, as of the commit that adds
-this file. Commit counts and blame figures below were measured on the
-pre-rewrite history and are labelled where that matters. Anything marked
-**needs maintainer confirmation** could not be determined from the repository
-and must be answered by the person who put the material here.
+**The audit is complete.** Every question it opened has an answer, every notice
+gap it found is closed, and the licensing files it was written to make possible
+now exist. Its job has changed accordingly: it is where a reader goes to see
+*why* a conclusion holds — which upstream release was matched, which checksum
+was locked, which derivation was documented — rather than a list of work
+outstanding.
+
+Two things remain open, and neither is a gap in this audit nor a condition on
+any licence. The 13 product photographs have no documented reuse permission;
+they are excluded from the content licence, and replacement is tracked in
+[issue #86](https://github.com/HodlDee/selfcustody/issues/86). Whether
+AI-generated images attract copyright is unsettled generally, so this project
+excludes them rather than guessing.
+
+Measurements were taken against `refs/heads/readme-foundation` at the commit
+that introduced this file. Commit counts and blame figures below were measured
+on the pre-rewrite history and are labelled where that matters; the repository
+has since been renamed from `DeesNeez/selfcustody` to `HodlDee/selfcustody`.
 
 ## What the audit found
 
@@ -30,12 +42,12 @@ and must be answered by the person who put the material here.
    fails the build if a served stylesheet loses its notice, because two of them
    already had. See [Notice gaps](#notice-gaps).
 3. **Every image now has a recorded origin, and half of them are other
-   people's.** Of 81 tracked images: 39 are third-party marks and product shots,
-   38 are classified from the maintainer's own account — one of those being a
-   manufacturer-provided image that likewise cannot be licensed onward — and 4
-   are the project's own marks. Three images were removed rather than
-   classified, one of them replaced by a licensed photograph. What remains is
-   not classification but permission and copyrightability. See
+   people's.** Of 81 tracked images, 40 are third-party items (27 marks and 13
+   product images), while the other 41 comprise 28 Gemini images, five Cash
+   Vortex assets, four project marks and four Unsplash photographs. Three
+   images were removed rather than classified, one of them replaced by a
+   licensed photograph. What remains is not classification but permission and
+   copyrightability. See
    [Image audit](#image-audit).
 4. **Project-authored prose and diagrams are cleanly owned.** This is the
    material CC BY 4.0 is actually for.
@@ -98,8 +110,10 @@ branches.
 
 ## Notice gaps
 
-These must be fixed before licensing files are published. Each is a licence
-condition the project does not meet, or did not until the row says otherwise.
+**All six are closed.** Each was a licence condition the project did not meet;
+each row records the gap and what fixed it. They are kept rather than deleted
+because the fix is the evidence — and because `assert-notices.mjs` exists on
+account of two of them.
 
 | # | Component | Licence | Gap | Required action |
 | --- | --- | --- | --- | --- |
@@ -146,14 +160,14 @@ project plan creates it; the reference should be checked against it then.
 
 ## Software inventory
 
-| Path | Material | Origin | Copyright holder | Proposed licence | Evidence / action |
+| Path | Material | Origin | Copyright holder | Licence | Evidence / action |
 | --- | --- | --- | --- | --- | --- |
 | `build/content.mjs` | Site software and written content | Project | Maintainer | MIT for the code, CC BY 4.0 for the prose it contains | Authorship confirmed by history; the file mixes both kinds of material, so the licensing files must split it by content rather than by path. |
-| `build/guides.mjs` | Educational writing plus 7 inline SVG diagrams | Project | Maintainer | CC BY 4.0 | 56 published guides, all authored in-repo. The strongest candidate for the content licence. |
+| `build/guides.mjs` | Module code **and** the educational writing plus 7 inline SVG diagrams it contains | Project | Maintainer | MIT for the code, CC BY 4.0 for the writing and diagrams | 56 published guides, all authored in-repo. Mixed material in one file, like `build/content.mjs`: the licence follows what each part is, not the extension. |
 | `build/render.mjs` | Static-site renderer | Project | Maintainer | MIT | Sole authorship in history. |
 | `build/tools/` | Workshop implementation, crypto, guards, tests | Project, except as noted | Maintainer, except as noted | MIT | 124 commits, all from the maintainer account. Three files are adapted from elsewhere — see the third-party table. |
 | `build/tools/bip39-english.txt` | BIP-39 English wordlist | `trezor/python-mnemonic` v0.21, the reference implementation BIP-39 names as carrying the wordlists | Pavol Rusnak | MIT | **Resolved.** Byte-identical to that release's copy and to `bitcoin/bips` (sha256 `2f5eed53…`). Licence vendored at `build/vendor/bip39/LICENSE` and carried inside both Workshop builds. |
-| `secp256k1-wasm/src/lib.rs`, `builder/` | Rust wrapper and pinned builder image | Adapted from merged [w-s-bitcoin/entropylab#103](https://github.com/w-s-bitcoin/entropylab/pull/103) | Maintainer | Unlicense | Confirmed by the maintainer and stated identically in `Cargo.toml` and `README.md`, with the full text at `secp256k1-wasm/LICENSE`. |
+| `secp256k1-wasm/src/lib.rs`, `builder/` | Project-authored Rust wrapper and builder recipe files — **not** the container image they produce, which installs third-party software under its own licences | Adapted from merged [w-s-bitcoin/entropylab#103](https://github.com/w-s-bitcoin/entropylab/pull/103) | Maintainer | Unlicense | Confirmed by the maintainer and stated identically in `Cargo.toml` and `README.md`, with the full text at `secp256k1-wasm/LICENSE`. |
 | `fuzzing/lifehash/fuzz.mjs` | Differential test harness | Project | Maintainer | MIT | Test tooling, never shipped. |
 | `.github/workflows/` | CI configuration | Project | Maintainer | MIT | Sole authorship. |
 | `docs/` | Generated composite output | Mixed | Mixed | **No single licence** | Each component keeps the licence of its source. Must not be blanket-licensed. |
@@ -531,7 +545,8 @@ structure; none of them is still blocking.
    Recording it as closed rather than open is the point: a later reader should
    not mistake its absence for a gap someone forgot to fill. Note separately
    that pseudonymity can make ownership harder to prove or enforce if it is ever
-   contested — a cost carried by the licensor, and not a defect in the audit.
+   contested. Where that would leave any particular dispute is not settled here,
+   and `LICENSE-CONTENT.md` deliberately declines to assign it either.
 2. *(Answered, and the answer is two different answers.)* The 27 logos and
    marks are used on a **proposed nominative-use basis** — recorded for review,
    not asserted as settled. The 13 product photographs have **no documented
@@ -541,22 +556,30 @@ structure; none of them is still blocking.
    recorded nowhere as permission. Replacement is tracked in
    [issue #86](https://github.com/HodlDee/selfcustody/issues/86). No vendor
    supplied terms this project is obliged to reproduce.
-3. *(Answered.)* Every one of the 40 is classified, with the tool or licence
-   named rather than merely approved: 28 AI-generated or project-edited Gemini
-   images, five Cash Vortex assets made with ChatGPT and Motionleap, four
-   project marks made with ChatGPT assistance, and four Unsplash photographs
-   credited to their photographers with links to the originals. Nothing is left
-   unknown, and everything in this list is excluded from CC BY 4.0.
+3. *(Answered.)* Every tracked image is classified, with the tool or licence
+   named rather than merely approved. **81 images in total**, in two groups:
+
+   **40 third-party items** — 27 manufacturer and service marks, plus 13 product
+   photographs.
+
+   **41 others** — 28 AI-generated or project-edited Gemini images, 5 Cash
+   Vortex assets made with ChatGPT and Motionleap, 4 project marks made with
+   ChatGPT assistance, and 4 Unsplash photographs credited to their
+   photographers with links to the originals.
+
+   Nothing is left unknown, and **all 81 are excluded from CC BY 4.0** — the
+   third-party group because it is not the project's to license, the rest for
+   the reasons given above.
 4. *(Answered.)* libsecp256k1's MIT notice now travels inside both generated
    pages, beside the WebAssembly it describes, because the offline build is
-   downloaded on its own. It will also be indexed in `THIRD_PARTY_NOTICES.md`,
+   downloaded on its own. It is also indexed in `THIRD_PARTY_NOTICES.md`,
    which is a convenience for readers rather than what satisfies the licence.
    `secp256k1-sys` is separately CC0-1.0 and is identified rather than
    reproduced, since that dedication asks for nothing back. Both texts are
    vendored under `build/vendor/libsecp256k1/` from the crate pinned in
    `Cargo.lock`, checked against its recorded hash.
 
-## What happens next
+## Current state
 
 - The notice gaps are closed, every question above is answered, and the
   licensing files are **written**: `LICENSE`, `LICENSING.md`,

@@ -36,17 +36,28 @@ independently of any upstream URL.
 
 ## Shipped components
 
-| Component | Where it ships | Licence | Full text |
-| --- | --- | --- | --- |
-| Project Nayuki QR generator | `build/vendor/qr/`, inlined into both Workshop builds | MIT | in the source files and the artifact |
-| BIP-39 English wordlist | `build/tools/bip39-english.txt`, inlined into both Workshop builds | MIT, © 2013–2016 Pavol Rusnak | [`build/vendor/bip39/LICENSE`](build/vendor/bip39/LICENSE) |
-| EntropyLab wallet export | `build/tools/sqlite-writer.js`, `build/tools/wallet-dat.js` | MIT, © 2026 Mr.Hodl and Wicked | [`build/vendor/entropylab-wallet-export/LICENSE`](build/vendor/entropylab-wallet-export/LICENSE) |
-| LifeHash | `build/tools/lifehash.js` | MIT, © 2022 Andreas Gassmann **and** BSD-2-Clause-Patent, © 2019 Blockchain Commons, LLC | [`build/vendor/lifehash/LICENSE-MIT-lifehash-ts.txt`](build/vendor/lifehash/LICENSE-MIT-lifehash-ts.txt), [`build/vendor/lifehash/LICENSE.md`](build/vendor/lifehash/LICENSE.md) |
-| Jost, Open Sans | `docs/assets/fonts/`, embedded in the offline artifact | SIL OFL 1.1 | [`build/vendor/fonts/OFL-Jost.txt`](build/vendor/fonts/OFL-Jost.txt), [`build/vendor/fonts/OFL-OpenSans.txt`](build/vendor/fonts/OFL-OpenSans.txt) |
-| Bootstrap 5.2.3 (CSS subset) | `docs/assets/vendor/bootstrap/css/` | MIT, © 2011–2022 Twitter, Inc. and The Bootstrap Authors | [`build/vendor/bootstrap/LICENSE`](build/vendor/bootstrap/LICENSE) |
-| Bootstrap Icons 1.10.2/1.10.3 | `docs/assets/vendor/bootstrap-icons/` | MIT, © 2019–2021 The Bootstrap Authors | [`build/vendor/bootstrap-icons/LICENSE.md`](build/vendor/bootstrap-icons/LICENSE.md) |
-| libsecp256k1 (C sources) | compiled into `build/tools/secp256k1-wasm-b64.js` | MIT, © 2013 Pieter Wuille | [`build/vendor/libsecp256k1/COPYING`](build/vendor/libsecp256k1/COPYING) |
-| `secp256k1-sys` 0.14.0 FFI crate and wasm shim | same | CC0-1.0 | [`build/vendor/libsecp256k1/LICENSE-CC0-secp256k1-sys.txt`](build/vendor/libsecp256k1/LICENSE-CC0-secp256k1-sys.txt) |
+The **Ships in** column lists every distributed file a component reaches,
+because that is what a notice obligation attaches to — not where the source
+happens to sit. There are three destinations: the **site pages** under `docs/`,
+the Workshop page **`docs/entropy.html`**, and the standalone
+**`docs/entropy-offline.html`**.
+
+| Component | In the repository | Ships in | Licence | Full text |
+| --- | --- | --- | --- | --- |
+| Project Nayuki QR generator | `build/vendor/qr/` | `entropy.html`, `entropy-offline.html` | MIT | [`build/vendor/qr/qrcodegen.js`](build/vendor/qr/qrcodegen.js) header, reproduced in both builds |
+| BIP-39 English wordlist | `build/tools/bip39-english.txt` | `entropy.html`, `entropy-offline.html` | MIT, © 2013–2016 Pavol Rusnak | [`build/vendor/bip39/LICENSE`](build/vendor/bip39/LICENSE) |
+| EntropyLab wallet export | `build/tools/sqlite-writer.js`, `build/tools/wallet-dat.js` | `entropy.html`, `entropy-offline.html` | MIT, © 2026 Mr.Hodl and Wicked | [`build/vendor/entropylab-wallet-export/LICENSE`](build/vendor/entropylab-wallet-export/LICENSE) |
+| LifeHash | `build/tools/lifehash.js` | `entropy.html`, `entropy-offline.html` | MIT, © 2022 Andreas Gassmann **and** BSD-2-Clause-Patent, © 2019 Blockchain Commons, LLC | [`build/vendor/lifehash/LICENSE-MIT-lifehash-ts.txt`](build/vendor/lifehash/LICENSE-MIT-lifehash-ts.txt), [`build/vendor/lifehash/LICENSE.md`](build/vendor/lifehash/LICENSE.md) |
+| Jost, Open Sans | `build/vendor/fonts/`, served from `docs/assets/fonts/` | site pages (as `woff2`), `entropy.html`, `entropy-offline.html` (embedded) | SIL OFL 1.1 | [`build/vendor/fonts/OFL-Jost.txt`](build/vendor/fonts/OFL-Jost.txt), [`build/vendor/fonts/OFL-OpenSans.txt`](build/vendor/fonts/OFL-OpenSans.txt) |
+| Bootstrap 5.2.3 (CSS subset) | `build/vendor/bootstrap/`, served from `docs/assets/vendor/bootstrap/css/` | site pages **only** | MIT, © 2011–2022 Twitter, Inc. and The Bootstrap Authors | [`build/vendor/bootstrap/LICENSE`](build/vendor/bootstrap/LICENSE) |
+| Bootstrap Icons 1.10.2/1.10.3 | `build/vendor/bootstrap-icons/`, subset to `docs/assets/vendor/bootstrap-icons/` | site pages **only** | MIT, © 2019–2021 The Bootstrap Authors | [`build/vendor/bootstrap-icons/LICENSE.md`](build/vendor/bootstrap-icons/LICENSE.md) |
+| libsecp256k1 (C sources) | compiled into `build/tools/secp256k1-wasm-b64.js` | `entropy.html`, `entropy-offline.html` | MIT, © 2013 Pieter Wuille | [`build/vendor/libsecp256k1/COPYING`](build/vendor/libsecp256k1/COPYING) |
+| `secp256k1-sys` 0.14.0 FFI crate and wasm shim | same | `entropy.html`, `entropy-offline.html` | CC0-1.0 | [`build/vendor/libsecp256k1/LICENSE-CC0-secp256k1-sys.txt`](build/vendor/libsecp256k1/LICENSE-CC0-secp256k1-sys.txt) |
+
+The two Bootstrap rows are why this column is worth having. Neither reaches the
+Workshop builds, so their notices live in the served stylesheets and nowhere
+else — which is exactly the pair that lost them once before, and why
+`assert-notices.mjs` checks them on every build.
 
 Two of those deserve a note.
 
@@ -71,10 +82,16 @@ Never shipped to a visitor, listed for completeness.
 
 ## Project code with its own licence
 
-`secp256k1-wasm/` — the Rust wrapper and pinned builder image — is
-project-authored but released under **The Unlicense** rather than MIT, stated
-identically in its `Cargo.toml` and `README.md`, with the full text at
+The **project-authored files** under `secp256k1-wasm/` — `src/lib.rs`,
+`Cargo.toml`, `rust-toolchain.toml` and the `builder/` recipe files — are
+released under **The Unlicense** rather than MIT, stated identically in its
+`Cargo.toml` and `README.md`, with the full text at
 [`secp256k1-wasm/LICENSE`](secp256k1-wasm/LICENSE).
+
+That dedication reaches those files and stops there. The **container image the
+recipe produces is not Unlicensed**: it installs a pinned Ubuntu base, clang,
+GNU binutils, Rust and Node, each under its own upstream terms. A dedication
+cannot reach software the project did not write.
 
 ## How these were identified
 
