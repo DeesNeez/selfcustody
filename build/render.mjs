@@ -18,6 +18,7 @@ import { renderEntropyOffline, renderEntropyEmbed } from './tools/entropy-page.m
 import { assertNoUnexpectedFetches } from './tools/assert-no-fetch.mjs';
 import { assertGlyphCoverage } from './tools/assert-glyphs.mjs';
 import { assertWorkshop } from './tools/assert-workshop.mjs';
+import { assertNotices } from './tools/assert-notices.mjs';
 import { createHash } from 'node:crypto';
 import { copyFileSync } from 'node:fs';
 
@@ -500,3 +501,4 @@ console.log(`icon check: ${referenced.size} glyphs by name and ${referencedPoint
 assertNoUnexpectedFetches('docs');
 assertGlyphCoverage('docs');
 assertWorkshop();
+assertNotices();
