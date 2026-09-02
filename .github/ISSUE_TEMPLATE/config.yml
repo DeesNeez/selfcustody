@@ -1,0 +1,25 @@
+# Blank issues are disabled so that every report arrives with the safety
+# warning in front of it. The templates all carry the same one: never paste
+# real wallet material into a public tracker.
+blank_issues_enabled: false
+
+contact_links:
+  - name: Report a security vulnerability (private)
+    url: https://github.com/HodlDee/selfcustody/security/advisories/new
+    about: >-
+      Do not open a public issue for a security problem. Use this private
+      advisory form. Never include a real seed phrase, entropy, passphrase or
+      private key in any report.
+
+  - name: Email the maintainer
+    url: mailto:info@selfcustody.ca
+    about: >-
+      For security reports you would rather send by email, or anything that
+      does not fit a template. Again: no real seeds, entropy, passphrases or
+      private keys, ever.
+
+  - name: Read the security policy first
+    url: https://github.com/HodlDee/selfcustody/blob/main/SECURITY.md
+    about: >-
+      What the Entropy Workshop claims and does not claim. Several claims are
+      falsifiable; showing one is false is a valid, and very welcome, report.

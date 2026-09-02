@@ -154,9 +154,12 @@ names, answering a question nobody had asked. Author testimony about how code
 was written beats inference from similarity metrics whose blind spots have not
 been mapped.
 
-A seventh, non-licensing note: `secp256k1-wasm/Cargo.toml` cites
-"CONTRIBUTING.md §2", and `CONTRIBUTING.md` does not exist. Phase 8 of the
-project plan creates it; the reference should be checked against it then.
+A seventh, non-licensing note, now **resolved**: `secp256k1-wasm/Cargo.toml`
+cites "CONTRIBUTING.md §2" and that file did not exist. `CONTRIBUTING.md` has
+since been added with §2 as the dependency and reproducibility policy — exact
+versions, committed lockfiles, images pinned by digest, inputs hash-verified,
+and licences vendored — which is what the crate was pointing at. The citation
+now resolves to the rule it claimed.
 
 ## Software inventory
 

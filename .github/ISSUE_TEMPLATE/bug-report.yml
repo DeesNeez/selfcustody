@@ -1,0 +1,93 @@
+name: Bug report
+description: Something on the site or in the Entropy Workshop behaves incorrectly.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > ### ⚠ Never paste real wallet material
+        >
+        > No seed phrase, private key, passphrase, extended private key, or real
+        > collected entropy — not in the description, not in a log, not in a
+        > screenshot. This tracker is public, permanent and mirrored, and
+        > deleting a comment does not unpublish it.
+        >
+        > Reproduce with a published BIP-39 test vector or an obviously fake
+        > value instead. It makes a better report, because someone else can run it.
+        >
+        > **If funds are already exposed, move them to a wallet from a new seed
+        > first.** Nothing here is more urgent than that.
+
+  - type: markdown
+    attributes:
+      value: |
+        **Security problem?** Do not file it here. Use the
+        [private advisory form](https://github.com/HodlDee/selfcustody/security/advisories/new)
+        or email info@selfcustody.ca.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+      placeholder: |
+        I expected … but instead …
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: >-
+        Numbered steps someone else can follow. Include the test vector or fake
+        value you used.
+      placeholder: |
+        1. Open …
+        2. Enter the all-zeros test vector …
+        3. …
+    validations:
+      required: true
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen
+      options:
+        - A guide or site page
+        - The Entropy Workshop on the site (entropy.html)
+        - The downloaded offline Workshop (entropy-offline.html)
+        - The build or a test script
+        - Somewhere else / not sure
+    validations:
+      required: true
+
+  - type: input
+    id: digest
+    attributes:
+      label: SHA-256 of your offline file
+      description: >-
+        Only if this concerns the downloaded Workshop. It identifies which build
+        you have, and it is the first thing anyone will ask for.
+      placeholder: "61f8ed3b…"
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and operating system
+      placeholder: "Firefox 141 on Windows 11; Safari 18 on iOS"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before submitting
+      options:
+        - label: >-
+            This contains no real seed phrase, private key, passphrase or real
+            entropy.
+          required: true
+        - label: This is not a security vulnerability report.
+          required: true

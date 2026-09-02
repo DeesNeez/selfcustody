@@ -1,0 +1,81 @@
+name: Content correction
+description: A guide says something wrong, outdated, unclear, or unsafe.
+title: "[Content] "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > ### ⚠ Never paste real wallet material
+        >
+        > No seed phrase, private key, passphrase, extended private key, or real
+        > collected entropy — not in the description, not in a screenshot. This
+        > tracker is public, permanent and mirrored.
+
+  - type: markdown
+    attributes:
+      value: |
+        Corrections are the most valuable reports this project gets. These
+        guides describe operations where a mistake can lose money permanently,
+        so a wrong step matters more here than a typo would elsewhere — though
+        typos are welcome too.
+
+  - type: input
+    id: page
+    attributes:
+      label: Which page
+      description: The URL, or the guide's title.
+      placeholder: "https://selfcustody.ca/guides/seed-backup-metal.html"
+    validations:
+      required: true
+
+  - type: textarea
+    id: says
+    attributes:
+      label: What it currently says
+      description: Quote the passage, so it can be found exactly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong with it
+      description: >-
+        Outdated, factually incorrect, ambiguous, or unsafe as written — and why.
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: What it should say, and how you know
+      description: >-
+        A link to the manufacturer's documentation, the BIP, or the source you
+        are relying on. A correction that can be checked lands faster than one
+        that has to be taken on trust.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How serious is it
+      options:
+        - Unsafe — following this could cost someone funds
+        - Wrong — factually incorrect, but not dangerous
+        - Outdated — was right, no longer is
+        - Unclear — correct but easy to misread
+        - Typo or wording
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before submitting
+      options:
+        - label: >-
+            This contains no real seed phrase, private key, passphrase or real
+            entropy.
+          required: true
