@@ -1,7 +1,7 @@
-/* LifeHash version2, adapted from the merged
-   EntropyLab implementation in PR #74. The reference algorithm is preserved,
-   but SHA-256 comes from EntropyCore so the offline page adds no browser API
-   or network dependency.
+/* LifeHash version2, adapted from the merged EntropyLab implementation in
+   w-s-bitcoin/entropylab#74. The reference algorithm is preserved, but
+   SHA-256 comes from EntropyCore so the offline page adds no browser API or
+   network dependency.
 
    Fingerprints are hashed as raw bytes, which is what Sparrow shows. See
    fromFingerprint for why, and for what it means for icons from earlier
