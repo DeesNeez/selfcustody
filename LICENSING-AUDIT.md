@@ -21,11 +21,11 @@ and must be answered by the person who put the material here.
    source lines and 83 images, none originated with anyone but the maintainer.
    That commit has since been removed from this repository's history. See
    [Contributor audit](#contributor-audit).
-2. **Two third-party notices are missing and one is contradictory.** The font
-   notices and the LifeHash notice are resolved; both were serious because the
-   standalone offline artifact carried neither. Bootstrap and Bootstrap Icons
-   still ship without theirs, and `secp256k1-wasm` still contradicts itself.
-   See [Notice gaps](#notice-gaps).
+2. **Two third-party notices are still missing.** The font notices and the
+   LifeHash notices are resolved -- both mattered because the standalone
+   offline artifact carried none of them -- and `secp256k1-wasm` no longer
+   contradicts itself about its own terms. Bootstrap and Bootstrap Icons still
+   ship without theirs. See [Notice gaps](#notice-gaps).
 3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
    images are manufacturer logos, product shots or exchange marks. They cannot
    go under a project content licence. The remaining 44 need the maintainer to
@@ -91,7 +91,7 @@ condition the project does not meet, or did not until the row says otherwise.
 | 3 | `docs/assets/vendor/bootstrap/css/bootstrap.min.css` | MIT | Shipped, minified, and the `/*! … */` banner Bootstrap's dist preserves has been stripped. No notice anywhere. Also has no source under `build/` — it is a hand-placed file inside otherwise-generated output. | Restore the banner or record the notice in `THIRD_PARTY_NOTICES.md`; record the exact upstream version, which is not stated anywhere. |
 | 4 | `build/vendor/bootstrap-icons/` and the generated subset in `docs/assets/vendor/bootstrap-icons/` | MIT | No licence text vendored; the generated stylesheet carries no banner. `README.md` records only "as vendored in commit a565235", not an upstream version. | Vendor the upstream `LICENSE`, record the upstream version, and carry the notice into the subset output. |
 | 5 | `build/tools/lifehash.js` | MIT **and** BSD-2-Clause-Patent | **Resolved.** The module carries both upstream licences, retained verbatim at `build/vendor/lifehash/` from pinned revisions and reproduced in full inside both generated Workshop pages. Which licences applied was settled by asking the author of the implementation it was adapted from, not by inference. | — |
-| 6 | `secp256k1-wasm/` | **Contradictory** | `README.md` says "The Rust wrapper is Unlicensed"; `Cargo.toml` declares `license = "Unlicense"`. Those mean opposite things — no licence at all, versus a public-domain dedication. | Decide which is intended and make both files say it. |
+| 6 | `secp256k1-wasm/` | Unlicense | **Resolved.** The maintainer confirms the wrapper is released into the public domain under The Unlicense. `README.md` no longer says "Unlicensed", which meant the opposite, and the full text is vendored at `secp256k1-wasm/LICENSE` from unlicense.org, so manifest, prose and licence text agree. The identifier is not repeated in `src/lib.rs`: that file's line numbering reaches the compiled module, so even a comment there would require regenerating the committed WebAssembly. libsecp256k1 and secp256k1-sys keep their own upstream licences. | — |
 
 ### How the LifeHash licences were established
 
@@ -136,7 +136,7 @@ project plan creates it; the reference should be checked against it then.
 | `build/render.mjs` | Static-site renderer | Project | Maintainer | MIT | Sole authorship in history. |
 | `build/tools/` | Workshop implementation, crypto, guards, tests | Project, except as noted | Maintainer, except as noted | MIT | 124 commits, all from the maintainer account. Three files are adapted from elsewhere — see the third-party table. |
 | `build/tools/bip39-english.txt` | BIP39 English wordlist | Upstream BIP39 | Not the project | Follows upstream | **Needs confirmation** of which source copy was used and under what terms. The wordlist is universally redistributed, but the project should still name its source. |
-| `secp256k1-wasm/src/lib.rs`, `builder/` | Rust wrapper and pinned builder image | Adapted from merged [w-s-bitcoin/entropylab#103](https://github.com/w-s-bitcoin/entropylab/pull/103) | Unresolved | Unresolved | Gap 6 above. |
+| `secp256k1-wasm/src/lib.rs`, `builder/` | Rust wrapper and pinned builder image | Adapted from merged [w-s-bitcoin/entropylab#103](https://github.com/w-s-bitcoin/entropylab/pull/103) | Maintainer | Unlicense | Confirmed by the maintainer and stated identically in `Cargo.toml` and `README.md`, with the full text at `secp256k1-wasm/LICENSE`. |
 | `fuzzing/lifehash/fuzz.mjs` | Differential test harness | Project | Maintainer | MIT | Test tooling, never shipped. |
 | `.github/workflows/` | CI configuration | Project | Maintainer | MIT | Sole authorship. |
 | `docs/` | Generated composite output | Mixed | Mixed | **No single licence** | Each component keeps the licence of its source. Must not be blanket-licensed. |
@@ -246,13 +246,15 @@ Commit 3 cannot proceed until these are recorded.
    of it come with terms the project should reproduce?
 3. For each of the 40 unresolved images: which of the seven classes above?
    Stock licences and generation tools need naming, not just approving.
-4. Is the `secp256k1-wasm` wrapper meant to be Unlicense, or unlicensed?
+4. libsecp256k1's own MIT notice is not reproduced anywhere, although its
+   compiled output ships inside the artifact. Should it go in
+   `THIRD_PARTY_NOTICES.md`, or travel inside the artifact the way the font
+   and LifeHash notices now do?
 
 ## What happens next
 
 - Fix the remaining notice gaps: Bootstrap and Bootstrap Icons ship without
-  their MIT notices (gaps 3 and 4), and `secp256k1-wasm` contradicts itself
-  about its own licence (gap 6). They are licence conditions, independent of
+  their MIT notices (gaps 3 and 4). They are licence conditions, independent of
   any decision about the project's own licensing.
 - Record answers to the four questions above in this file.
 - Then, and only then, write `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md`
