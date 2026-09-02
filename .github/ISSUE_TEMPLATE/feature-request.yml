@@ -1,0 +1,75 @@
+name: Feature request
+description: Suggest a new guide, a Workshop capability, or a site improvement.
+title: "[Request] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > ### ⚠ Never paste real wallet material
+        >
+        > No seed phrase, private key, passphrase, extended private key, or real
+        > collected entropy — not in the description, not in a screenshot. This
+        > tracker is public, permanent and mirrored.
+
+  - type: markdown
+    attributes:
+      value: |
+        Worth knowing before you write: this site is deliberately small. It has
+        no analytics, no tracking, no third-party requests at runtime, and a
+        build guard that fails if a page starts making one. Requests that would
+        add a network dependency to the Entropy Workshop are very unlikely to be
+        accepted — that it works with no network at all is the point of it.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve
+      description: >-
+        Describe the situation someone is in, rather than the feature. The
+        problem usually has more than one solution and you may not have the best.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: What area
+      options:
+        - A new guide, or an addition to one
+        - The Entropy Workshop
+        - Site navigation, search or layout
+        - Accessibility
+        - Build, tests or tooling
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What else you considered
+      description: >-
+        Including doing nothing. If an existing guide nearly covers this, say
+        which — extending one is usually better than adding another.
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before submitting
+      options:
+        - label: >-
+            This contains no real seed phrase, private key, passphrase or real
+            entropy.
+          required: true
+        - label: >-
+            I have checked that no existing guide or open issue already covers
+            this.
+          required: true
