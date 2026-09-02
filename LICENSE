@@ -1,0 +1,41 @@
+                        ⚠ DRAFT — NOT IN EFFECT
+
+    While this notice is present, this licence grants nothing. It is under
+    review in PR #84 (https://github.com/HodlDee/selfcustody/pull/84), and
+    default copyright applies to the software described below.
+
+    A finalization commit, made only after approval, removes this notice from
+    this file and from LICENSING.md, LICENSE-CONTENT.md and
+    THIRD_PARTY_NOTICES.md together, so the licensing package takes effect as
+    one. The presence of this notice, not the state of any pull request, is
+    what tells you which version you are holding.
+
+    Everything below this line is the licence as it will read once that commit
+    lands. It covers project-authored software only. The project's educational
+    writing is licensed separately under CC BY 4.0 (see LICENSE-CONTENT.md),
+    and third-party components keep their own licences (see
+    THIRD_PARTY_NOTICES.md).
+
+    ------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2023-2026 HodlDee
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

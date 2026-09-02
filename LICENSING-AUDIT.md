@@ -475,30 +475,41 @@ where its attribution lives.
 Every tracked image now has a recorded origin. The category that opened this
 audit — images the repository could say nothing about — is empty.
 
-What that does **not** mean is that the image position is settled. Three things
-still stand between here and a content licence:
+What that does **not** mean is that the image position is settled. Of the three
+things this section once listed as outstanding, two have since been recorded
+elsewhere in this file and one remains genuinely open:
 
-- The 39 third-party marks and the manufacturer product image need a **basis**
-  recorded for their use — press kit, media-kit terms, explicit permission, or
-  nominative fair use. A classification says what they are, not why this project
-  may show them.
-- Whether AI-generated images attract copyright at all, and on what terms model
-  output may be licensed onward, is unresolved and applies to 28 files plus the
-  five Cash Vortex assets.
-- The four project marks are presumed authored for the project, and that has
-  still never been written down.
+- **Basis for the third-party marks and product images — recorded, split in
+  two.** The 27 logos and marks have a *proposed* nominative-use basis, which is
+  written down for a reviewer to accept or reject and is **not** a legal opinion
+  or a settled fact. The 13 product photographs have **no documented
+  permission**; a 2026-09-02 vendor audit found one vendor's terms refusing this
+  use and no usable terms for the other eight, and they are tracked in
+  [issue #86](https://github.com/HodlDee/selfcustody/issues/86). Recorded as
+  unresolved is a different state from unrecorded, and it is the state they are
+  now in.
+- **Whether AI-generated images attract copyright — still open**, and this one
+  is not the project's to close. It covers 28 Gemini files plus the five Cash
+  Vortex assets. They are excluded from CC BY 4.0 for exactly that reason.
+- **The four project marks — written down.** Their origin is recorded above:
+  created for the project under the maintainer's direction with ChatGPT
+  assistance, with the division between human-authored and generated expression
+  undocumented. They stay excluded as reserved branding, for a reason
+  independent of how the copyright question resolves.
 
-
-Each needs one of: original project photography, original project
-illustration, manufacturer-provided, third-party with permission, licensed
-stock (with the licence recorded), generated derivative (with the tool and its
-output terms recorded), or unknown provenance. Only the first two, plus
-anything with explicit sublicensing rights, can go under CC BY 4.0. Anything
-that stays **unknown** must be excluded by name.
+The classification scheme that opened this audit — original photography,
+original illustration, manufacturer-provided, third-party with permission,
+licensed stock, generated derivative, or unknown — has been applied to every
+tracked image, and **no image is left in the "unknown" class**. What still
+governs the licence is unchanged: only project-original material, plus anything
+carrying explicit sublicensing rights, goes under CC BY 4.0, and everything else
+is excluded by name in `LICENSE-CONTENT.md`.
 
 ## Questions the maintainer must answer
 
-Commit 3 cannot proceed until these are recorded.
+**All four are now answered**, and the answers are recorded below and in the
+sections above. The heading is kept because the questions are the audit's
+structure; none of them is still blocking.
 
 1. *(Answered. Nothing outstanding.)* The copyright owner and licensor is
    **HodlDee**, a pseudonymous individual, and the same name serves as the
@@ -521,10 +532,21 @@ Commit 3 cannot proceed until these are recorded.
    not mistake its absence for a gap someone forgot to fill. Note separately
    that pseudonymity can make ownership harder to prove or enforce if it is ever
    contested — a cost carried by the licensor, and not a defect in the audit.
-2. On what basis is each manufacturer logo and product image used, and does any
-   of it come with terms the project should reproduce?
-3. For each of the 40 unresolved images: which of the seven classes above?
-   Stock licences and generation tools need naming, not just approving.
+2. *(Answered, and the answer is two different answers.)* The 27 logos and
+   marks are used on a **proposed nominative-use basis** — recorded for review,
+   not asserted as settled. The 13 product photographs have **no documented
+   permission**: the vendor audit of 2026-09-02 located terms for one vendor
+   that refuse this use, and none usable for the remaining eight. Six vendors
+   publish media kits stating no terms at all, which is not permission and is
+   recorded nowhere as permission. Replacement is tracked in
+   [issue #86](https://github.com/HodlDee/selfcustody/issues/86). No vendor
+   supplied terms this project is obliged to reproduce.
+3. *(Answered.)* Every one of the 40 is classified, with the tool or licence
+   named rather than merely approved: 28 AI-generated or project-edited Gemini
+   images, five Cash Vortex assets made with ChatGPT and Motionleap, four
+   project marks made with ChatGPT assistance, and four Unsplash photographs
+   credited to their photographers with links to the originals. Nothing is left
+   unknown, and everything in this list is excluded from CC BY 4.0.
 4. *(Answered.)* libsecp256k1's MIT notice now travels inside both generated
    pages, beside the WebAssembly it describes, because the offline build is
    downloaded on its own. It will also be indexed in `THIRD_PARTY_NOTICES.md`,
@@ -536,19 +558,21 @@ Commit 3 cannot proceed until these are recorded.
 
 ## What happens next
 
-- The notice gaps are closed. What remains before the licensing files can be
-  written is the maintainer's own material rather than anyone else's.
-- Record answers to the remaining questions above in this file.
-- `LICENSE-CONTENT.md` records the CC BY 4.0 grant over project-authored prose
-  and diagrams and, at greater length, what that grant excludes. **Nothing gates
-  it.** Ownership is settled — HodlDee authored the material and licenses it —
-  so it takes effect on merge, and the only step left is review.
+- The notice gaps are closed, every question above is answered, and the
+  licensing files are **written**: `LICENSE`, `LICENSING.md`,
+  `THIRD_PARTY_NOTICES.md` and `LICENSE-CONTENT.md` all exist on this branch and
+  are reviewable as one package rather than one at a time.
+- Each carries a **draft notice**, and none is in effect while that notice is
+  present. Ownership is settled — HodlDee authored the material and licenses it
+  — so what remains is review of the wording, not a condition anyone is waiting
+  on. A single finalization commit removes all four notices together, so the
+  package activates at once instead of leaving live files pointing at draft
+  ones.
 - The thirteen product photographs are **not** a gate on it. They are excluded
   from the licence, so it can take effect without reaching them, and their
   undocumented status is tracked in
   [issue #86](https://github.com/HodlDee/selfcustody/issues/86). Excluding them
   settles what the licence grants; it settles nothing about the basis on which
   they appear on the site, which remains unresolved.
-- Then, and only then, write `LICENSE`, `LICENSING.md` and
-  `THIRD_PARTY_NOTICES.md`, put `LICENSE-CONTENT.md` into force, and update the
-  README's licensing section.
+- On approval: one finalization commit removes the four draft notices and
+  updates the README's licensing section to point at files that are in force.

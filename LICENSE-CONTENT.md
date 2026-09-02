@@ -2,11 +2,16 @@
 
 > ## ⚠ Draft — not in effect
 >
-> **This licence grants nothing.** It is under review in
-> [PR #84](https://github.com/HodlDee/selfcustody/pull/84) and does not apply to
-> any material while that PR is open. This notice is removed in a finalization
-> commit at merge, and not before — until then, default copyright applies and no
-> reuse permission should be inferred from anything below.
+> **While this notice is present, this licence grants nothing.** It is under
+> review in [PR #84](https://github.com/HodlDee/selfcustody/pull/84), default
+> copyright applies, and no reuse permission should be inferred from anything
+> below.
+>
+> The notice is not removed "at merge" — a commit necessarily precedes the merge
+> that carries it, so no such moment exists. It is removed by a **finalization
+> commit**, made only after approval and pushed as the last commit on the review
+> branch, which is then merged. **The presence of this notice, not the state of
+> any pull request, is what tells you which version you are holding.**
 >
 > **Copyright © 2023–2026 HodlDee.**
 >
@@ -65,12 +70,23 @@ That burden falls on the licensor, not on you.
 
 Preferred form:
 
-> "Adapted from [SelfCustody.ca](https://selfcustody.ca/guides/the-page-you-used.html),
-> licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-> Changes were made."
+> "Adapted from [SelfCustody.ca](https://selfcustody.ca/guides/the-page-you-used.html)
+> by **HodlDee**, © 2023–2026 HodlDee, licensed under
+> [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Changes were made."
 
-Link to the specific page you drew from rather than the site root, so a reader
-can check what you started with.
+Four things are doing work there, and dropping the first is the common mistake:
+
+| Element | In the example |
+| --- | --- |
+| **The author** | HodlDee |
+| The source | a link to the page you used |
+| The licence | a link to CC BY 4.0 itself, not just its name |
+| Your changes | "Changes were made", ideally more specific |
+
+Naming the author is not decoration — attribution is the entire consideration
+this licence asks for, and a credit that omits HodlDee does not satisfy it.
+Linking the specific page rather than the site root is a courtesy on top: it
+lets a reader check what you started with.
 
 ### Saying what you changed
 
@@ -188,5 +204,18 @@ its source.** There is no licence that applies to a generated page as a whole,
 and treating one as CC BY because most of its words are would sweep in material
 this file spends its length excluding.
 
-Work from `build/guides.mjs` and `build/content.mjs` rather than from the
-rendered HTML. That is where the licensed material actually lives.
+**The licence follows the material, not the file it arrives in.** The same
+prose is licensed whether you take it from `build/guides.mjs`, from the rendered
+HTML under `docs/`, from a PDF, from an ePub or from print. CC BY 4.0 grants use
+"in any medium or format", and reformatting changes nothing about what you may
+do with the writing or what you owe in return.
+
+Working from the source modules is practical advice rather than a condition:
+that is where the licensed material sits unmixed, so you can take it without
+sorting it out of everything else first.
+
+What does not travel is that everything else. Lifting the prose carries this
+licence with it; copying a rendered page wholesale also picks up a vendored
+font, an AI-generated image and a third-party mark, none of which this licence
+grants — and none of which becomes grantable by being adjacent to something that
+is.
