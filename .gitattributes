@@ -20,3 +20,15 @@ docs/entropy-offline.html.sha256 -text
 # Every tracked .md blob is LF today. This pins that, so the next edit made on
 # a Windows checkout cannot quietly commit a different file.
 *.md text eol=lf
+
+# Licence and notice texts, which have no .md extension and so were not covered
+# by the rule above. These are reproduced upstream documents: their bytes are
+# the point, several are compared against served files by the build's notice
+# check, and one is a licence this project grants under. Every one of these
+# blobs is LF today, so this pins the current state rather than changing it --
+# what it prevents is the same accident the Markdown rule prevents, an edit made
+# on a Windows checkout quietly committing a different file.
+LICENSE         text eol=lf
+COPYING         text eol=lf
+LICENSE-*.txt   text eol=lf
+OFL-*.txt       text eol=lf
