@@ -500,7 +500,8 @@ that stays **unknown** must be excluded by name.
 Commit 3 cannot proceed until these are recorded.
 
 1. *(Answered, pending paperwork.)* The proposed copyright holder is **Hodl
-   Dee Inc**. What is still outstanding is the written assignment: the material
+   Dee Inc**, and the public attribution name is **HodlDee** — a legal person
+   for the rights, a recognisable name for the credit line. What is still outstanding is the written assignment: the material
    was authored by the maintainer as an individual, and an entity holds nothing
    until those rights are actually assigned to it. Until that document exists
    and is recorded here, "Hodl Dee Inc" is a proposal rather than a fact, and

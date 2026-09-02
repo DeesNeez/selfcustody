@@ -37,9 +37,14 @@ map.
 
 ## Attribution
 
-**Attribute to:** Hodl Dee Inc *(proposed — pending the written assignment
+**Attribute to:** HodlDee
+**Copyright holder:** Hodl Dee Inc *(proposed — pending the written assignment
 described above)*
 **Canonical URL:** <https://selfcustody.ca>
+
+Those are two different fields doing two different jobs. The credit a reuser
+writes is a public-facing name; the holder is the legal person the rights sit
+with. They need not match, and here they deliberately do not.
 
 Preferred form:
 
