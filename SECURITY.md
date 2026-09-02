@@ -11,7 +11,7 @@ document is about it.
 ## Reporting a vulnerability
 
 Email **info@selfcustody.ca**, or open a private report through GitHub's
-["Report a vulnerability"](https://github.com/DeesNeez/selfcustody/security/advisories/new)
+["Report a vulnerability"](https://github.com/HodlDee/selfcustody/security/advisories/new)
 form on this repository.
 
 Please do not open a public issue for anything that affects the correctness or
@@ -132,8 +132,21 @@ For a stronger origin check, verify the keyless build-provenance attestation
 published by this repository's release workflow:
 
 ```
+gh attestation verify entropy-offline.html -R HodlDee/selfcustody
+```
+
+If that reports no matching attestation, try the repository's former name:
+
+```
 gh attestation verify entropy-offline.html -R DeesNeez/selfcustody
 ```
+
+Both commands are correct, for different files. This repository was renamed
+from `DeesNeez/selfcustody` to `HodlDee/selfcustody`, and an attestation
+records the repository as it stood when it was signed. A copy downloaded before
+the rename verifies under the old name; a copy downloaded after it verifies
+under the new one. Neither is a sign of tampering, and a file that verifies
+under either is verified.
 
 That proves the file's bytes were attested by this repository's GitHub Actions
 workflow after its verification jobs passed. It does not prove that the source

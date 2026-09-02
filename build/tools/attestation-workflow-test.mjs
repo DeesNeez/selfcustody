@@ -22,8 +22,15 @@ assert.match(job, /persist-credentials: false/,
   'the attestation checkout must not retain a repository token');
 
 assert.match(security,
-  /gh attestation verify entropy-offline\.html -R DeesNeez\/selfcustody/,
+  /gh attestation verify entropy-offline\.html -R HodlDee\/selfcustody/,
   'the security policy must document provenance verification');
+/* The repository was renamed, and an attestation names the repository it was
+   signed under. Every artifact published before the rename verifies only under
+   the old name, so the policy has to keep documenting it -- dropping it would
+   strand every copy already downloaded. */
+assert.match(security,
+  /gh attestation verify entropy-offline\.html -R DeesNeez\/selfcustody/,
+  'the security policy must keep the pre-rename verification command');
 assert.match(security, /does not prove that the source\s+itself is correct/i,
   'the documentation must state the attestation trust boundary');
 

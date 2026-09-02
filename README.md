@@ -215,7 +215,7 @@ source.
 CI runs Node.js 22. Use that until an explicit supported range is established.
 
 ```bash
-git clone https://github.com/DeesNeez/selfcustody.git
+git clone https://github.com/HodlDee/selfcustody.git
 cd selfcustody
 npm run build
 ```
@@ -271,7 +271,7 @@ from CI.
 
 Report anything affecting the correctness or containment of the Entropy
 Workshop privately: email **info@selfcustody.ca**, or use GitHub's
-[private advisory form](https://github.com/DeesNeez/selfcustody/security/advisories/new).
+[private advisory form](https://github.com/HodlDee/selfcustody/security/advisories/new).
 Wrong derivations, exposed secrets, unexpected networking and offline-build
 containment failures should not be filed as public issues. Broken links, wrong
 facts and layout bugs are welcome as ordinary public issues.

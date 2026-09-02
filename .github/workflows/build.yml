@@ -113,7 +113,7 @@ jobs:
       # pointer is not reproducibility. Anyone can reconstruct this image from
       # secp256k1-wasm/builder/ and compare -- that path is exercised by the
       # publish workflow, so it does not also need to run on every PR.
-      WASM_BUILDER_IMAGE: ghcr.io/deesneez/selfcustody-wasm-builder@sha256:1418e85a9c5fb5759fd5b4bdc42f3485cbc8dedf3c78e259fa6fe815a806f9ae
+      WASM_BUILDER_IMAGE: ghcr.io/hodldee/selfcustody-wasm-builder@sha256:1418e85a9c5fb5759fd5b4bdc42f3485cbc8dedf3c78e259fa6fe815a806f9ae
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
