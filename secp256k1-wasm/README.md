@@ -42,6 +42,6 @@ Nothing about the intended terms changed, only the wording that described them.
 
 libsecp256k1 and secp256k1-sys are not covered by that dedication. They keep
 their own upstream licences, which live in the crate source downloaded at build
-time rather than in this repository -- and the compiled result of that source
-ships inside the Workshop artifact, so their notices belong in
-`THIRD_PARTY_NOTICES.md` when it is written.
+time rather than in this repository. Their applicable notices must be preserved
+separately; distribution of the compiled dependency is tracked in
+`LICENSING-AUDIT.md`, question 4.
