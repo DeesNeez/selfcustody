@@ -29,7 +29,7 @@ file, copied verbatim from <https://unlicense.org/UNLICENSE>.
 The identifier is deliberately not repeated as a comment in `src/lib.rs`, and
 the reason is worth knowing before anyone adds one. That file's line numbering
 reaches the compiled module: adding four comment lines to the top of it changed
-the emitted WebAssembly, and CI's `build-wasm` job caught the committed
+the emitted WebAssembly, and CI's `wasm` job caught the committed
 `build/tools/secp256k1-wasm-b64.js` no longer matching what the pinned builder
 produces. Any edit to `src/lib.rs`, comments included, therefore costs a
 regeneration through `npm run build:wasm:container` and a new artifact

@@ -155,6 +155,20 @@ Every test is a script, and **every committed test runs in CI** —
 `npm run test:ci-completeness` fails the build if a test exists that CI does not
 run, so adding a test means wiring it into `.github/workflows/build.yml` too.
 
+Two checks are required on a pull request. `Site · build, generated files and
+guards` runs on every change, because every change can break the build. The
+`Entropy Workshop` gate always reports, but the jobs behind it — the Workshop's
+own tests, the LifeHash differential test, and the WASM rebuild — run only when
+a path they cover changed, so expect to see them skipped on a docs-only pull
+request. That is the gate working, not a check that failed to start. The
+complete suite also runs weekly, and on demand from the Actions tab.
+
+What puts the Workshop in scope is mostly its regenerated output. Because
+`docs/` is committed with the source that produced it (§4), a source edit
+that reaches the Workshop arrives with a changed `docs/entropy*` beside it,
+and that is the signal CI reads. An edit to `build/guides.mjs` regenerates
+guides and nothing else, so it scopes to nothing.
+
 Run the ones your change touches. The full list is in `package.json`; the ones
 people need most often:
 

@@ -227,7 +227,7 @@ answered by rebuilding it or by the attestation above — not by any hash in the
 file.
 
 The build asserts exactly that on every run, for both pages, and the
-`build-wasm` CI job separately rebuilds the engine in the pinned image twice
+`wasm` CI job separately rebuilds the engine in the pinned image twice
 and refuses any wrapper that differs from the committed one — the check that
 caught a locally-compressed payload before it shipped.
 
