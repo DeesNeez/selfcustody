@@ -182,30 +182,101 @@ than classified — `education-library.jpeg`, `signing-device-circuit.jpeg` and
 last of their places. Do not place this directory under a content licence as a
 whole.
 
-### Third-party marks and product images — 39 files, exclude
+### Third-party material — 40 files, excluded, and two different problems
+
+These were counted as one group and are not one problem. A trademark and a
+photograph of a product are protected by different bodies of law, and the
+arguments that permit using them are not interchangeable. Splitting them is
+what makes the remaining work tractable.
+
+#### Logos and marks used for identification — 27 files
 
 | Group | Count | Files |
 | --- | --- | --- |
 | `device-logos/` | 12 | bitbox, bitkey, coldcard, foundation, jade, krux, ledger, satscard, seedsigner (×2), tapsigner, trezor |
-| `devices/` | 12 | bitbox02, bitkey, blockstream-jade-plus, coldcard-q-mk5, krux-yahboom, ledger-stax-face, prime_light, satscard, seedsigner, tapsigner, trezor-safe-7 (×2) |
 | `software/` | 7 | bluewallet, cove, electrum, nunchuk, sparrow, specter, wasabi |
 | `exchanges/` | 6 | bitbuy, bitcoin-well, bull-bitcoin, kraken, ndax, shakepay |
 | `custody/` | 2 | casa, unchained |
 
-These are logos, trademarks and product photography belonging to their makers.
-They stay with their owners and are excluded from any project content licence.
-**Needs maintainer confirmation:** on what basis each is used — press kit,
-media-kit terms, explicit permission, or nominative fair use. No credit,
-permission note or source URL for any of them exists anywhere in the
-repository.
+**Proposed basis: nominative use.** Each appears beside writing about that
+product, to identify the thing being discussed. The site compares devices,
+software and exchanges; a comparison that cannot name and show what it compares
+is not much of a comparison. Nominative use is generally available where the
+product cannot readily be identified without the mark, no more of the mark is
+used than needed, and nothing suggests sponsorship or endorsement. The first two
+conditions are met by how the site uses them. The third is the one a project has
+to actively maintain, which is why the disclaimer below exists.
 
-### Project marks — 4 files, project-owned but not CC BY
+**Proposed disclaimer,** to appear wherever these marks are shown and in the
+licensing files:
+
+> Product names, logos and trademarks are the property of their respective
+> owners. Their use here identifies the products discussed and does not indicate
+> affiliation with, sponsorship by, or endorsement from their owners.
+
+This is a proposed basis, not a legal opinion, and it is recorded so a reviewer
+can accept or reject it on the facts.
+
+#### Product photographs — 13 files
+
+| File | Depicts |
+| --- | --- |
+| `devices/bitbox02.webp` | Shift Crypto BitBox02 |
+| `devices/bitkey.png` | Block Bitkey |
+| `devices/blockstream-jade-plus.png` | Blockstream Jade Plus |
+| `devices/coldcard-q-mk5.png` | Coinkite COLDCARD Q / Mk5 |
+| `devices/krux-yahboom.png` | Krux on Yahboom hardware |
+| `devices/ledger-stax-face.webp` | Ledger Stax |
+| `devices/prime_light.webp` | Foundation Passport Prime |
+| `devices/satscard.png` | Coinkite SATSCARD |
+| `devices/seedsigner.webp` | SeedSigner |
+| `devices/tapsigner.svg` | Coinkite TAPSIGNER |
+| `devices/trezor-safe-7-detail.png` | SatoshiLabs Trezor Safe 7 |
+| `devices/trezor-safe-7-shortlist.png` | SatoshiLabs Trezor Safe 7 |
+| `coldcard-q-mk5-devices.jpg` | Coinkite COLDCARD, maintainer-confirmed as manufacturer-provided |
+
+**Nominative use does not reach these.** The doctrine concerns using a *mark* to
+refer to a product. A photograph is a separate copyrighted work owned by whoever
+took it, and being permitted to name a product grants nothing over someone
+else's picture of it. These need a licence: press-kit or media-kit terms that
+permit editorial use, or explicit permission.
+
+**None of the thirteen has a documented permission source.** The repository
+contains no credit line, no source URL, no press-kit reference and no
+correspondence for any of them, and a search for the words "press kit", "media
+kit" and "permission" finds nothing outside this audit's own notes.
+
+`coldcard-q-mk5-devices.jpg` is the one with any provenance at all: the
+maintainer confirms it was manufacturer-provided. That records where it came
+from, not the terms it came under, so it needs the same documentation as the
+rest.
+
+Until terms are located for a given file, three options exist for it, and the
+choice is per-file rather than for the group: locate and record the terms;
+replace it with a photograph the project owns or has licensed; or remove it and
+let the writing carry the comparison. The last is not a defeat — several of
+these sit beside prose that already describes the device.
+
+### Project marks — 4 files, reserved branding, excluded from CC BY
 
 `self-custody-symbol.svg`, `self-custody-favicon.svg`, `favicon.png`,
-`apple-touch-icon.png`. **Needs maintainer confirmation** that these were
-authored for the project. A project logo is normally kept out of a content
-licence even when the project owns it, so that reuse of the writing does not
-imply endorsement.
+`apple-touch-icon.png`.
+
+Created for the Self Custody project under the maintainer's direction with
+ChatGPT assistance; the division between human-authored and generated
+expression is not documented.
+
+That closes the provenance question without settling a different one. How they
+were made is known; whether, and to what extent, they attract copyright is not
+asserted here — the same open question that hangs over the other AI-generated
+material in this audit. Whatever rights the maintainer does hold in them can be
+included in the assignment to the copyright holder named above.
+
+They are **excluded from CC BY 4.0 regardless of how that resolves**, and the
+reason is independent of ownership. A content licence that swept up the project
+marks would let a reuser of the writing present it under this project's
+branding, which is precisely what a mark exists to prevent. Reserved branding is
+the correct treatment whether the marks turn out to be protected or not.
 
 ### Confirmed by the maintainer - 38 files
 
@@ -428,8 +499,12 @@ that stays **unknown** must be excluded by name.
 
 Commit 3 cannot proceed until these are recorded.
 
-1. What is the correct copyright holder line for `LICENSE` — a personal name,
-   or an entity?
+1. *(Answered, pending paperwork.)* The proposed copyright holder is **Hodl
+   Dee Inc**. What is still outstanding is the written assignment: the material
+   was authored by the maintainer as an individual, and an entity holds nothing
+   until those rights are actually assigned to it. Until that document exists
+   and is recorded here, "Hodl Dee Inc" is a proposal rather than a fact, and
+   `LICENSE` should not be published carrying it.
 2. On what basis is each manufacturer logo and product image used, and does any
    of it come with terms the project should reproduce?
 3. For each of the 40 unresolved images: which of the seven classes above?
@@ -448,5 +523,11 @@ Commit 3 cannot proceed until these are recorded.
 - The notice gaps are closed. What remains before the licensing files can be
   written is the maintainer's own material rather than anyone else's.
 - Record answers to the remaining questions above in this file.
-- Then, and only then, write `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md`
-  and `THIRD_PARTY_NOTICES.md`, and update the README's licensing section.
+- `LICENSE-CONTENT.md` exists as a **draft** and is marked as not in force. It
+  records the intended CC BY 4.0 grant and, at greater length, what that grant
+  excludes. It is deliberately not published as live: the assignment to the
+  copyright holder does not exist yet, and thirteen product photographs have no
+  documented permission.
+- Then, and only then, write `LICENSE`, `LICENSING.md` and
+  `THIRD_PARTY_NOTICES.md`, put `LICENSE-CONTENT.md` into force, and update the
+  README's licensing section.

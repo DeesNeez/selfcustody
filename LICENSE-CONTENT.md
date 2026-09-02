@@ -1,0 +1,147 @@
+# Licence for the educational content — DRAFT
+
+> **This draft is not in force.** Nothing on this page grants anything yet, and
+> no reuse permission should be inferred from it. Two things must happen first,
+> and both are tracked in [LICENSING-AUDIT.md](LICENSING-AUDIT.md):
+>
+> 1. The copyright in the project's own writing has to be **assigned in
+>    writing** to the holder named below. The material was authored by an
+>    individual; an entity holds nothing until those rights are transferred to
+>    it.
+> 2. The thirteen product photographs the site serves have **no documented
+>    permission**. They are excluded here, but a licence published while their
+>    status is unresolved would invite exactly the confusion this file exists to
+>    prevent.
+>
+> Until both are settled, default copyright applies to everything in this
+> repository.
+
+## What this licence covers
+
+The project's own educational writing and its original diagrams:
+
+- the guide text in `build/guides.mjs`, which is what the pages under
+  `docs/guides/` are generated from
+- the prose in `build/content.mjs` that becomes the site's own pages
+- the inline SVG diagrams authored in those two files
+- `SECURITY.md`, `README.md` and this repository's other project-authored prose
+
+Licensed under the **Creative Commons Attribution 4.0 International Licence
+(CC BY 4.0)** — <https://creativecommons.org/licenses/by/4.0/>.
+
+Project-authored **software** is covered separately, under the MIT Licence. The
+split matters because the two live in the same files: `build/content.mjs` is a
+JavaScript module that contains prose. The licence follows the nature of the
+material, not the file extension. See [LICENSING.md](LICENSING.md) for the full
+map.
+
+## Attribution
+
+**Attribute to:** Hodl Dee Inc *(proposed — pending the written assignment
+described above)*
+**Canonical URL:** <https://selfcustody.ca>
+
+Preferred form:
+
+> "Adapted from [SelfCustody.ca](https://selfcustody.ca/guides/the-page-you-used.html),
+> licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+> Changes were made."
+
+Link to the specific page you drew from rather than the site root, so a reader
+can check what you started with.
+
+### Saying what you changed
+
+CC BY 4.0 requires you to indicate if you modified the material. A sentence is
+enough, and being specific is more useful to your readers than being thorough:
+
+- "Condensed from the original; the multisig section was removed."
+- "Translated into French."
+- "Updated fee figures for 2027; the rest is unchanged."
+
+If you changed nothing, say so — "reproduced unchanged" — because that tells a
+reader they can rely on the original.
+
+## What this licence does NOT cover
+
+Everything below is **excluded**. Some of it belongs to other people, some has
+an unresolved status, and one category is deliberately withheld. Reusing the
+writing grants nothing over any of it.
+
+### Images generated with, or assisted by, AI
+
+Every image in this repository that was produced with a generative tool —
+28 files made with Google Gemini, the five Cash Vortex assets made with ChatGPT
+and Motionleap, and the project marks below.
+
+The exclusion is not a judgement that these are worthless or that the project
+lacks rights in them. It is that **whether AI output attracts copyright at all,
+and on what terms it may be licensed onward, is unsettled**, and this project
+will not resolve that question by asserting a licence over material whose
+status it cannot state. Licensing something you may not own is worse than
+licensing nothing.
+
+### Photographs from Unsplash
+
+Four photographs, each used under the Unsplash Licence:
+
+| File | Photographer | Photograph |
+| --- | --- | --- |
+| `fiat-single-bill.png` | engin akyurt | [`7aWvQdR36Y0`](https://unsplash.com/photos/a-one-hundred-dollar-bill-with-a-picture-of-a-mans-face-on-it-7aWvQdR36Y0) |
+| `hero-lock.webp` | Kaffeebart | [`KrPulSdUetk`](https://unsplash.com/photos/a-close-up-of-a-padlock-on-a-door-KrPulSdUetk) |
+| `hero-keylock.webp` | Dima Solomin | [`LkoDqb5E3zg`](https://unsplash.com/photos/a-close-up-of-a-key-on-a-door-LkoDqb5E3zg) |
+| `coinkite-circuit-board.jpg` | Alexandre Debiève | [`FO7JIlwjOtU`](https://unsplash.com/photos/macro-photography-of-black-circuit-board-FO7JIlwjOtU) |
+
+They are redistributable on the Unsplash Licence's own terms, which is not a
+grant this project can pass on as its own. Go to Unsplash rather than relying on
+anything here. `hero-lock.webp` has additionally had its colours modified, which
+that licence permits and which does not make it project-owned.
+
+### Manufacturer logos, product photographs, and other third-party marks
+
+Twenty-seven logos and marks belonging to hardware makers, wallet software
+vendors, exchanges and custody services, and thirteen photographs of products.
+
+> Product names, logos and trademarks are the property of their respective
+> owners. Their use here identifies the products discussed and does not indicate
+> affiliation with, sponsorship by, or endorsement from their owners.
+
+The marks appear beside writing about those products, to identify what is being
+discussed. That is a use of a *mark*; it grants nothing over a *photograph*, and
+the two are tracked separately in the audit for that reason.
+
+### The project's own marks
+
+`self-custody-symbol.svg`, `self-custody-favicon.svg`, `favicon.png` and
+`apple-touch-icon.png`.
+
+These are **reserved**, and the reason has nothing to do with who owns them. A
+content licence that included the project's branding would let anyone republish
+this writing under this project's identity — which is the one thing a mark
+exists to prevent, and the opposite of what attribution is for. You may reuse
+the writing; you may not present it as though it came from SelfCustody.ca.
+
+### Third-party software, fonts and vendored components
+
+The QR generator, the fonts, Bootstrap and Bootstrap Icons, libsecp256k1 and its
+FFI crate, the LifeHash implementation, the BIP-39 wordlist, and the vendored
+wallet-export code. Each keeps its own licence; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+### Anything whose provenance is unresolved
+
+If the audit does not record where something came from, it is excluded, whatever
+this page appears to say. An exclusion by name is a convenience; the absence of
+a recorded grant is the operative fact.
+
+## Generated files
+
+The pages under `docs/` are assembled from several of the categories above at
+once. A single guide page can carry project-authored prose, a vendored font, an
+AI-generated image and a third-party mark. **Each component keeps the licence of
+its source.** There is no licence that applies to a generated page as a whole,
+and treating one as CC BY because most of its words are would sweep in material
+this file spends its length excluding.
+
+Work from `build/guides.mjs` and `build/content.mjs` rather than from the
+rendered HTML. That is where the licensed material actually lives.
