@@ -163,6 +163,37 @@ const embedFontLicences = () => {
    Not shipped, and so not carried: the crate's examples and its Wycheproof
    test vectors, each with their own notice. build.rs compiles four C files
    and the shim; the rest of the crate never reaches the artifact. */
+/* The BIP-39 English wordlist ships inside the artifact in full, so a licence
+   travels with it -- and it is taken from a source that actually grants one.
+
+   BIP-39 names trezor/python-mnemonic as the reference implementation
+   "including wordlists", and that repository carries a repository-level MIT
+   licence with a real copyright holder. The bytes there are identical to the
+   ones in bitcoin/bips, so nothing about the list itself changes by sourcing
+   it from the project whose licence can be quoted rather than inferred.
+
+   The alternative was to lean on BIP-39's own preamble, which today reads
+   License: MIT. That would have been an anachronism. At the 2014 commit that
+   added the wordlist, BIP-39 declared no licence at all -- the word does not
+   appear in the document at that revision -- and it named a different set of
+   authors than it does now. A notice has to describe the thing it ships
+   beside. */
+const BIP39_LICENCE = 'build/vendor/bip39/LICENSE';
+
+const embedBip39Notice = () => {
+  const text = readFileSync(BIP39_LICENCE, 'utf8').replace(/\r\n/g, '\n').trim();
+  assertInlineSafe(text, 'the vendored BIP-39 wordlist licence');
+  const body = text.split('\n').map(line => (line ? `   ${line}` : '')).join('\n');
+  const head = [
+    '   BIP-39 English wordlist, reproduced in full below.',
+    '',
+    '   Taken from trezor/python-mnemonic v0.21, the reference implementation',
+    '   BIP-39 names as carrying the wordlists, and byte-identical to the copy',
+    '   in bitcoin/bips. That project\'s licence follows.'
+  ].join('\n');
+  return `/* ${'-'.repeat(72)}\n${head}\n\n${body}\n   ${'-'.repeat(72)} */\n`;
+};
+
 const SECP_LICENCE = 'build/vendor/libsecp256k1/COPYING';
 
 const embedSecpLicence = () => {
@@ -4993,6 +5024,7 @@ ${qrlib}
   EntropySecp256k1Ready.then(() => {
     const OFFLINE_BUILD = ${offline};
     const C = EntropyCore;
+${embedBip39Notice()}
     const WORDLIST_RAW = '${wordlist}';
     EntropyBetaWarning.init({ version: '${ENTROPY_RELEASE}' });
 ${selfTest()}
