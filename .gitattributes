@@ -9,3 +9,14 @@
 docs/entropy-offline.html       -text
 docs/entropy-offline.html.sha256 -text
 *.sh text eol=lf
+
+# Markdown is written on Windows and Linux both, and nothing in the build
+# reads it, so its line endings are invisible until a diff shows a whole file
+# rewritten. That happened once: an editing script wrote LICENSING-AUDIT.md
+# back as CRLF with one stray CR, and with core.autocrlf left to decide, those
+# bytes went into the blob as written -- 267 insertions and 266 deletions for
+# a two-line change.
+#
+# Every tracked .md blob is LF today. This pins that, so the next edit made on
+# a Windows checkout cannot quietly commit a different file.
+*.md text eol=lf
