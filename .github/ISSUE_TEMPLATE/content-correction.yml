@@ -1,7 +1,7 @@
 name: Content correction
 description: A guide says something wrong, outdated, unclear, or unsafe.
 title: "[Content] "
-labels: ["content"]
+labels: ["documentation"]
 body:
   - type: markdown
     attributes:

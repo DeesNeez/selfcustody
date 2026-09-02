@@ -12,7 +12,8 @@ message. See [§7](#7-never-submit-real-wallet-material).
 
 The site is generated. `build/render.mjs` reads `build/content.mjs` (page prose
 and layout) and `build/guides.mjs` (the 56 guides and their diagrams) and writes
-`docs/`, which is what GitHub Pages serves.
+into `docs/`, which is what GitHub Pages serves. Not everything there is
+generated, though — §4 says which files are and which are maintained by hand.
 
 The Entropy Workshop is the exception worth knowing about. It exists twice: as
 `docs/entropy.html` on the site, and as `docs/entropy-offline.html`, a single
@@ -72,8 +73,9 @@ will be caught, so it is cheaper to notice it yourself first.
 npm run build
 ```
 
-That regenerates `docs/` and runs every guard. It should be quiet and it should
-be fast; if it prints a warning, that is a finding, not noise.
+That regenerates the generated files under `docs/` (§4) and runs every guard. It
+should be quiet and it should be fast; if it prints a warning, that is a
+finding, not noise.
 
 The WebAssembly is a separate, containerised build and is **not** rebuilt by
 `npm run build` — the compiled result is committed. Only touch it if you are
@@ -83,15 +85,45 @@ changing the crypto engine:
 npm run build:wasm:container
 ```
 
-## 4. Generated files
+## 4. Generated files, and the ones that only look generated
 
-**Never hand-edit anything under `docs/`.** It is output. An edit there is
-overwritten by the next build, and CI will catch the divergence anyway.
+`docs/` is **not** uniformly generated, and treating it as though it were is the
+mistake worth avoiding in both directions: editing output that will be
+overwritten, or refusing to edit a file that is only ever maintained by hand.
 
-Change the source — `build/content.mjs`, `build/guides.mjs`, the CSS — then run
-`npm run build` and **commit the regenerated `docs/` in the same commit**. A
-commit whose source and output disagree is a commit that does not describe a
-working state.
+**Fully generated — never hand-edit.** An edit here is overwritten by the next
+build, and CI catches the divergence anyway.
+
+| Path | Written by |
+| --- | --- |
+| `docs/guides/*.html` | `build/render.mjs` from `build/guides.mjs` |
+| `docs/entropy.html`, `docs/entropy-offline.html`, `.sha256` | `build/render.mjs` |
+| `docs/sitemap.xml` | `build/render.mjs` |
+| `docs/assets/vendor/bootstrap-icons/` | `build/subset-icons.mjs` (`npm run icons:subset`) |
+
+**Partly generated — edit with care.** The root pages (`docs/index.html`,
+`docs/devices.html`, `docs/guides.html` and their siblings) are hand-maintained
+shells. `build/render.mjs` reads each one and replaces only three containers —
+`#site-header`, `#main-content`, `#site-footer` — plus the asset-version query
+strings. **Everything else in those files, including the entire `<head>`, is
+hand-maintained and yours to edit**: title, meta description, Open Graph and
+Twitter tags, canonical link, preloads, structured data.
+
+Read `build/render.mjs` before touching one. It aborts rather than guessing if a
+page's three containers are missing, or if a page has an empty shell but is not
+listed in its `FILES` map — so a new root page has to be registered there.
+
+**Hand-maintained — no generator at all.** `docs/assets/css/`, the images, the
+fonts, and `docs/assets/vendor/bootstrap/css/bootstrap.min.css`. That last one
+is a *hand-cut subset* of Bootstrap — a fraction of upstream's size, and not the
+output of any build step; read
+[`build/vendor/bootstrap/README.md`](build/vendor/bootstrap/README.md) before
+changing it, and keep the licence header at the top intact —
+`assert-notices.mjs` fails the build if it goes.
+
+When you change a source that *does* generate output, run `npm run build` and
+**commit the regenerated files in the same commit**. A commit whose source and
+output disagree is a commit that does not describe a working state.
 
 Two files have deliberately unusual handling, both recorded in
 `.gitattributes`: `docs/entropy-offline.html` and its `.sha256` are stored with
@@ -182,11 +214,38 @@ thing anyone will ask for.
 
 ## 9. Licensing
 
-Contributions are accepted under the licences this repository already uses: MIT
-for project-authored software, CC BY 4.0 for educational writing and original
-diagrams. [LICENSING.md](LICENSING.md) maps which is which, and the split
-follows what material *is* rather than which file holds it — `build/guides.mjs`
-is a module containing prose, so its code is MIT and its writing is CC BY 4.0.
+Contributions are accepted under the licences this repository already uses.
+There are **three** regimes for project-authored material, and which one applies
+depends on what you are changing:
+
+| What you are contributing | Licence |
+| --- | --- |
+| Project-authored software | [MIT](LICENSE) |
+| Educational writing and original diagrams | [CC BY 4.0](LICENSE-CONTENT.md) |
+| Project-authored files under `secp256k1-wasm/` | [The Unlicense](secp256k1-wasm/LICENSE) |
+
+The third catches people out, so it is worth stating plainly: `src/lib.rs`,
+`Cargo.toml`, `rust-toolchain.toml` and the `builder/` recipe files were
+dedicated to the public domain upstream, and a contribution to them is dedicated
+the same way. That is a broader give-away than MIT and it cannot be walked back,
+so if you are not willing to place your work in the public domain, do not submit
+it there — say so and it can go somewhere else in the tree.
+
+[LICENSING.md](LICENSING.md) maps the whole repository. The split follows what
+material *is* rather than which file holds it: `build/guides.mjs` is a module
+containing prose, so its code is MIT and its writing is CC BY 4.0.
+
+**By submitting a contribution you agree that:**
+
+- it is licensed under whichever of the three regimes above applies to the
+  material you changed, on the same terms as the rest of that material; and
+- **you have the right to submit it** — it is your own work, or you have the
+  necessary permission, and it is not carrying someone else's copyright,
+  licence obligations or employer claim into this repository unrecorded.
+
+There is no separate CLA to sign. If any part of your contribution is not yours
+to give, say which part and where it came from, and it can be handled properly
+under §2 instead of arriving silently.
 
 **Do not add images without provenance.** Every tracked image has a recorded
 origin, and keeping it that way is easier than reconstructing it later. If you
