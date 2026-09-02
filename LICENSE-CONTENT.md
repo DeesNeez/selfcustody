@@ -1,24 +1,14 @@
-# Licence for the educational content — DRAFT
+# Licence for the educational content
 
-> ## ⚠ Draft — not in effect
->
-> **While this notice is present, this licence grants nothing.** It is under
-> review in [PR #84](https://github.com/HodlDee/selfcustody/pull/84), default
-> copyright applies, and no reuse permission should be inferred from anything
-> below.
->
-> The notice is not removed "at merge" — a commit necessarily precedes the merge
-> that carries it, so no such moment exists. It is removed by a **finalization
-> commit**, made only after approval and pushed as the last commit on the review
-> branch, which is then merged. **The presence of this notice, not the state of
-> any pull request, is what tells you which version you are holding.**
->
 > **Copyright © 2023–2026 HodlDee.**
 >
-> What holds this back is **review, not ownership** — the two are worth keeping
-> apart. Copyright in this material vested in its author on authorship, and the
-> author is the licensor, so there is nothing to transfer and no condition
-> outstanding. The wording simply has not been signed off yet.
+> **This licence is in effect.** It applies to the eligible project-authored
+> material distributed with this file — the writing and original diagrams
+> described under *What this licence covers*, and nothing else.
+>
+> Eligibility is not a formality. The exclusions below are as much a part of
+> this licence as the grant is, and material this file excludes is not licensed
+> by being distributed alongside material that is.
 >
 > **The thirteen product photographs the site serves are excluded**, and that is
 > a statement about scope rather than a resolution. Their reuse permission is

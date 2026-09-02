@@ -1,15 +1,4 @@
-# Licensing map — DRAFT
-
-> ## ⚠ Draft — not in effect
->
-> **While this notice is present, nothing here grants anything.** This map is
-> under review in [PR #84](https://github.com/HodlDee/selfcustody/pull/84), and
-> default copyright applies.
->
-> A finalization commit, made only after approval, removes this notice from
-> `LICENSE`, `LICENSE-CONTENT.md`, `THIRD_PARTY_NOTICES.md` and this file
-> together, so the package takes effect as one. The presence of this notice, not
-> the state of any pull request, is what tells you which version you are holding.
+# Licensing map
 
 **Copyright © 2023–2026 HodlDee.** HodlDee is the pseudonymous identifier
 designated by the licensor for attribution; compliance does not require

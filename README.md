@@ -286,17 +286,33 @@ reproduce a download.
 
 ## Licensing
 
-Top-level project licensing is being prepared. Until it is published,
-project-authored software, writing, diagrams and media remain under default
-copyright.
+**Copyright © 2023–2026 HodlDee.** Four regimes apply to different material, so
+there is no single badge for this repository:
 
-Existing third-party components retain their upstream licences and notices. The
-intended project licensing is MIT for project-authored software and Creative
-Commons Attribution 4.0 International for project-authored educational writing
-and diagrams, subject to the current authorship and provenance audit.
-Third-party images, logos and trademarks are not included in that intended
-content licence.
+| Material | Licence |
+| --- | --- |
+| Project-authored software | [MIT](LICENSE) |
+| Project-authored writing and original diagrams | [CC BY 4.0](LICENSE-CONTENT.md) |
+| The `secp256k1-wasm` wrapper | [The Unlicense](secp256k1-wasm/LICENSE) |
+| Third-party components | [their own](THIRD_PARTY_NOTICES.md) |
 
-[LICENSING-AUDIT.md](LICENSING-AUDIT.md) records that audit in progress: what
-has been verified, which third-party notices are still missing, and what is
-still unresolved.
+[LICENSING.md](LICENSING.md) is the map. The split follows what material *is*
+rather than what file holds it: `build/content.mjs` and `build/guides.mjs` are
+modules containing prose, so the code in them is MIT and the writing is CC BY
+4.0. Generated pages under `docs/` have **no single licence** — each component
+keeps its source's.
+
+Reusing the writing asks for more than a credit line. Retain the copyright and
+licence notices, link the licence itself, indicate any changes, and add no
+further restrictions; [LICENSE-CONTENT.md](LICENSE-CONTENT.md) lists the
+conditions in full, along with the warranty disclaimer. The material is offered
+as-is, which is worth weighing before republishing custody instructions.
+
+Third-party images, logos and trademarks are **excluded** from the content
+licence. Thirteen product photographs have no documented reuse permission; their
+use is unresolved rather than authorised, and replacement is tracked in
+[issue #86](https://github.com/HodlDee/selfcustody/issues/86).
+
+[LICENSING-AUDIT.md](LICENSING-AUDIT.md) records the working behind all of it:
+what was checked, against which pinned upstream evidence, and what each
+conclusion rests on.

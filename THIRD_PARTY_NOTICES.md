@@ -1,16 +1,4 @@
-# Third-party notices — DRAFT
-
-> ## ⚠ Draft — not in effect
->
-> **While this notice is present, this index is under review** in
-> [PR #84](https://github.com/HodlDee/selfcustody/pull/84), alongside `LICENSE`,
-> `LICENSING.md` and `LICENSE-CONTENT.md`. A finalization commit, made only
-> after approval, removes all four notices together.
->
-> One thing this draft marking does **not** affect: the obligations below are
-> upstream licences, and they bind regardless of anything this project does.
-> They are already satisfied in the shipped files, which is where satisfying
-> them actually happens.
+# Third-party notices
 
 This file is an **index, not the mechanism**. Every licence that requires its
 notice to travel with the material already has it travelling, and this page is a

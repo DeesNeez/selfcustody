@@ -583,19 +583,20 @@ structure; none of them is still blocking.
 
 - The notice gaps are closed, every question above is answered, and the
   licensing files are **written**: `LICENSE`, `LICENSING.md`,
-  `THIRD_PARTY_NOTICES.md` and `LICENSE-CONTENT.md` all exist on this branch and
-  are reviewable as one package rather than one at a time.
-- Each carries a **draft notice**, and none is in effect while that notice is
-  present. Ownership is settled — HodlDee authored the material and licenses it
-  — so what remains is review of the wording, not a condition anyone is waiting
-  on. A single finalization commit removes all four notices together, so the
-  package activates at once instead of leaving live files pointing at draft
-  ones.
+  `THIRD_PARTY_NOTICES.md` and `LICENSE-CONTENT.md` all exist in this repository
+  and stand as one package rather than one at a time.
+- The draft notices are removed and **the package is in force**. All four
+  activated in a single commit, so no live file was ever left pointing at a
+  draft one. Ownership was never the question: HodlDee authored the material and
+  licenses it.
 - The thirteen product photographs are **not** a gate on it. They are excluded
   from the licence, so it can take effect without reaching them, and their
   undocumented status is tracked in
   [issue #86](https://github.com/HodlDee/selfcustody/issues/86). Excluding them
   settles what the licence grants; it settles nothing about the basis on which
   they appear on the site, which remains unresolved.
-- On approval: one finalization commit removes the four draft notices and
-  updates the README's licensing section to point at files that are in force.
+- The README's licensing section points at the files rather than describing an
+  intention.
+- What remains open is recorded rather than pending: the 13 product photographs
+  (issue #86), and the copyrightability of AI-generated images, which is not
+  this project's question to close. Neither affects what the licences grant.
