@@ -149,7 +149,7 @@ project plan creates it; the reference should be checked against it then.
 | Project Nayuki QR generator | `build/vendor/qr/`, inlined into both Workshop builds | MIT | **Yes** — in both source files and the shipped artifact. `assert-no-fetch.mjs` explicitly protects the notice's URL from being flagged. This is the model the others should follow. |
 | EntropyLab wallet export (`sqlite-writer.js`, `wallet-dat.js`) | `build/tools/`, licence at `build/vendor/entropylab-wallet-export/LICENSE` | MIT, © 2026 Mr.Hodl and Wicked | **Yes** — full notice inline in both files and present in the shipped artifact. |
 | LifeHash | `build/tools/lifehash.js`, licences at `build/vendor/lifehash/` | MIT, © 2022 Andreas Gassmann **and** BSD-2-Clause-Patent, © 2019 Blockchain Commons, LLC | **Yes** — both reproduced in full inside both Workshop builds, beside the module they cover. Adapted from EntropyLab's implementation (`w-s-bitcoin/entropylab#74`), which was itself adapted from both sources rather than written clean-room. |
-| Jost, Open Sans | `build/vendor/fonts/`, copied to `docs/assets/fonts/`, embedded in the offline artifact | SIL OFL 1.1 | **No** — gaps 1 and 2. |
+| Jost, Open Sans | `build/vendor/fonts/`, copied to `docs/assets/fonts/`, embedded in the offline artifact | SIL OFL 1.1 | **Yes** — all three distributed forms carry it. The upstream `OFL.txt` for each family is vendored beside the source, copied to `docs/assets/fonts/` alongside the served woff2 files, and inlined in full in both Workshop builds. |
 | Bootstrap (CSS subset) | `docs/assets/vendor/bootstrap/css/` | MIT | **No** — gap 3. |
 | Bootstrap Icons | `build/vendor/bootstrap-icons/`, subset to `docs/assets/vendor/bootstrap-icons/` | MIT | **No** — gap 4. |
 | libsecp256k1 (via `secp256k1-sys` 0.14.0) | Compiled into `build/tools/secp256k1-wasm-b64.js` | Upstream MIT | Licence lives in the crate source fetched at build time, not in this repo. Should be reproduced in `THIRD_PARTY_NOTICES.md`, since the compiled output ships here. |
@@ -250,8 +250,10 @@ Commit 3 cannot proceed until these are recorded.
 
 ## What happens next
 
-- Fix the six notice gaps. They are licence conditions, independent of any
-  decision about the project's own licensing.
+- Fix the remaining notice gaps: Bootstrap and Bootstrap Icons ship without
+  their MIT notices (gaps 3 and 4), and `secp256k1-wasm` contradicts itself
+  about its own licence (gap 6). They are licence conditions, independent of
+  any decision about the project's own licensing.
 - Record answers to the four questions above in this file.
 - Then, and only then, write `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md`
   and `THIRD_PARTY_NOTICES.md`, and update the README's licensing section.
