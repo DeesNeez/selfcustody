@@ -31,9 +31,8 @@ and must be answered by the person who put the material here.
 3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
    images are manufacturer logos, product shots or exchange marks, and cannot
    go under a project content licence. Of the other 44, the maintainer has now
-   classified 31, two are probable and awaiting confirmation, one has had its
-   provenance rejected, and 6 remain unclassified. See
-   [Image audit](#image-audit).
+   classified 34, one has had its provenance rejected, and 5 remain
+   unclassified. See [Image audit](#image-audit).
 4. **Project-authored prose and diagrams are cleanly owned.** This is the
    material CC BY 4.0 is actually for.
 
@@ -191,9 +190,9 @@ authored for the project. A project logo is normally kept out of a content
 licence even when the project owns it, so that reuse of the writing does not
 imply endorsement.
 
-### Confirmed by the maintainer - 31 files
+### Confirmed by the maintainer - 34 files
 
-**Generated with Google Gemini - 24 files.** The maintainer keeps the originals
+**Generated with Google Gemini - 26 files.** The maintainer keeps the originals
 in a `Gen photos` folder outside the repository and states that everything in
 it was generated with Google Gemini. The tracked files are compressed copies of
 those originals.
@@ -212,9 +211,11 @@ sources, which the gradient hash alone ties.
 | `choosing-your-first-setup-three-shapes.jpg` | `hww1.jfif` |
 | `coldcard-advanced-features-seed-plate.jpg` | `ccs.jfif` |
 | `coldcard-seed-word-writing.jpg` | `cc1.jfif` |
+| `dashboard-network-preview-v3.jpg` | `dashboard.jfif` |
 | `devices-hero.jpg` | `device.jfif` |
 | `dice-entropy.jpg` | `dice2.jfif` |
 | `exchanges-hero.jpg` | `exchange.jfif` |
+| `glossary-hero.jpg` | `glossary.jfif` |
 | `guides-library-hero.jpg` | `library 2.jfif` |
 | `jade-setup-qr-scan.jpg` | `jade.jfif` |
 | `keys-addresses-utxos-flatlay.jpg` | `cash.jfif` |
@@ -236,8 +237,14 @@ sources, which the gradient hash alone ties.
 Recorded as generated derivatives, naming Google Gemini as the tool used. That
 is a statement about how each file was made. It asserts nothing about Gemini
 itself, and nothing here settles the terms on which model output may be
-licensed onward. That question is separate, applies to all 24 together, and is
+licensed onward. That question is separate, applies to all 26 together, and is
 still open.
+
+`dashboard-network-preview-v3.jpg` and `glossary-hero.jpg` are in this table on
+the maintainer's confirmation rather than on the fingerprint evidence, which
+was weaker for both: one is a crop, the other an edited iteration, and neither
+matched closely enough to record unaided. They were listed as probable until
+that confirmation arrived.
 
 `social-preview.jpg` carries one qualification. Its base matches the folder,
 but this repository's own history shows later project compositing on it: a
@@ -262,36 +269,32 @@ its source. Naming a tool describes how a file was made and asserts nothing
 about the tool itself; as with the Gemini set, the terms on which model output
 may be licensed onward are a separate question and still open.
 
-**Stock photography from Unsplash - 2 files, attribution incomplete.**
+**Unsplash photographs - 3 files.** Each is now identified to a specific
+photograph rather than to the platform, which is the difference between a
+recorded source and a recorded licence. Verified against the live Unsplash
+pages on 2026-09-02; each states "Free to use under the Unsplash License",
+which permits modification and both commercial and non-commercial use.
 
-    fiat-single-bill.png            hero-lock.webp
-
-The maintainer states Unsplash as the source. That names a platform, not a
-grant: the Unsplash Licence attaches per photograph, and what may be done with
-one depends on which photograph it is. The specific photo, photographer and
-download date are **not established**, and could not be recovered here. Neither
-file carries EXIF, no commit message or source note anywhere mentions Unsplash,
-and both arrived in a single homepage commit on 2026-07-29 that records nothing
-about them. Neither matches anything in `Gen photos`.
-
-They are therefore **unresolved**, not complete. Still needed for each: the
-photograph's Unsplash URL, the photographer's name, the download date if
-recoverable, and the licence version in force at the time.
-
-`hero-keylock.webp` is not covered by this, and was not assumed to be. It was
-not named by the maintainer, a neighbouring filename is not evidence of a
-shared source, and it matches nothing in `Gen photos` either. It stays pending.
-
-### Probable but unconfirmed - 2 files
-
-Both resemble a `Gen photos` original closely enough to suggest a crop or a
-later edit, and not closely enough to record as fact. Listed so the maintainer
-can confirm or reject them rather than having them quietly counted either way.
-
-| Tracked file | Closest original | Reading of the evidence |
+| File | Photograph | Photographer |
 | --- | --- | --- |
-| `glossary-hero.jpg` (1570x656) | `glossary.jfif` (1632x656) | Identical height, narrower width, near fingerprint match: consistent with a horizontal crop |
-| `dashboard-network-preview-v3.jpg` | `dashboard.jfif` | Same subject and aspect ratio, weaker fingerprint match; the "v3" suggests an edited iteration |
+| `fiat-single-bill.png` | [a one hundred dollar bill with a picture of a man's face on it](https://unsplash.com/photos/a-one-hundred-dollar-bill-with-a-picture-of-a-mans-face-on-it-7aWvQdR36Y0) (`7aWvQdR36Y0`) | engin akyurt |
+| `hero-lock.webp` | [a close up of a padlock on a door](https://unsplash.com/photos/a-close-up-of-a-padlock-on-a-door-KrPulSdUetk) (`KrPulSdUetk`) | Kaffeebart |
+| `hero-keylock.webp` | [a close up of a key on a door](https://unsplash.com/photos/a-close-up-of-a-key-on-a-door-LkoDqb5E3zg) (`LkoDqb5E3zg`) | Dima Solomin |
+
+`hero-lock.webp` is a **derivative**: its colours were modified using Claude.
+The Unsplash Licence permits that, and the result is still governed by it
+rather than becoming project-owned, because the photograph underneath is
+someone else's work.
+
+All three are **excluded from the project-wide CC BY 4.0 licence**. They are
+redistributable under the Unsplash Licence on its own terms; that is not a
+grant this project can pass on as its own, and the licences differ in what they
+require of a reuser.
+
+`hero-keylock.webp` was pending until its source was supplied. It was
+deliberately not classified alongside `hero-lock.webp` earlier: the two have
+neighbouring filenames and turned out to have different photographers, which is
+exactly why a filename is not evidence of a shared source.
 
 ### Provenance rejected - 1 file
 
@@ -305,7 +308,7 @@ not in any generated page. Nothing currently displays it, so removing it is as
 available as replacing it. Until one or the other happens it stays excluded
 from any content licence.
 
-### Unresolved provenance - 6 files, cannot be classified from the repository
+### Unresolved provenance - 5 files, cannot be classified from the repository
 
 The remaining root images. The repository contains no credit line, EXIF policy,
 source note or licence record for any of them, and nothing in
@@ -320,7 +323,7 @@ matches anything in `Gen photos`:
 Editorial and illustrative imagery:
 
     quickstart-rabbit-portrait.webp signing-device-circuit.jpeg
-    hero-keylock.webp               software-hero.jpg
+    software-hero.jpg
 
 Each needs one of: original project photography, original project
 illustration, manufacturer-provided, third-party with permission, licensed
