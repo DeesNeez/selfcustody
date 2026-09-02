@@ -264,7 +264,7 @@ photograph — the audit says so and names it.
 Naming Gemini is a statement about how each file was made. It asserts nothing
 about Gemini itself, and nothing here settles whether the output is
 copyrightable or on what terms it may be licensed onward. That question is
-separate, applies to all 26 together, and is still open.
+separate, applies to all 28 together, and is still open.
 
 Four rows rest on the maintainer's confirmation rather than on the fingerprint
 evidence, and are marked so rather than blended in with the rest.
@@ -334,7 +334,7 @@ The Unsplash Licence permits that, and the result is still governed by it
 rather than becoming project-owned, because the photograph underneath is
 someone else's work.
 
-All three are **excluded from the project-wide CC BY 4.0 licence**. They are
+All four are **excluded from the project-wide CC BY 4.0 licence**. They are
 redistributable under the Unsplash Licence on its own terms; that is not a
 grant this project can pass on as its own, and the licences differ in what they
 require of a reuser.

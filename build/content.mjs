@@ -781,7 +781,7 @@ const currentYear = new Date().getFullYear();
            <a class="sc-btn sc-btn-ghost" href="devices.html">All device brands</a>`,
           {
             /* Replaces a photograph whose provenance could not be established.
-               This one is by Alexandre Debieve, from Unsplash under the
+               This one is by Alexandre Debiève, from Unsplash under the
                Unsplash Licence -- see LICENSING-AUDIT.md for the photograph,
                the photographer and the date it was verified. */
             src: "assets/img/coinkite-circuit-board.jpg",
