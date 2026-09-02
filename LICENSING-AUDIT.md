@@ -152,7 +152,7 @@ project plan creates it; the reference should be checked against it then.
 | Jost, Open Sans | `build/vendor/fonts/`, copied to `docs/assets/fonts/`, embedded in the offline artifact | SIL OFL 1.1 | **Yes** — all three distributed forms carry it. The upstream `OFL.txt` for each family is vendored beside the source, copied to `docs/assets/fonts/` alongside the served woff2 files, and inlined in full in both Workshop builds. |
 | Bootstrap (CSS subset) | `docs/assets/vendor/bootstrap/css/` | MIT | **No** — gap 3. |
 | Bootstrap Icons | `build/vendor/bootstrap-icons/`, subset to `docs/assets/vendor/bootstrap-icons/` | MIT | **No** — gap 4. |
-| libsecp256k1 (via `secp256k1-sys` 0.14.0) | Compiled into `build/tools/secp256k1-wasm-b64.js` | Upstream MIT | Licence lives in the crate source fetched at build time, not in this repo. Should be reproduced in `THIRD_PARTY_NOTICES.md`, since the compiled output ships here. |
+| libsecp256k1 (via `secp256k1-sys` 0.14.0) | Compiled into `build/tools/secp256k1-wasm-b64.js`, licences at `build/vendor/libsecp256k1/` | MIT, © 2013 Pieter Wuille, for the C sources; CC0-1.0 for the `secp256k1-sys` FFI crate and its wasm shim | **Yes** — the MIT text is reproduced in full inside both Workshop builds beside the payload it covers. CC0 is named there and vendored in full, not reproduced, since it requires no notice. Both taken from the crate pinned in `Cargo.lock` and verified against its recorded checksum. |
 | `lifehash` npm package 1.0.0 (Andreas Gassmann) | `fuzzing/lifehash/` dev dependency | MIT | Test-only, never shipped. Worth listing for completeness. |
 | `@noble/hashes` (Paul Miller) | Transitive dev dependency of the above | MIT | Test-only, never shipped. |
 
@@ -246,16 +246,20 @@ Commit 3 cannot proceed until these are recorded.
    of it come with terms the project should reproduce?
 3. For each of the 40 unresolved images: which of the seven classes above?
    Stock licences and generation tools need naming, not just approving.
-4. libsecp256k1's own MIT notice is not reproduced anywhere, although its
-   compiled output ships inside the artifact. Should it go in
-   `THIRD_PARTY_NOTICES.md`, or travel inside the artifact the way the font
-   and LifeHash notices now do?
+4. *(Answered.)* libsecp256k1's MIT notice now travels inside both generated
+   pages, beside the WebAssembly it describes, because the offline build is
+   downloaded on its own. It will also be indexed in `THIRD_PARTY_NOTICES.md`,
+   which is a convenience for readers rather than what satisfies the licence.
+   `secp256k1-sys` is separately CC0-1.0 and is identified rather than
+   reproduced, since that dedication asks for nothing back. Both texts are
+   vendored under `build/vendor/libsecp256k1/` from the crate pinned in
+   `Cargo.lock`, checked against its recorded hash.
 
 ## What happens next
 
 - Fix the remaining notice gaps: Bootstrap and Bootstrap Icons ship without
   their MIT notices (gaps 3 and 4). They are licence conditions, independent of
   any decision about the project's own licensing.
-- Record answers to the four questions above in this file.
+- Record answers to the remaining questions above in this file.
 - Then, and only then, write `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md`
   and `THIRD_PARTY_NOTICES.md`, and update the README's licensing section.

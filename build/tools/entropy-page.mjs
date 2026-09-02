@@ -148,6 +148,29 @@ const embedFontLicences = () => {
    So both notices travel: MIT for the TypeScript package, BSD-2-Clause-Patent
    for the C++ reference underneath it. Two short notices is the whole
    obligation, and the BSD one carries a patent grant worth having. */
+/* The curve engine is compiled from libsecp256k1's C, and MIT asks that its
+   notice travel with substantial portions of the software -- compiled forms
+   included. Both builds carry the engine, so both carry the notice.
+
+   The CC0 half is deliberately treated differently. secp256k1-sys, the FFI
+   crate, is CC0-1.0, and its own `wasm/wasm.c` shim is compiled in beside
+   libsecp256k1's sources. CC0 is a dedication that asks for nothing back, so
+   reproducing seven kilobytes of its legal code inside every copy of the page
+   would be weight for its own sake. It is named here and vendored in full
+   beside the MIT text instead, which keeps it identified and separate from
+   this project's own Unlicense dedication rather than folded into it.
+
+   Not shipped, and so not carried: the crate's examples and its Wycheproof
+   test vectors, each with their own notice. build.rs compiles four C files
+   and the shim; the rest of the crate never reaches the artifact. */
+const SECP_LICENCE = 'build/vendor/libsecp256k1/COPYING';
+
+const embedSecpLicence = () => {
+  const text = readFileSync(SECP_LICENCE, 'utf8').replace(/\r\n/g, '\n').trim();
+  assertInlineSafe(text, 'the vendored libsecp256k1 licence');
+  return `/* ${'-'.repeat(72)}\n   libsecp256k1. The WebAssembly curve engine inlined below is compiled from\n   Bitcoin Core's libsecp256k1 C sources, whose licence follows in full.\n\n   The FFI crate that binds them, secp256k1-sys 0.14.0, is separately under\n   CC0-1.0, as is its wasm shim compiled in alongside. That dedication asks\n   for no notice; its text is vendored at\n   build/vendor/libsecp256k1/LICENSE-CC0-secp256k1-sys.txt. Neither is part\n   of this project's own Unlicense dedication, which covers only the wrapper\n   in secp256k1-wasm/.\n   ${'-'.repeat(72)}\n\n${text}\n*/\n`;
+};
+
 const LIFEHASH_LICENCES = [
   { what: 'Blockchain Commons bc-lifehash -- the LifeHash algorithm and its C++ reference implementation',
     file: 'build/vendor/lifehash/LICENSE.md' },
@@ -4938,6 +4961,7 @@ const toolScripts = ({ preflight, secpWasmGzipB64, secpWasm, betaWarning, core, 
 ${preflight}
 </script>
 <script>
+${embedSecpLicence()}
 ${secpWasmGzipB64}
 </script>
 <script>
