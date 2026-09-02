@@ -29,6 +29,101 @@ const workflowFiles = readdirSync(dir)
 
 assert.ok(workflowFiles.length > 0, `no workflows were found in ${dir}`);
 
+/* ------------------------------------------------------- trigger detection */
+
+/* What a workflow fires on, read from its `on:` key. Every form GitHub accepts
+   is read, because the guard below turns "this workflow is manual" into a
+   licence to ignore what it runs -- and a detector that understands one
+   spelling would grant that licence to a workflow written in another. The
+   forms are: a block mapping (with per-trigger detail beneath it), a block
+   sequence, a bare scalar, and a flow sequence.
+
+   Returns null when there is no `on:` key at all, which is a broken workflow
+   rather than a manual one, and is asserted on separately. */
+const TRIGGER_KEY = /^(?:on|"on"|'on'):/;
+const uncomment = line => line.replace(/(^|\s)#.*$/, '').trim();
+const unquote = name => name.trim().replace(/^['"]|['"]$/g, '').replace(/:$/, '');
+
+function triggersIn(source) {
+  const lines = source.split('\n');
+  // YAML 1.1 reads a bare `on` as the boolean true, so some workflows quote
+  // the key. GitHub accepts either and they mean the same thing.
+  const start = lines.findIndex(line => TRIGGER_KEY.test(line));
+  if (start === -1) return null;
+
+  const inline = uncomment(lines[start].replace(TRIGGER_KEY, ''));
+
+  // on: [push, pull_request]
+  if (inline.startsWith('[')) {
+    return inline.replace(/^\[/, '').replace(/\]$/, '')
+      .split(',').map(unquote).filter(Boolean);
+  }
+  // on: push
+  if (inline) return [unquote(inline)];
+
+  // The block beneath `on:`. It ends at the next line in column zero -- which
+  // is what keeps a job named `push` under `jobs:` from reading as a trigger.
+  // Only entries at the block's own depth count, so the `inputs:` of a
+  // workflow_dispatch cannot contribute a name either.
+  const names = [];
+  let depth = null;
+  for (let i = start + 1; i < lines.length; i += 1) {
+    const line = lines[i];
+    if (line.trim() === '' || line.trimStart().startsWith('#')) continue;
+    const indent = line.length - line.trimStart().length;
+    if (indent === 0) break;
+    if (depth === null) depth = indent;
+    if (indent > depth) continue;
+    if (indent < depth) break;
+
+    const body = uncomment(line);
+    const sequence = body.match(/^-\s*(.+)$/);          // - push
+    if (sequence) { names.push(unquote(sequence[1])); continue; }
+    const mapping = body.match(/^([^:\s]+):/);          // push:
+    if (mapping) names.push(unquote(mapping[1]));
+  }
+  return names;
+}
+
+const AUTOMATIC_TRIGGERS = ['push', 'pull_request', 'pull_request_target', 'schedule'];
+const automaticTriggersIn = source => {
+  const triggers = triggersIn(source);
+  return triggers === null ? null : triggers.filter(t => AUTOMATIC_TRIGGERS.includes(t));
+};
+
+/* The detector decides whether a workflow's steps count as CI, so it is worth
+   more than the one shape this repository happens to use today. Each case
+   below is a form GitHub accepts; the last two are the ways a looser reading
+   would go wrong. */
+const detectorCases = [
+  ['block mapping', "on:\n  push:\n    branches: ['**']\n  pull_request:\n", ['push', 'pull_request']],
+  ['block sequence', 'on:\n  - push\n  - schedule\n', ['push', 'schedule']],
+  ['scalar', 'on: push\n', ['push']],
+  ['flow sequence', 'on: [push, pull_request]\n', ['push', 'pull_request']],
+  ['flow sequence, quoted and spaced', "on: [ 'push', \"schedule\" ]\n", ['push', 'schedule']],
+  ['quoted key, because YAML 1.1 reads bare on as true', '"on": push\n', ['push']],
+  ['a trailing comment', 'on: push # only pushes\n', ['push']],
+  ['manual, block mapping with inputs', 'on:\n  workflow_dispatch:\n    inputs:\n      sha:\n        type: string\n', []],
+  ['manual, scalar', 'on: workflow_dispatch\n', []],
+  ['manual, flow sequence', 'on: [workflow_dispatch, workflow_call]\n', []],
+  // A nested key that happens to be named after a trigger. Reading the block
+  // at any depth would call this workflow automatic and let it vouch for
+  // whatever it runs.
+  ['an input named push', 'on:\n  workflow_dispatch:\n    inputs:\n      push:\n        type: boolean\n', []],
+  // The block has to end at column zero. Reading to end of file would find
+  // the job below and call this workflow automatic.
+  ['a job named push', 'on:\n  workflow_dispatch:\n\njobs:\n  push:\n    runs-on: ubuntu-latest\n', []],
+];
+
+for (const [label, source, expected] of detectorCases) {
+  assert.deepEqual(automaticTriggersIn(source), expected,
+    `trigger detection, ${label}: expected [${expected}], got [${automaticTriggersIn(source)}]`);
+}
+assert.equal(triggersIn('name: nothing\njobs:\n  x:\n    runs-on: ubuntu-latest\n'), null,
+  'a workflow with no on: key must be reported as broken, not as manual');
+
+/* -------------------------------------------------------- the corpus rule */
+
 /* Only workflows that fire on their own can be said to run anything. This
    repository also has publish-wasm-builder.yml, which is workflow_dispatch
    only and already names secp256k1-wasm-test.mjs -- so a corpus of "every
@@ -37,17 +132,19 @@ assert.ok(workflowFiles.length > 0, `no workflows were found in ${dir}`);
    going stale: any other workflow that gains an automatic trigger has to be
    added here or fail. */
 const AUTOMATIC = ['build.yml'];
-const AUTOMATIC_TRIGGERS = ['push', 'pull_request', 'pull_request_target', 'schedule'];
 
 for (const name of AUTOMATIC) {
   assert.ok(workflowFiles.includes(name),
     `${dir}/${name} is listed as an automatic workflow but does not exist`);
+  const automatic = automaticTriggersIn(read(name));
+  assert.ok(automatic !== null, `${dir}/${name} has no on: key`);
+  assert.notDeepEqual(automatic, [],
+    `${dir}/${name} is listed as automatic but fires on nothing automatic`);
 }
 
 for (const name of workflowFiles.filter(f => !AUTOMATIC.includes(f))) {
-  // The `on:` block, from the top-level key to the next one.
-  const triggers = read(name).match(/^on:\n(?:(?: .*)?\n)*/m)?.[0] ?? '';
-  const automatic = AUTOMATIC_TRIGGERS.filter(t => new RegExp(`^  ${t}:`, 'm').test(triggers));
+  const automatic = automaticTriggersIn(read(name));
+  assert.ok(automatic !== null, `${dir}/${name} has no on: key`);
   assert.deepEqual(automatic, [],
     `${dir}/${name} fires automatically on ${automatic.join(', ')} but is not in ` +
     'AUTOMATIC -- add it, or the tests it runs will not count toward completeness');
@@ -81,6 +178,8 @@ assert.deepEqual(missingFrom(corpusOf(manual), [PROBE]), [],
   `precondition: a manual workflow must name ${PROBE} for this regression to bite`);
 assert.deepEqual(missingFrom(corpusOf(AUTOMATIC.filter(n => n !== 'build.yml')), [PROBE]), [PROBE],
   'a test named only by a manually triggered workflow must count as missing');
+
+/* ------------------------------------------------------------- the gate */
 
 /* Naming a test is not the same as running it. The specialist jobs in
    build.yml are conditional, so a test could be named only inside a job whose
@@ -123,5 +222,6 @@ assert.deepEqual(unjudged, [],
   'without it a job skipped by a broken condition reads as correctly scoped out');
 
 console.log(
-  `ci completeness: all ${tracked.length} tracked tests run in ${AUTOMATIC.join(', ')}, ` +
-  `and all ${scoped.length} path-scoped jobs are judged by the gate`);
+  `ci completeness: ${detectorCases.length} trigger forms read correctly, all ` +
+  `${tracked.length} tracked tests run in ${AUTOMATIC.join(', ')}, and all ` +
+  `${scoped.length} path-scoped jobs are judged by the gate`);
