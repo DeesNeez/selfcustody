@@ -29,9 +29,11 @@ and must be answered by the person who put the material here.
    fails the build if a served stylesheet loses its notice, because two of them
    already had. See [Notice gaps](#notice-gaps).
 3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
-   images are manufacturer logos, product shots or exchange marks. They cannot
-   go under a project content licence. The remaining 44 need the maintainer to
-   state their origin. See [Image audit](#image-audit).
+   images are manufacturer logos, product shots or exchange marks, and cannot
+   go under a project content licence. Of the other 44, the maintainer has now
+   classified 31, two are probable and awaiting confirmation, one has had its
+   provenance rejected, and 6 remain unclassified. See
+   [Image audit](#image-audit).
 4. **Project-authored prose and diagrams are cleanly owned.** This is the
    material CC BY 4.0 is actually for.
 
@@ -189,48 +191,136 @@ authored for the project. A project logo is normally kept out of a content
 licence even when the project owns it, so that reuse of the writing does not
 imply endorsement.
 
-### Unresolved provenance — 40 files, cannot be classified from the repository
+### Confirmed by the maintainer - 31 files
 
-35 root images plus the 5 in `cash-vortex/`. The repository contains no credit
-line, EXIF policy, source note or licence record for any of them, and nothing
-in `build/content.mjs` or `build/guides.mjs` attributes an image to anyone.
+**Generated with Google Gemini - 24 files.** The maintainer keeps the originals
+in a `Gen photos` folder outside the repository and states that everything in
+it was generated with Google Gemini. The tracked files are compressed copies of
+those originals.
 
-Coinkite-related, and possibly manufacturer-supplied — note the maintainer's
-past association with Coinkite and the site's dedicated Coinkite page:
+Compression means the tracked bytes differ from the originals, so the mapping
+was established by image content rather than by hashing files: each image was
+reduced to a perceptual fingerprint (an 8x8 gradient hash) and a coarse tone
+signature, and a pair was accepted only where both agreed and the aspect ratio
+matched. Every row below is an exact fingerprint match with a matching tone
+signature. The tone signature is what separates the three near-identical dice
+sources, which the gradient hash alone ties.
 
-    coinkite-metal-security.jpeg   coldcard-q-mk5-devices.jpg
-    coldcard-seed-word-writing.jpg  coldcard-advanced-features-seed-plate.jpg
+| Tracked file | Original in `Gen photos` |
+| --- | --- |
+| `bring-your-own-entropy-dice.jpg` | `dice3.jfif` |
+| `choosing-your-first-setup-three-shapes.jpg` | `hww1.jfif` |
+| `coldcard-advanced-features-seed-plate.jpg` | `ccs.jfif` |
+| `coldcard-seed-word-writing.jpg` | `cc1.jfif` |
+| `devices-hero.jpg` | `device.jfif` |
+| `dice-entropy.jpg` | `dice2.jfif` |
+| `exchanges-hero.jpg` | `exchange.jfif` |
+| `guides-library-hero.jpg` | `library 2.jfif` |
+| `jade-setup-qr-scan.jpg` | `jade.jfif` |
+| `keys-addresses-utxos-flatlay.jpg` | `cash.jfif` |
+| `owning-your-bitcoin-key.jpg` | `key.jfif` |
+| `passport-setup-qr-scan.jpg` | `foudnation.jfif` |
+| `quickstart-desk.jpg` | `Self custody.jfif` |
+| `quickstart-dice.jpg` | `dice.jfif` |
+| `quickstart-rabbit-tablet.webp` | `rabbit3.jfif` |
+| `quickstart-seed-words.jpg` | `seed words.jfif` |
+| `recovery-test-drill-two-devices.jpg` | `dev2.jfif` |
+| `social-preview.jpg` | `selfcustody-vault-banner.jpg` |
+| `sparrow-laptop-hardware-wallet.jpg` | `Gemini_Generated_Image_6sth86sth86sth86.jfif` |
+| `stuck-transaction-envelope.jpg` | `letter.jfif` |
+| `what-is-money-hyperinflation-notes.jpg` | `money.jfif` |
+| `what-is-money-rai-stone.jpg` | `yap stone.jfif` |
+| `what-is-money-trade-beads.jpg` | `beads.jfif` |
+| `what-not-to-normalize-phone-gallery.jpg` | `photo seed.jfif` |
 
-Device-specific photography or screen captures:
+Recorded as generated derivatives, naming Google Gemini as the tool used. That
+is a statement about how each file was made. It asserts nothing about Gemini
+itself, and nothing here settles the terms on which model output may be
+licensed onward. That question is separate, applies to all 24 together, and is
+still open.
 
-    passport-setup-qr-scan.jpg      jade-setup-qr-scan.jpg
-    sparrow-laptop-hardware-wallet.jpg
-    recovery-test-drill-two-devices.jpg
-    dashboard-network-preview-v3.jpg
+`social-preview.jpg` carries one qualification. Its base matches the folder,
+but this repository's own history shows later project compositing on it: a
+masked lockup, a reconstructed gradient and an added credit line. Generated
+base, project-authored composition above it.
+
+**Created for this project - 5 files.** Project-owned original work, and
+candidates for CC BY 4.0 alongside the written material. The five split into
+artwork and an animation derived from it, and the tools differ:
+
+| File | How it was made |
+| --- | --- |
+| `cash-vortex/cash-vortex-core.webp` | Created for this project using ChatGPT |
+| `cash-vortex/controlled-orbit.webp` | Created for this project using ChatGPT |
+| `cash-vortex/controlled-orbit-v2.webp` | Created for this project using ChatGPT |
+| `cash-vortex/exchanges-cash-vortex.png` | Created for this project using ChatGPT |
+| `cash-vortex/exchanges-cash-vortex-final3.mp4` | Animated in Motionleap from the Cash Vortex artwork above |
+
+The mp4 is a derivative of the project's own artwork rather than an independent
+asset: Motionleap is the animation and editing tool, and the four stills are
+its source. Naming a tool describes how a file was made and asserts nothing
+about the tool itself; as with the Gemini set, the terms on which model output
+may be licensed onward are a separate question and still open.
+
+**Stock photography from Unsplash - 2 files, attribution incomplete.**
+
+    fiat-single-bill.png            hero-lock.webp
+
+The maintainer states Unsplash as the source. That names a platform, not a
+grant: the Unsplash Licence attaches per photograph, and what may be done with
+one depends on which photograph it is. The specific photo, photographer and
+download date are **not established**, and could not be recovered here. Neither
+file carries EXIF, no commit message or source note anywhere mentions Unsplash,
+and both arrived in a single homepage commit on 2026-07-29 that records nothing
+about them. Neither matches anything in `Gen photos`.
+
+They are therefore **unresolved**, not complete. Still needed for each: the
+photograph's Unsplash URL, the photographer's name, the download date if
+recoverable, and the licence version in force at the time.
+
+`hero-keylock.webp` is not covered by this, and was not assumed to be. It was
+not named by the maintainer, a neighbouring filename is not evidence of a
+shared source, and it matches nothing in `Gen photos` either. It stays pending.
+
+### Probable but unconfirmed - 2 files
+
+Both resemble a `Gen photos` original closely enough to suggest a crop or a
+later edit, and not closely enough to record as fact. Listed so the maintainer
+can confirm or reject them rather than having them quietly counted either way.
+
+| Tracked file | Closest original | Reading of the evidence |
+| --- | --- | --- |
+| `glossary-hero.jpg` (1570x656) | `glossary.jfif` (1632x656) | Identical height, narrower width, near fingerprint match: consistent with a horizontal crop |
+| `dashboard-network-preview-v3.jpg` | `dashboard.jfif` | Same subject and aspect ratio, weaker fingerprint match; the "v3" suggests an edited iteration |
+
+### Provenance rejected - 1 file
+
+    education-library.jpeg
+
+The maintainer has rejected this image's provenance. It is to be replaced by a
+newly generated original, with the tool, date and prompt recorded. Two facts
+bear on how that is done: it matches nothing in `Gen photos`, and it is
+**referenced nowhere** - not in `build/content.mjs`, not in `build/guides.mjs`,
+not in any generated page. Nothing currently displays it, so removing it is as
+available as replacing it. Until one or the other happens it stays excluded
+from any content licence.
+
+### Unresolved provenance - 6 files, cannot be classified from the repository
+
+The remaining root images. The repository contains no credit line, EXIF policy,
+source note or licence record for any of them, and nothing in
+`build/content.mjs` or `build/guides.mjs` attributes an image to anyone.
+
+Coinkite-related, and possibly manufacturer-supplied. Note the maintainer's
+past association with Coinkite and the site's dedicated Coinkite page. Neither
+matches anything in `Gen photos`:
+
+    coinkite-metal-security.jpeg    coldcard-q-mk5-devices.jpg
 
 Editorial and illustrative imagery:
 
-    quickstart-desk.jpg             quickstart-dice.jpg
-    quickstart-seed-words.jpg       quickstart-rabbit-portrait.webp
-    quickstart-rabbit-tablet.webp   dice-entropy.jpg
-    bring-your-own-entropy-dice.jpg keys-addresses-utxos-flatlay.jpg
-    signing-device-circuit.jpeg     education-library.jpeg
-    choosing-your-first-setup-three-shapes.jpg
-    owning-your-bitcoin-key.jpg     stuck-transaction-envelope.jpg
-    what-is-money-rai-stone.jpg     what-is-money-trade-beads.jpg
-    what-is-money-hyperinflation-notes.jpg
-    what-not-to-normalize-phone-gallery.jpg
-    fiat-single-bill.png            social-preview.jpg
-    hero-lock.webp                  hero-keylock.webp
-    devices-hero.jpg                exchanges-hero.jpg
-    software-hero.jpg               guides-library-hero.jpg
-    glossary-hero.jpg
-
-Generated or composited:
-
-    cash-vortex/cash-vortex-core.webp        cash-vortex/controlled-orbit.webp
-    cash-vortex/controlled-orbit-v2.webp     cash-vortex/exchanges-cash-vortex.png
-    cash-vortex/exchanges-cash-vortex-final3.mp4
+    quickstart-rabbit-portrait.webp signing-device-circuit.jpeg
+    hero-keylock.webp               software-hero.jpg
 
 Each needs one of: original project photography, original project
 illustration, manufacturer-provided, third-party with permission, licensed
