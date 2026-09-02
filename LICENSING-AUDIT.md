@@ -526,9 +526,14 @@ Commit 3 cannot proceed until these are recorded.
 - Record answers to the remaining questions above in this file.
 - `LICENSE-CONTENT.md` exists as a **draft** and is marked as not in force. It
   records the intended CC BY 4.0 grant and, at greater length, what that grant
-  excludes. It is deliberately not published as live: the assignment to the
-  copyright holder does not exist yet, and thirteen product photographs have no
-  documented permission.
+  excludes. **One thing gates it**: the written assignment to the copyright
+  holder does not exist yet.
+- The thirteen product photographs are **not** a gate on it. They are excluded
+  from the licence, so it can take effect without reaching them, and their
+  undocumented status is tracked in
+  [issue #86](https://github.com/HodlDee/selfcustody/issues/86). Excluding them
+  settles what the licence grants; it settles nothing about the basis on which
+  they appear on the site, which remains unresolved.
 - Then, and only then, write `LICENSE`, `LICENSING.md` and
   `THIRD_PARTY_NOTICES.md`, put `LICENSE-CONTENT.md` into force, and update the
   README's licensing section.

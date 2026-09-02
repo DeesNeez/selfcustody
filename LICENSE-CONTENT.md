@@ -1,21 +1,21 @@
 # Licence for the educational content — DRAFT
 
-> **This draft is not in force.** Nothing on this page grants anything yet, and
-> no reuse permission should be inferred from it. Two things must happen first,
-> and both are tracked in [LICENSING-AUDIT.md](LICENSING-AUDIT.md):
+> **This draft is not in force.** One thing must happen first: the copyright in
+> the project's own writing has to be **assigned in writing** to the holder
+> named below. The material was authored by an individual, and an entity holds
+> nothing until those rights are transferred to it. Until that document exists
+> and is recorded in [LICENSING-AUDIT.md](LICENSING-AUDIT.md), default copyright
+> applies and nothing on this page grants anything.
 >
-> 1. The copyright in the project's own writing has to be **assigned in
->    writing** to the holder named below. The material was authored by an
->    individual; an entity holds nothing until those rights are transferred to
->    it.
-> 2. The thirteen product photographs the site serves have **no documented
->    permission**. They are excluded here, but a licence published while their
->    status is unresolved would invite exactly the confusion this file exists to
->    prevent — a reader could reasonably take "excluded from the licence" to
->    mean "settled", and for these it means the opposite.
+> **What is *not* a condition of this licence taking effect:** the thirteen
+> product photographs the site serves, whose reuse permission is undocumented.
+> They are excluded from this licence, so it can grant what it grants without
+> touching them, and their status is tracked separately in
+> [issue #86](https://github.com/HodlDee/selfcustody/issues/86).
 >
-> Until both are settled, default copyright applies to everything in this
-> repository.
+> That is a statement about scope, not a resolution. Their use here remains
+> **unresolved** — not authorised, not settled, and not made so by their absence
+> from this licence.
 
 ## What this licence covers
 
@@ -127,9 +127,13 @@ between the two groups:
 - The **13 product photographs** have **no documented permission**. A
   photograph is a separate copyrighted work owned by whoever took it, and being
   permitted to name a product grants nothing over someone else's picture of it.
-  Their status is open, and it is tracked as open in
-  [LICENSING-AUDIT.md](LICENSING-AUDIT.md) rather than being quietly settled by
-  their absence from this licence.
+  Their status is open and stays open: it is tracked in
+  [issue #86](https://github.com/HodlDee/selfcustody/issues/86) and in
+  [LICENSING-AUDIT.md](LICENSING-AUDIT.md), not settled by their absence from
+  this licence. A vendor audit on 2026-09-02 found published terms for one
+  vendor that **refuse** this use, and no usable terms at all for the other
+  eight. Six vendors publish downloadable media kits stating no terms; that is
+  not permission, and it is not recorded as permission anywhere.
 
 Whichever way that resolves — terms located, images replaced, or images removed
 — it changes what this project may display. It does not change this exclusion,
