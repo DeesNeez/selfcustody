@@ -11,7 +11,8 @@
 > 2. The thirteen product photographs the site serves have **no documented
 >    permission**. They are excluded here, but a licence published while their
 >    status is unresolved would invite exactly the confusion this file exists to
->    prevent.
+>    prevent — a reader could reasonably take "excluded from the licence" to
+>    mean "settled", and for these it means the opposite.
 >
 > Until both are settled, default copyright applies to everything in this
 > repository.
@@ -104,16 +105,35 @@ that licence permits and which does not make it project-owned.
 
 ### Manufacturer logos, product photographs, and other third-party marks
 
-Twenty-seven logos and marks belonging to hardware makers, wallet software
-vendors, exchanges and custody services, and thirteen photographs of products.
+**All forty are excluded from this licence**: twenty-seven logos and marks
+belonging to hardware makers, wallet software vendors, exchanges and custody
+services, and thirteen photographs of products — including
+`coldcard-q-mk5-devices.jpg`, which is manufacturer-provided and is one of the
+thirteen rather than an exception to them.
 
 > Product names, logos and trademarks are the property of their respective
 > owners. Their use here identifies the products discussed and does not indicate
 > affiliation with, sponsorship by, or endorsement from their owners.
 
-The marks appear beside writing about those products, to identify what is being
-discussed. That is a use of a *mark*; it grants nothing over a *photograph*, and
-the two are tracked separately in the audit for that reason.
+**Being excluded from this licence is not the same as this project having a
+settled right to show them**, and the two should not be read as one statement.
+Exclusion says only that reusing the writing grants you nothing over them. It
+says nothing about the basis on which they appear here, and that basis differs
+between the two groups:
+
+- The **27 logos and marks** appear beside writing about the products they
+  identify, under a proposed basis of nominative use. That is a use of a
+  *mark*, recorded in the audit for a reviewer to accept or reject.
+- The **13 product photographs** have **no documented permission**. A
+  photograph is a separate copyrighted work owned by whoever took it, and being
+  permitted to name a product grants nothing over someone else's picture of it.
+  Their status is open, and it is tracked as open in
+  [LICENSING-AUDIT.md](LICENSING-AUDIT.md) rather than being quietly settled by
+  their absence from this licence.
+
+Whichever way that resolves — terms located, images replaced, or images removed
+— it changes what this project may display. It does not change this exclusion,
+which holds regardless.
 
 ### The project's own marks
 
