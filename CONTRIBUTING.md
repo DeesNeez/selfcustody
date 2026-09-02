@@ -99,24 +99,38 @@ build, and CI catches the divergence anyway.
 | `docs/guides/*.html` | `build/render.mjs` from `build/guides.mjs` |
 | `docs/entropy.html`, `docs/entropy-offline.html`, `.sha256` | `build/render.mjs` |
 | `docs/sitemap.xml` | `build/render.mjs` |
+| `docs/assets/fonts/` | `build/render.mjs`, copied from `build/vendor/fonts/` — the two `woff2` files and both OFL notices, which the licence requires to travel with them |
 | `docs/assets/vendor/bootstrap-icons/` | `build/subset-icons.mjs` (`npm run icons:subset`) |
 
-**Partly generated — edit with care.** The root pages (`docs/index.html`,
-`docs/devices.html`, `docs/guides.html` and their siblings) are hand-maintained
-shells. `build/render.mjs` reads each one and replaces only three containers —
-`#site-header`, `#main-content`, `#site-footer` — plus the asset-version query
-strings. **Everything else in those files, including the entire `<head>`, is
-hand-maintained and yours to edit**: title, meta description, Open Graph and
-Twitter tags, canonical link, preloads, structured data.
+**Partly generated — edit with care.** The root pages listed in the `FILES` map
+in `build/render.mjs` — `index.html`, `guides.html`, `glossary.html`,
+`devices.html`, `software.html`, `exchanges.html`, `dashboard.html`,
+`merch.html`, `contact.html`, `coinkite.html`, `block-demo.html` — are
+hand-maintained shells. The renderer reads each one and replaces only three
+containers — `#site-header`, `#main-content`, `#site-footer` — plus the
+asset-version query strings. **Everything else in those files, including the
+entire `<head>`, is hand-maintained and yours to edit**: title, meta
+description, Open Graph and Twitter tags, canonical link, preloads, structured
+data.
+
+That map is the definition, not the directory listing. `docs/services.html` sits
+beside them and carries no shell at all, so nothing generated ever touches it.
 
 Read `build/render.mjs` before touching one. It aborts rather than guessing if a
 page's three containers are missing, or if a page has an empty shell but is not
 listed in its `FILES` map — so a new root page has to be registered there.
 
-**Hand-maintained — no generator at all.** `docs/assets/css/`, the images, the
-fonts, and `docs/assets/vendor/bootstrap/css/bootstrap.min.css`. That last one
-is a *hand-cut subset* of Bootstrap — a fraction of upstream's size, and not the
-output of any build step; read
+**Hand-maintained — no generator at all.**
+
+- `docs/assets/css/` — the site's own stylesheets
+- `docs/assets/js/` — `site-refresh.js`
+- `docs/assets/img/` — every image
+- `docs/assets/vendor/bootstrap/css/bootstrap.min.css`
+- one-offs directly maintained at the root: `docs/CNAME`, `docs/robots.txt`,
+  `docs/services.html`, `docs/block-probe.js`
+
+The Bootstrap stylesheet is the one to be careful with. It is a *hand-cut
+subset*, a fraction of upstream's size and the output of no build step; read
 [`build/vendor/bootstrap/README.md`](build/vendor/bootstrap/README.md) before
 changing it, and keep the licence header at the top intact —
 `assert-notices.mjs` fails the build if it goes.
@@ -225,11 +239,11 @@ depends on what you are changing:
 | Project-authored files under `secp256k1-wasm/` | [The Unlicense](secp256k1-wasm/LICENSE) |
 
 The third catches people out, so it is worth stating plainly: `src/lib.rs`,
-`Cargo.toml`, `rust-toolchain.toml` and the `builder/` recipe files were
-dedicated to the public domain upstream, and a contribution to them is dedicated
-the same way. That is a broader give-away than MIT and it cannot be walked back,
-so if you are not willing to place your work in the public domain, do not submit
-it there — say so and it can go somewhere else in the tree.
+`Cargo.toml`, `rust-toolchain.toml` and the `builder/` recipe files are already
+released by this project under The Unlicense, and a contribution to them is
+released the same way. That is a broader give-away than MIT. If you are
+unwilling to contribute under those terms, do not submit changes there — say so
+and the work can go somewhere else in the tree.
 
 [LICENSING.md](LICENSING.md) maps the whole repository. The split follows what
 material *is* rather than which file holds it: `build/guides.mjs` is a module
