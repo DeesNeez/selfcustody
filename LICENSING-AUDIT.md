@@ -21,11 +21,13 @@ and must be answered by the person who put the material here.
    source lines and 83 images, none originated with anyone but the maintainer.
    That commit has since been removed from this repository's history. See
    [Contributor audit](#contributor-audit).
-2. **One third-party notice is still missing.** The fonts, LifeHash,
-   libsecp256k1 and Bootstrap Icons all carry theirs now, and `secp256k1-wasm`
-   no longer contradicts itself about its own terms. Bootstrap's CSS subset is
-   the last one without a notice, and the only one whose upstream version is
-   still unidentified. See [Notice gaps](#notice-gaps).
+2. **Every third-party notice gap is closed.** The fonts, LifeHash,
+   libsecp256k1, Bootstrap Icons and Bootstrap all carry their notices, in the
+   place each licence needs them: inside the artifact where it is distributed
+   standalone, beside the file where it is served. `secp256k1-wasm` no longer
+   contradicts itself about its own terms. `build/tools/assert-notices.mjs`
+   fails the build if a served stylesheet loses its notice, because two of them
+   already had. See [Notice gaps](#notice-gaps).
 3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
    images are manufacturer logos, product shots or exchange marks. They cannot
    go under a project content licence. The remaining 44 need the maintainer to
@@ -88,7 +90,7 @@ condition the project does not meet, or did not until the row says otherwise.
 | --- | --- | --- | --- | --- |
 | 1 | Jost and Open Sans, embedded as base64 in `docs/entropy-offline.html` | SIL OFL 1.1 | **Resolved.** Both licences are now inlined in full in both Workshop builds, beside the bytes they cover. The full text travels rather than a reference, because the offline build is a single file people pass around. | — |
 | 2 | `build/vendor/fonts/` | SIL OFL 1.1 | **Resolved.** `OFL-Jost.txt` and `OFL-OpenSans.txt` are vendored from the Google Fonts directories the subsets were cut from, and `build/render.mjs` copies them into `docs/assets/fonts/` so the served copies carry them too. | — |
-| 3 | `docs/assets/vendor/bootstrap/css/bootstrap.min.css` | MIT | Shipped, minified, and the `/*! … */` banner Bootstrap's dist preserves has been stripped. No notice anywhere. Also has no source under `build/` — it is a hand-placed file inside otherwise-generated output. | Restore the banner or record the notice in `THIRD_PARTY_NOTICES.md`; record the exact upstream version, which is not stated anywhere. |
+| 3 | `docs/assets/vendor/bootstrap/css/bootstrap.min.css` | MIT | **Resolved.** Identified as Bootstrap 5.2.3: the file as first vendored is byte-identical to the official 5.2.3 dist, and the subset's selectors and custom properties are all present in that release. `LICENSE` is vendored from the package and reproduced in full at the top of the served file. It remains hand-maintained rather than generated, so `assert-notices.mjs` fails the build if the notice is lost or altered. | — |
 | 4 | `build/vendor/bootstrap-icons/` and the generated subset in `docs/assets/vendor/bootstrap-icons/` | MIT | **Resolved.** `LICENSE.md` is vendored from the package, and `npm run icons:subset` now writes it into a bang comment at the top of the generated stylesheet, read from the vendored file so the two cannot drift. The release is identified by matching bytes against every published package rather than by date: the files are identical to 1.10.2 and 1.10.3, which differ only in `package.json` and share one `LICENSE.md`. | — |
 | 5 | `build/tools/lifehash.js` | MIT **and** BSD-2-Clause-Patent | **Resolved.** The module carries both upstream licences, retained verbatim at `build/vendor/lifehash/` from pinned revisions and reproduced in full inside both generated Workshop pages. Which licences applied was settled by asking the author of the implementation it was adapted from, not by inference. | — |
 | 6 | `secp256k1-wasm/` | Unlicense | **Resolved.** The maintainer confirms the wrapper is released into the public domain under The Unlicense. `README.md` no longer says "Unlicensed", which meant the opposite, and the full text is vendored at `secp256k1-wasm/LICENSE` from unlicense.org, so manifest, prose and licence text agree. The identifier is not repeated in `src/lib.rs`: that file's line numbering reaches the compiled module, so even a comment there would require regenerating the committed WebAssembly. libsecp256k1 and secp256k1-sys keep their own upstream licences. | — |
@@ -150,7 +152,7 @@ project plan creates it; the reference should be checked against it then.
 | EntropyLab wallet export (`sqlite-writer.js`, `wallet-dat.js`) | `build/tools/`, licence at `build/vendor/entropylab-wallet-export/LICENSE` | MIT, © 2026 Mr.Hodl and Wicked | **Yes** — full notice inline in both files and present in the shipped artifact. |
 | LifeHash | `build/tools/lifehash.js`, licences at `build/vendor/lifehash/` | MIT, © 2022 Andreas Gassmann **and** BSD-2-Clause-Patent, © 2019 Blockchain Commons, LLC | **Yes** — both reproduced in full inside both Workshop builds, beside the module they cover. Adapted from EntropyLab's implementation (`w-s-bitcoin/entropylab#74`), which was itself adapted from both sources rather than written clean-room. |
 | Jost, Open Sans | `build/vendor/fonts/`, copied to `docs/assets/fonts/`, embedded in the offline artifact | SIL OFL 1.1 | **Yes** — all three distributed forms carry it. The upstream `OFL.txt` for each family is vendored beside the source, copied to `docs/assets/fonts/` alongside the served woff2 files, and inlined in full in both Workshop builds. |
-| Bootstrap (CSS subset) | `docs/assets/vendor/bootstrap/css/` | MIT | **No** — gap 3. |
+| Bootstrap (CSS subset) | `docs/assets/vendor/bootstrap/css/`, licence at `build/vendor/bootstrap/` | MIT, © 2011-2022 Twitter, Inc. and The Bootstrap Authors | **Yes** — reproduced in full at the top of the served file. Identified as 5.2.3 by byte-matching the pre-subset copy in this repository's history against the official dist. |
 | Bootstrap Icons | `build/vendor/bootstrap-icons/`, subset to `docs/assets/vendor/bootstrap-icons/` | MIT, © 2019-2021 The Bootstrap Authors | **Yes** — vendored from the package and written into the generated subset's bang comment. Identified as 1.10.2/1.10.3 by byte-matching against every published release. |
 | libsecp256k1 (via `secp256k1-sys` 0.14.0) | Compiled into `build/tools/secp256k1-wasm-b64.js`, licences at `build/vendor/libsecp256k1/` | MIT, © 2013 Pieter Wuille, for the C sources; CC0-1.0 for the `secp256k1-sys` FFI crate and its wasm shim | **Yes** — the MIT text is reproduced in full inside both Workshop builds beside the payload it covers. CC0 is named there and vendored in full, not reproduced, since it requires no notice. Both taken from the crate pinned in `Cargo.lock` and verified against its recorded checksum. |
 | `lifehash` npm package 1.0.0 (Andreas Gassmann) | `fuzzing/lifehash/` dev dependency | MIT | Test-only, never shipped. Worth listing for completeness. |
@@ -257,9 +259,8 @@ Commit 3 cannot proceed until these are recorded.
 
 ## What happens next
 
-- Fix the last notice gap: the Bootstrap CSS subset ships without its MIT
-  notice (gap 3), and its upstream version is recorded nowhere. It is a licence
-  condition, independent of any decision about the project's own licensing.
+- The notice gaps are closed. What remains before the licensing files can be
+  written is the maintainer's own material rather than anyone else's.
 - Record answers to the remaining questions above in this file.
 - Then, and only then, write `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md`
   and `THIRD_PARTY_NOTICES.md`, and update the README's licensing section.
