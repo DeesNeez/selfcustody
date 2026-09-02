@@ -1,7 +1,18 @@
-/* LifeHash version2, adapted from the merged EntropyLab implementation in
-   w-s-bitcoin/entropylab#74. The reference algorithm is preserved, but
-   SHA-256 comes from EntropyCore so the offline page adds no browser API or
-   network dependency.
+/* LifeHash version2.
+
+   LifeHash originates with Blockchain Commons, whose C++ implementation is its
+   reference. This module is adapted from EntropyLab's JavaScript
+   implementation of it, contributed there under that project's public-domain
+   terms (w-s-bitcoin/entropylab#74).
+
+   This module and the modifications made to it here are distributed under the
+   BSD-2-Clause-Patent licence, retained in full at
+   build/vendor/lifehash/LICENSE.md and carried inside both generated Workshop
+   pages. AndreasGassmann/lifehash is a separate implementation used only to
+   check this one in fuzzing/lifehash; nothing from it is present here.
+
+   The reference algorithm is preserved, but SHA-256 comes from EntropyCore so
+   the offline page adds no browser API or network dependency.
 
    Fingerprints are hashed as raw bytes, which is what Sparrow shows. See
    fromFingerprint for why, and for what it means for icons from earlier

@@ -22,10 +22,10 @@ and must be answered by the person who put the material here.
    That commit has since been removed from this repository's history. See
    [Contributor audit](#contributor-audit).
 2. **Two third-party notices are missing and one is contradictory.** The font
-   notices, which were the most serious because the standalone offline artifact
-   carried none, are now resolved. Bootstrap and Bootstrap Icons still ship
-   without theirs, and `secp256k1-wasm` still contradicts itself. See
-   [Notice gaps](#notice-gaps).
+   notices and the LifeHash notice are resolved; both were serious because the
+   standalone offline artifact carried neither. Bootstrap and Bootstrap Icons
+   still ship without theirs, and `secp256k1-wasm` still contradicts itself.
+   See [Notice gaps](#notice-gaps).
 3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
    images are manufacturer logos, product shots or exchange marks. They cannot
    go under a project content licence. The remaining 44 need the maintainer to
@@ -90,8 +90,32 @@ condition the project does not meet, or did not until the row says otherwise.
 | 2 | `build/vendor/fonts/` | SIL OFL 1.1 | **Resolved.** `OFL-Jost.txt` and `OFL-OpenSans.txt` are vendored from the Google Fonts directories the subsets were cut from, and `build/render.mjs` copies them into `docs/assets/fonts/` so the served copies carry them too. | — |
 | 3 | `docs/assets/vendor/bootstrap/css/bootstrap.min.css` | MIT | Shipped, minified, and the `/*! … */` banner Bootstrap's dist preserves has been stripped. No notice anywhere. Also has no source under `build/` — it is a hand-placed file inside otherwise-generated output. | Restore the banner or record the notice in `THIRD_PARTY_NOTICES.md`; record the exact upstream version, which is not stated anywhere. |
 | 4 | `build/vendor/bootstrap-icons/` and the generated subset in `docs/assets/vendor/bootstrap-icons/` | MIT | No licence text vendored; the generated stylesheet carries no banner. `README.md` records only "as vendored in commit a565235", not an upstream version. | Vendor the upstream `LICENSE`, record the upstream version, and carry the notice into the subset output. |
-| 5 | `build/tools/lifehash.js` | **Unclear** | Header says "adapted from the merged EntropyLab implementation in PR #74", meaning [w-s-bitcoin/entropylab#74](https://github.com/w-s-bitcoin/entropylab/pull/74) rather than this repository's own PR of that number. No licence notice, and no reference to LifeHash's own upstream origin. Unlike `sqlite-writer.js` and `wallet-dat.js` — adapted from the same project and both carrying the full MIT notice inline — this file carries nothing. | Establish the licence of the EntropyLab implementation *and* of the LifeHash algorithm's upstream reference implementation, then add the notice. This one blocks calling the Workshop's licensing complete. |
+| 5 | `build/tools/lifehash.js` | BSD-2-Clause-Patent | **Resolved.** The module is now distributed under Blockchain Commons' licence, retained verbatim at `build/vendor/lifehash/LICENSE.md` from pinned commit `0444dbed` and reproduced in full inside both generated Workshop pages. EntropyLab is recorded as the public-domain adaptation layer; AndreasGassmann/lifehash as differential-testing provenance only. | — |
 | 6 | `secp256k1-wasm/` | **Contradictory** | `README.md` says "The Rust wrapper is Unlicensed"; `Cargo.toml` declares `license = "Unlicense"`. Those mean opposite things — no licence at all, versus a public-domain dedication. | Decide which is intended and make both files say it. |
+
+### How the LifeHash licence was chosen
+
+Its provenance runs Blockchain Commons (algorithm and C++ reference) to
+EntropyLab (the JavaScript implementation adapted here) to this project, with
+AndreasGassmann/lifehash a parallel implementation used only for differential
+testing. EntropyLab's header described its work as a "faithful port of the
+reference algorithm (Blockchain Commons / the lifehash JS package)", naming two
+possible sources without distinguishing them.
+
+A question asking which was consulted is open at `w-s-bitcoin/entropylab#74`.
+Rather than wait on it, the conservative answer was taken: carry Blockchain
+Commons' licence, which is correct whether the implementation was translated
+from their source or written from the algorithm.
+
+The MIT implementation is excluded on evidence rather than convenience.
+Normalized-token similarity between EntropyLab's file and that package sits at
+the unrelated-code floor once controls are used; none of Blockchain Commons'
+distinctive identifiers survive into EntropyLab although that package preserved
+them; and the one substantial matching passage appears verbatim in Blockchain
+Commons' own `gradients.cpp`, so the resemblance is inherited rather than
+copied. The package is also never installed by the site build, never committed
+and never shipped. Should upstream reply showing it was in fact a source, its
+notice would need adding beside the current one.
 
 A seventh, non-licensing note: `secp256k1-wasm/Cargo.toml` cites
 "CONTRIBUTING.md §2", and `CONTRIBUTING.md` does not exist. Phase 8 of the
@@ -118,7 +142,7 @@ project plan creates it; the reference should be checked against it then.
 | --- | --- | --- | --- |
 | Project Nayuki QR generator | `build/vendor/qr/`, inlined into both Workshop builds | MIT | **Yes** — in both source files and the shipped artifact. `assert-no-fetch.mjs` explicitly protects the notice's URL from being flagged. This is the model the others should follow. |
 | EntropyLab wallet export (`sqlite-writer.js`, `wallet-dat.js`) | `build/tools/`, licence at `build/vendor/entropylab-wallet-export/LICENSE` | MIT, © 2026 Mr.Hodl and Wicked | **Yes** — full notice inline in both files and present in the shipped artifact. |
-| LifeHash port | `build/tools/lifehash.js` | Unclear | **No** — gap 5. |
+| LifeHash | `build/tools/lifehash.js`, licence at `build/vendor/lifehash/LICENSE.md` | BSD-2-Clause-Patent, © 2019 Blockchain Commons, LLC | **Yes** — reproduced in full inside both Workshop builds, beside the module it covers. Adapted from EntropyLab's implementation (`w-s-bitcoin/entropylab#74`), contributed there under that project's public-domain terms. |
 | Jost, Open Sans | `build/vendor/fonts/`, copied to `docs/assets/fonts/`, embedded in the offline artifact | SIL OFL 1.1 | **No** — gaps 1 and 2. |
 | Bootstrap (CSS subset) | `docs/assets/vendor/bootstrap/css/` | MIT | **No** — gap 3. |
 | Bootstrap Icons | `build/vendor/bootstrap-icons/`, subset to `docs/assets/vendor/bootstrap-icons/` | MIT | **No** — gap 4. |
@@ -217,14 +241,11 @@ Commit 3 cannot proceed until these are recorded.
 3. For each of the 40 unresolved images: which of the seven classes above?
    Stock licences and generation tools need naming, not just approving.
 4. Is the `secp256k1-wasm` wrapper meant to be Unlicense, or unlicensed?
-5. What licence covers the EntropyLab LifeHash implementation in
-   [w-s-bitcoin/entropylab#74](https://github.com/w-s-bitcoin/entropylab/pull/74), and
-   what is the upstream origin of the LifeHash algorithm it implements?
 
 ## What happens next
 
 - Fix the six notice gaps. They are licence conditions, independent of any
   decision about the project's own licensing.
-- Record answers to the five questions above in this file.
+- Record answers to the four questions above in this file.
 - Then, and only then, write `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md`
   and `THIRD_PARTY_NOTICES.md`, and update the README's licensing section.
