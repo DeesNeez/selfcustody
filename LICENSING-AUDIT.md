@@ -31,11 +31,12 @@ and must be answered by the person who put the material here.
    already had. See [Notice gaps](#notice-gaps).
 3. **Every image now has a recorded origin, and half of them are other
    people's.** Of 81 tracked images: 39 are third-party marks and product shots,
-   37 are classified from the maintainer's own account — one of those being a
-   manufacturer-provided image that likewise cannot be licensed onward — 4 are
-   the project's own marks, and 1 is the placeholder added here. Three images
-   were removed rather than classified. What remains is not classification but
-   permission and copyrightability. See [Image audit](#image-audit).
+   38 are classified from the maintainer's own account — one of those being a
+   manufacturer-provided image that likewise cannot be licensed onward — and 4
+   are the project's own marks. Three images were removed rather than
+   classified, one of them replaced by a licensed photograph. What remains is
+   not classification but permission and copyrightability. See
+   [Image audit](#image-audit).
 4. **Project-authored prose and diagrams are cleanly owned.** This is the
    material CC BY 4.0 is actually for.
 
@@ -177,8 +178,9 @@ project plan creates it; the reference should be checked against it then.
 
 81 tracked files under `docs/assets/img/`. Three images were removed rather
 than classified — `education-library.jpeg`, `signing-device-circuit.jpeg` and
-`coinkite-metal-security.jpeg` — and one placeholder was added in the last of
-their places. Do not place this directory under a content licence as a whole.
+`coinkite-metal-security.jpeg` — and a licensed photograph was added in the
+last of their places. Do not place this directory under a content licence as a
+whole.
 
 ### Third-party marks and product images — 39 files, exclude
 
@@ -205,7 +207,7 @@ authored for the project. A project logo is normally kept out of a content
 licence even when the project owns it, so that reuse of the writing does not
 imply endorsement.
 
-### Confirmed by the maintainer - 37 files
+### Confirmed by the maintainer - 38 files
 
 **AI-generated images, and the project-edited or compressed versions of them - 28 files.** The maintainer keeps the originals
 in a `Gen photos` folder outside the repository and states that everything in
@@ -307,7 +309,7 @@ itself. As with the AI-generated set above, whether this material is
 copyrightable at all, and on what terms it may be licensed onward, are separate
 questions that this audit records rather than answers.
 
-**Unsplash photographs - 3 files.** Each is now identified to a specific
+**Unsplash photographs - 4 files.** Each is now identified to a specific
 photograph rather than to the platform, which is the difference between a
 recorded source and a recorded licence. Verified against the live Unsplash
 pages on 2026-09-02; each states "Free to use under the Unsplash License",
@@ -318,6 +320,14 @@ which permits modification and both commercial and non-commercial use.
 | `fiat-single-bill.png` | [a one hundred dollar bill with a picture of a man's face on it](https://unsplash.com/photos/a-one-hundred-dollar-bill-with-a-picture-of-a-mans-face-on-it-7aWvQdR36Y0) (`7aWvQdR36Y0`) | engin akyurt |
 | `hero-lock.webp` | [a close up of a padlock on a door](https://unsplash.com/photos/a-close-up-of-a-padlock-on-a-door-KrPulSdUetk) (`KrPulSdUetk`) | Kaffeebart |
 | `hero-keylock.webp` | [a close up of a key on a door](https://unsplash.com/photos/a-close-up-of-a-key-on-a-door-LkoDqb5E3zg) (`LkoDqb5E3zg`) | Dima Solomin |
+| `coinkite-circuit-board.jpg` | [macro photography of black circuit board](https://unsplash.com/photos/macro-photography-of-black-circuit-board-FO7JIlwjOtU) (`FO7JIlwjOtU`) | Alexandre Debiève |
+
+`coinkite-circuit-board.jpg` was downloaded from that page at 1920x1280 and
+resized to the 1600x1067 the hero slot expects. The source is exactly 3:2, so
+nothing was cropped — the picture is the photographer's framing, only smaller.
+It is re-encoded at quality 74, which holds the macro detail at 211 KB; the
+same detail is why it will not compress to the 142 KB of the photograph it
+replaces.
 
 `hero-lock.webp` is a **derivative**: its colours were modified using Claude.
 The Unsplash Licence permits that, and the result is still governed by it
@@ -372,22 +382,21 @@ unresolved, and genuinely unused: no reference in `build/content.mjs`,
 `build/guides.mjs`, any generated page, or any stylesheet. Deleting it changed
 nothing that renders, so it needed no replacement.
 
-**`coinkite-metal-security.jpeg` — removed; replaced by a placeholder.**
-Provenance unresolved. Unlike the other two this one was doing visible work: it
-was the hero image of `docs/coinkite.html`, at 1600x1067 with
+**`coinkite-metal-security.jpeg` — removed; replaced by a licensed
+photograph.** Provenance unresolved. Unlike the other two this one was doing
+visible work: it was the hero image of `docs/coinkite.html`, at 1600x1067 with
 `fetchpriority="high"`, so deleting it outright would have left that page's
 hero empty.
 
-`docs/assets/img/coinkite-hero-placeholder.png` stands in — a plain vertical
-gradient in the page's own dark range, generated for the purpose, carrying no
-photographic content and no provenance question. Its `alt` is empty because it
-is decorative: describing a photograph that is no longer there would have been
-worse than describing nothing. It is project-created and can go under whatever
-licence the project's own material does.
+A plain gradient panel stood in briefly. `coinkite-circuit-board.jpg` has taken
+its place — a real photograph with a photographer, a URL and a licence, listed
+with the other Unsplash images above. That is the better outcome: an image with
+recorded provenance rather than an absence, and one fewer temporary artefact to
+remember to replace later.
 
-The placeholder is temporary by intent. A replacement with a recorded source
-should take its place, and the comment beside it in `build/content.mjs` says
-so.
+The `alt` text describes the new photograph rather than the old one. The
+comment beside it in `build/content.mjs` records why the image changed and
+where its attribution lives.
 
 ### Nothing remains unclassified
 

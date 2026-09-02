@@ -780,13 +780,12 @@ const currentYear = new Date().getFullYear();
           `<a class="sc-btn sc-btn-primary" href="#compare-coinkite">Compare products</a>
            <a class="sc-btn sc-btn-ghost" href="devices.html">All device brands</a>`,
           {
-            /* Placeholder. The photograph here had unresolved provenance and was
-               removed; this is a plain panel in the page's own dark range until
-               a replacement with a recorded source exists. Decorative, so the
-               alt text is empty rather than describing a picture that is no
-               longer there. */
-            src: "assets/img/coinkite-hero-placeholder.png",
-            alt: "",
+            /* Replaces a photograph whose provenance could not be established.
+               This one is by Alexandre Debieve, from Unsplash under the
+               Unsplash Licence -- see LICENSING-AUDIT.md for the photograph,
+               the photographer and the date it was verified. */
+            src: "assets/img/coinkite-circuit-board.jpg",
+            alt: "Macro photograph of a circuit board, its chips and capacitors in sharp relief",
             width: 1600,
             height: 1067
           }
