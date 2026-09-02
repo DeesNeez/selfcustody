@@ -22,10 +22,10 @@ and must be answered by the person who put the material here.
    That commit has since been removed from this repository's history. See
    [Contributor audit](#contributor-audit).
 2. **Two third-party notices are missing and one is contradictory.** The font
-   notices, which were the most serious because the standalone offline artifact
-   carried none, are now resolved. Bootstrap and Bootstrap Icons still ship
-   without theirs, and `secp256k1-wasm` still contradicts itself. See
-   [Notice gaps](#notice-gaps).
+   notices and the LifeHash notice are resolved; both were serious because the
+   standalone offline artifact carried neither. Bootstrap and Bootstrap Icons
+   still ship without theirs, and `secp256k1-wasm` still contradicts itself.
+   See [Notice gaps](#notice-gaps).
 3. **Roughly half the images are third-party brand assets.** 39 of 83 tracked
    images are manufacturer logos, product shots or exchange marks. They cannot
    go under a project content licence. The remaining 44 need the maintainer to
@@ -90,8 +90,38 @@ condition the project does not meet, or did not until the row says otherwise.
 | 2 | `build/vendor/fonts/` | SIL OFL 1.1 | **Resolved.** `OFL-Jost.txt` and `OFL-OpenSans.txt` are vendored from the Google Fonts directories the subsets were cut from, and `build/render.mjs` copies them into `docs/assets/fonts/` so the served copies carry them too. | — |
 | 3 | `docs/assets/vendor/bootstrap/css/bootstrap.min.css` | MIT | Shipped, minified, and the `/*! … */` banner Bootstrap's dist preserves has been stripped. No notice anywhere. Also has no source under `build/` — it is a hand-placed file inside otherwise-generated output. | Restore the banner or record the notice in `THIRD_PARTY_NOTICES.md`; record the exact upstream version, which is not stated anywhere. |
 | 4 | `build/vendor/bootstrap-icons/` and the generated subset in `docs/assets/vendor/bootstrap-icons/` | MIT | No licence text vendored; the generated stylesheet carries no banner. `README.md` records only "as vendored in commit a565235", not an upstream version. | Vendor the upstream `LICENSE`, record the upstream version, and carry the notice into the subset output. |
-| 5 | `build/tools/lifehash.js` | **Unclear** | Header says "adapted from the merged EntropyLab implementation in PR #74", meaning [w-s-bitcoin/entropylab#74](https://github.com/w-s-bitcoin/entropylab/pull/74) rather than this repository's own PR of that number. No licence notice, and no reference to LifeHash's own upstream origin. Unlike `sqlite-writer.js` and `wallet-dat.js` — adapted from the same project and both carrying the full MIT notice inline — this file carries nothing. | Establish the licence of the EntropyLab implementation *and* of the LifeHash algorithm's upstream reference implementation, then add the notice. This one blocks calling the Workshop's licensing complete. |
+| 5 | `build/tools/lifehash.js` | MIT **and** BSD-2-Clause-Patent | **Resolved.** The module carries both upstream licences, retained verbatim at `build/vendor/lifehash/` from pinned revisions and reproduced in full inside both generated Workshop pages. Which licences applied was settled by asking the author of the implementation it was adapted from, not by inference. | — |
 | 6 | `secp256k1-wasm/` | **Contradictory** | `README.md` says "The Rust wrapper is Unlicensed"; `Cargo.toml` declares `license = "Unlicense"`. Those mean opposite things — no licence at all, versus a public-domain dedication. | Decide which is intended and make both files say it. |
+
+### How the LifeHash licences were established
+
+EntropyLab's implementation described itself as a "faithful port of the
+reference algorithm (Blockchain Commons / the lifehash JS package)", naming two
+possible sources without saying which was consulted. The question was put to
+its author at `w-s-bitcoin/entropylab#74`.
+
+The answer: the file was written by following the reference sources function by
+function — primarily Andreas Gassmann's TypeScript package (MIT), itself a port
+of Blockchain Commons' C++ (BSD-2-Clause-Patent) — and re-expressing them in
+that project's idiom. Explicitly not clean-room. EntropyLab's public-domain
+terms cover that project's original code but cannot cover adapted upstream
+expression, so they do not reach the whole module. Both notices are therefore
+carried.
+
+The traces the author cited are checkable in this repository and check out:
+`runGameOfLife` and `buildFracGrid` are names from the TypeScript package —
+the C++ inlines that logic and has no such functions — and both appear in our
+module; the string "BitEnumerator underflow." is verbatim in the package and in
+the file ours was adapted from.
+
+**A structural comparison run here first reached the opposite conclusion**, and
+the failure is recorded rather than quietly dropped. Its similarity measure
+normalised every string literal to a placeholder, so the verbatim error message
+was invisible to it by construction; and its identifier test probed for
+Blockchain Commons' `snake_case` names rather than the TypeScript package's own
+names, answering a question nobody had asked. Author testimony about how code
+was written beats inference from similarity metrics whose blind spots have not
+been mapped.
 
 A seventh, non-licensing note: `secp256k1-wasm/Cargo.toml` cites
 "CONTRIBUTING.md §2", and `CONTRIBUTING.md` does not exist. Phase 8 of the
@@ -118,8 +148,8 @@ project plan creates it; the reference should be checked against it then.
 | --- | --- | --- | --- |
 | Project Nayuki QR generator | `build/vendor/qr/`, inlined into both Workshop builds | MIT | **Yes** — in both source files and the shipped artifact. `assert-no-fetch.mjs` explicitly protects the notice's URL from being flagged. This is the model the others should follow. |
 | EntropyLab wallet export (`sqlite-writer.js`, `wallet-dat.js`) | `build/tools/`, licence at `build/vendor/entropylab-wallet-export/LICENSE` | MIT, © 2026 Mr.Hodl and Wicked | **Yes** — full notice inline in both files and present in the shipped artifact. |
-| LifeHash port | `build/tools/lifehash.js` | Unclear | **No** — gap 5. |
-| Jost, Open Sans | `build/vendor/fonts/`, copied to `docs/assets/fonts/`, embedded in the offline artifact | SIL OFL 1.1 | **No** — gaps 1 and 2. |
+| LifeHash | `build/tools/lifehash.js`, licences at `build/vendor/lifehash/` | MIT, © 2022 Andreas Gassmann **and** BSD-2-Clause-Patent, © 2019 Blockchain Commons, LLC | **Yes** — both reproduced in full inside both Workshop builds, beside the module they cover. Adapted from EntropyLab's implementation (`w-s-bitcoin/entropylab#74`), which was itself adapted from both sources rather than written clean-room. |
+| Jost, Open Sans | `build/vendor/fonts/`, copied to `docs/assets/fonts/`, embedded in the offline artifact | SIL OFL 1.1 | **Yes** — all three distributed forms carry it. The upstream `OFL.txt` for each family is vendored beside the source, copied to `docs/assets/fonts/` alongside the served woff2 files, and inlined in full in both Workshop builds. |
 | Bootstrap (CSS subset) | `docs/assets/vendor/bootstrap/css/` | MIT | **No** — gap 3. |
 | Bootstrap Icons | `build/vendor/bootstrap-icons/`, subset to `docs/assets/vendor/bootstrap-icons/` | MIT | **No** — gap 4. |
 | libsecp256k1 (via `secp256k1-sys` 0.14.0) | Compiled into `build/tools/secp256k1-wasm-b64.js` | Upstream MIT | Licence lives in the crate source fetched at build time, not in this repo. Should be reproduced in `THIRD_PARTY_NOTICES.md`, since the compiled output ships here. |
@@ -217,14 +247,13 @@ Commit 3 cannot proceed until these are recorded.
 3. For each of the 40 unresolved images: which of the seven classes above?
    Stock licences and generation tools need naming, not just approving.
 4. Is the `secp256k1-wasm` wrapper meant to be Unlicense, or unlicensed?
-5. What licence covers the EntropyLab LifeHash implementation in
-   [w-s-bitcoin/entropylab#74](https://github.com/w-s-bitcoin/entropylab/pull/74), and
-   what is the upstream origin of the LifeHash algorithm it implements?
 
 ## What happens next
 
-- Fix the six notice gaps. They are licence conditions, independent of any
-  decision about the project's own licensing.
-- Record answers to the five questions above in this file.
+- Fix the remaining notice gaps: Bootstrap and Bootstrap Icons ship without
+  their MIT notices (gaps 3 and 4), and `secp256k1-wasm` contradicts itself
+  about its own licence (gap 6). They are licence conditions, independent of
+  any decision about the project's own licensing.
+- Record answers to the four questions above in this file.
 - Then, and only then, write `LICENSE`, `LICENSE-CONTENT.md`, `LICENSING.md`
   and `THIRD_PARTY_NOTICES.md`, and update the README's licensing section.

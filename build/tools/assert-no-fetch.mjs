@@ -78,10 +78,12 @@ const ALLOWED = {
    fetches. Everything else in both builds stays under the strict rule. */
 const INLINE_ORIGINS = {
   'entropy.html': {
-    'https://www.nayuki.io': "the vendored QR library's required copyright notice"
+    'https://www.nayuki.io': "the vendored QR library's required copyright notice",
+    'https://spdx.org': "the SPDX identifier in LifeHash's required BSD-2-Clause-Patent notice"
   },
   'entropy-offline.html': {
-    'https://www.nayuki.io': "the vendored QR library's required copyright notice"
+    'https://www.nayuki.io': "the vendored QR library's required copyright notice",
+    'https://spdx.org': "the SPDX identifier in LifeHash's required BSD-2-Clause-Patent notice"
   }
 };
 

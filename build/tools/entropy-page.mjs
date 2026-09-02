@@ -85,21 +85,82 @@ const fontLicences = () => FONTS.map(({ family, version, licence }) =>
   `${family} ${version}\n\n${readFileSync(licence, 'utf8').replace(/\r\n/g, '\n').trim()}`
 ).join(`\n\n${'='.repeat(72)}\n\n`);
 
+/* Every licence this build embeds is carried as a comment inside a <style> or
+   a <script> element, and two different things can escape that.
+
+   The comment itself ends at the C-style terminator, which would drop the
+   rest of the licence into live CSS or JavaScript. And the element ends at "</style" or
+   "</script" no matter what the CSS or JS parser would have made of the
+   surrounding characters, because the HTML tokenizer runs first and does not
+   know it is inside a comment -- so the remainder would be reparsed as markup.
+   Both closers are matched case-insensitively, because the tokenizer is.
+
+   No licence carried today contains any of the three. These checks exist so
+   that a future upstream revision cannot introduce one silently: licence text
+   is the one input this build takes verbatim from strangers, and it is exactly
+   the input nobody re-reads. Both closers are checked in both contexts rather
+   than only the relevant one, so that moving a notice between a stylesheet and
+   a script cannot quietly lose its guard. */
+const assertInlineSafe = (text, what) => {
+  if (text.includes('*' + '/')) {
+    throw new Error(`${what} contains a comment terminator, which would end the comment early`);
+  }
+  for (const element of ['script', 'style']) {
+    if (new RegExp(`</${element}`, 'i').test(text)) {
+      throw new Error(`${what} contains </${element}, which would end the ${element} element early`);
+    }
+  }
+};
+
 const embedFontLicences = () => {
   const text = fontLicences();
-  if (text.includes('*/')) {
-    throw new Error('a vendored font licence contains */, which would close the CSS comment early');
-  }
-  /* A CSS comment does not protect this. The HTML tokenizer leaves the style
-     element on "</style", whatever the CSS parser would have made of the
-     surrounding characters, so the rest of the licence would be reparsed as
-     markup. Case-insensitive, because the tokenizer is. Neither current
-     licence contains it; the check exists so that a future upstream text
-     cannot introduce it silently. */
-  if (/<\/style/i.test(text)) {
-    throw new Error('a vendored font licence contains </style, which would end the style element early');
-  }
+  assertInlineSafe(text, 'a vendored font licence');
   return `\n/* ${'-'.repeat(72)}\n   Embedded webfonts. Both families are used under the SIL Open Font\n   License 1.1; the full text of each licence follows the family it covers.\n   The font files themselves are subsets, unmodified in outline, of the\n   upstream releases named below.\n   ${'-'.repeat(72)}\n\n${text}\n*/\n`;
+};
+
+/* LifeHash originates with Blockchain Commons, and their licence requires the
+   copyright notice and conditions to be retained by anything that redistributes
+   the source. Both Workshop builds inline the module, and entropy-offline.html
+   is a single file people download and pass around, so the notice has to ride
+   inside the artifact rather than sit in the repository beside it -- the same
+   reasoning the font licences follow.
+
+   The text is the vendored file verbatim, including the SPDX line's URL. That
+   URL is declared in assert-no-fetch.mjs exactly as Project Nayuki's is, for
+   the same reason: naming an origin inside a comment is not fetching it, and
+   editing a licence to avoid declaring it would be the worse trade. */
+/* Two licences, because the module has two upstreams and the author of the
+   implementation it was adapted from told us so directly.
+
+   The provenance question was put to EntropyLab at w-s-bitcoin/entropylab#74.
+   The answer: their file was written by following the reference sources
+   function by function -- primarily Andreas Gassmann's TypeScript package,
+   itself a port of Blockchain Commons' C++ -- and re-expressing them in that
+   project's idiom. Not clean-room. The author pointed at the surviving traces:
+   a verbatim error string, and function names taken from the TypeScript rather
+   than from the C++, which inlines that logic and has no such names.
+
+   Both are checkable here, and both check out. `runGameOfLife` and
+   `buildFracGrid` appear in the package and in this module; the string
+   "BitEnumerator underflow." is in the package and in the file this module was
+   adapted from.
+
+   So both notices travel: MIT for the TypeScript package, BSD-2-Clause-Patent
+   for the C++ reference underneath it. Two short notices is the whole
+   obligation, and the BSD one carries a patent grant worth having. */
+const LIFEHASH_LICENCES = [
+  { what: 'Blockchain Commons bc-lifehash -- the LifeHash algorithm and its C++ reference implementation',
+    file: 'build/vendor/lifehash/LICENSE.md' },
+  { what: 'AndreasGassmann/lifehash -- the TypeScript implementation this module was adapted from',
+    file: 'build/vendor/lifehash/LICENSE-MIT-lifehash-ts.txt' }
+];
+
+const embedLifeHashLicence = () => {
+  const text = LIFEHASH_LICENCES.map(({ what, file }) =>
+    `${what}\n\n${readFileSync(file, 'utf8').replace(/\r\n/g, '\n').trim()}`
+  ).join(`\n\n${'='.repeat(72)}\n\n`);
+  assertInlineSafe(text, 'a vendored LifeHash licence');
+  return `/* ${'-'.repeat(72)}\n   LifeHash. This module is adapted from EntropyLab's JavaScript\n   implementation, which was itself adapted from the two upstream sources\n   below rather than written from the algorithm description. Both licences\n   are reproduced in full, because this file travels inside the artifact.\n   ${'-'.repeat(72)}\n\n${text}\n*/\n`;
 };
 
 /* font-display: block, not swap.
@@ -4889,6 +4950,7 @@ ${betaWarning}
 ${core}
 </script>
 <script>
+${embedLifeHashLicence()}
 ${lifehash}
 </script>
 <script>

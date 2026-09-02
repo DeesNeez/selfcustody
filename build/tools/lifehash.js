@@ -1,7 +1,24 @@
-/* LifeHash version2, adapted from the merged EntropyLab implementation in
-   w-s-bitcoin/entropylab#74. The reference algorithm is preserved, but
-   SHA-256 comes from EntropyCore so the offline page adds no browser API or
-   network dependency.
+/* LifeHash version2.
+
+   Adapted from EntropyLab's JavaScript implementation
+   (w-s-bitcoin/entropylab#74), which was itself adapted -- function by
+   function, not clean-room -- from Andreas Gassmann's TypeScript package and,
+   underneath it, Blockchain Commons' C++ reference. That is the author's own
+   account of how it was written, given on that pull request; the traces are
+   still visible here in runGameOfLife and buildFracGrid, names that come from
+   the TypeScript rather than the C++.
+
+   So this module and the modifications made to it here are distributed under
+   both upstream licences: MIT (Copyright (c) 2022 Andreas Gassmann) and
+   BSD-2-Clause-Patent (Copyright (c) 2019 Blockchain Commons, LLC). Both are
+   retained in full under build/vendor/lifehash/ and carried inside both
+   generated Workshop pages, because the offline build travels on its own.
+
+   fuzzing/lifehash checks this module against the same Gassmann package. That
+   is testing, not provenance -- the provenance is the adaptation above.
+
+   The reference algorithm is preserved, but SHA-256 comes from EntropyCore so
+   the offline page adds no browser API or network dependency.
 
    Fingerprints are hashed as raw bytes, which is what Sparrow shows. See
    fromFingerprint for why, and for what it means for icons from earlier

@@ -28,7 +28,7 @@ const renderFingerprint = hex =>
 /* SHA-256 over the raw 32x32 RGB pixels, at module size 1. Produced by the
    canonical `lifehash` npm package (AndreasGassmann/lifehash), which is a
    separate implementation from this one -- so a shared bug in this port
-   cannot make them agree. Pinned via EntropyLab #232, which generated and
+   cannot make them agree. Pinned via w-s-bitcoin/entropylab#232, which generated and
    verified them against Sparrow's icons. */
 const SPARROW_VECTORS = [
   ['73c5da0a', '09da10ffd57a4f58616a5eda313d3f0c861e79b93e1b609a012f9c3530b427b5'],
