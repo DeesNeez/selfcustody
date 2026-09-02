@@ -103,8 +103,24 @@ const preamble = css
   .slice(0, css.indexOf('.bi-123::before'))
   .replace(/(bootstrap-icons\.woff2?)\?[^")]*/g, `$1?${SUBSET_TAG}`);
 
+/* Upstream ships this notice at the top of its own stylesheet, and MIT asks
+   that it accompany substantial portions of the software. A subset is a
+   substantial portion: it is upstream's glyph outlines and upstream's class
+   names, with the unused ones removed. Rebuilding the preamble here is what
+   dropped the notice in the first place, since it slices from the first rule
+   rather than from the top of the file, so it is put back explicitly.
+
+   Read from the vendored licence rather than retyped, so the two cannot
+   drift. The bang comment is the convention CSS minifiers preserve. */
+const licence = readFileSync(`${SRC_DIR}/LICENSE.md`, 'utf8').replace(/\r\n/g, '\n').trim();
+if (licence.includes('*' + '/')) {
+  console.error('  ABORT: the vendored Bootstrap Icons licence would close the CSS comment early');
+  process.exit(1);
+}
+const notice = `/*!\n * Bootstrap Icons, subset to the glyphs this site uses.\n * Glyph outlines and class names are upstream's; see\n * build/vendor/bootstrap-icons/README.md for the version and provenance.\n *\n${licence.split('\n').map(l => (l ? ` * ${l}` : ' *')).join('\n')}\n */\n`;
+
 const rules = keep.map(n => `.${n}::before { content: "\\${cp.get(n)}"; }`).join('\n');
-writeFileSync(OUT_CSS, preamble + rules + '\n');
+writeFileSync(OUT_CSS, notice + preamble + rules + '\n');
 
 console.log(`  ${OUT_CSS}`);
 console.log(`  ${cp.size} glyph rules -> ${keep.length}   ${Math.round(css.length / 1024)} KB -> ${Math.round((preamble.length + rules.length) / 1024)} KB`);
