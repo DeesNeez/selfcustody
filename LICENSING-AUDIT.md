@@ -2,8 +2,9 @@
 
 The record of who owns what in this repository, and the evidence the licensing
 files rest on. **This file grants no rights and licenses nothing** — that is
-`LICENSE`, `LICENSE-CONTENT.md` and `secp256k1-wasm/LICENSE`, mapped in
-`LICENSING.md`, with third-party terms indexed in `THIRD_PARTY_NOTICES.md`.
+`LICENSE`, `LICENSE-CONTENT.md` and `secp256k1-wasm/LICENSE`, whose scope and
+exclusions are set out in `LICENSING.md`, with third-party terms indexed in
+`THIRD_PARTY_NOTICES.md`.
 
 **The audit is complete.** Every question it opened has an answer, every notice
 gap it found is closed, and the licensing files it was written to make possible
@@ -520,7 +521,7 @@ licensed stock, generated derivative, or unknown — has been applied to every
 tracked image, and **no image is left in the "unknown" class**. What still
 governs the licence is unchanged: only project-original material, plus anything
 carrying explicit sublicensing rights, goes under CC BY 4.0, and everything else
-is excluded by name in `LICENSE-CONTENT.md`.
+is excluded by name in `LICENSING.md`.
 
 ## Questions the maintainer must answer
 
@@ -549,7 +550,7 @@ structure; none of them is still blocking.
    not mistake its absence for a gap someone forgot to fill. Note separately
    that pseudonymity can make ownership harder to prove or enforce if it is ever
    contested. Where that would leave any particular dispute is not settled here,
-   and `LICENSE-CONTENT.md` deliberately declines to assign it either.
+   and `LICENSING.md` deliberately declines to assign it either.
 2. *(Answered, and the answer is two different answers.)* The 27 logos and
    marks are used on a **proposed nominative-use basis** — recorded for review,
    not asserted as settled. The 13 product photographs have **no documented

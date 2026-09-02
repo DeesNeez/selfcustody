@@ -304,8 +304,10 @@ keeps its source's.
 
 Reusing the writing asks for more than a credit line. Retain the copyright and
 licence notices, link the licence itself, indicate any changes, and add no
-further restrictions; [LICENSE-CONTENT.md](LICENSE-CONTENT.md) lists the
-conditions in full, along with the warranty disclaimer. The material is offered
+further restrictions;
+[LICENSING.md](LICENSING.md#what-compliance-actually-requires) lists the
+conditions in full, along with the warranty disclaimer, and
+[LICENSE-CONTENT.md](LICENSE-CONTENT.md) is the licence's own legal text. The material is offered
 as-is, which is worth weighing before republishing custody instructions.
 
 Third-party images, logos and trademarks are **excluded** from the content

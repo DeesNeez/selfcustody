@@ -1,266 +1,396 @@
-# Licence for the educational content
+Attribution 4.0 International
 
-> **Copyright © 2023–2026 HodlDee.**
->
-> **This licence is in effect.** It applies to the eligible project-authored
-> material distributed with this file — the writing and original diagrams
-> described under *What this licence covers*, and nothing else.
->
-> Eligibility is not a formality. The exclusions below are as much a part of
-> this licence as the grant is, and material this file excludes is not licensed
-> by being distributed alongside material that is.
->
-> **The thirteen product photographs the site serves are excluded**, and that is
-> a statement about scope rather than a resolution. Their reuse permission is
-> undocumented, their status is tracked in
-> [issue #86](https://github.com/HodlDee/selfcustody/issues/86), and their use
-> here remains **unresolved** — not authorised, not settled, and not made so by
-> their absence from a licence that never claimed to cover them.
+=======================================================================
 
-## What this licence covers
+Creative Commons Corporation ("Creative Commons") is not a law firm and
+does not provide legal services or legal advice. Distribution of
+Creative Commons public licenses does not create a lawyer-client or
+other relationship. Creative Commons makes its licenses and related
+information available on an "as-is" basis. Creative Commons gives no
+warranties regarding its licenses, any material licensed under their
+terms and conditions, or any related information. Creative Commons
+disclaims all liability for damages resulting from their use to the
+fullest extent possible.
 
-The project's own educational writing and its original diagrams:
+Using Creative Commons Public Licenses
 
-- the guide text in `build/guides.mjs`, which is what the pages under
-  `docs/guides/` are generated from
-- the prose in `build/content.mjs` that becomes the site's own pages
-- the inline SVG diagrams authored in those two files
-- `SECURITY.md`, `README.md` and this repository's other project-authored prose
+Creative Commons public licenses provide a standard set of terms and
+conditions that creators and other rights holders may use to share
+original works of authorship and other material subject to copyright
+and certain other rights specified in the public license below. The
+following considerations are for informational purposes only, are not
+exhaustive, and do not form part of our licenses.
 
-Licensed under the **Creative Commons Attribution 4.0 International Licence
-(CC BY 4.0)** — <https://creativecommons.org/licenses/by/4.0/>.
+     Considerations for licensors: Our public licenses are
+     intended for use by those authorized to give the public
+     permission to use material in ways otherwise restricted by
+     copyright and certain other rights. Our licenses are
+     irrevocable. Licensors should read and understand the terms
+     and conditions of the license they choose before applying it.
+     Licensors should also secure all rights necessary before
+     applying our licenses so that the public can reuse the
+     material as expected. Licensors should clearly mark any
+     material not subject to the license. This includes other CC-
+     licensed material, or material used under an exception or
+     limitation to copyright. More considerations for licensors:
+    wiki.creativecommons.org/Considerations_for_licensors
 
-Project-authored **software** is covered separately, under the MIT Licence. The
-split matters because the two live in the same files: `build/content.mjs` is a
-JavaScript module that contains prose. The licence follows the nature of the
-material, not the file extension. See [LICENSING.md](LICENSING.md) for the full
-map.
+     Considerations for the public: By using one of our public
+     licenses, a licensor grants the public permission to use the
+     licensed material under specified terms and conditions. If
+     the licensor's permission is not necessary for any reason--for
+     example, because of any applicable exception or limitation to
+     copyright--then that use is not regulated by the license. Our
+     licenses grant only permissions under copyright and certain
+     other rights that a licensor has authority to grant. Use of
+     the licensed material may still be restricted for other
+     reasons, including because others have copyright or other
+     rights in the material. A licensor may make special requests,
+     such as asking that all changes be marked or described.
+     Although not required by our licenses, you are encouraged to
+     respect those requests where reasonable. More considerations
+     for the public:
+    wiki.creativecommons.org/Considerations_for_licensees
 
-## Attribution
+=======================================================================
 
-**Copyright © 2023–2026 HodlDee**
-**Attribute to:** HodlDee
-**Licensor and copyright owner:** HodlDee
-**Canonical URL:** <https://selfcustody.ca>
+Creative Commons Attribution 4.0 International Public License
 
-HodlDee is a **pseudonymous individual** — one person, writing under a name
-rather than a legal one. The credit line and the owner are therefore the same
-name, doing one job instead of two.
+By exercising the Licensed Rights (defined below), You accept and agree
+to be bound by the terms and conditions of this Creative Commons
+Attribution 4.0 International Public License ("Public License"). To the
+extent this Public License may be interpreted as a contract, You are
+granted the Licensed Rights in consideration of Your acceptance of
+these terms and conditions, and the Licensor grants You such rights in
+consideration of benefits the Licensor receives from making the
+Licensed Material available under these terms and conditions.
 
-**HodlDee is the pseudonymous identifier designated by the licensor for
-attribution. Compliance does not require disclosure of the licensor's legal
-identity.** Crediting HodlDee is what the attribution condition asks of you; it
-is **necessary but not sufficient on its own**, and the full set of conditions
-is listed below.
 
-That is a statement about what reuse requires, and not a claim that publishing
-under a pseudonym costs nothing. Copyright arises on authorship whatever name an
-author uses, but establishing or enforcing ownership can call for evidence
-linking the author to the name, which a pseudonym does not supply on its own.
-How that would play out in any particular dispute is not something this file
-decides.
+Section 1 -- Definitions.
 
-Preferred form:
+  a. Adapted Material means material subject to Copyright and Similar
+     Rights that is derived from or based upon the Licensed Material
+     and in which the Licensed Material is translated, altered,
+     arranged, transformed, or otherwise modified in a manner requiring
+     permission under the Copyright and Similar Rights held by the
+     Licensor. For purposes of this Public License, where the Licensed
+     Material is a musical work, performance, or sound recording,
+     Adapted Material is always produced where the Licensed Material is
+     synched in timed relation with a moving image.
 
-> "Adapted from [SelfCustody.ca](https://selfcustody.ca/guides/the-page-you-used.html)
-> by **HodlDee**, © 2023–2026 HodlDee, licensed under
-> [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Changes were made."
+  b. Adapter's License means the license You apply to Your Copyright
+     and Similar Rights in Your contributions to Adapted Material in
+     accordance with the terms and conditions of this Public License.
 
-Four things are doing work there, and dropping the first is the common mistake:
+  c. Copyright and Similar Rights means copyright and/or similar rights
+     closely related to copyright including, without limitation,
+     performance, broadcast, sound recording, and Sui Generis Database
+     Rights, without regard to how the rights are labeled or
+     categorized. For purposes of this Public License, the rights
+     specified in Section 2(b)(1)-(2) are not Copyright and Similar
+     Rights.
 
-| Element | In the example |
-| --- | --- |
-| **The author** | HodlDee |
-| The source | a link to the page you used |
-| The licence | a link to CC BY 4.0 itself, not just its name |
-| Your changes | "Changes were made", ideally more specific |
+  d. Effective Technological Measures means those measures that, in the
+     absence of proper authority, may not be circumvented under laws
+     fulfilling obligations under Article 11 of the WIPO Copyright
+     Treaty adopted on December 20, 1996, and/or similar international
+     agreements.
 
-Naming the author is not decoration, and a credit that omits HodlDee does not
-satisfy the attribution condition. Linking the specific page rather than the
-site root is a courtesy on top: it lets a reader check what you started with.
+  e. Exceptions and Limitations means fair use, fair dealing, and/or
+     any other exception or limitation to Copyright and Similar Rights
+     that applies to Your use of the Licensed Material.
 
-### What compliance actually requires
+  f. Licensed Material means the artistic or literary work, database,
+     or other material to which the Licensor applied this Public
+     License.
 
-Attribution is the condition people remember, and it is not the only one. If you
-share this material, CC BY 4.0 asks all of the following (section 3(a)):
+  g. Licensed Rights means the rights granted to You subject to the
+     terms and conditions of this Public License, which are limited to
+     all Copyright and Similar Rights that apply to Your use of the
+     Licensed Material and that the Licensor has authority to license.
 
-The first four apply **to the extent they are supplied** with the material you
-took, which here they are:
+  h. Licensor means the individual(s) or entity(ies) granting rights
+     under this Public License.
 
-- **Credit the creator** — HodlDee, the name designated for attribution.
-- **Retain the copyright notice** — `© 2023–2026 HodlDee`.
-- **Retain a notice referring to this licence**, and a **notice referring to the
-  disclaimer of warranties** below.
-- **Retain a link to the material**, where reasonably practicable.
+  i. Share means to provide material to the public by any means or
+     process that requires permission under the Licensed Rights, such
+     as reproduction, public display, public performance, distribution,
+     dissemination, communication, or importation, and to make material
+     available to the public including in ways that members of the
+     public may access the material from a place and at a time
+     individually chosen by them.
 
-Then, in every case:
+  j. Sui Generis Database Rights means rights other than copyright
+     resulting from Directive 96/9/EC of the European Parliament and of
+     the Council of 11 March 1996 on the legal protection of databases,
+     as amended and/or succeeded, as well as other essentially
+     equivalent rights anywhere in the world.
 
-- **Indicate if you modified it**, and keep any indication of earlier
-  modifications.
-- **Say that the material is under CC BY 4.0, and include either the licence
-  text or a link to it** — <https://creativecommons.org/licenses/by/4.0/>. The
-  licence accepts either; a link is the usual choice.
+  k. You means the individual or entity exercising the Licensed Rights
+     under this Public License. Your has a corresponding meaning.
 
-Section 2 adds two limits, and both are conditioned on effect rather than
-absolute. You may not offer additional or different terms, and you may not apply
-effective technological measures, **where doing so would restrict anyone
-downstream from exercising the rights this licence grants**. Terms that leave
-those rights intact — your own licence over your own additions, for instance —
-are not what that provision reaches.
 
-You may satisfy all of this in any reasonable manner for your medium — a
-footnote, a credits page, a link — and if the licensor asks, you must remove the
-attribution information to the extent reasonably practicable.
+Section 2 -- Scope.
 
-### Saying what you changed
+  a. License grant.
 
-CC BY 4.0 requires you to indicate if you modified the material. A sentence is
-enough, and being specific is more useful to your readers than being thorough:
+       1. Subject to the terms and conditions of this Public License,
+          the Licensor hereby grants You a worldwide, royalty-free,
+          non-sublicensable, non-exclusive, irrevocable license to
+          exercise the Licensed Rights in the Licensed Material to:
 
-- "Condensed from the original; the multisig section was removed."
-- "Translated into French."
-- "Updated fee figures for 2027; the rest is unchanged."
+            a. reproduce and Share the Licensed Material, in whole or
+               in part; and
 
-If you changed nothing, the licence asks nothing of you here — the condition is
-to indicate modification, and there is none to indicate. Writing "reproduced
-unchanged" anyway is a **courtesy, not a requirement**: it tells a reader they
-can rely on the original. Nothing in this file adds conditions to CC BY 4.0, and
-where it suggests going further than the licence asks, it says so.
+            b. produce, reproduce, and Share Adapted Material.
 
-## What this licence does NOT cover
+       2. Exceptions and Limitations. For the avoidance of doubt, where
+          Exceptions and Limitations apply to Your use, this Public
+          License does not apply, and You do not need to comply with
+          its terms and conditions.
 
-Everything below is **excluded**. Some of it belongs to other people, some has
-an unresolved status, and one category is deliberately withheld. Reusing the
-writing grants nothing over any of it.
+       3. Term. The term of this Public License is specified in Section
+          6(a).
 
-### Images generated with, or assisted by, AI
+       4. Media and formats; technical modifications allowed. The
+          Licensor authorizes You to exercise the Licensed Rights in
+          all media and formats whether now known or hereafter created,
+          and to make technical modifications necessary to do so. The
+          Licensor waives and/or agrees not to assert any right or
+          authority to forbid You from making technical modifications
+          necessary to exercise the Licensed Rights, including
+          technical modifications necessary to circumvent Effective
+          Technological Measures. For purposes of this Public License,
+          simply making modifications authorized by this Section 2(a)
+          (4) never produces Adapted Material.
 
-Every image in this repository that was produced with a generative tool —
-28 files made with Google Gemini, the five Cash Vortex assets made with ChatGPT
-and Motionleap, and the project marks below.
+       5. Downstream recipients.
 
-The exclusion is not a judgement that these are worthless or that the project
-lacks rights in them. It is that **whether AI output attracts copyright at all,
-and on what terms it may be licensed onward, is unsettled**, and this project
-will not resolve that question by asserting a licence over material whose
-status it cannot state. Licensing something you may not own is worse than
-licensing nothing.
+            a. Offer from the Licensor -- Licensed Material. Every
+               recipient of the Licensed Material automatically
+               receives an offer from the Licensor to exercise the
+               Licensed Rights under the terms and conditions of this
+               Public License.
 
-### Photographs from Unsplash
+            b. No downstream restrictions. You may not offer or impose
+               any additional or different terms or conditions on, or
+               apply any Effective Technological Measures to, the
+               Licensed Material if doing so restricts exercise of the
+               Licensed Rights by any recipient of the Licensed
+               Material.
 
-Four photographs, each used under the Unsplash Licence:
+       6. No endorsement. Nothing in this Public License constitutes or
+          may be construed as permission to assert or imply that You
+          are, or that Your use of the Licensed Material is, connected
+          with, or sponsored, endorsed, or granted official status by,
+          the Licensor or others designated to receive attribution as
+          provided in Section 3(a)(1)(A)(i).
 
-| File | Photographer | Photograph |
-| --- | --- | --- |
-| `fiat-single-bill.png` | engin akyurt | [`7aWvQdR36Y0`](https://unsplash.com/photos/a-one-hundred-dollar-bill-with-a-picture-of-a-mans-face-on-it-7aWvQdR36Y0) |
-| `hero-lock.webp` | Kaffeebart | [`KrPulSdUetk`](https://unsplash.com/photos/a-close-up-of-a-padlock-on-a-door-KrPulSdUetk) |
-| `hero-keylock.webp` | Dima Solomin | [`LkoDqb5E3zg`](https://unsplash.com/photos/a-close-up-of-a-key-on-a-door-LkoDqb5E3zg) |
-| `coinkite-circuit-board.jpg` | Alexandre Debiève | [`FO7JIlwjOtU`](https://unsplash.com/photos/macro-photography-of-black-circuit-board-FO7JIlwjOtU) |
+  b. Other rights.
 
-They are redistributable on the Unsplash Licence's own terms, which is not a
-grant this project can pass on as its own. Go to Unsplash rather than relying on
-anything here. `hero-lock.webp` has additionally had its colours modified, which
-that licence permits and which does not make it project-owned.
+       1. Moral rights, such as the right of integrity, are not
+          licensed under this Public License, nor are publicity,
+          privacy, and/or other similar personality rights; however, to
+          the extent possible, the Licensor waives and/or agrees not to
+          assert any such rights held by the Licensor to the limited
+          extent necessary to allow You to exercise the Licensed
+          Rights, but not otherwise.
 
-### Manufacturer logos, product photographs, and other third-party marks
+       2. Patent and trademark rights are not licensed under this
+          Public License.
 
-**All forty are excluded from this licence**: twenty-seven logos and marks
-belonging to hardware makers, wallet software vendors, exchanges and custody
-services, and thirteen photographs of products — including
-`coldcard-q-mk5-devices.jpg`, which is manufacturer-provided and is one of the
-thirteen rather than an exception to them.
+       3. To the extent possible, the Licensor waives any right to
+          collect royalties from You for the exercise of the Licensed
+          Rights, whether directly or through a collecting society
+          under any voluntary or waivable statutory or compulsory
+          licensing scheme. In all other cases the Licensor expressly
+          reserves any right to collect such royalties.
 
-> Product names, logos and trademarks are the property of their respective
-> owners. Their use here identifies the products discussed and does not indicate
-> affiliation with, sponsorship by, or endorsement from their owners.
 
-**Being excluded from this licence is not the same as this project having a
-settled right to show them**, and the two should not be read as one statement.
-Exclusion says only that reusing the writing grants you nothing over them. It
-says nothing about the basis on which they appear here, and that basis differs
-between the two groups:
+Section 3 -- License Conditions.
 
-- The **27 logos and marks** appear beside writing about the products they
-  identify, under a proposed basis of nominative use. That is a use of a
-  *mark*, recorded in the audit for a reviewer to accept or reject.
-- The **13 product photographs** have **no documented permission**. A
-  photograph is a separate copyrighted work owned by whoever took it, and being
-  permitted to name a product grants nothing over someone else's picture of it.
-  Their status is open and stays open: it is tracked in
-  [issue #86](https://github.com/HodlDee/selfcustody/issues/86) and in
-  [LICENSING-AUDIT.md](LICENSING-AUDIT.md), not settled by their absence from
-  this licence. A vendor audit on 2026-09-02 found published terms for one
-  vendor that **refuse** this use, and no usable terms at all for the other
-  eight. Six vendors publish downloadable media kits stating no terms; that is
-  not permission, and it is not recorded as permission anywhere.
+Your exercise of the Licensed Rights is expressly made subject to the
+following conditions.
 
-Whichever way that resolves — terms located, images replaced, or images removed
-— it changes what this project may display. It does not change this exclusion,
-which holds regardless.
+  a. Attribution.
 
-### The project's own marks
+       1. If You Share the Licensed Material (including in modified
+          form), You must:
 
-`self-custody-symbol.svg`, `self-custody-favicon.svg`, `favicon.png` and
-`apple-touch-icon.png`.
+            a. retain the following if it is supplied by the Licensor
+               with the Licensed Material:
 
-These are **reserved**, and the reason has nothing to do with who owns them. A
-content licence that included the project's branding would let anyone republish
-this writing under this project's identity — which is the one thing a mark
-exists to prevent, and the opposite of what attribution is for. You may reuse
-the writing; you may not present it as though it came from SelfCustody.ca.
+                 i. identification of the creator(s) of the Licensed
+                    Material and any others designated to receive
+                    attribution, in any reasonable manner requested by
+                    the Licensor (including by pseudonym if
+                    designated);
 
-### Third-party software, fonts and vendored components
+                ii. a copyright notice;
 
-The QR generator, the fonts, Bootstrap and Bootstrap Icons, libsecp256k1 and its
-FFI crate, the LifeHash implementation, the BIP-39 wordlist, and the vendored
-wallet-export code. Each keeps its own licence; see
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+               iii. a notice that refers to this Public License;
 
-### Anything whose provenance is unresolved
+                iv. a notice that refers to the disclaimer of
+                    warranties;
 
-If the audit does not record where something came from, it is excluded, whatever
-this page appears to say. An exclusion by name is a convenience; the absence of
-a recorded grant is the operative fact.
+                 v. a URI or hyperlink to the Licensed Material to the
+                    extent reasonably practicable;
 
-## No warranty
+            b. indicate if You modified the Licensed Material and
+               retain an indication of any previous modifications; and
 
-**This material is offered as-is.** CC BY 4.0 (section 5) offers the Licensed
-Material without warranties of any kind — express, implied, statutory or other,
-including title, merchantability, fitness for a particular purpose,
-non-infringement, absence of errors, or accuracy — and disclaims liability for
-any losses arising from its use, to the fullest extent the law allows.
+            c. indicate the Licensed Material is licensed under this
+               Public License, and include the text of, or the URI or
+               hyperlink to, this Public License.
 
-That is worth reading twice for a project about Bitcoin custody. These guides
-describe operations where a mistake can lose money permanently and irreversibly.
-Nothing here is a guarantee that a procedure is correct, current, or right for
-your circumstances, and reusing it does not transfer that judgement to anyone
-else. Verify against the manufacturer's own documentation, and test recovery
-with an amount you can afford to lose.
+       2. You may satisfy the conditions in Section 3(a)(1) in any
+          reasonable manner based on the medium, means, and context in
+          which You Share the Licensed Material. For example, it may be
+          reasonable to satisfy the conditions by providing a URI or
+          hyperlink to a resource that includes the required
+          information.
 
-Where the disclaimer cannot be given full effect in your jurisdiction, it
-applies as closely as local law permits.
+       3. If requested by the Licensor, You must remove any of the
+          information required by Section 3(a)(1)(A) to the extent
+          reasonably practicable.
 
-## Generated files
+       4. If You Share Adapted Material You produce, the Adapter's
+          License You apply must not prevent recipients of the Adapted
+          Material from complying with this Public License.
 
-The pages under `docs/` are assembled from several of the categories above at
-once. A single guide page can carry project-authored prose, a vendored font, an
-AI-generated image and a third-party mark. **Each component keeps the licence of
-its source.** There is no licence that applies to a generated page as a whole,
-and treating one as CC BY because most of its words are would sweep in material
-this file spends its length excluding.
 
-**The licence follows the material, not the file it arrives in.** The same
-prose is licensed whether you take it from `build/guides.mjs`, from the rendered
-HTML under `docs/`, from a PDF, from an ePub or from print. CC BY 4.0 grants use
-"in any medium or format", and reformatting changes nothing about what you may
-do with the writing or what you owe in return.
+Section 4 -- Sui Generis Database Rights.
 
-Working from the source modules is practical advice rather than a condition:
-that is where the licensed material sits unmixed, so you can take it without
-sorting it out of everything else first.
+Where the Licensed Rights include Sui Generis Database Rights that
+apply to Your use of the Licensed Material:
 
-What does not travel is that everything else. Lifting the prose carries this
-licence with it; copying a rendered page wholesale also picks up a vendored
-font, an AI-generated image and a third-party mark, none of which this licence
-grants — and none of which becomes grantable by being adjacent to something that
-is.
+  a. for the avoidance of doubt, Section 2(a)(1) grants You the right
+     to extract, reuse, reproduce, and Share all or a substantial
+     portion of the contents of the database;
+
+  b. if You include all or a substantial portion of the database
+     contents in a database in which You have Sui Generis Database
+     Rights, then the database in which You have Sui Generis Database
+     Rights (but not its individual contents) is Adapted Material; and
+
+  c. You must comply with the conditions in Section 3(a) if You Share
+     all or a substantial portion of the contents of the database.
+
+For the avoidance of doubt, this Section 4 supplements and does not
+replace Your obligations under this Public License where the Licensed
+Rights include other Copyright and Similar Rights.
+
+
+Section 5 -- Disclaimer of Warranties and Limitation of Liability.
+
+  a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE
+     EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS
+     AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF
+     ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS,
+     IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION,
+     WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR
+     PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS,
+     ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT
+     KNOWN OR DISCOVERABLE. WHERE DISCLAIMERS OF WARRANTIES ARE NOT
+     ALLOWED IN FULL OR IN PART, THIS DISCLAIMER MAY NOT APPLY TO YOU.
+
+  b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE
+     TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION,
+     NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT,
+     INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES,
+     COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR
+     USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN
+     ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR
+     DAMAGES. WHERE A LIMITATION OF LIABILITY IS NOT ALLOWED IN FULL OR
+     IN PART, THIS LIMITATION MAY NOT APPLY TO YOU.
+
+  c. The disclaimer of warranties and limitation of liability provided
+     above shall be interpreted in a manner that, to the extent
+     possible, most closely approximates an absolute disclaimer and
+     waiver of all liability.
+
+
+Section 6 -- Term and Termination.
+
+  a. This Public License applies for the term of the Copyright and
+     Similar Rights licensed here. However, if You fail to comply with
+     this Public License, then Your rights under this Public License
+     terminate automatically.
+
+  b. Where Your right to use the Licensed Material has terminated under
+     Section 6(a), it reinstates:
+
+       1. automatically as of the date the violation is cured, provided
+          it is cured within 30 days of Your discovery of the
+          violation; or
+
+       2. upon express reinstatement by the Licensor.
+
+     For the avoidance of doubt, this Section 6(b) does not affect any
+     right the Licensor may have to seek remedies for Your violations
+     of this Public License.
+
+  c. For the avoidance of doubt, the Licensor may also offer the
+     Licensed Material under separate terms or conditions or stop
+     distributing the Licensed Material at any time; however, doing so
+     will not terminate this Public License.
+
+  d. Sections 1, 5, 6, 7, and 8 survive termination of this Public
+     License.
+
+
+Section 7 -- Other Terms and Conditions.
+
+  a. The Licensor shall not be bound by any additional or different
+     terms or conditions communicated by You unless expressly agreed.
+
+  b. Any arrangements, understandings, or agreements regarding the
+     Licensed Material not stated herein are separate from and
+     independent of the terms and conditions of this Public License.
+
+
+Section 8 -- Interpretation.
+
+  a. For the avoidance of doubt, this Public License does not, and
+     shall not be interpreted to, reduce, limit, restrict, or impose
+     conditions on any use of the Licensed Material that could lawfully
+     be made without permission under this Public License.
+
+  b. To the extent possible, if any provision of this Public License is
+     deemed unenforceable, it shall be automatically reformed to the
+     minimum extent necessary to make it enforceable. If the provision
+     cannot be reformed, it shall be severed from this Public License
+     without affecting the enforceability of the remaining terms and
+     conditions.
+
+  c. No term or condition of this Public License will be waived and no
+     failure to comply consented to unless expressly agreed to by the
+     Licensor.
+
+  d. Nothing in this Public License constitutes or may be interpreted
+     as a limitation upon, or waiver of, any privileges and immunities
+     that apply to the Licensor or You, including from the legal
+     processes of any jurisdiction or authority.
+
+
+=======================================================================
+
+Creative Commons is not a party to its public
+licenses. Notwithstanding, Creative Commons may elect to apply one of
+its public licenses to material it publishes and in those instances
+will be considered the “Licensor.” The text of the Creative Commons
+public licenses is dedicated to the public domain under the CC0 Public
+Domain Dedication. Except for the limited purpose of indicating that
+material is shared under a Creative Commons public license or as
+otherwise permitted by the Creative Commons policies published at
+creativecommons.org/policies, Creative Commons does not authorize the
+use of the trademark "Creative Commons" or any other trademark or logo
+of Creative Commons without its prior written consent including,
+without limitation, in connection with any unauthorized modifications
+to any of its public licenses or any other arrangements,
+understandings, or agreements concerning use of licensed material. For
+the avoidance of doubt, this paragraph does not form part of the
+public licenses.
+
+Creative Commons may be contacted at creativecommons.org.
+
