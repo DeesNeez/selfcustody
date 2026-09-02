@@ -1,14 +1,19 @@
-# Licence for the educational content
+# Licence for the educational content — DRAFT
 
+> ## ⚠ Draft — not in effect
+>
+> **This licence grants nothing.** It is under review in
+> [PR #84](https://github.com/HodlDee/selfcustody/pull/84) and does not apply to
+> any material while that PR is open. This notice is removed in a finalization
+> commit at merge, and not before — until then, default copyright applies and no
+> reuse permission should be inferred from anything below.
 >
 > **Copyright © 2023–2026 HodlDee.**
 >
-> This licence has no outstanding conditions. It takes effect when merged to
-> `main`; on a review branch it is a proposal, and the copy you are reading
-> grants nothing until it lands.
->
-> Copyright in this material vested in its author on authorship, and the author
-> is the licensor, so there is nothing to transfer and nothing to wait for.
+> What holds this back is **review, not ownership** — the two are worth keeping
+> apart. Copyright in this material vested in its author on authorship, and the
+> author is the licensor, so there is nothing to transfer and no condition
+> outstanding. The wording simply has not been signed off yet.
 >
 > **The thirteen product photographs the site serves are excluded**, and that is
 > a statement about scope rather than a resolution. Their reuse permission is
@@ -47,10 +52,16 @@ HodlDee is a **pseudonymous individual** — one person, writing under a name
 rather than a legal one. The credit line and the owner are therefore the same
 name, doing one job instead of two.
 
-A pseudonym does not weaken any of this. Copyright arises on authorship
-regardless of the name the author publishes under, and it may be licensed under
-that name. Reusing this material requires crediting HodlDee; it does not require
-knowing who that is, and this repository deliberately does not record it.
+**HodlDee is the pseudonymous identifier designated by the licensor for
+attribution. Compliance does not require disclosure of the licensor's legal
+identity.** Credit HodlDee as this page describes and you have done what the
+licence asks.
+
+That is a statement about what reuse requires, and not a claim that publishing
+under a pseudonym costs nothing. Copyright arises on authorship whatever name an
+author uses, but establishing or enforcing ownership can call for evidence
+linking the author to the name, which a pseudonym does not supply on its own.
+That burden falls on the licensor, not on you.
 
 Preferred form:
 

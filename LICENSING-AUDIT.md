@@ -512,11 +512,15 @@ Commit 3 cannot proceed until these are recorded.
    proposed transferring them to an entity; that plan is withdrawn, and no
    entity holds or is proposed to hold anything.
 
-   The maintainer's legal identity is **not recorded here and must not be
-   requested**. A pseudonym is sufficient to hold and license copyright, the
-   licence asks a reuser to credit HodlDee rather than to identify anyone, and
-   pseudonymity is a security property for someone publishing about Bitcoin
-   custody rather than an administrative gap to be closed.
+   The maintainer's legal identity is **intentionally not published and is not
+   an outstanding audit item**. HodlDee is the identifier designated for
+   attribution, and the licence asks a reuser to credit that name rather than to
+   identify anyone, so nothing in this audit depends on the answer.
+
+   Recording it as closed rather than open is the point: a later reader should
+   not mistake its absence for a gap someone forgot to fill. Note separately
+   that pseudonymity can make ownership harder to prove or enforce if it is ever
+   contested — a cost carried by the licensor, and not a defect in the audit.
 2. On what basis is each manufacturer logo and product image used, and does any
    of it come with terms the project should reproduce?
 3. For each of the 40 unresolved images: which of the seven classes above?
