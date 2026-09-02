@@ -780,8 +780,12 @@ const currentYear = new Date().getFullYear();
           `<a class="sc-btn sc-btn-primary" href="#compare-coinkite">Compare products</a>
            <a class="sc-btn sc-btn-ghost" href="devices.html">All device brands</a>`,
           {
-            src: "assets/img/coinkite-metal-security.jpeg",
-            alt: "Close-up of scratched, brushed metal catching warm light",
+            /* Replaces a photograph whose provenance could not be established.
+               This one is by Alexandre Debiève, from Unsplash under the
+               Unsplash Licence -- see LICENSING-AUDIT.md for the photograph,
+               the photographer and the date it was verified. */
+            src: "assets/img/coinkite-circuit-board.jpg",
+            alt: "Macro photograph of a circuit board, its chips and capacitors in sharp relief",
             width: 1600,
             height: 1067
           }
