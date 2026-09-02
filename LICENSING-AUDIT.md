@@ -269,8 +269,9 @@ expression is not documented.
 That closes the provenance question without settling a different one. How they
 were made is known; whether, and to what extent, they attract copyright is not
 asserted here — the same open question that hangs over the other AI-generated
-material in this audit. Whatever rights the maintainer does hold in them can be
-included in the assignment to the copyright holder named above.
+material in this audit. Whatever rights the maintainer does hold in them are
+already held by HodlDee, who authored them — there is no transfer step in which
+they could be gained or lost.
 
 They are **excluded from CC BY 4.0 regardless of how that resolves**, and the
 reason is independent of ownership. A content licence that swept up the project
@@ -499,13 +500,23 @@ that stays **unknown** must be excluded by name.
 
 Commit 3 cannot proceed until these are recorded.
 
-1. *(Answered, pending paperwork.)* The proposed copyright holder is **Hodl
-   Dee Inc**, and the public attribution name is **HodlDee** — a legal person
-   for the rights, a recognisable name for the credit line. What is still outstanding is the written assignment: the material
-   was authored by the maintainer as an individual, and an entity holds nothing
-   until those rights are actually assigned to it. Until that document exists
-   and is recorded here, "Hodl Dee Inc" is a proposal rather than a fact, and
-   `LICENSE` should not be published carrying it.
+1. *(Answered. Nothing outstanding.)* The copyright owner and licensor is
+   **HodlDee**, a pseudonymous individual, and the same name serves as the
+   public attribution. The notice is **Copyright © 2023–2026 HodlDee**, a range
+   that matches this repository's history — first commit 2023-01-05, still
+   active in 2026.
+
+   No assignment is pending, because none is needed. Copyright vested in the
+   author on authorship and the author is the licensor, so the rights are
+   already where the licence says they are. An earlier revision of this file
+   proposed transferring them to an entity; that plan is withdrawn, and no
+   entity holds or is proposed to hold anything.
+
+   The maintainer's legal identity is **not recorded here and must not be
+   requested**. A pseudonym is sufficient to hold and license copyright, the
+   licence asks a reuser to credit HodlDee rather than to identify anyone, and
+   pseudonymity is a security property for someone publishing about Bitcoin
+   custody rather than an administrative gap to be closed.
 2. On what basis is each manufacturer logo and product image used, and does any
    of it come with terms the project should reproduce?
 3. For each of the 40 unresolved images: which of the seven classes above?
@@ -524,10 +535,10 @@ Commit 3 cannot proceed until these are recorded.
 - The notice gaps are closed. What remains before the licensing files can be
   written is the maintainer's own material rather than anyone else's.
 - Record answers to the remaining questions above in this file.
-- `LICENSE-CONTENT.md` exists as a **draft** and is marked as not in force. It
-  records the intended CC BY 4.0 grant and, at greater length, what that grant
-  excludes. **One thing gates it**: the written assignment to the copyright
-  holder does not exist yet.
+- `LICENSE-CONTENT.md` records the CC BY 4.0 grant over project-authored prose
+  and diagrams and, at greater length, what that grant excludes. **Nothing gates
+  it.** Ownership is settled — HodlDee authored the material and licenses it —
+  so it takes effect on merge, and the only step left is review.
 - The thirteen product photographs are **not** a gate on it. They are excluded
   from the licence, so it can take effect without reaching them, and their
   undocumented status is tracked in

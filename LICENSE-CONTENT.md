@@ -1,21 +1,21 @@
-# Licence for the educational content — DRAFT
+# Licence for the educational content
 
-> **This draft is not in force.** One thing must happen first: the copyright in
-> the project's own writing has to be **assigned in writing** to the holder
-> named below. The material was authored by an individual, and an entity holds
-> nothing until those rights are transferred to it. Until that document exists
-> and is recorded in [LICENSING-AUDIT.md](LICENSING-AUDIT.md), default copyright
-> applies and nothing on this page grants anything.
 >
-> **What is *not* a condition of this licence taking effect:** the thirteen
-> product photographs the site serves, whose reuse permission is undocumented.
-> They are excluded from this licence, so it can grant what it grants without
-> touching them, and their status is tracked separately in
-> [issue #86](https://github.com/HodlDee/selfcustody/issues/86).
+> **Copyright © 2023–2026 HodlDee.**
 >
-> That is a statement about scope, not a resolution. Their use here remains
-> **unresolved** — not authorised, not settled, and not made so by their absence
-> from this licence.
+> This licence has no outstanding conditions. It takes effect when merged to
+> `main`; on a review branch it is a proposal, and the copy you are reading
+> grants nothing until it lands.
+>
+> Copyright in this material vested in its author on authorship, and the author
+> is the licensor, so there is nothing to transfer and nothing to wait for.
+>
+> **The thirteen product photographs the site serves are excluded**, and that is
+> a statement about scope rather than a resolution. Their reuse permission is
+> undocumented, their status is tracked in
+> [issue #86](https://github.com/HodlDee/selfcustody/issues/86), and their use
+> here remains **unresolved** — not authorised, not settled, and not made so by
+> their absence from a licence that never claimed to cover them.
 
 ## What this licence covers
 
@@ -38,14 +38,19 @@ map.
 
 ## Attribution
 
+**Copyright © 2023–2026 HodlDee**
 **Attribute to:** HodlDee
-**Copyright holder:** Hodl Dee Inc *(proposed — pending the written assignment
-described above)*
+**Licensor and copyright owner:** HodlDee
 **Canonical URL:** <https://selfcustody.ca>
 
-Those are two different fields doing two different jobs. The credit a reuser
-writes is a public-facing name; the holder is the legal person the rights sit
-with. They need not match, and here they deliberately do not.
+HodlDee is a **pseudonymous individual** — one person, writing under a name
+rather than a legal one. The credit line and the owner are therefore the same
+name, doing one job instead of two.
+
+A pseudonym does not weaken any of this. Copyright arises on authorship
+regardless of the name the author publishes under, and it may be licensed under
+that name. Reusing this material requires crediting HodlDee; it does not require
+knowing who that is, and this repository deliberately does not record it.
 
 Preferred form:
 
