@@ -780,8 +780,13 @@ const currentYear = new Date().getFullYear();
           `<a class="sc-btn sc-btn-primary" href="#compare-coinkite">Compare products</a>
            <a class="sc-btn sc-btn-ghost" href="devices.html">All device brands</a>`,
           {
-            src: "assets/img/coinkite-metal-security.jpeg",
-            alt: "Close-up of scratched, brushed metal catching warm light",
+            /* Placeholder. The photograph here had unresolved provenance and was
+               removed; this is a plain panel in the page's own dark range until
+               a replacement with a recorded source exists. Decorative, so the
+               alt text is empty rather than describing a picture that is no
+               longer there. */
+            src: "assets/img/coinkite-hero-placeholder.png",
+            alt: "",
             width: 1600,
             height: 1067
           }

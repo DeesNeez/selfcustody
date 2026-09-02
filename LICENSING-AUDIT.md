@@ -29,12 +29,13 @@ and must be answered by the person who put the material here.
    contradicts itself about its own terms. `build/tools/assert-notices.mjs`
    fails the build if a served stylesheet loses its notice, because two of them
    already had. See [Notice gaps](#notice-gaps).
-3. **Roughly half the images are third-party brand assets.** 39 of the 82
-   tracked images are manufacturer logos, product shots or exchange marks, and
-   cannot go under a project content licence. Of the other 43, the maintainer
-   has classified 34, four are the project's own marks, and 5 remain
-   unclassified. A further image was removed from the repository rather than
-   classified. See [Image audit](#image-audit).
+3. **Every image now has a recorded origin, and half of them are other
+   people's.** Of 81 tracked images: 39 are third-party marks and product shots,
+   37 are classified from the maintainer's own account — one of those being a
+   manufacturer-provided image that likewise cannot be licensed onward — 4 are
+   the project's own marks, and 1 is the placeholder added here. Three images
+   were removed rather than classified. What remains is not classification but
+   permission and copyrightability. See [Image audit](#image-audit).
 4. **Project-authored prose and diagrams are cleanly owned.** This is the
    material CC BY 4.0 is actually for.
 
@@ -174,9 +175,10 @@ project plan creates it; the reference should be checked against it then.
 
 ## Image audit
 
-82 tracked files under `docs/assets/img/`, one fewer than when this audit
-began: `education-library.jpeg` was removed rather than classified. Do not
-place this directory under a content licence as a whole.
+81 tracked files under `docs/assets/img/`. Three images were removed rather
+than classified — `education-library.jpeg`, `signing-device-circuit.jpeg` and
+`coinkite-metal-security.jpeg` — and one placeholder was added in the last of
+their places. Do not place this directory under a content licence as a whole.
 
 ### Third-party marks and product images — 39 files, exclude
 
@@ -203,9 +205,9 @@ authored for the project. A project logo is normally kept out of a content
 licence even when the project owns it, so that reuse of the writing does not
 imply endorsement.
 
-### Confirmed by the maintainer - 34 files
+### Confirmed by the maintainer - 37 files
 
-**AI-generated images, and the project-edited or compressed versions of them - 26 files.** The maintainer keeps the originals
+**AI-generated images, and the project-edited or compressed versions of them - 28 files.** The maintainer keeps the originals
 in a `Gen photos` folder outside the repository and states that everything in
 it was generated with Google Gemini. The tracked files are compressed copies of
 those originals.
@@ -235,11 +237,13 @@ sources, which the gradient hash alone ties.
 | `owning-your-bitcoin-key.jpg` | `key.jfif` |
 | `passport-setup-qr-scan.jpg` | `foudnation.jfif` |
 | `quickstart-desk.jpg` | `Self custody.jfif` |
+| `quickstart-rabbit-portrait.webp` | not matched — see note below |
 | `quickstart-dice.jpg` | `dice.jfif` |
 | `quickstart-rabbit-tablet.webp` | `rabbit3.jfif` |
 | `quickstart-seed-words.jpg` | `seed words.jfif` |
 | `recovery-test-drill-two-devices.jpg` | `dev2.jfif` |
 | `social-preview.jpg` | `selfcustody-vault-banner.jpg` |
+| `software-hero.jpg` | not matched — see note below |
 | `sparrow-laptop-hardware-wallet.jpg` | `Gemini_Generated_Image_6sth86sth86sth86.jfif` |
 | `stuck-transaction-envelope.jpg` | `letter.jfif` |
 | `what-is-money-hyperinflation-notes.jpg` | `money.jfif` |
@@ -260,11 +264,20 @@ about Gemini itself, and nothing here settles whether the output is
 copyrightable or on what terms it may be licensed onward. That question is
 separate, applies to all 26 together, and is still open.
 
-`dashboard-network-preview-v3.jpg` and `glossary-hero.jpg` are in this table on
-the maintainer's confirmation rather than on the fingerprint evidence, which
-was weaker for both: one is a crop, the other an edited iteration, and neither
-matched closely enough to record unaided. They were listed as probable until
-that confirmation arrived.
+Four rows rest on the maintainer's confirmation rather than on the fingerprint
+evidence, and are marked so rather than blended in with the rest.
+
+`dashboard-network-preview-v3.jpg` and `glossary-hero.jpg` matched a `Gen
+photos` original closely but not exactly: one is a crop, the other an edited
+iteration.
+
+`quickstart-rabbit-portrait.webp` and `software-hero.jpg` did not match any
+original at all. Both are crops at an aspect ratio no candidate shares — the
+first is portrait against landscape sources — and the comparison used here
+works on whole images, so a heavy crop defeats it by construction. Absence of a
+match is therefore not evidence against the maintainer's account; it is the
+method reaching its limit, which is worth recording so a later reader does not
+mistake the blank for a finding.
 
 `social-preview.jpg` carries one qualification. Its base matches the folder,
 but this repository's own history shows later project compositing on it: a
@@ -321,12 +334,23 @@ deliberately not classified alongside `hero-lock.webp` earlier: the two have
 neighbouring filenames and turned out to have different photographers, which is
 exactly why a filename is not evidence of a shared source.
 
-### Removed from the repository - 1 file
+**Manufacturer-provided product image - 1 file.**
+
+    coldcard-q-mk5-devices.jpg
+
+Supplied by the manufacturer rather than made for this project, which puts it
+with the 39 marks and product shots above: excluded from any project content
+licence, and still needing a basis recorded for its use.
+
+### Removed from the repository - 3 files
 
     education-library.jpeg
 
-**Removed; no longer distributed.** The maintainer rejected this image's
-provenance and chose removal over replacement.
+Three images were removed rather than classified. None is distributed any
+more, so no licence needs to cover them.
+
+**`education-library.jpeg` — removed; no longer distributed.** The maintainer
+rejected this image's provenance and chose removal over replacement.
 
 An earlier revision of this audit said the file was referenced nowhere. That
 was wrong: the check behind it looked at `build/content.mjs`,
@@ -343,25 +367,46 @@ the two gradients over the section's own ground. The homepage was then loaded
 and scrolled in full, and its network log shows no request for the file and no
 404 of any kind.
 
-The image is no longer in the repository and no longer distributed, so no
-licence needs to cover it.
+**`signing-device-circuit.jpeg` — removed; no longer distributed.** Provenance
+unresolved, and genuinely unused: no reference in `build/content.mjs`,
+`build/guides.mjs`, any generated page, or any stylesheet. Deleting it changed
+nothing that renders, so it needed no replacement.
 
-### Unresolved provenance - 5 files, cannot be classified from the repository
+**`coinkite-metal-security.jpeg` — removed; replaced by a placeholder.**
+Provenance unresolved. Unlike the other two this one was doing visible work: it
+was the hero image of `docs/coinkite.html`, at 1600x1067 with
+`fetchpriority="high"`, so deleting it outright would have left that page's
+hero empty.
 
-The remaining root images. The repository contains no credit line, EXIF policy,
-source note or licence record for any of them, and nothing in
-`build/content.mjs` or `build/guides.mjs` attributes an image to anyone.
+`docs/assets/img/coinkite-hero-placeholder.png` stands in — a plain vertical
+gradient in the page's own dark range, generated for the purpose, carrying no
+photographic content and no provenance question. Its `alt` is empty because it
+is decorative: describing a photograph that is no longer there would have been
+worse than describing nothing. It is project-created and can go under whatever
+licence the project's own material does.
 
-Coinkite-related, and possibly manufacturer-supplied. Note the maintainer's
-past association with Coinkite and the site's dedicated Coinkite page. Neither
-matches anything in `Gen photos`:
+The placeholder is temporary by intent. A replacement with a recorded source
+should take its place, and the comment beside it in `build/content.mjs` says
+so.
 
-    coinkite-metal-security.jpeg    coldcard-q-mk5-devices.jpg
+### Nothing remains unclassified
 
-Editorial and illustrative imagery:
+Every tracked image now has a recorded origin. The category that opened this
+audit — images the repository could say nothing about — is empty.
 
-    quickstart-rabbit-portrait.webp signing-device-circuit.jpeg
-    software-hero.jpg
+What that does **not** mean is that the image position is settled. Three things
+still stand between here and a content licence:
+
+- The 39 third-party marks and the manufacturer product image need a **basis**
+  recorded for their use — press kit, media-kit terms, explicit permission, or
+  nominative fair use. A classification says what they are, not why this project
+  may show them.
+- Whether AI-generated images attract copyright at all, and on what terms model
+  output may be licensed onward, is unresolved and applies to 28 files plus the
+  five Cash Vortex assets.
+- The four project marks are presumed authored for the project, and that has
+  still never been written down.
+
 
 Each needs one of: original project photography, original project
 illustration, manufacturer-provided, third-party with permission, licensed
