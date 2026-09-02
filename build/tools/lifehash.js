@@ -1,15 +1,21 @@
 /* LifeHash version2.
 
-   LifeHash originates with Blockchain Commons, whose C++ implementation is its
-   reference. This module is adapted from EntropyLab's JavaScript
-   implementation of it, contributed there under that project's public-domain
-   terms (w-s-bitcoin/entropylab#74).
+   Adapted from EntropyLab's JavaScript implementation
+   (w-s-bitcoin/entropylab#74), which was itself adapted -- function by
+   function, not clean-room -- from Andreas Gassmann's TypeScript package and,
+   underneath it, Blockchain Commons' C++ reference. That is the author's own
+   account of how it was written, given on that pull request; the traces are
+   still visible here in runGameOfLife and buildFracGrid, names that come from
+   the TypeScript rather than the C++.
 
-   This module and the modifications made to it here are distributed under the
-   BSD-2-Clause-Patent licence, retained in full at
-   build/vendor/lifehash/LICENSE.md and carried inside both generated Workshop
-   pages. AndreasGassmann/lifehash is a separate implementation used only to
-   check this one in fuzzing/lifehash; nothing from it is present here.
+   So this module and the modifications made to it here are distributed under
+   both upstream licences: MIT (Copyright (c) 2022 Andreas Gassmann) and
+   BSD-2-Clause-Patent (Copyright (c) 2019 Blockchain Commons, LLC). Both are
+   retained in full under build/vendor/lifehash/ and carried inside both
+   generated Workshop pages, because the offline build travels on its own.
+
+   fuzzing/lifehash checks this module against the same Gassmann package. That
+   is testing, not provenance -- the provenance is the adaptation above.
 
    The reference algorithm is preserved, but SHA-256 comes from EntropyCore so
    the offline page adds no browser API or network dependency.

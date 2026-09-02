@@ -5711,11 +5711,13 @@ const EntropyCore = (() => {
 </script>
 <script>
 /* ------------------------------------------------------------------------
-   LifeHash. The algorithm and its reference implementation are the work of
-   Blockchain Commons; this module is adapted from EntropyLab's JavaScript
-   implementation of it. Distributed under the licence reproduced in full
-   below, which is carried here because this file travels inside the artifact.
+   LifeHash. This module is adapted from EntropyLab's JavaScript
+   implementation, which was itself adapted from the two upstream sources
+   below rather than written from the algorithm description. Both licences
+   are reproduced in full, because this file travels inside the artifact.
    ------------------------------------------------------------------------
+
+Blockchain Commons bc-lifehash -- the LifeHash algorithm and its C++ reference implementation
 
 Unless otherwise noted (either in /README.md or in the file's header comments) the contents of this repository are released under the following license:
 
@@ -5738,20 +5740,52 @@ Except as expressly stated above, no rights or licenses from any copyright holde
 DISCLAIMER
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+========================================================================
+
+AndreasGassmann/lifehash -- the TypeScript implementation this module was adapted from
+
+MIT License
+
+Copyright (c) 2022 Andreas Gassmann
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
 
 /* LifeHash version2.
 
-   LifeHash originates with Blockchain Commons, whose C++ implementation is its
-   reference. This module is adapted from EntropyLab's JavaScript
-   implementation of it, contributed there under that project's public-domain
-   terms (w-s-bitcoin/entropylab#74).
+   Adapted from EntropyLab's JavaScript implementation
+   (w-s-bitcoin/entropylab#74), which was itself adapted -- function by
+   function, not clean-room -- from Andreas Gassmann's TypeScript package and,
+   underneath it, Blockchain Commons' C++ reference. That is the author's own
+   account of how it was written, given on that pull request; the traces are
+   still visible here in runGameOfLife and buildFracGrid, names that come from
+   the TypeScript rather than the C++.
 
-   This module and the modifications made to it here are distributed under the
-   BSD-2-Clause-Patent licence, retained in full at
-   build/vendor/lifehash/LICENSE.md and carried inside both generated Workshop
-   pages. AndreasGassmann/lifehash is a separate implementation used only to
-   check this one in fuzzing/lifehash; nothing from it is present here.
+   So this module and the modifications made to it here are distributed under
+   both upstream licences: MIT (Copyright (c) 2022 Andreas Gassmann) and
+   BSD-2-Clause-Patent (Copyright (c) 2019 Blockchain Commons, LLC). Both are
+   retained in full under build/vendor/lifehash/ and carried inside both
+   generated Workshop pages, because the offline build travels on its own.
+
+   fuzzing/lifehash checks this module against the same Gassmann package. That
+   is testing, not provenance -- the provenance is the adaptation above.
 
    The reference algorithm is preserved, but SHA-256 comes from EntropyCore so
    the offline page adds no browser API or network dependency.

@@ -129,12 +129,38 @@ const embedFontLicences = () => {
    URL is declared in assert-no-fetch.mjs exactly as Project Nayuki's is, for
    the same reason: naming an origin inside a comment is not fetching it, and
    editing a licence to avoid declaring it would be the worse trade. */
-const LIFEHASH_LICENCE = 'build/vendor/lifehash/LICENSE.md';
+/* Two licences, because the module has two upstreams and the author of the
+   implementation it was adapted from told us so directly.
+
+   The provenance question was put to EntropyLab at w-s-bitcoin/entropylab#74.
+   The answer: their file was written by following the reference sources
+   function by function -- primarily Andreas Gassmann's TypeScript package,
+   itself a port of Blockchain Commons' C++ -- and re-expressing them in that
+   project's idiom. Not clean-room. The author pointed at the surviving traces:
+   a verbatim error string, and function names taken from the TypeScript rather
+   than from the C++, which inlines that logic and has no such names.
+
+   Both are checkable here, and both check out. `runGameOfLife` and
+   `buildFracGrid` appear in the package and in this module; the string
+   "BitEnumerator underflow." is in the package and in the file this module was
+   adapted from.
+
+   So both notices travel: MIT for the TypeScript package, BSD-2-Clause-Patent
+   for the C++ reference underneath it. Two short notices is the whole
+   obligation, and the BSD one carries a patent grant worth having. */
+const LIFEHASH_LICENCES = [
+  { what: 'Blockchain Commons bc-lifehash -- the LifeHash algorithm and its C++ reference implementation',
+    file: 'build/vendor/lifehash/LICENSE.md' },
+  { what: 'AndreasGassmann/lifehash -- the TypeScript implementation this module was adapted from',
+    file: 'build/vendor/lifehash/LICENSE-MIT-lifehash-ts.txt' }
+];
 
 const embedLifeHashLicence = () => {
-  const text = readFileSync(LIFEHASH_LICENCE, 'utf8').replace(/\r\n/g, '\n').trim();
-  assertInlineSafe(text, 'the vendored LifeHash licence');
-  return `/* ${'-'.repeat(72)}\n   LifeHash. The algorithm and its reference implementation are the work of\n   Blockchain Commons; this module is adapted from EntropyLab's JavaScript\n   implementation of it. Distributed under the licence reproduced in full\n   below, which is carried here because this file travels inside the artifact.\n   ${'-'.repeat(72)}\n\n${text}\n*/\n`;
+  const text = LIFEHASH_LICENCES.map(({ what, file }) =>
+    `${what}\n\n${readFileSync(file, 'utf8').replace(/\r\n/g, '\n').trim()}`
+  ).join(`\n\n${'='.repeat(72)}\n\n`);
+  assertInlineSafe(text, 'a vendored LifeHash licence');
+  return `/* ${'-'.repeat(72)}\n   LifeHash. This module is adapted from EntropyLab's JavaScript\n   implementation, which was itself adapted from the two upstream sources\n   below rather than written from the algorithm description. Both licences\n   are reproduced in full, because this file travels inside the artifact.\n   ${'-'.repeat(72)}\n\n${text}\n*/\n`;
 };
 
 /* font-display: block, not swap.
