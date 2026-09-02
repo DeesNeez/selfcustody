@@ -13,10 +13,23 @@
 > them actually happens.
 
 This file is an **index, not the mechanism**. Every licence that requires its
-notice to travel with the code already carries it inside the file that ships —
-inlined beside the component it covers, so a reader who downloads
-`entropy-offline.html` on its own receives the notices with it. This page is a
+notice to travel with the material already has it travelling, and this page is a
 convenience for anyone wanting the whole picture in one place.
+
+How the notice travels depends on how the component ships, and there are three
+arrangements rather than one:
+
+- **Inlined into the shipped file.** The QR generator, the BIP-39 wordlist, the
+  wallet-export code, LifeHash, libsecp256k1 and the two font families all have
+  their full licence text written inside both Workshop builds. That matters most
+  for `entropy-offline.html`, which is downloaded on its own and has to arrive
+  complete.
+- **A header comment in the served file.** The Bootstrap and Bootstrap Icons
+  notices sit at the top of the stylesheets the site serves, where the CSS they
+  cover is. `npm run build` fails if either is removed.
+- **A file beside the asset.** The fonts are also served as `woff2` binaries,
+  which cannot carry a comment, so `OFL-Jost.txt` and `OFL-OpenSans.txt` sit in
+  `docs/assets/fonts/` next to the files they license.
 
 Full texts are vendored in this repository at the paths given, so they survive
 independently of any upstream URL.
@@ -65,13 +78,28 @@ identically in its `Cargo.toml` and `README.md`, with the full text at
 
 ## How these were identified
 
-Every entry was established by **matching bytes against a pinned upstream
-release**, not inferred from dates, filenames or package metadata. Bootstrap and
-Bootstrap Icons were identified by byte-matching against every published release
-until one matched; the BIP-39 wordlist was sourced from `trezor/python-mnemonic`
-v0.21, which BIP-39 names as the reference implementation, rather than from a
-copy that declared no licence; libsecp256k1 and `secp256k1-sys` were taken from
-the crate pinned in `Cargo.lock` and verified against its recorded checksum.
+Every entry is **tied to pinned upstream evidence**, not inferred from dates,
+filenames or package metadata. Which kind of evidence depends on the component,
+and three were used:
+
+- **Byte matching.** Bootstrap and Bootstrap Icons were identified by matching
+  the vendored files against every published release until one matched. The
+  BIP-39 wordlist was sourced from `trezor/python-mnemonic` v0.21 — which BIP-39
+  names as the reference implementation — rather than from a copy that declared
+  no licence, and confirmed byte-identical.
+- **Locked checksums.** libsecp256k1 and `secp256k1-sys` were taken from the
+  crate pinned in `Cargo.lock` and verified against its recorded checksum, which
+  establishes the source without matching a release tree by hand.
+- **Documented derivation.** LifeHash could not be settled by comparison, and an
+  early attempt to do so reached the wrong answer: structural matching suggested
+  a single upstream, and it took the original author's own account of the
+  adaptation to establish that the code descends primarily from Andreas
+  Gassmann's TypeScript, which itself derives from Blockchain Commons' work.
+  Both notices travel because of that account, not because of a diff.
+
+The third case is why the claim is worded this way. Byte matching answers "are
+these the same bytes"; it does not answer "what was this adapted from", and
+treating the two as one question is how a licence gets dropped.
 
 `npm run build` runs a notice check that fails if a served stylesheet loses its
 licence header, and treats a missing vendored licence as a failure in itself.

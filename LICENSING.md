@@ -16,16 +16,21 @@ designated by the licensor for attribution; compliance does not require
 disclosure of the licensor's legal identity.
 
 This repository is not under a single licence, and it would be misleading to
-put one badge on it. Three different bodies of material live here under three
-different regimes.
+put one badge on it. Four regimes apply to different bodies of material.
 
-## The three regimes
+## The four regimes
 
 | Material | Licence | Full text |
 | --- | --- | --- |
 | Project-authored **software** | MIT | [LICENSE](LICENSE) |
 | Project-authored **educational writing** and original diagrams | CC BY 4.0 | [LICENSE-CONTENT.md](LICENSE-CONTENT.md) |
+| The **`secp256k1-wasm` wrapper** and its builder | The Unlicense | [`secp256k1-wasm/LICENSE`](secp256k1-wasm/LICENSE) |
 | **Third-party** components | each keeps its own | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
+
+The third is project-authored too, and is separate rather than an oversight: it
+was released into the public domain upstream, and `secp256k1-wasm/Cargo.toml`
+and its `README.md` both state The Unlicense. Re-licensing it as MIT here would
+narrow terms already given away.
 
 ## The split is by nature, not by path
 
@@ -49,7 +54,7 @@ HTML under `docs/`, or in a PDF someone printed from it. CC BY 4.0 grants use
 | --- | --- | --- |
 | `build/render.mjs`, `build/tools/` | Renderer, Entropy Workshop, guards, tests | MIT, except the third-party files listed in the notices |
 | `build/content.mjs` | Site software **and** the prose it contains | MIT for the code, CC BY 4.0 for the prose |
-| `build/guides.mjs` | 56 guides plus original inline SVG diagrams | CC BY 4.0 |
+| `build/guides.mjs` | Module code **and** the 56 guides plus original SVG diagrams it contains | MIT for the code, CC BY 4.0 for the writing and diagrams |
 | `secp256k1-wasm/` | Rust wrapper and pinned builder image | The Unlicense — see `secp256k1-wasm/LICENSE` |
 | `fuzzing/` | Differential test harness, never shipped | MIT |
 | `.github/workflows/` | CI configuration | MIT |
@@ -64,7 +69,18 @@ image and a manufacturer's mark. **Each component keeps the licence of its
 source**, and treating the page as CC BY because most of its words are would
 sweep in material the content licence spends its length excluding.
 
-Take the prose and the licence comes with it. Take the page and it does not.
+Read precisely, that is a statement about the page as a unit, not about its
+contents. The project-authored prose inside a rendered page is the same CC BY
+material it is in `build/guides.mjs`, and the licence reaches it there as
+anywhere else — quoting a paragraph from a published page is squarely within the
+grant. What has no licence is **the assembled page as a whole**, because no
+single set of terms covers everything on it.
+
+So the practical question is not where you took the material from but what you
+took. Take the project's writing and this licence comes with it. Take the page
+entire and you have also taken a font, an image and a mark that arrive on their
+own terms — which may still permit what you intend, but not because of anything
+this licence says.
 
 ## What is excluded from the content licence
 

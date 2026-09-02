@@ -59,8 +59,9 @@ name, doing one job instead of two.
 
 **HodlDee is the pseudonymous identifier designated by the licensor for
 attribution. Compliance does not require disclosure of the licensor's legal
-identity.** Credit HodlDee as this page describes and you have done what the
-licence asks.
+identity.** Crediting HodlDee is what the attribution condition asks of you; it
+is **necessary but not sufficient on its own**, and the full set of conditions
+is listed below.
 
 That is a statement about what reuse requires, and not a claim that publishing
 under a pseudonym costs nothing. Copyright arises on authorship whatever name an
@@ -83,10 +84,34 @@ Four things are doing work there, and dropping the first is the common mistake:
 | The licence | a link to CC BY 4.0 itself, not just its name |
 | Your changes | "Changes were made", ideally more specific |
 
-Naming the author is not decoration — attribution is the entire consideration
-this licence asks for, and a credit that omits HodlDee does not satisfy it.
-Linking the specific page rather than the site root is a courtesy on top: it
-lets a reader check what you started with.
+Naming the author is not decoration, and a credit that omits HodlDee does not
+satisfy the attribution condition. Linking the specific page rather than the
+site root is a courtesy on top: it lets a reader check what you started with.
+
+### What compliance actually requires
+
+Attribution is the condition people remember, and it is not the only one. If you
+share this material, CC BY 4.0 asks all of the following (section 3(a)):
+
+- **Credit the creator** — HodlDee, the name designated for attribution.
+- **Retain the copyright notice** — `© 2023–2026 HodlDee`.
+- **Retain a notice referring to this licence**, and a **notice referring to the
+  disclaimer of warranties** below.
+- **Link to the licence itself**, not merely name it:
+  <https://creativecommons.org/licenses/by/4.0/>.
+- **Link to the material** you used, where reasonably practicable.
+- **Indicate if you modified it**, and keep any indication of earlier
+  modifications.
+
+Two further limits come from section 2:
+
+- **You may not impose additional or different terms** on what you pass on, and
+- **you may not apply effective technological measures** that stop others doing
+  what this licence permits.
+
+You may satisfy the notice requirements in any reasonable manner for your medium
+— a footnote, a credits page, a link — and if the licensor asks, you must remove
+the attribution to the extent reasonably practicable.
 
 ### Saying what you changed
 
@@ -97,8 +122,11 @@ enough, and being specific is more useful to your readers than being thorough:
 - "Translated into French."
 - "Updated fee figures for 2027; the rest is unchanged."
 
-If you changed nothing, say so — "reproduced unchanged" — because that tells a
-reader they can rely on the original.
+If you changed nothing, the licence asks nothing of you here — the condition is
+to indicate modification, and there is none to indicate. Writing "reproduced
+unchanged" anyway is a **courtesy, not a requirement**: it tells a reader they
+can rely on the original. Nothing in this file adds conditions to CC BY 4.0, and
+where it suggests going further than the licence asks, it says so.
 
 ## What this licence does NOT cover
 
@@ -194,6 +222,24 @@ wallet-export code. Each keeps its own licence; see
 If the audit does not record where something came from, it is excluded, whatever
 this page appears to say. An exclusion by name is a convenience; the absence of
 a recorded grant is the operative fact.
+
+## No warranty
+
+**This material is offered as-is.** CC BY 4.0 (section 5) offers the Licensed
+Material without warranties of any kind — express, implied, statutory or other,
+including title, merchantability, fitness for a particular purpose,
+non-infringement, absence of errors, or accuracy — and disclaims liability for
+any losses arising from its use, to the fullest extent the law allows.
+
+That is worth reading twice for a project about Bitcoin custody. These guides
+describe operations where a mistake can lose money permanently and irreversibly.
+Nothing here is a guarantee that a procedure is correct, current, or right for
+your circumstances, and reusing it does not transfer that judgement to anyone
+else. Verify against the manufacturer's own documentation, and test recovery
+with an amount you can afford to lose.
+
+Where the disclaimer cannot be given full effect in your jurisdiction, it
+applies as closely as local law permits.
 
 ## Generated files
 
