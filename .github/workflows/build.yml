@@ -1,20 +1,46 @@
 name: build
 
-# Every guard in this repo runs at build time, which until now meant they only
-# ran when someone remembered. None of this needs a browser, so it costs a
-# minute and closes that gap.
+# Two required checks come out of this file, and they are deliberately
+# different weights.
+#
+#   site  -- the whole repository builds, the generated files under docs/ are
+#            current, and the fetch, glyph and licence-notice guards pass. It
+#            has no dependencies and runs on every push and every pull
+#            request, because every change can break it.
+#
+#   Entropy Workshop -- an aggregate gate that always reports, but whose
+#            specialist jobs run only when something they cover actually
+#            changed. Editing a page of prose should not compile Rust or pull
+#            a package from the registry.
+#
+# The scoping is done with job-level `if:` conditions rather than a
+# workflow-level `paths:` filter, and that distinction is the reason this file
+# is shaped the way it is. A required workflow filtered out by `paths:` never
+# reports at all, and GitHub leaves the pull request waiting on a check that
+# will never arrive. A job skipped by an `if:` reports success.
+# https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks
 on:
   push:
     branches: ['**']
   pull_request:
+  # The specialist jobs are skipped on most pull requests, so without this they
+  # would only ever run against a change that touched them -- and a build that
+  # breaks because a registry, an image or a toolchain moved underneath it does
+  # not touch anything. Weekly, and on demand, the whole suite runs regardless.
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
 
-# Read-only. This workflow inspects the tree and never writes to it, so the
-# token it is handed should not be able to either.
+# Read-only by default. Only attest-offline widens this, and only for itself.
 permissions:
   contents: read
 
 jobs:
-  verify:
+  # ---------------------------------------------------------------- site ----
+  # Required on every pull request. Cheap, no network beyond the checkout, and
+  # it fails on anything that would make the published site wrong.
+  site:
+    name: Site · build, generated files and guards
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -32,12 +58,205 @@ jobs:
         with:
           node-version: '22'
 
-      # First, and cheap. Every step below is one someone remembered to add,
-      # and two tests had already been committed without one. This fails the
-      # job before the real work starts rather than after it passes on a
-      # suite that is quietly smaller than the repository's.
-      - name: Every committed test runs here
+      # First, and cheap. Every specialist step below is one someone remembered
+      # to add, and two tests had already been committed without one. This
+      # fails the job before the real work starts rather than after it passes
+      # on a suite that is quietly smaller than the repository's.
+      - name: Every committed test runs somewhere in CI
         run: node build/tools/ci-completeness-test.mjs
+
+      # The scoping and gate logic below is shell embedded in this file, which
+      # nothing would otherwise execute until it was deciding real runs. This
+      # extracts both scripts and runs them against synthetic repositories, so
+      # a condition that scopes the wrong way -- or a gate that accepts a job
+      # skipped against scope's own answer -- fails here instead of silently.
+      - name: CI scoping and gate logic
+        run: node build/tools/ci-scope-test.mjs
+
+      # Also runs, in order: the icon-subset check, the fetch guard, the glyph
+      # guard, the licence-notice guard and the Workshop guard. Any of them
+      # failing exits non-zero.
+      - name: Build and guards
+        run: node build/render.mjs
+
+      # A build on a clean checkout must leave the tree exactly as committed.
+      # If this fails, either someone edited docs/ by hand or the build is not
+      # deterministic -- and a non-deterministic build cannot have a meaningful
+      # published checksum.
+      # --porcelain rather than `git diff`, because a diff says nothing about
+      # untracked files: a diagnostic written into the repo root by a stray
+      # script passes a diff check and then gets committed by the next `add -A`.
+      # That happened twice here before this line existed.
+      - name: Generated files are current and reproducible
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::the build left the tree dirty -- run 'node build/render.mjs', commit generated output, and remove stray files"
+            git status --porcelain
+            exit 1
+          fi
+
+  # --------------------------------------------------------------- scope ----
+  # Decides which specialist jobs are worth running. Everything below reads its
+  # outputs; nothing below computes its own answer, so there is one place to
+  # look when a job runs that should not have, or does not run when it should.
+  scope:
+    name: Entropy Workshop · which checks are relevant
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      entropy: ${{ steps.decide.outputs.entropy }}
+      lifehash: ${{ steps.decide.outputs.lifehash }}
+      wasm: ${{ steps.decide.outputs.wasm }}
+      offline_html: ${{ steps.decide.outputs.offline_html }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          # The comparison below needs both endpoints present. A shallow
+          # checkout has neither the pull request's base nor the push's
+          # predecessor, and the fallback for a missing endpoint is to run
+          # everything -- which would quietly make the scoping a no-op.
+          fetch-depth: 0
+
+      - name: Compare against the base and decide
+        id: decide
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          EMPTY_SHA: '0000000000000000000000000000000000000000'
+        run: |
+          set -euo pipefail
+
+          # A pull request is measured against its merge base, so a stale branch is
+          # judged on what it changes rather than on what main did meanwhile. A push is
+          # measured against its own predecessor.
+          if [ "$GITHUB_EVENT_NAME" = 'pull_request' ]; then
+            from="$BASE_SHA"; to="$HEAD_SHA"; range_dots='...'
+          else
+            from="${BEFORE_SHA:-}"; to="$GITHUB_SHA"; range_dots='..'
+          fi
+
+          comparable=yes
+          if [ -z "$from" ] || [ "$from" = "$EMPTY_SHA" ] \
+             || ! git cat-file -e "${from}^{commit}" 2>/dev/null \
+             || ! git cat-file -e "${to}^{commit}" 2>/dev/null; then
+            comparable=no
+          fi
+
+          changed=''
+          if [ "$comparable" = 'yes' ]; then
+            changed="$(git diff --name-only "${from}${range_dots}${to}")"
+          fi
+
+          matches() { printf '%s\n' "$changed" | grep -qE "$1"; }
+
+          # The attestation subject, decided before the scoping below because a push to
+          # main that moves these bytes is one of the reasons to run everything.
+          offline_html=false
+          if [ "$GITHUB_EVENT_NAME" = 'push' ] && [ "$GITHUB_REF" = 'refs/heads/main' ]; then
+            if [ "$comparable" = 'yes' ]; then
+              if printf '%s\n' "$changed" | grep -qxF 'docs/entropy-offline.html'; then
+                offline_html=true
+              fi
+            else
+              # Nothing to compare against, so the artifact is treated as new.
+              offline_html=true
+            fi
+          fi
+
+          # Anything that cannot be scoped honestly runs the complete suite.
+          run_all=''
+          case "$GITHUB_EVENT_NAME" in
+            schedule)          run_all='the weekly full run' ;;
+            workflow_dispatch) run_all='a manual full run' ;;
+          esac
+          # A comparison whose endpoints are missing reports "nothing changed" for every
+          # file, which is the one wrong answer that looks like a cheap one.
+          if [ -z "$run_all" ] && [ "$comparable" = 'no' ]; then
+            run_all='no usable base commit to compare against'
+          fi
+          # Workflow logic decides what runs, so a change to it cannot be scoped by the
+          # very rules it is changing.
+          if [ -z "$run_all" ] && matches '^[.]github/workflows/'; then
+            run_all='the workflow logic itself changed'
+          fi
+          # The run that mints an attestation is the one whose gate has to mean
+          # something, so that run does everything. Merging an ordinary site pull
+          # request does not move these bytes and is scoped like any other push --
+          # otherwise every merge to main would rebuild the WebAssembly and reinstall
+          # the LifeHash reference to prove that a guide's wording is still correct.
+          if [ -z "$run_all" ] && [ "$offline_html" = 'true' ]; then
+            run_all='a push to main that moves the attested artifact'
+          fi
+
+          if [ -n "$run_all" ]; then
+            entropy=true; lifehash=true; wasm=true
+            echo "running the complete suite: $run_all"
+          else
+            echo 'changed files:'
+            printf '%s\n' "$changed" | sed 's/^/  /'
+
+            # docs/ is generated and committed with the source that produced it, and the
+            # site job fails on a tree that a clean build would change. So a source edit
+            # that reaches the Workshop cannot merge without its regenerated
+            # docs/entropy* output in the same commit, and that output is a better
+            # signal than the source: it is the difference itself rather than a guess at
+            # which of build/ can reach the page. An edit to build/guides.mjs regenerates
+            # guides and nothing else, and is correctly scoped out here.
+            #
+            # Named separately are the inputs that never show up in generated output: the
+            # Workshop's own tests and fixtures, and SECURITY.md, whose text the
+            # attestation-policy test asserts against.
+            if matches '^(docs/entropy|SECURITY[.]md$|package[.]json$|build/tools/(entropy-|wallet-dat|browser-preflight|beta-warning|card-suit-font-test|die-distribution-test|attestation-workflow-test|secp256k1-wasm-test|load-core|sqlite-writer|bip39-english))'; then
+              entropy=true
+            else
+              entropy=false
+            fi
+
+            # The port, its test, and the vendored reference implementation whose
+            # lockfile is the only provenance the differential test has. The port is also
+            # inlined into the Workshop page, so an edit to it moves docs/entropy* too
+            # and turns on the entropy job by the rule above -- that is the intended
+            # overlap, not a duplicate.
+            if matches '^(build/tools/lifehash([.]js|-test[.]mjs)$|fuzzing/lifehash/)'; then
+              lifehash=true
+            else
+              lifehash=false
+            fi
+
+            # The crate and its pinned builder, the compiled wrapper, and the tooling and
+            # tests that produce and check them.
+            if matches '^(secp256k1-wasm/|build/tools/(secp256k1-wasm[.]js|secp256k1-wasm-b64[.]js|secp256k1-wasm-test[.]mjs|wasm-compile[.]mjs|wasm-wrap[.]mjs|wasm-wipe-test[.]mjs|build-wasm-container[.]mjs|snapshot-probe[.]sh)$)'; then
+              wasm=true
+            else
+              wasm=false
+            fi
+          fi
+
+          {
+            echo "entropy=$entropy"
+            echo "lifehash=$lifehash"
+            echo "wasm=$wasm"
+            echo "offline_html=$offline_html"
+          } | tee -a "$GITHUB_OUTPUT"
+  # ------------------------------------------------------------- entropy ----
+  # The Workshop's own correctness: conversion, the browser entry path, the
+  # wallet export, and the offline artifact's published checksum and
+  # attestation policy.
+  entropy:
+    name: Entropy Workshop · conversion, export and offline artifact
+    needs: scope
+    if: needs.scope.outputs.entropy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
 
       # The published test vectors. Every expected value comes from a
       # specification rather than from running this code.
@@ -56,6 +275,10 @@ jobs:
       - name: Browser startup preflight
         run: node build/tools/browser-preflight-test.mjs
 
+      # Against the committed wrapper. Rebuilding that wrapper from source is
+      # the wasm job's subject, and that job has its own, much narrower
+      # trigger -- so this stays here, where the Workshop's engine is exercised
+      # even on a change that never touches the crate.
       - name: Committed libsecp256k1 WebAssembly
         run: node build/tools/secp256k1-wasm-test.mjs
 
@@ -65,19 +288,11 @@ jobs:
       - name: Card-suit font fallbacks
         run: node build/tools/card-suit-font-test.mjs
 
-      - name: Fingerprint LifeHash
-        run: node build/tools/lifehash-test.mjs
-
       - name: Die and coin distribution charts
         run: node build/tools/die-distribution-test.mjs
 
       - name: Offline artifact attestation policy
         run: node build/tools/attestation-workflow-test.mjs
-
-      # Also runs, in order: the icon-subset check, the fetch guard, the glyph
-      # guard and the Workshop guard. Any of them failing exits non-zero.
-      - name: Build and guards
-        run: node build/render.mjs
 
       # The artifact's whole promise. Deliberately checked on Linux, where the
       # checkout has LF endings: the checksum used to describe the Windows
@@ -87,24 +302,49 @@ jobs:
         working-directory: docs
         run: sha256sum -c entropy-offline.html.sha256
 
-      # A build on a clean checkout must leave the tree exactly as committed.
-      # If this fails, either someone edited docs/ by hand or the build is not
-      # deterministic -- and a non-deterministic build cannot have a meaningful
-      # published checksum.
-      # --porcelain rather than `git diff`, because a diff says nothing about
-      # untracked files: a diagnostic written into the repo root by a stray
-      # script passes a diff check and then gets committed by the next `add -A`.
-      # That happened twice here before this line existed.
-      - name: Generated files are current and reproducible
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "::error::the build left the tree dirty -- run 'node build/render.mjs', commit generated output, and remove stray files"
-            git status --porcelain
-            exit 1
-          fi
+  # ------------------------------------------------------------ lifehash ----
+  # The LifeHash port, and the port measured against the library it was ported
+  # from. Its own job because the differential test is the only thing in this
+  # repository that installs a dependency: fuzzing/lifehash/ has its own
+  # lockfile, nothing it pulls in is reachable from the site, and the artifact
+  # still ships with no runtime dependencies.
+  #
+  # Scoped narrowly so that a registry outage cannot fail a pull request that
+  # has nothing to do with LifeHash -- but still named in the gate, so an
+  # artifact is never attested while it is red.
+  lifehash:
+    name: Entropy Workshop · LifeHash matches the canonical implementation
+    needs: scope
+    if: needs.scope.outputs.lifehash == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
 
-  build-wasm:
-    name: Build · libsecp256k1 WASM in the published builder
+      - name: Fingerprint LifeHash
+        run: node build/tools/lifehash-test.mjs
+
+      # npm ci, not npm install: the lockfile decides, and a dependency that
+      # resolved to something else would fail here rather than quietly become
+      # the thing this test trusts as the reference.
+      - name: Install the reference implementation
+        working-directory: fuzzing/lifehash
+        run: npm ci --no-audit --no-fund
+
+      - name: Compare both implementations
+        working-directory: fuzzing/lifehash
+        run: node fuzz.mjs
+
+  # ---------------------------------------------------------------- wasm ----
+  wasm:
+    name: Entropy Workshop · libsecp256k1 WASM in the published builder
+    needs: scope
+    if: needs.scope.outputs.wasm == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -116,6 +356,8 @@ jobs:
       WASM_BUILDER_IMAGE: ghcr.io/hodldee/selfcustody-wasm-builder@sha256:1418e85a9c5fb5759fd5b4bdc42f3485cbc8dedf3c78e259fa6fe815a806f9ae
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           # Exactly the Node the builder image carries. It does not generate
@@ -258,45 +500,99 @@ jobs:
           fi
           echo "committed artifact matches the published builder"
 
-  # This job is deliberately separate from verification. Pull requests and
-  # ordinary branch pushes keep a read-only token; only an already-verified
-  # commit on the default branch receives the short-lived OIDC permission
-  # needed to publish provenance for the exact downloadable HTML bytes.
-  # The LifeHash port against the library it was ported from. Its own job
-  # because it is the only thing in this repository that installs a dependency:
-  # fuzzing/lifehash/ has its own lockfile, nothing it pulls in is reachable
-  # from the site, and the artifact still ships with no runtime dependencies.
-  #
-  # Kept out of `verify` so that a registry outage cannot fail the job that
-  # gates ordinary correctness -- but named in attest-offline's needs, because
-  # an artifact should not be attested while a behavioural test is red.
-  fuzz-lifehash:
-    name: LifeHash matches the canonical implementation
+  # ---------------------------------------------------------------- gate ----
+  # The single required check for everything above. `if: always()` is what
+  # makes it usable as one: it reports on every run, whether its specialist
+  # jobs ran, were skipped as irrelevant, or failed. Requiring those jobs
+  # individually would not do -- GitHub counts a skipped job as passing, so a
+  # job skipped by a broken condition would be indistinguishable from one
+  # skipped on purpose, and branch protection would hold three checks whose
+  # meaning changes with the diff instead of one whose meaning never does.
+  gate:
+    name: Entropy Workshop
+    needs: [scope, entropy, lifehash, wasm]
+    if: always()
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-        with:
-          node-version: '22'
+      - name: Every relevant check passed
+        env:
+          SCOPE: ${{ needs.scope.result }}
+          ENTROPY: ${{ needs.entropy.result }}
+          LIFEHASH: ${{ needs.lifehash.result }}
+          WASM: ${{ needs.wasm.result }}
+          # What scope asked for, beside what actually happened. Without the
+          # first half the second half cannot be judged.
+          EXPECT_ENTROPY: ${{ needs.scope.outputs.entropy }}
+          EXPECT_LIFEHASH: ${{ needs.scope.outputs.lifehash }}
+          EXPECT_WASM: ${{ needs.scope.outputs.wasm }}
+        run: |
+          failed=0
 
-      # npm ci, not npm install: the lockfile decides, and a dependency that
-      # resolved to something else would fail here rather than quietly become
-      # the thing this test trusts as the reference.
-      - name: Install the reference implementation
-        working-directory: fuzzing/lifehash
-        run: npm ci --no-audit --no-fund
+          # scope decides what every expectation below means, so it is checked first and
+          # on its own: a scope job that did not succeed hands out empty strings, and an
+          # empty expectation would quietly excuse every other result.
+          if [ "$SCOPE" = 'success' ]; then
+            echo 'scope: passed'
+          else
+            echo "::error::scope: $SCOPE"
+            failed=1
+          fi
 
-      - name: Compare both implementations
-        working-directory: fuzzing/lifehash
-        run: node fuzz.mjs
+          # A skipped job reports green, which is what makes the conditions in this file
+          # safe to use and also what makes them dangerous: a broken `if:` produces the
+          # same colour as a correctly scoped-out job. The scope job's own answer is the
+          # only thing that can tell those apart, so it is compared against the result
+          # rather than trusted to have been applied.
+          check() {
+            name="$1"; expected="$2"; result="$3"
+            case "$result" in
+              success)
+                echo "$name: passed"
+                ;;
+              skipped)
+                if [ "$expected" = 'true' ]; then
+                  echo "::error::$name: scope asked for this job and it did not run -- its \`if:\` condition disagrees with scope"
+                  failed=1
+                else
+                  echo "$name: skipped, nothing it covers changed"
+                fi
+                ;;
+              *)
+                echo "::error::$name: $result"
+                failed=1
+                ;;
+            esac
+          }
 
+          check entropy  "$EXPECT_ENTROPY"  "$ENTROPY"
+          check lifehash "$EXPECT_LIFEHASH" "$LIFEHASH"
+          check wasm     "$EXPECT_WASM"     "$WASM"
+
+          if [ "$failed" -ne 0 ]; then
+            exit 1
+          fi
+          echo 'Entropy Workshop: every relevant check passed'
+  # -------------------------------------------------------------- attest ----
+  # Deliberately separate from verification. Pull requests and ordinary branch
+  # pushes keep a read-only token; only an already-verified commit on the
+  # default branch receives the short-lived OIDC permission needed to publish
+  # provenance for the exact downloadable HTML bytes.
+  #
+  # An attestation describes bytes, so it is minted when the bytes move and not
+  # otherwise. A second signature over an identical file does record another
+  # source commit and workflow run, but it is not needed to verify bytes that
+  # did not change -- the existing attestation already answers for them -- and
+  # a prose-only commit is not worth a run of the complete suite. When the
+  # bytes do move, scope says so, and that same answer forces every specialist
+  # job to run, so this never rests on a gate that went green by skipping.
   attest-offline:
     name: Attest · offline Entropy Workshop
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [verify, build-wasm, fuzz-lifehash]
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.scope.outputs.offline_html == 'true'
+    needs: [site, scope, gate]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
