@@ -10,10 +10,11 @@ subset of Bootstrap's stylesheet and is served to every visitor.
 site serves descends from a copy that is byte-identical to the official
 distribution.
 
-The served stylesheet is 15.6 KB against upstream's 190 KB, so hashing it
-against published releases proves nothing — a subset matches no release by
-construction. What settles it is the repository's own history. The file was
-vendored whole and only later cut down:
+The served stylesheet is 17,037 bytes against the 194,901 it was cut from —
+under a tenth of the original — so hashing it against published releases
+proves nothing: a subset matches no release by construction. What settles it
+is the repository's own history. The file was vendored whole and only later
+cut down:
 
 | Commit | What it did |
 | --- | --- |
